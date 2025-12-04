@@ -3,6 +3,7 @@
   background: var(--background);
   max-width: 393px;
   margin: 0 auto;
+  padding-bottom: 80px;
 }
 
 .main {
@@ -13,7 +14,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .pageTitle {
@@ -22,13 +23,29 @@
   font-weight: 600;
   color: var(--foreground);
   text-align: center;
-  margin-right: 44px; /* Balance with back button */
+  margin-right: 44px;
 }
 
 .searchSection {
-  margin: 20px 0;
+  margin-bottom: 16px;
 }
 
-.categoriesSection {
-  margin-top: 8px;
+.tabsSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  margin-bottom: 12px;
+}
+
+.sectionTitle h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.productsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

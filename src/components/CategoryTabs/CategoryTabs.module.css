@@ -1,0 +1,45 @@
+.container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 13px 10px;
+  background: var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.tab.active {
+  background: var(--secondary);
+  color: var(--white);
+}
+
+.icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.name {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+}

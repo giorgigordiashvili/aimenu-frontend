@@ -1,0 +1,28 @@
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  height: 44px;
+  background: var(--white);
+  border: 0.873px solid var(--gray-200);
+  border-radius: var(--border-radius-md);
+  width: 100%;
+}
+
+.searchIcon {
+  flex-shrink: 0;
+  color: var(--gray-400);
+}
+
+.input {
+  flex: 1;
+  font-size: 12px;
+  color: var(--foreground);
+  background: transparent;
+  letter-spacing: -0.15px;
+}
+
+.input::placeholder {
+  color: var(--gray-400);
+}

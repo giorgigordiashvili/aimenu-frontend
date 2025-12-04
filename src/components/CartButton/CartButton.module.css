@@ -1,0 +1,59 @@
+.button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  border-radius: 50px;
+  color: var(--white);
+  gap: 12px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(236, 0, 63, 0.3);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(236, 0, 63, 0.4);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 12px rgba(236, 0, 63, 0.3);
+}
+
+.badge {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary);
+  border-radius: 50%;
+}
+
+.badgeText {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  letter-spacing: -0.15px;
+}
+
+.text {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.15px;
+}
+
+.arrow {
+  position: absolute;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(0deg);
+}
