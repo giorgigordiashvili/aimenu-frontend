@@ -234,3 +234,10 @@
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .restaurantImage {
+    aspect-ratio: 262 / 160;
+  }
+}

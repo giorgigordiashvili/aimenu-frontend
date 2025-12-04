@@ -24,6 +24,7 @@ interface RestaurantCardProps {
   isOpenNow?: string;
   amenities?: Amenity[];
   priceLevel?: string;
+  categoryName?: string;
 }
 
 const RestaurantCard = memo(function RestaurantCard({
@@ -35,6 +36,7 @@ const RestaurantCard = memo(function RestaurantCard({
   averageRating,
   amenities = [],
   priceLevel = '₾₾',
+  categoryName,
 }: RestaurantCardProps) {
   const displayAmenities = useMemo(() => amenities.slice(0, 2), [amenities]);
   const extraAmenitiesCount = amenities.length - 2;
@@ -47,7 +49,7 @@ const RestaurantCard = memo(function RestaurantCard({
             src={logo}
             alt={name}
             fill
-            sizes="(max-width: 768px) 100vw, 50vw"
+            sizes="(max-width: 768px) 100vw, 262px"
             className={styles.image}
             loading="lazy"
           />
@@ -61,6 +63,9 @@ const RestaurantCard = memo(function RestaurantCard({
             </svg>
             <span className={styles.ratingText}>{averageRating}</span>
           </div>
+        )}
+        {categoryName && (
+          <div className={styles.categoryBadge}>{categoryName}</div>
         )}
       </div>
 
@@ -95,6 +100,10 @@ const RestaurantCard = memo(function RestaurantCard({
         {description && (
           <p className={styles.description}>{description}</p>
         )}
+
+        <div className={styles.detailsButton}>
+          <span>დეტალები</span>
+        </div>
       </div>
     </Link>
   );

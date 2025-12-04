@@ -72,6 +72,16 @@ export default function Home() {
       </div>
 
       <main className={styles.main}>
+        {/* Desktop section header */}
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionTitleGroup}>
+            <h1 className={styles.sectionTitle}>პოპულარული რესტორნები</h1>
+            <p className={styles.sectionSubtitle}>რჩეული ადგილები მთელი საქართველოს მასშტაბით</p>
+          </div>
+          <button className={styles.viewAllButton}>ყველას ნახვა</button>
+        </div>
+
+        {/* Mobile category tabs */}
         <div className={styles.categoryTabs}>
           {loading ? (
             <CategoryTabsSkeleton count={5} />
@@ -91,7 +101,7 @@ export default function Home() {
 
         <div className={styles.restaurantsList}>
           {loading ? (
-            <RestaurantListSkeleton count={4} />
+            <RestaurantListSkeleton count={8} />
           ) : error ? (
             <div className={styles.errorState}>{error}</div>
           ) : filteredRestaurants.length === 0 ? (
@@ -110,6 +120,7 @@ export default function Home() {
                 totalReviews={restaurant.total_reviews}
                 isOpenNow={restaurant.is_open_now}
                 amenities={restaurant.amenities}
+                categoryName={restaurant.category?.name}
               />
             ))
           )}
