@@ -62,3 +62,39 @@
   color: var(--foreground);
   width: fit-content;
 }
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .container {
+    gap: 24px;
+    padding-bottom: 32px;
+  }
+
+  .imageContainer {
+    width: 120px;
+    height: 120px;
+    border-radius: 16px;
+  }
+
+  .info {
+    gap: 8px;
+  }
+
+  .name {
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.5px;
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 22px;
+    color: #62748e;
+  }
+
+  .ratingBadge {
+    padding: 4px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+}

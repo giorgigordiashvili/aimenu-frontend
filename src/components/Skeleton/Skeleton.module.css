@@ -144,6 +144,51 @@
   gap: 8px;
 }
 
+/* Desktop category list skeleton */
+@media (min-width: 768px) {
+  .categoryList {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .categoryCard {
+    flex-direction: column;
+    padding: 16px;
+    border-radius: 14px;
+    gap: 12px;
+  }
+
+  .categoryImage {
+    width: 100%;
+    height: 120px;
+    margin-right: 0;
+    border-radius: 10px;
+  }
+
+  .categoryName {
+    text-align: center;
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .categoryChevron {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .categoryList {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .categoryList {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
 /* Product Card Skeleton */
 .productCard {
   display: flex;
@@ -239,5 +284,28 @@
 @media (min-width: 768px) {
   .restaurantImage {
     aspect-ratio: 262 / 160;
+  }
+
+  /* Product card skeleton desktop */
+  .productCard {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .productImage {
+    width: 100%;
+    height: 160px;
+    border-radius: 0;
+  }
+
+  .productContent {
+    padding: 12px;
+  }
+
+  .productButton {
+    display: none;
   }
 }

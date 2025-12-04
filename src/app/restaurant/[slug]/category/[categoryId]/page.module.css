@@ -74,3 +74,66 @@
   width: 100px;
   border-radius: 4px;
 }
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .main {
+    padding: 24px 80px 100px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .titleSection {
+    margin-bottom: 24px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+    font-weight: 700;
+    margin-right: 0;
+    text-align: left;
+    flex: none;
+  }
+
+  .searchSection {
+    margin-bottom: 24px;
+    max-width: 400px;
+  }
+
+  .tabsSection {
+    margin-bottom: 32px;
+  }
+
+  .sectionTitle {
+    margin-bottom: 20px;
+  }
+
+  .sectionTitle h2 {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .productsList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .titleSkeleton {
+    height: 32px;
+    max-width: 200px;
+    margin-right: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .productsList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .productsList {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

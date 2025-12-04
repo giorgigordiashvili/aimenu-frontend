@@ -118,7 +118,7 @@ export default function ProductDetailModal({
               src={product.image}
               alt={product.name}
               fill
-              sizes="393px"
+              sizes="(min-width: 768px) 600px, 393px"
               className={styles.image}
               priority
             />
@@ -128,6 +128,12 @@ export default function ProductDetailModal({
           <div className={styles.backButtonContainer}>
             <BackButton onClick={onClose} />
           </div>
+          {/* Desktop close button */}
+          <button className={styles.closeButton} onClick={onClose} aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
 
         {/* Content */}

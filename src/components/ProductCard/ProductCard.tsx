@@ -38,7 +38,7 @@ const ProductCard = memo(function ProductCard({
             src={image}
             alt={name}
             fill
-            sizes="100px"
+            sizes="(min-width: 768px) 300px, 100px"
             className={styles.image}
             loading="lazy"
           />

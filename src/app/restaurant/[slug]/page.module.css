@@ -91,3 +91,53 @@
   flex-direction: column;
   gap: 8px;
 }
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .main {
+    padding: 24px 80px 100px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .titleSection {
+    margin-bottom: 32px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+    font-weight: 700;
+    margin-right: 0;
+    text-align: left;
+    flex: none;
+  }
+
+  .searchSection {
+    margin: 32px 0;
+    max-width: 400px;
+  }
+
+  .categoriesSection {
+    margin-top: 24px;
+  }
+
+  /* Skeleton styles for desktop */
+  .restaurantInfoSkeleton {
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .logoSkeleton {
+    width: 120px;
+    height: 120px;
+    border-radius: 16px;
+  }
+
+  .nameSkeleton {
+    height: 32px;
+  }
+
+  .descSkeleton {
+    height: 20px;
+  }
+}

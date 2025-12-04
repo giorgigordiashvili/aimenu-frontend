@@ -30,7 +30,7 @@ export default function CategoryList({ categories, restaurantSlug }: CategoryLis
                 src={category.image}
                 alt={category.name}
                 fill
-                sizes="54px"
+                sizes="(min-width: 768px) 200px, 54px"
                 className={styles.image}
                 loading="lazy"
               />

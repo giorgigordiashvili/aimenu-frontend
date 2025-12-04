@@ -58,3 +58,56 @@
   color: var(--gray-400);
   flex-shrink: 0;
 }
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .item {
+    flex-direction: column;
+    padding: 16px;
+    border-radius: 14px;
+    gap: 12px;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  .item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .imageContainer {
+    width: 100%;
+    height: 120px;
+    margin-right: 0;
+    border-radius: 10px;
+  }
+
+  .name {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .chevron {
+    display: none;
+  }
+}
+
+/* Large desktop - 4 columns */
+@media (min-width: 1024px) {
+  .list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Extra large desktop - 5 columns */
+@media (min-width: 1280px) {
+  .list {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
