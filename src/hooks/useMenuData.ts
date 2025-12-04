@@ -31,8 +31,25 @@ interface FormattedCategory {
   icon?: string;
 }
 
+// Helper to parse translations string or object
+const parseTranslations = (translations: unknown): object => {
+  if (!translations) return {};
+  if (typeof translations === 'string') {
+    try {
+      return JSON.parse(translations);
+    } catch {
+      return {};
+    }
+  }
+  if (typeof translations === 'object') {
+    return translations as object;
+  }
+  return {};
+};
+
 const getTranslatedField = (translations: unknown, field: string, locale: Locale = defaultLocale): string => {
-  return getTranslation(translations, field, locale);
+  const parsed = parseTranslations(translations);
+  return getTranslation(parsed, field, locale);
 };
 
 const formatMenuItem = (item: MenuItem, locale: Locale): FormattedProduct => {

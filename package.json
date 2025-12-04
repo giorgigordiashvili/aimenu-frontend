@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@gordela/api-generator": "^1.2.0",
+    "@microsoft/clarity": "^1.0.2",
     "next": "16.0.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",

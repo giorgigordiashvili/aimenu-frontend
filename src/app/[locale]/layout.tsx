@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { CartProvider } from "@/context/CartContext";
 import { TableProvider } from "@/context/TableContext";
 import { LocaleProvider } from "@/context/LocaleContext";
+import ClarityProvider from "@/components/ClarityProvider";
 import { locales, Locale, isValidLocale } from "@/i18n/config";
 import "../globals.css";
 
@@ -55,6 +56,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={`${inter.variable} ${notoSansGeorgian.variable}`}>
       <body>
+        <ClarityProvider />
         <LocaleProvider locale={locale as Locale}>
           <TableProvider>
             <CartProvider>
