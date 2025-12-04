@@ -1,7 +1,22 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Noto_Sans_Georgian } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { TableProvider } from "@/context/TableContext";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const notoSansGeorgian = Noto_Sans_Georgian({
+  subsets: ["georgian"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-noto-georgian",
+});
 
 export const metadata: Metadata = {
   title: "AiMenu - Restaurant Menu",
@@ -21,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ka">
+    <html lang="ka" className={`${inter.variable} ${notoSansGeorgian.variable}`}>
       <body>
         <TableProvider>
           <CartProvider>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Header, RestaurantCard, RestaurantListSkeleton, CategoryTabsSkeleton } from '@/components';
-import { restaurantsList } from '@/api/generated/api';
-import type { RestaurantList, RestaurantCategory } from '@/api/generated/interfaces';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useRestaurants } from '@/hooks/useRestaurants';
+import type { RestaurantCategory } from '@/api/generated/interfaces';
 import styles from './page.module.css';
 
 interface CategoryWithIcon {
@@ -28,41 +29,10 @@ const getCategoryIcon = (slug: string): string => {
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [activeCategory, setActiveCategory] = useState('all');
-  const [restaurants, setRestaurants] = useState<RestaurantList[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchRestaurants() {
-      try {
-        setLoading(true);
-        const response = await restaurantsList(
-          undefined, // acceptsRemoteOrders
-          undefined, // acceptsReservations
-          undefined, // acceptsTakeaway
-          undefined, // city
-          undefined, // country
-          undefined, // minRating
-          searchQuery || undefined, // name
-          undefined, // ordering
-          undefined, // page
-          20, // pageSize
-          searchQuery || undefined, // search
-        );
-        setRestaurants(response.results);
-        setError(null);
-      } catch (err) {
-        console.error('Failed to fetch restaurants:', err);
-        setError('ვერ მოხერხდა რესტორნების ჩატვირთვა');
-        setRestaurants([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchRestaurants();
-  }, [searchQuery]);
+  const { restaurants, isLoading: loading, error } = useRestaurants({ search: debouncedSearch });
 
   // Extract unique categories from restaurants
   const categories = useMemo((): CategoryWithIcon[] => {
@@ -85,13 +55,15 @@ export default function Home() {
     ];
   }, [restaurants]);
 
-  const filteredRestaurants = restaurants.filter((restaurant) => {
-    const matchesSearch = restaurant.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesCategory = activeCategory === 'all' || restaurant.category?.id === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredRestaurants = useMemo(() => {
+    return restaurants.filter((restaurant) => {
+      const matchesSearch = restaurant.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory = activeCategory === 'all' || restaurant.category?.id === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [restaurants, searchQuery, activeCategory]);
 
   return (
     <div className={styles.page}>

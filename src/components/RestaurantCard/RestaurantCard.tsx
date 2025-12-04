@@ -1,5 +1,7 @@
 'use client';
 
+import { memo, useMemo } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import styles from './RestaurantCard.module.css';
 
@@ -24,7 +26,7 @@ interface RestaurantCardProps {
   priceLevel?: string;
 }
 
-export default function RestaurantCard({
+const RestaurantCard = memo(function RestaurantCard({
   name,
   slug,
   description,
@@ -34,14 +36,21 @@ export default function RestaurantCard({
   amenities = [],
   priceLevel = '₾₾',
 }: RestaurantCardProps) {
-  const displayAmenities = amenities.slice(0, 2);
+  const displayAmenities = useMemo(() => amenities.slice(0, 2), [amenities]);
   const extraAmenitiesCount = amenities.length - 2;
 
   return (
     <Link href={`/restaurant/${slug}`} className={styles.card}>
       <div className={styles.imageContainer}>
         {logo ? (
-          <img src={logo} alt={name} className={styles.image} />
+          <Image
+            src={logo}
+            alt={name}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className={styles.image}
+            loading="lazy"
+          />
         ) : (
           <div className={styles.imagePlaceholder} />
         )}
@@ -89,4 +98,6 @@ export default function RestaurantCard({
       </div>
     </Link>
   );
-}
+});
+
+export default RestaurantCard;

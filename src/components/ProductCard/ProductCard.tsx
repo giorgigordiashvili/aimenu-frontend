@@ -1,5 +1,7 @@
 'use client';
 
+import { memo, useCallback } from 'react';
+import Image from 'next/image';
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
@@ -11,7 +13,7 @@ interface ProductCardProps {
   onClick?: () => void;
 }
 
-export default function ProductCard({
+const ProductCard = memo(function ProductCard({
   id,
   name,
   description,
@@ -19,11 +21,11 @@ export default function ProductCard({
   image,
   onClick,
 }: ProductCardProps) {
-  const handleCardClick = () => {
+  const handleCardClick = useCallback(() => {
     if (onClick) {
       onClick();
     }
-  };
+  }, [onClick]);
 
   return (
     <div
@@ -32,7 +34,14 @@ export default function ProductCard({
     >
       <div className={styles.imageContainer}>
         {image ? (
-          <img src={image} alt={name} className={styles.image} />
+          <Image
+            src={image}
+            alt={name}
+            fill
+            sizes="100px"
+            className={styles.image}
+            loading="lazy"
+          />
         ) : (
           <div className={styles.imagePlaceholder} />
         )}
@@ -56,4 +65,6 @@ export default function ProductCard({
       </div>
     </div>
   );
-}
+});
+
+export default ProductCard;

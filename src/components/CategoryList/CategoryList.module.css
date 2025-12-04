@@ -26,6 +26,7 @@
 }
 
 .imageContainer {
+  position: relative;
   width: 54px;
   height: 53px;
   border-radius: var(--border-radius-sm);

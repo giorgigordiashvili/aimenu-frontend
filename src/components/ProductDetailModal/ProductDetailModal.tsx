@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import BackButton from '../BackButton';
 import styles from './ProductDetailModal.module.css';
 
@@ -113,7 +114,14 @@ export default function ProductDetailModal({
         {/* Product Image */}
         <div className={styles.imageContainer}>
           {product.image ? (
-            <img src={product.image} alt={product.name} className={styles.image} />
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes="393px"
+              className={styles.image}
+              priority
+            />
           ) : (
             <div className={styles.imagePlaceholder} />
           )}

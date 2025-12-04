@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import styles from './CategoryList.module.css';
 
@@ -25,7 +26,14 @@ export default function CategoryList({ categories, restaurantSlug }: CategoryLis
         >
           <div className={styles.imageContainer}>
             {category.image ? (
-              <img src={category.image} alt={category.name} className={styles.image} />
+              <Image
+                src={category.image}
+                alt={category.name}
+                fill
+                sizes="54px"
+                className={styles.image}
+                loading="lazy"
+              />
             ) : (
               <div className={styles.imagePlaceholder} />
             )}
