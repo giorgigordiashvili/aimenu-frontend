@@ -1,0 +1,93 @@
+.page {
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.main {
+  padding: 10px 20px 40px;
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pageTitle {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  text-align: center;
+  margin-right: 44px; /* Balance with back button */
+}
+
+.searchSection {
+  margin: 20px 0;
+}
+
+.categoriesSection {
+  margin-top: 8px;
+}
+
+.loadingState,
+.errorState {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--gray-500);
+  font-size: 14px;
+}
+
+.errorState {
+  color: #ec003f;
+}
+
+/* Skeleton styles */
+.restaurantInfoSkeleton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 16px;
+  margin-bottom: 16px;
+}
+
+.logoSkeleton {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.infoSkeleton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nameSkeleton {
+  height: 24px;
+  width: 60%;
+  border-radius: 4px;
+}
+
+.descSkeleton {
+  height: 16px;
+  width: 80%;
+  border-radius: 4px;
+}
+
+.searchSkeleton {
+  height: 48px;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.categoriesList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

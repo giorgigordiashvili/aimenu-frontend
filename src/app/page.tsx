@@ -1,89 +1,146 @@
 'use client';
 
-import { useState } from 'react';
-import { Header, BackButton, SearchBar, CategoryList, RestaurantInfo } from '@/components';
+import { useState, useEffect, useMemo } from 'react';
+import { Header, RestaurantCard, RestaurantListSkeleton, CategoryTabsSkeleton } from '@/components';
+import { restaurantsList } from '@/api/generated/api';
+import type { RestaurantList, RestaurantCategory } from '@/api/generated/interfaces';
 import styles from './page.module.css';
 
-// Mock data for demonstration
-const mockRestaurant = {
-  id: '1',
-  name: 'შავი ლომი',
-  slug: 'shavi-lomi',
-  description: 'თბილისი • ქართული ფიუჟენი',
-  logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&h=200&fit=crop',
-  rating: 4.8,
-};
+interface CategoryWithIcon {
+  id: string;
+  name: string;
+  icon: string;
+}
 
-const mockCategories = [
-  {
-    id: '1',
-    name: 'გემრიელი სალათები',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&h=200&fit=crop',
-  },
-  {
-    id: '2',
-    name: 'მჟავე კერძები',
-    image: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=200&h=200&fit=crop',
-  },
-  {
-    id: '3',
-    name: 'ტრადიციული დესერტები',
-    image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&h=200&fit=crop',
-  },
-  {
-    id: '4',
-    name: 'ბოსტნეულის კერძები',
-    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=200&h=200&fit=crop',
-  },
-  {
-    id: '5',
-    name: 'თევზის კერძები',
-    image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=200&h=200&fit=crop',
-  },
-  {
-    id: '6',
-    name: 'ხორცის კერძები',
-    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&h=200&fit=crop',
-  },
-];
+const getCategoryIcon = (slug: string): string => {
+  const iconMap: Record<string, string> = {
+    georgian: '🥟',
+    italian: '🍕',
+    asian: '🍜',
+    european: '🥐',
+    bar: '🍸',
+    cafe: '☕',
+    fastfood: '🍔',
+    seafood: '🦐',
+  };
+  return iconMap[slug.toLowerCase()] || '🍽️';
+};
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [restaurants, setRestaurants] = useState<RestaurantList[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredCategories = mockCategories.filter((category) =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    async function fetchRestaurants() {
+      try {
+        setLoading(true);
+        const response = await restaurantsList(
+          undefined, // acceptsRemoteOrders
+          undefined, // acceptsReservations
+          undefined, // acceptsTakeaway
+          undefined, // city
+          undefined, // country
+          undefined, // minRating
+          searchQuery || undefined, // name
+          undefined, // ordering
+          undefined, // page
+          20, // pageSize
+          searchQuery || undefined, // search
+        );
+        setRestaurants(response.results);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch restaurants:', err);
+        setError('ვერ მოხერხდა რესტორნების ჩატვირთვა');
+        setRestaurants([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRestaurants();
+  }, [searchQuery]);
+
+  // Extract unique categories from restaurants
+  const categories = useMemo((): CategoryWithIcon[] => {
+    const categoryMap = new Map<string, RestaurantCategory>();
+    restaurants.forEach((restaurant) => {
+      if (restaurant.category && !categoryMap.has(restaurant.category.id)) {
+        categoryMap.set(restaurant.category.id, restaurant.category);
+      }
+    });
+
+    const extractedCategories: CategoryWithIcon[] = Array.from(categoryMap.values()).map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      icon: getCategoryIcon(cat.slug),
+    }));
+
+    return [
+      { id: 'all', name: 'ყველა', icon: '🍽️' },
+      ...extractedCategories,
+    ];
+  }, [restaurants]);
+
+  const filteredRestaurants = restaurants.filter((restaurant) => {
+    const matchesSearch = restaurant.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory === 'all' || restaurant.category?.id === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className={styles.page}>
-      <Header />
+      <div className={styles.heroSection}>
+        <Header />
+      </div>
 
       <main className={styles.main}>
-        <div className={styles.titleSection}>
-          <BackButton />
-          <h1 className={styles.pageTitle}>რესტორნის მენიუ</h1>
+        <div className={styles.categoryTabs}>
+          {loading ? (
+            <CategoryTabsSkeleton count={5} />
+          ) : (
+            categories.map((category) => (
+              <button
+                key={category.id}
+                className={`${styles.categoryTab} ${activeCategory === category.id ? styles.activeTab : ''}`}
+                onClick={() => setActiveCategory(category.id)}
+              >
+                <span className={styles.categoryIcon}>{category.icon}</span>
+                <span className={styles.categoryName}>{category.name}</span>
+              </button>
+            ))
+          )}
         </div>
 
-        <RestaurantInfo
-          name={mockRestaurant.name}
-          description={mockRestaurant.description}
-          logo={mockRestaurant.logo}
-          rating={mockRestaurant.rating}
-        />
-
-        <div className={styles.searchSection}>
-          <SearchBar
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="მოძებნე კერძი სახელით"
-          />
-        </div>
-
-        <div className={styles.categoriesSection}>
-          <CategoryList
-            categories={filteredCategories}
-            restaurantSlug={mockRestaurant.slug}
-          />
+        <div className={styles.restaurantsList}>
+          {loading ? (
+            <RestaurantListSkeleton count={4} />
+          ) : error ? (
+            <div className={styles.errorState}>{error}</div>
+          ) : filteredRestaurants.length === 0 ? (
+            <div className={styles.emptyState}>რესტორნები ვერ მოიძებნა</div>
+          ) : (
+            filteredRestaurants.map((restaurant) => (
+              <RestaurantCard
+                key={restaurant.id}
+                id={restaurant.id}
+                name={restaurant.name}
+                slug={restaurant.slug}
+                description={restaurant.description}
+                logo={restaurant.logo}
+                city={restaurant.city}
+                averageRating={restaurant.average_rating}
+                totalReviews={restaurant.total_reviews}
+                isOpenNow={restaurant.is_open_now}
+                amenities={restaurant.amenities}
+              />
+            ))
+          )}
         </div>
       </main>
     </div>

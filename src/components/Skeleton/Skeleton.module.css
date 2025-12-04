@@ -1,0 +1,236 @@
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 25%,
+    var(--gray-100) 50%,
+    var(--gray-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Restaurant Card Skeleton */
+.restaurantCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 0.873px solid var(--gray-200);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.restaurantImage {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 25%,
+    var(--gray-100) 50%,
+    var(--gray-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.restaurantContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.restaurantHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.restaurantName {
+  height: 24px;
+  width: 60%;
+  border-radius: 4px;
+}
+
+.restaurantPrice {
+  height: 20px;
+  width: 40px;
+  border-radius: 4px;
+}
+
+.restaurantLocation {
+  height: 15px;
+  width: 40%;
+  border-radius: 4px;
+}
+
+.restaurantAmenities {
+  display: flex;
+  gap: 8px;
+}
+
+.amenityTag {
+  height: 22px;
+  width: 70px;
+  border-radius: 100px;
+}
+
+.restaurantDescription {
+  height: 36px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+/* Category Card Skeleton */
+.categoryCard {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  background: var(--white);
+  border: 0.873px solid var(--gray-200);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.categoryImage {
+  width: 54px;
+  height: 53px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  margin-right: 14px;
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 25%,
+    var(--gray-100) 50%,
+    var(--gray-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.categoryName {
+  flex: 1;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.categoryChevron {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 25%,
+    var(--gray-100) 50%,
+    var(--gray-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Product Card Skeleton */
+.productCard {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+}
+
+.productImage {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 25%,
+    var(--gray-100) 50%,
+    var(--gray-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.productContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.productName {
+  height: 20px;
+  width: 70%;
+  border-radius: 4px;
+}
+
+.productDescription {
+  height: 32px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.productFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.productPrice {
+  height: 20px;
+  width: 60px;
+  border-radius: 4px;
+}
+
+.productButton {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+}
+
+/* Category Tab Skeleton */
+.categoryTabsContainer {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.categoryTabsContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryTab {
+  width: 80px;
+  height: 36px;
+  border-radius: 100px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 25%,
+    var(--gray-100) 50%,
+    var(--gray-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

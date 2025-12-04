@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Header,
@@ -9,89 +9,199 @@ import {
   CategoryTabs,
   ProductCard,
   CartButton,
+  ProductDetailModal,
+  ProductListSkeleton,
+  CategoryTabsSkeleton,
+  Skeleton,
 } from '@/components';
+import {
+  restaurantsMenuItemsList,
+  restaurantsMenuCategoriesList,
+} from '@/api/generated/api';
+import type { MenuItem, MenuCategory, ModifierGroup, Modifier } from '@/api/generated/interfaces';
 import styles from './page.module.css';
 
-// Mock data for demonstration
-const mockCategories = [
-  { id: '1', name: 'ცხელი კერძები', icon: '🍲' },
-  { id: '2', name: 'სასმელები', icon: '🍹' },
-  { id: '3', name: 'ცივი კერძები', icon: '🥗' },
-  { id: '4', name: 'ყავა', icon: '☕' },
-  { id: '5', name: 'ბარი', icon: '🍸' },
-];
-
-const mockProducts = [
-  {
-    id: '1',
-    name: 'აჭარული ხაჭაპური',
-    description: 'კენკრის სოუსით',
-    price: 12.0,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop',
-    categoryId: '1',
-  },
-  {
-    id: '2',
-    name: 'მხარში ხაჭაპური',
-    description: 'დაფნის სოუსით',
-    price: 15.0,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop',
-    categoryId: '1',
-  },
-  {
-    id: '3',
-    name: 'თბილი ხაჭაპური',
-    description: 'პომიდვრის სოუსით',
-    price: 10.0,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop',
-    categoryId: '1',
-  },
-  {
-    id: '4',
-    name: 'ჩხაპური',
-    description: 'ყვრიმალის იოგურტით',
-    price: 14.0,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop',
-    categoryId: '1',
-  },
-  {
-    id: '5',
-    name: 'მცხალი ხაჭაპური',
-    description: 'ბროწეულის სოუსით',
-    price: 13.0,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop',
-    categoryId: '1',
-  },
-  {
-    id: '6',
-    name: 'ბაკურიანი ხაჭაპური',
-    description: 'მწვანე სოუსით',
-    price: 16.0,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop',
-    categoryId: '1',
-  },
-];
+interface FormattedProduct {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+  categoryId: string;
+  modifierGroups: {
+    id: string;
+    name: string;
+    type: 'single' | 'multiple';
+    required?: boolean;
+    modifiers: { id: string; name: string; price: number }[];
+  }[];
+}
 
 export default function CategoryPage() {
   const params = useParams();
+  const slug = params.slug as string;
   const categoryId = params.categoryId as string;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<FormattedProduct | null>(null);
+  const [products, setProducts] = useState<FormattedProduct[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string; icon?: string }[]>([]);
+  const [categoryName, setCategoryName] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  // Get category name for title
-  const currentCategory = mockCategories.find((c) => c.id === categoryId);
-  const pageTitle = currentCategory?.name || 'გემრიელი სალათები';
+  const getTranslatedField = (translations: unknown, field: string): string => {
+    if (!translations) return '';
+    if (typeof translations === 'object') {
+      const obj = translations as Record<string, { [key: string]: string } | string>;
+      const kaValue = obj.ka;
+      const enValue = obj.en;
 
-  // Filter products based on search and category
-  const filteredProducts = mockProducts.filter((product) => {
+      if (kaValue && typeof kaValue === 'object' && field in kaValue) {
+        return kaValue[field] || '';
+      }
+      if (enValue && typeof enValue === 'object' && field in enValue) {
+        return enValue[field] || '';
+      }
+
+      const firstValue = Object.values(obj)[0];
+      if (firstValue && typeof firstValue === 'object' && field in firstValue) {
+        return (firstValue as Record<string, string>)[field] || '';
+      }
+
+      if (typeof kaValue === 'string') return kaValue;
+      if (typeof enValue === 'string') return enValue;
+    }
+    return '';
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const [itemsData, categoriesData] = await Promise.all([
+          restaurantsMenuItemsList(slug),
+          restaurantsMenuCategoriesList(slug),
+        ]);
+
+        // Format categories
+        const formattedCategories = categoriesData.results.map((cat: MenuCategory) => ({
+          id: cat.id,
+          name: getTranslatedField(cat.translations, 'name'),
+          icon: '🍽️',
+        }));
+        setCategories(formattedCategories);
+
+        // Find current category name
+        const currentCat = categoriesData.results.find((c: MenuCategory) => c.id === categoryId);
+        if (currentCat) {
+          setCategoryName(getTranslatedField(currentCat.translations, 'name'));
+        }
+
+        // Filter and format products for this category
+        const categoryItems = itemsData.results.filter(
+          (item: MenuItem) => item.category?.id === categoryId
+        );
+
+        const formattedProducts: FormattedProduct[] = categoryItems.map((item: MenuItem) => {
+          // Parse modifier_groups - it can be a string or already an array
+          let modifierGroupsData: ModifierGroup[] = [];
+          if (item.modifier_groups) {
+            if (typeof item.modifier_groups === 'string') {
+              try {
+                modifierGroupsData = JSON.parse(item.modifier_groups);
+              } catch {
+                modifierGroupsData = [];
+              }
+            } else if (Array.isArray(item.modifier_groups)) {
+              modifierGroupsData = item.modifier_groups as unknown as ModifierGroup[];
+            }
+          }
+
+          // Format modifier groups
+          const formattedModifierGroups = modifierGroupsData.map((group: ModifierGroup) => ({
+            id: group.id,
+            name: getTranslatedField(group.translations, 'name'),
+            type: (String(group.selection_type) === 'single' ? 'single' : 'multiple') as 'single' | 'multiple',
+            required: group.is_required || false,
+            modifiers: (group.modifiers || []).map((mod: Modifier) => ({
+              id: mod.id,
+              name: getTranslatedField(mod.translations, 'name'),
+              price: parseFloat(mod.price_adjustment || '0') || 0,
+            })),
+          }));
+
+          return {
+            id: item.id,
+            name: getTranslatedField(item.translations, 'name'),
+            description: getTranslatedField(item.translations, 'description'),
+            price: parseFloat(item.price) || 0,
+            image: item.image,
+            categoryId: item.category?.id || '',
+            modifierGroups: formattedModifierGroups,
+          };
+        });
+
+        setProducts(formattedProducts);
+      } catch (err) {
+        console.error('Failed to fetch menu items:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (slug && categoryId) {
+      fetchData();
+    }
+  }, [slug, categoryId]);
+
+  const pageTitle = categoryName || 'მენიუ';
+
+  // Filter products based on search
+  const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      activeCategory === null || product.categoryId === activeCategory;
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
+
+  const handleProductClick = (product: FormattedProduct) => {
+    setSelectedProduct(product);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <Header />
+        <main className={styles.main}>
+          <div className={styles.titleSection}>
+            <BackButton />
+            <Skeleton className={styles.titleSkeleton} />
+          </div>
+
+          <div className={styles.searchSection}>
+            <Skeleton className={styles.searchSkeleton} />
+          </div>
+
+          <div className={styles.tabsSection}>
+            <CategoryTabsSkeleton count={5} />
+          </div>
+
+          <div className={styles.sectionTitle}>
+            <Skeleton className={styles.sectionTitleSkeleton} />
+          </div>
+
+          <div className={styles.productsList}>
+            <ProductListSkeleton count={4} />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
@@ -113,31 +223,44 @@ export default function CategoryPage() {
 
         <div className={styles.tabsSection}>
           <CategoryTabs
-            categories={mockCategories}
+            categories={categories}
             activeCategory={activeCategory}
             onCategoryChange={setActiveCategory}
           />
         </div>
 
         <div className={styles.sectionTitle}>
-          <h2>ცხელი კერძები</h2>
+          <h2>{pageTitle}</h2>
         </div>
 
         <div className={styles.productsList}>
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              description={product.description}
-              price={product.price}
-              image={product.image}
-            />
-          ))}
+          {filteredProducts.length === 0 ? (
+            <div className={styles.emptyState}>პროდუქტები ვერ მოიძებნა</div>
+          ) : (
+            filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                description={product.description}
+                price={product.price}
+                image={product.image}
+                onClick={() => handleProductClick(product)}
+              />
+            ))
+          )}
         </div>
       </main>
 
       <CartButton />
+
+      {selectedProduct && (
+        <ProductDetailModal
+          isOpen={!!selectedProduct}
+          onClose={handleCloseModal}
+          product={selectedProduct}
+        />
+      )}
     </div>
   );
 }

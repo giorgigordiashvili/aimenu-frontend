@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
 const instance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://aimenu.ge',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://admin.aimenu.ge",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 

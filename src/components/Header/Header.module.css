@@ -5,7 +5,7 @@
   right: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 12px 16px;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
@@ -19,24 +19,14 @@
   gap: 8px;
 }
 
-.logoIcon {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
+.logo {
+  height: 32px;
+  width: 32px;
+  object-fit: contain;
 }
 
 .logoText {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  color: var(--primary);
-  letter-spacing: -0.95px;
-}
-
-.menuButton {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--foreground);
+  color: #EC003F;
 }

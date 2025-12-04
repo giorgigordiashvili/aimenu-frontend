@@ -14,6 +14,19 @@
   border-color: #ff98a5;
 }
 
+.clickable {
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.clickable:hover {
+  transform: scale(1.01);
+}
+
+.clickable:active {
+  transform: scale(0.99);
+}
+
 .imageContainer {
   width: 78px;
   height: 76px;
@@ -75,7 +88,7 @@
   flex-shrink: 0;
 }
 
-.addToCartButton {
+.viewButton {
   width: 42px;
   height: 42px;
   display: flex;
@@ -85,61 +98,16 @@
   border: 0.873px solid var(--gray-100);
   border-radius: 10px;
   box-shadow: var(--shadow-sm);
-  color: var(--foreground);
-  transition: transform 0.1s ease;
+  color: var(--gray-500);
+  transition: transform 0.1s ease, color 0.1s ease;
+  cursor: pointer;
 }
 
-.addToCartButton:hover {
+.viewButton:hover {
   background: var(--gray-100);
-}
-
-.addToCartButton:active {
-  transform: scale(0.95);
-}
-
-.quantityControl {
-  display: flex;
-  align-items: center;
-  background: var(--white);
-  border: 0.873px solid var(--gray-100);
-  border-radius: 10px;
-  box-shadow: var(--shadow-sm);
-  padding: 6px;
-  gap: 4px;
-}
-
-.quantityButton {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--border-radius-sm);
   color: var(--foreground);
-  transition: background 0.1s ease;
 }
 
-.quantityButton:hover {
-  background: var(--gray-100);
-}
-
-.quantityButton:active {
+.viewButton:active {
   transform: scale(0.95);
-}
-
-.addButton {
-  background: var(--primary-light);
-  color: var(--primary);
-}
-
-.addButton:hover {
-  background: #ffe4e8;
-}
-
-.quantity {
-  min-width: 16px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--foreground);
-  text-align: center;
 }
