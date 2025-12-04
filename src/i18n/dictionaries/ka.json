@@ -1,0 +1,56 @@
+{
+  "common": {
+    "menu": "მენიუ",
+    "cart": "კალათა",
+    "order": "შეკვეთა",
+    "total": "ჯამი",
+    "addToCart": "კალათაში დამატება",
+    "checkout": "შეკვეთის გაფორმება",
+    "search": "ძებნა",
+    "filter": "ფილტრი",
+    "close": "დახურვა",
+    "back": "უკან",
+    "viewAll": "ყველას ნახვა",
+    "details": "დეტალები",
+    "loading": "იტვირთება...",
+    "error": "შეცდომა"
+  },
+  "home": {
+    "popularRestaurants": "პოპულარული რესტორნები",
+    "featuredPlaces": "რჩეული ადგილები მთელი საქართველოს მასშტაბით",
+    "allCategories": "ყველა",
+    "noRestaurantsFound": "რესტორნები ვერ მოიძებნა",
+    "failedToLoad": "ვერ მოხერხდა რესტორნების ჩატვირთვა"
+  },
+  "restaurant": {
+    "menu": "მენიუ",
+    "categories": "კატეგორიები",
+    "searchPlaceholder": "მოძებნე კერძი სახელით",
+    "noProductsFound": "პროდუქტები ვერ მოიძებნა",
+    "failedToLoad": "ვერ მოხერხდა რესტორნის ჩატვირთვა",
+    "notFound": "რესტორანი ვერ მოიძებნა"
+  },
+  "product": {
+    "total": "ჯამი"
+  },
+  "cart": {
+    "title": "კალათა",
+    "empty": "კალათა ცარიელია",
+    "items": "ნივთები",
+    "subtotal": "ქვეჯამი",
+    "total": "ჯამი"
+  },
+  "table": {
+    "scanQr": "დაასკანერეთ QR კოდი",
+    "tableNumber": "მაგიდა",
+    "sessionActive": "სესია აქტიურია",
+    "inviteOthers": "მოიწვიე სხვები",
+    "leaveTable": "მაგიდის დატოვება"
+  },
+  "dietary": {
+    "vegetarian": "ვეგეტარიანული",
+    "vegan": "ვეგანური",
+    "glutenFree": "გლუტენის გარეშე",
+    "spicy": "ცხარე"
+  }
+}

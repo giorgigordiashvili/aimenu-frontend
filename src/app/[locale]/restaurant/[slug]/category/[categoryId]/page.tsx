@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useCategoryProducts } from '@/hooks/useMenuData';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 import {
   Header,
   BackButton,
@@ -45,6 +46,9 @@ export default function CategoryPage() {
   const slug = params.slug as string;
   const categoryId = params.categoryId as string;
 
+  const { locale } = useLocale();
+  const t = useTranslations();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<FormattedProduct | null>(null);
@@ -54,9 +58,9 @@ export default function CategoryPage() {
     categories,
     categoryName,
     isLoading: loading,
-  } = useCategoryProducts(slug, categoryId);
+  } = useCategoryProducts(slug, categoryId, locale);
 
-  const pageTitle = categoryName || 'მენიუ';
+  const pageTitle = categoryName || t.restaurant.menu;
   const debouncedSearch = useDebounce(searchQuery, 300);
 
   // Filter products based on search
@@ -121,7 +125,7 @@ export default function CategoryPage() {
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="მოძებნე კერძი სახელით"
+            placeholder={t.restaurant.searchPlaceholder}
           />
         </div>
 
@@ -139,7 +143,7 @@ export default function CategoryPage() {
 
         <div className={styles.productsList}>
           {filteredProducts.length === 0 ? (
-            <div className={styles.emptyState}>პროდუქტები ვერ მოიძებნა</div>
+            <div className={styles.emptyState}>{t.restaurant.noProductsFound}</div>
           ) : (
             filteredProducts.map((product) => (
               <ProductCard

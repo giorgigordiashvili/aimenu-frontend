@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Locale, defaultLocale } from '@/i18n/config';
 import styles from './CategoryList.module.css';
 
 interface Category {
@@ -13,15 +14,16 @@ interface Category {
 interface CategoryListProps {
   categories: Category[];
   restaurantSlug: string;
+  locale?: Locale;
 }
 
-export default function CategoryList({ categories, restaurantSlug }: CategoryListProps) {
+export default function CategoryList({ categories, restaurantSlug, locale = defaultLocale }: CategoryListProps) {
   return (
     <div className={styles.list}>
       {categories.map((category) => (
         <Link
           key={category.id}
-          href={`/restaurant/${restaurantSlug}/category/${category.id}`}
+          href={`/${locale}/restaurant/${restaurantSlug}/category/${category.id}`}
           className={styles.item}
         >
           <div className={styles.imageContainer}>

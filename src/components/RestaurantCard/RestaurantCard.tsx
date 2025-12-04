@@ -3,14 +3,24 @@
 import { memo, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Locale, defaultLocale } from '@/i18n/config';
+import { getDictionary } from '@/i18n/getDictionary';
+import { getTranslation } from '@/utils/translations';
+import type { Amenity } from '@/api/generated/interfaces';
 import styles from './RestaurantCard.module.css';
 
-interface Amenity {
-  id: string;
-  name: string;
-  slug: string;
-  icon?: string;
-}
+// Helper to parse translations string or object
+const parseTranslations = (translations: string | object | undefined): object => {
+  if (!translations) return {};
+  if (typeof translations === 'string') {
+    try {
+      return JSON.parse(translations);
+    } catch {
+      return {};
+    }
+  }
+  return translations;
+};
 
 interface RestaurantCardProps {
   id: string;
@@ -25,6 +35,7 @@ interface RestaurantCardProps {
   amenities?: Amenity[];
   priceLevel?: string;
   categoryName?: string;
+  locale?: Locale;
 }
 
 const RestaurantCard = memo(function RestaurantCard({
@@ -37,12 +48,14 @@ const RestaurantCard = memo(function RestaurantCard({
   amenities = [],
   priceLevel = '₾₾',
   categoryName,
+  locale = defaultLocale,
 }: RestaurantCardProps) {
+  const t = getDictionary(locale);
   const displayAmenities = useMemo(() => amenities.slice(0, 2), [amenities]);
   const extraAmenitiesCount = amenities.length - 2;
 
   return (
-    <Link href={`/restaurant/${slug}`} className={styles.card}>
+    <Link href={`/${locale}/restaurant/${slug}`} className={styles.card}>
       <div className={styles.imageContainer}>
         {logo ? (
           <Image
@@ -88,7 +101,7 @@ const RestaurantCard = memo(function RestaurantCard({
             {displayAmenities.map((amenity) => (
               <span key={amenity.id} className={styles.amenity}>
                 {amenity.icon && <span className={styles.amenityIcon}>{amenity.icon}</span>}
-                {amenity.name}
+                {getTranslation(parseTranslations(amenity.translations), 'name', locale) || amenity.slug}
               </span>
             ))}
             {extraAmenitiesCount > 0 && (
@@ -102,7 +115,7 @@ const RestaurantCard = memo(function RestaurantCard({
         )}
 
         <div className={styles.detailsButton}>
-          <span>დეტალები</span>
+          <span>{t.common.details}</span>
         </div>
       </div>
     </Link>

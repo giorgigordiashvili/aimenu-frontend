@@ -1,12 +1,17 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
+import { useLocale } from '@/context/LocaleContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import styles from './Header.module.css';
 
 export default function Header() {
+  const { locale } = useLocale();
+
   return (
     <header className={styles.header}>
-      <div className={styles.logoContainer}>
+      <Link href={`/${locale}`} className={styles.logoContainer}>
         <Image
           src="/logo.png"
           alt="AiMenu"
@@ -16,7 +21,8 @@ export default function Header() {
           priority
         />
         <span className={styles.logoText}>AiMenu</span>
-      </div>
+      </Link>
+      <LanguageSwitcher currentLocale={locale} />
     </header>
   );
 }

@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import { Header, RestaurantCard, RestaurantListSkeleton, CategoryTabsSkeleton } from '@/components';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useRestaurants } from '@/hooks/useRestaurants';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { getTranslation } from '@/utils/translations';
 import type { RestaurantCategory } from '@/api/generated/interfaces';
 import styles from './page.module.css';
 
@@ -27,7 +29,23 @@ const getCategoryIcon = (slug: string): string => {
   return iconMap[slug.toLowerCase()] || '🍽️';
 };
 
+// Helper to parse translations string or object
+const parseTranslations = (translations: string | object | undefined): object => {
+  if (!translations) return {};
+  if (typeof translations === 'string') {
+    try {
+      return JSON.parse(translations);
+    } catch {
+      return {};
+    }
+  }
+  return translations;
+};
+
 export default function Home() {
+  const { locale } = useLocale();
+  const t = useTranslations();
+
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 300);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -45,15 +63,15 @@ export default function Home() {
 
     const extractedCategories: CategoryWithIcon[] = Array.from(categoryMap.values()).map((cat) => ({
       id: cat.id,
-      name: cat.name,
+      name: getTranslation(parseTranslations(cat.translations), 'name', locale) || cat.slug,
       icon: getCategoryIcon(cat.slug),
     }));
 
     return [
-      { id: 'all', name: 'ყველა', icon: '🍽️' },
+      { id: 'all', name: t.home.allCategories, icon: '🍽️' },
       ...extractedCategories,
     ];
-  }, [restaurants]);
+  }, [restaurants, t.home.allCategories, locale]);
 
   const filteredRestaurants = useMemo(() => {
     return restaurants.filter((restaurant) => {
@@ -75,10 +93,10 @@ export default function Home() {
         {/* Desktop section header */}
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleGroup}>
-            <h1 className={styles.sectionTitle}>პოპულარული რესტორნები</h1>
-            <p className={styles.sectionSubtitle}>რჩეული ადგილები მთელი საქართველოს მასშტაბით</p>
+            <h1 className={styles.sectionTitle}>{t.home.popularRestaurants}</h1>
+            <p className={styles.sectionSubtitle}>{t.home.featuredPlaces}</p>
           </div>
-          <button className={styles.viewAllButton}>ყველას ნახვა</button>
+          <button className={styles.viewAllButton}>{t.common.viewAll}</button>
         </div>
 
         {/* Mobile category tabs */}
@@ -103,9 +121,9 @@ export default function Home() {
           {loading ? (
             <RestaurantListSkeleton count={8} />
           ) : error ? (
-            <div className={styles.errorState}>{error}</div>
+            <div className={styles.errorState}>{t.home.failedToLoad}</div>
           ) : filteredRestaurants.length === 0 ? (
-            <div className={styles.emptyState}>რესტორნები ვერ მოიძებნა</div>
+            <div className={styles.emptyState}>{t.home.noRestaurantsFound}</div>
           ) : (
             filteredRestaurants.map((restaurant) => (
               <RestaurantCard
@@ -120,7 +138,8 @@ export default function Home() {
                 totalReviews={restaurant.total_reviews}
                 isOpenNow={restaurant.is_open_now}
                 amenities={restaurant.amenities}
-                categoryName={restaurant.category?.name}
+                categoryName={restaurant.category ? getTranslation(parseTranslations(restaurant.category.translations), 'name', locale) || restaurant.category.slug : undefined}
+                locale={locale}
               />
             ))
           )}

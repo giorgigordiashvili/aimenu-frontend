@@ -1,0 +1,56 @@
+{
+  "common": {
+    "menu": "Menu",
+    "cart": "Cart",
+    "order": "Order",
+    "total": "Total",
+    "addToCart": "Add to Cart",
+    "checkout": "Checkout",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close",
+    "back": "Back",
+    "viewAll": "View All",
+    "details": "Details",
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "home": {
+    "popularRestaurants": "Popular Restaurants",
+    "featuredPlaces": "Featured places from all over Georgia",
+    "allCategories": "All",
+    "noRestaurantsFound": "No restaurants found",
+    "failedToLoad": "Failed to load restaurants"
+  },
+  "restaurant": {
+    "menu": "Menu",
+    "categories": "Categories",
+    "searchPlaceholder": "Search for a dish by name",
+    "noProductsFound": "No products found",
+    "failedToLoad": "Failed to load restaurant",
+    "notFound": "Restaurant not found"
+  },
+  "product": {
+    "total": "Total"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Cart is empty",
+    "items": "Items",
+    "subtotal": "Subtotal",
+    "total": "Total"
+  },
+  "table": {
+    "scanQr": "Scan QR Code",
+    "tableNumber": "Table",
+    "sessionActive": "Session Active",
+    "inviteOthers": "Invite Others",
+    "leaveTable": "Leave Table"
+  },
+  "dietary": {
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "glutenFree": "Gluten Free",
+    "spicy": "Spicy"
+  }
+}

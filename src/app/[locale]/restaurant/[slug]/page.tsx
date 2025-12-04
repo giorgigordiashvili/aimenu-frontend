@@ -18,6 +18,8 @@ import {
   tablesValidateRetrieve,
 } from "@/api/generated/api";
 import { useTable } from "@/context/TableContext";
+import { useLocale, useTranslations } from "@/context/LocaleContext";
+import { getTranslation } from "@/utils/translations";
 import type {
   RestaurantDetail,
   MenuCategory,
@@ -30,6 +32,8 @@ export default function RestaurantDetailPage() {
   const slug = params.slug as string;
   const tableCode = searchParams.get("table");
 
+  const { locale } = useLocale();
+  const t = useTranslations();
   const { tableData, setTableData, setTableCode: storeTableCode } = useTable();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,7 +82,7 @@ export default function RestaurantDetailPage() {
         setError(null);
       } catch (err) {
         console.error("Failed to fetch restaurant data:", err);
-        setError("ვერ მოხერხდა რესტორნის ჩატვირთვა");
+        setError(t.restaurant.failedToLoad);
       } finally {
         setLoading(false);
       }
@@ -87,54 +91,11 @@ export default function RestaurantDetailPage() {
     if (slug) {
       fetchData();
     }
-  }, [slug]);
-
-  const getTranslatedName = (translations: unknown): string => {
-    if (!translations) return "";
-
-    // Handle object with nested language structure: { ka: { name: "..." }, en: { name: "..." } }
-    if (typeof translations === "object") {
-      const obj = translations as Record<string, { name?: string } | string>;
-      const kaValue = obj.ka;
-      const enValue = obj.en;
-
-      // Check if it's nested structure with name property
-      if (kaValue && typeof kaValue === "object" && "name" in kaValue) {
-        return kaValue.name || "";
-      }
-      if (enValue && typeof enValue === "object" && "name" in enValue) {
-        return enValue.name || "";
-      }
-
-      // Fallback to first available language
-      const firstValue = Object.values(obj)[0];
-      if (
-        firstValue &&
-        typeof firstValue === "object" &&
-        "name" in firstValue
-      ) {
-        return firstValue.name || "";
-      }
-
-      // Simple structure: { ka: "name", en: "name" }
-      if (typeof kaValue === "string") return kaValue;
-      if (typeof enValue === "string") return enValue;
-    }
-
-    if (typeof translations === "string") {
-      try {
-        return getTranslatedName(JSON.parse(translations));
-      } catch {
-        return translations;
-      }
-    }
-
-    return "";
-  };
+  }, [slug, t.restaurant.failedToLoad]);
 
   const formattedCategories = categories.map((cat) => ({
     id: cat.id,
-    name: getTranslatedName(cat.translations),
+    name: getTranslation(cat.translations, 'name', locale),
     image: cat.image,
   }));
 
@@ -149,7 +110,7 @@ export default function RestaurantDetailPage() {
         <main className={styles.main}>
           <div className={styles.titleSection}>
             <BackButton />
-            <h1 className={styles.pageTitle}>მენიუ</h1>
+            <h1 className={styles.pageTitle}>{t.restaurant.menu}</h1>
           </div>
 
           <div className={styles.restaurantInfoSkeleton}>
@@ -180,7 +141,7 @@ export default function RestaurantDetailPage() {
         <Header />
         <main className={styles.main}>
           <div className={styles.errorState}>
-            {error || "რესტორანი ვერ მოიძებნა"}
+            {error || t.restaurant.notFound}
           </div>
         </main>
       </div>
@@ -194,12 +155,12 @@ export default function RestaurantDetailPage() {
       <main className={styles.main}>
         <div className={styles.titleSection}>
           <BackButton />
-          <h1 className={styles.pageTitle}>მენიუ</h1>
+          <h1 className={styles.pageTitle}>{t.restaurant.menu}</h1>
         </div>
 
         <RestaurantInfo
           name={restaurant.name}
-          description={`${restaurant.city || "თბილისი"} • ${restaurant.description || "ქართული სამზარეულო"}`}
+          description={`${restaurant.city || ""} • ${restaurant.description || ""}`}
           logo={restaurant.logo}
           rating={parseFloat(restaurant.average_rating || "0")}
         />
@@ -208,12 +169,12 @@ export default function RestaurantDetailPage() {
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="მოძებნე კერძი სახელით"
+            placeholder={t.restaurant.searchPlaceholder}
           />
         </div>
 
         <div className={styles.categoriesSection}>
-          <CategoryList categories={filteredCategories} restaurantSlug={slug} />
+          <CategoryList categories={filteredCategories} restaurantSlug={slug} locale={locale} />
         </div>
       </main>
 

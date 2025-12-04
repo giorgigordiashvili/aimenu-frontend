@@ -1,0 +1,56 @@
+{
+  "common": {
+    "menu": "Меню",
+    "cart": "Корзина",
+    "order": "Заказ",
+    "total": "Итого",
+    "addToCart": "В корзину",
+    "checkout": "Оформить заказ",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "close": "Закрыть",
+    "back": "Назад",
+    "viewAll": "Смотреть все",
+    "details": "Подробнее",
+    "loading": "Загрузка...",
+    "error": "Ошибка"
+  },
+  "home": {
+    "popularRestaurants": "Популярные рестораны",
+    "featuredPlaces": "Избранные места со всей Грузии",
+    "allCategories": "Все",
+    "noRestaurantsFound": "Рестораны не найдены",
+    "failedToLoad": "Не удалось загрузить рестораны"
+  },
+  "restaurant": {
+    "menu": "Меню",
+    "categories": "Категории",
+    "searchPlaceholder": "Поиск блюда по названию",
+    "noProductsFound": "Продукты не найдены",
+    "failedToLoad": "Не удалось загрузить ресторан",
+    "notFound": "Ресторан не найден"
+  },
+  "product": {
+    "total": "Итого"
+  },
+  "cart": {
+    "title": "Корзина",
+    "empty": "Корзина пуста",
+    "items": "Товары",
+    "subtotal": "Подытог",
+    "total": "Итого"
+  },
+  "table": {
+    "scanQr": "Сканировать QR",
+    "tableNumber": "Стол",
+    "sessionActive": "Сессия активна",
+    "inviteOthers": "Пригласить других",
+    "leaveTable": "Покинуть стол"
+  },
+  "dietary": {
+    "vegetarian": "Вегетарианское",
+    "vegan": "Веганское",
+    "glutenFree": "Без глютена",
+    "spicy": "Острое"
+  }
+}

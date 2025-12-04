@@ -9,10 +9,9 @@ export interface ActionEnum {
 
 export interface Amenity {
   id: string;
-  name: string;
+  translations: string;
   slug: string;
   icon?: string;
-  description?: string;
 }
 
 export interface AuditLogDetail {
@@ -993,9 +992,8 @@ export interface ReservationUpdateRequest {
 
 export interface RestaurantCategory {
   id: string;
-  name: string;
+  translations: string;
   slug: string;
-  description?: string;
   icon?: string;
   image?: string;
 }

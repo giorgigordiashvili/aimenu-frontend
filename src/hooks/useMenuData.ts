@@ -6,6 +6,8 @@ import {
   restaurantsMenuCategoriesList,
 } from '@/api/generated/api';
 import type { MenuItem, MenuCategory, ModifierGroup, Modifier } from '@/api/generated/interfaces';
+import { Locale, defaultLocale } from '@/i18n/config';
+import { getTranslation } from '@/utils/translations';
 
 interface FormattedProduct {
   id: string;
@@ -29,32 +31,11 @@ interface FormattedCategory {
   icon?: string;
 }
 
-const getTranslatedField = (translations: unknown, field: string): string => {
-  if (!translations) return '';
-  if (typeof translations === 'object') {
-    const obj = translations as Record<string, { [key: string]: string } | string>;
-    const kaValue = obj.ka;
-    const enValue = obj.en;
-
-    if (kaValue && typeof kaValue === 'object' && field in kaValue) {
-      return kaValue[field] || '';
-    }
-    if (enValue && typeof enValue === 'object' && field in enValue) {
-      return enValue[field] || '';
-    }
-
-    const firstValue = Object.values(obj)[0];
-    if (firstValue && typeof firstValue === 'object' && field in firstValue) {
-      return (firstValue as Record<string, string>)[field] || '';
-    }
-
-    if (typeof kaValue === 'string') return kaValue;
-    if (typeof enValue === 'string') return enValue;
-  }
-  return '';
+const getTranslatedField = (translations: unknown, field: string, locale: Locale = defaultLocale): string => {
+  return getTranslation(translations, field, locale);
 };
 
-const formatMenuItem = (item: MenuItem): FormattedProduct => {
+const formatMenuItem = (item: MenuItem, locale: Locale): FormattedProduct => {
   // Parse modifier_groups - it can be a string or already an array
   let modifierGroupsData: ModifierGroup[] = [];
   if (item.modifier_groups) {
@@ -72,20 +53,20 @@ const formatMenuItem = (item: MenuItem): FormattedProduct => {
   // Format modifier groups
   const formattedModifierGroups = modifierGroupsData.map((group: ModifierGroup) => ({
     id: group.id,
-    name: getTranslatedField(group.translations, 'name'),
+    name: getTranslatedField(group.translations, 'name', locale),
     type: (String(group.selection_type) === 'single' ? 'single' : 'multiple') as 'single' | 'multiple',
     required: group.is_required || false,
     modifiers: (group.modifiers || []).map((mod: Modifier) => ({
       id: mod.id,
-      name: getTranslatedField(mod.translations, 'name'),
+      name: getTranslatedField(mod.translations, 'name', locale),
       price: parseFloat(mod.price_adjustment || '0') || 0,
     })),
   }));
 
   return {
     id: item.id,
-    name: getTranslatedField(item.translations, 'name'),
-    description: getTranslatedField(item.translations, 'description'),
+    name: getTranslatedField(item.translations, 'name', locale),
+    description: getTranslatedField(item.translations, 'description', locale),
     price: parseFloat(item.price) || 0,
     image: item.image,
     categoryId: item.category?.id || '',
@@ -98,7 +79,7 @@ interface MenuDataResult {
   categories: FormattedCategory[];
 }
 
-const fetchMenuData = async (slug: string): Promise<MenuDataResult> => {
+const fetchMenuData = async (slug: string, locale: Locale): Promise<MenuDataResult> => {
   const [itemsData, categoriesData] = await Promise.all([
     restaurantsMenuItemsList(slug),
     restaurantsMenuCategoriesList(slug),
@@ -107,12 +88,12 @@ const fetchMenuData = async (slug: string): Promise<MenuDataResult> => {
   // Format categories
   const formattedCategories = categoriesData.results.map((cat: MenuCategory) => ({
     id: cat.id,
-    name: getTranslatedField(cat.translations, 'name'),
+    name: getTranslatedField(cat.translations, 'name', locale),
     icon: '🍽️',
   }));
 
   // Format products
-  const formattedProducts = itemsData.results.map(formatMenuItem);
+  const formattedProducts = itemsData.results.map((item) => formatMenuItem(item, locale));
 
   return {
     products: formattedProducts,
@@ -120,10 +101,10 @@ const fetchMenuData = async (slug: string): Promise<MenuDataResult> => {
   };
 };
 
-export function useMenuData(slug: string | null) {
+export function useMenuData(slug: string | null, locale: Locale = defaultLocale) {
   const { data, error, isLoading, mutate } = useSWR(
-    slug ? ['menuData', slug] : null,
-    () => (slug ? fetchMenuData(slug) : null),
+    slug ? ['menuData', slug, locale] : null,
+    () => (slug ? fetchMenuData(slug, locale) : null),
     {
       revalidateOnFocus: false,
       dedupingInterval: 60000, // Dedupe requests for 1 minute
@@ -140,8 +121,8 @@ export function useMenuData(slug: string | null) {
   };
 }
 
-export function useCategoryProducts(slug: string | null, categoryId: string | null) {
-  const { products, categories, isLoading, error, mutate } = useMenuData(slug);
+export function useCategoryProducts(slug: string | null, categoryId: string | null, locale: Locale = defaultLocale) {
+  const { products, categories, isLoading, error, mutate } = useMenuData(slug, locale);
 
   // Filter products for this category
   const categoryProducts = categoryId
