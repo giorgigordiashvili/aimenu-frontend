@@ -98,7 +98,9 @@ export default function CategoryTabs({
         {allCategories.map(category => (
           <Tab
             key={category.id}
-            isActive={(category.id === 'all' && activeCategory === null) || category.id === activeCategory}
+            isActive={
+              (category.id === 'all' && activeCategory === null) || category.id === activeCategory
+            }
             onClick={() => onCategoryChange(category.id === 'all' ? null : category.id)}
           >
             <Icon>{category.icon}</Icon>

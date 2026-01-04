@@ -43,8 +43,8 @@ export default function Header() {
     <HeaderWrapper>
       <LogoContainer href={`/${locale}`}>
         <Image
-          src="/logo.png"
-          alt="AiMenu"
+          src='/logo.png'
+          alt='AiMenu'
           width={32}
           height={32}
           style={{ height: '32px', width: '32px', objectFit: 'contain' }}

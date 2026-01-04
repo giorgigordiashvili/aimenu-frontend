@@ -100,7 +100,7 @@ export default function RestaurantInfo({ name, description, logo, rating }: Rest
     <Container>
       <ImageContainer>
         {logo ? (
-          <Image src={logo} alt={name} fill sizes="80px" style={{ objectFit: 'cover' }} />
+          <Image src={logo} alt={name} fill sizes='80px' style={{ objectFit: 'cover' }} />
         ) : (
           <ImagePlaceholder />
         )}

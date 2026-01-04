@@ -35,7 +35,8 @@ const Card = styled(Link)({
   transition: 'transform 0.1s ease, box-shadow 0.1s ease',
   '&:hover': {
     transform: 'translateY(-2px)',
-    boxShadow: '0px 24px 24px -12px rgba(12, 12, 13, 0.15), 0px 8px 8px -4px rgba(12, 12, 13, 0.08)',
+    boxShadow:
+      '0px 24px 24px -12px rgba(12, 12, 13, 0.15), 0px 8px 8px -4px rgba(12, 12, 13, 0.08)',
   },
   '&:active': {
     transform: 'translateY(0)',

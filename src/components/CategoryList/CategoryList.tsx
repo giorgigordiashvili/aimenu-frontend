@@ -122,22 +122,28 @@ export default function CategoryList({
                 src={category.image}
                 alt={category.name}
                 fill
-                sizes="(min-width: 768px) 200px, 54px"
+                sizes='(min-width: 768px) 200px, 54px'
                 style={{ objectFit: 'cover' }}
-                loading="lazy"
+                loading='lazy'
               />
             ) : (
               <ImagePlaceholder />
             )}
           </ImageContainer>
           <Name>{category.name}</Name>
-          <Chevron width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <Chevron
+            width='20'
+            height='20'
+            viewBox='0 0 20 20'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
             <path
-              d="M7.5 15L12.5 10L7.5 5"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              d='M7.5 15L12.5 10L7.5 5'
+              stroke='currentColor'
+              strokeWidth='1.5'
+              strokeLinecap='round'
+              strokeLinejoin='round'
             />
           </Chevron>
         </Item>
