@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useCategoryProducts } from '@/hooks/useMenuData';
-import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { useState, useMemo } from 'react';
+
 import {
   Header,
   BackButton,
@@ -17,13 +15,14 @@ import {
   CategoryTabsSkeleton,
   Skeleton,
 } from '@/components';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useCategoryProducts } from '@/hooks/useMenuData';
+
 import styles from './page.module.css';
 
 // Lazy load the modal
-const ProductDetailModal = dynamic(
-  () => import('@/components/ProductDetailModal'),
-  { ssr: false }
-);
+const ProductDetailModal = dynamic(() => import('@/components/ProductDetailModal'), { ssr: false });
 
 interface FormattedProduct {
   id: string;
@@ -65,10 +64,8 @@ export default function CategoryPage() {
 
   // Filter products based on search
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(debouncedSearch.toLowerCase());
+    return products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(debouncedSearch.toLowerCase());
       return matchesSearch;
     });
   }, [products, debouncedSearch]);
@@ -145,7 +142,7 @@ export default function CategoryPage() {
           {filteredProducts.length === 0 ? (
             <div className={styles.emptyState}>{t.restaurant.noProductsFound}</div>
           ) : (
-            filteredProducts.map((product) => (
+            filteredProducts.map(product => (
               <ProductCard
                 key={product.id}
                 id={product.id}

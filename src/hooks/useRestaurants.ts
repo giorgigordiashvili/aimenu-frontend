@@ -1,6 +1,7 @@
 'use client';
 
 import useSWR from 'swr';
+
 import { restaurantsList } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
 
@@ -20,7 +21,7 @@ const fetchRestaurants = async (search?: string): Promise<RestaurantList[]> => {
     undefined, // ordering
     undefined, // page
     20, // pageSize
-    search || undefined, // search
+    search || undefined // search
   );
   return response.results;
 };

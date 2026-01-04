@@ -1,41 +1,42 @@
-import type { Metadata, Viewport } from "next";
-import { Inter, Noto_Sans_Georgian } from "next/font/google";
-import { notFound } from "next/navigation";
-import { CartProvider } from "@/context/CartContext";
-import { TableProvider } from "@/context/TableContext";
-import { LocaleProvider } from "@/context/LocaleContext";
-import ClarityProvider from "@/components/ClarityProvider";
-import { locales, Locale, isValidLocale } from "@/i18n/config";
-import "../globals.css";
+import type { Metadata, Viewport } from 'next';
+import { Inter, Noto_Sans_Georgian } from 'next/font/google';
+import { notFound } from 'next/navigation';
+
+import ClarityProvider from '@/components/ClarityProvider';
+import { CartProvider } from '@/context/CartContext';
+import { LocaleProvider } from '@/context/LocaleContext';
+import { TableProvider } from '@/context/TableContext';
+import { locales, Locale, isValidLocale } from '@/i18n/config';
+import '../globals.css';
 
 const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-inter",
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-inter',
 });
 
 const notoSansGeorgian = Noto_Sans_Georgian({
-  subsets: ["georgian"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-noto-georgian",
+  subsets: ['georgian'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-noto-georgian',
 });
 
 export const metadata: Metadata = {
-  title: "AiMenu - Restaurant Menu",
-  description: "Digital menu for restaurants",
+  title: 'AiMenu - Restaurant Menu',
+  description: 'Digital menu for restaurants',
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
 };
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+  return locales.map(locale => ({ locale }));
 }
 
 interface LocaleLayoutProps {
@@ -43,10 +44,7 @@ interface LocaleLayoutProps {
   params: Promise<{ locale: string }>;
 }
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: LocaleLayoutProps) {
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale } = await params;
 
   if (!isValidLocale(locale)) {
@@ -59,9 +57,7 @@ export default async function LocaleLayout({
         <ClarityProvider />
         <LocaleProvider locale={locale as Locale}>
           <TableProvider>
-            <CartProvider>
-              {children}
-            </CartProvider>
+            <CartProvider>{children}</CartProvider>
           </TableProvider>
         </LocaleProvider>
       </body>

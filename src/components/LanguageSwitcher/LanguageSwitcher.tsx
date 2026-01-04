@@ -1,7 +1,9 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+
 import { Locale, locales, localeNames } from '@/i18n/config';
+
 import styles from './LanguageSwitcher.module.css';
 
 interface LanguageSwitcherProps {
@@ -23,6 +25,7 @@ export default function LanguageSwitcher({ currentLocale }: LanguageSwitcherProp
     const newPath = segments.join('/') || '/';
 
     // Set cookie for persistence
+    // eslint-disable-next-line react-hooks/immutability
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
 
     router.push(newPath);
@@ -30,7 +33,7 @@ export default function LanguageSwitcher({ currentLocale }: LanguageSwitcherProp
 
   return (
     <div className={styles.container}>
-      {locales.map((locale) => (
+      {locales.map(locale => (
         <button
           key={locale}
           onClick={() => switchLocale(locale)}

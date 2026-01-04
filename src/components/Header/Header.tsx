@@ -2,8 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useLocale } from '@/context/LocaleContext';
+
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useLocale } from '@/context/LocaleContext';
+
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -13,8 +15,8 @@ export default function Header() {
     <header className={styles.header}>
       <Link href={`/${locale}`} className={styles.logoContainer}>
         <Image
-          src="/logo.png"
-          alt="AiMenu"
+          src='/logo.png'
+          alt='AiMenu'
           width={32}
           height={32}
           className={styles.logo}

@@ -1,8 +1,6 @@
 import { Locale } from './config';
-
-// Import dictionaries statically for type safety
-import ka from './dictionaries/ka.json';
 import en from './dictionaries/en.json';
+import ka from './dictionaries/ka.json';
 import ru from './dictionaries/ru.json';
 
 export type Dictionary = typeof ka;

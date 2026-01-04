@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 import axios from '@/api/axios';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+
 import styles from './RegisterForm.module.css';
 
 interface RegisterFormProps {
@@ -99,7 +101,9 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
       }
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { data?: { detail?: string; email?: string[]; password?: string[] } } };
+        const axiosErr = err as {
+          response?: { data?: { detail?: string; email?: string[]; password?: string[] } };
+        };
         const errorData = axiosErr.response?.data;
         if (errorData?.detail) {
           setError(errorData.detail);
@@ -149,7 +153,9 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
       router.push(`/${locale}`);
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { data?: { detail?: string; slug?: string[]; name?: string[] } } };
+        const axiosErr = err as {
+          response?: { data?: { detail?: string; slug?: string[]; name?: string[] } };
+        };
         const errorData = axiosErr.response?.data;
         if (errorData?.detail) {
           setError(errorData.detail);
@@ -192,23 +198,19 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
           </div>
         </div>
 
-        {error && (
-          <div className={styles.error}>
-            {error}
-          </div>
-        )}
+        {error && <div className={styles.error}>{error}</div>}
 
         {step === 'user' ? (
           <form onSubmit={handleUserSubmit} className={styles.form}>
             <div className={styles.row}>
               <div className={styles.field}>
-                <label htmlFor="firstName" className={styles.label}>
+                <label htmlFor='firstName' className={styles.label}>
                   {t.register.firstName}
                 </label>
                 <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
+                  type='text'
+                  id='firstName'
+                  name='firstName'
                   value={formData.firstName}
                   onChange={handleChange}
                   className={styles.input}
@@ -216,13 +218,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="lastName" className={styles.label}>
+                <label htmlFor='lastName' className={styles.label}>
                   {t.register.lastName}
                 </label>
                 <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
+                  type='text'
+                  id='lastName'
+                  name='lastName'
                   value={formData.lastName}
                   onChange={handleChange}
                   className={styles.input}
@@ -232,13 +234,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="email" className={styles.label}>
+              <label htmlFor='email' className={styles.label}>
                 {t.register.email}
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
+                type='email'
+                id='email'
+                name='email'
                 value={formData.email}
                 onChange={handleChange}
                 className={styles.input}
@@ -247,28 +249,28 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="phoneNumber" className={styles.label}>
+              <label htmlFor='phoneNumber' className={styles.label}>
                 {t.register.phoneNumber}
               </label>
               <input
-                type="tel"
-                id="phoneNumber"
-                name="phoneNumber"
+                type='tel'
+                id='phoneNumber'
+                name='phoneNumber'
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 className={styles.input}
-                placeholder="+995 XXX XXX XXX"
+                placeholder='+995 XXX XXX XXX'
               />
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="password" className={styles.label}>
+              <label htmlFor='password' className={styles.label}>
                 {t.register.password}
               </label>
               <input
-                type="password"
-                id="password"
-                name="password"
+                type='password'
+                id='password'
+                name='password'
                 value={formData.password}
                 onChange={handleChange}
                 className={styles.input}
@@ -278,13 +280,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="passwordConfirm" className={styles.label}>
+              <label htmlFor='passwordConfirm' className={styles.label}>
                 {t.register.confirmPassword}
               </label>
               <input
-                type="password"
-                id="passwordConfirm"
-                name="passwordConfirm"
+                type='password'
+                id='passwordConfirm'
+                name='passwordConfirm'
                 value={formData.passwordConfirm}
                 onChange={handleChange}
                 className={styles.input}
@@ -293,24 +295,20 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
               />
             </div>
 
-            <button
-              type="submit"
-              className={styles.submitButton}
-              disabled={isLoading}
-            >
+            <button type='submit' className={styles.submitButton} disabled={isLoading}>
               {isLoading ? t.common.loading : t.register.continue}
             </button>
           </form>
         ) : (
           <form onSubmit={handleRestaurantSubmit} className={styles.form}>
             <div className={styles.field}>
-              <label htmlFor="restaurantName" className={styles.label}>
+              <label htmlFor='restaurantName' className={styles.label}>
                 {t.register.restaurantName}
               </label>
               <input
-                type="text"
-                id="restaurantName"
-                name="restaurantName"
+                type='text'
+                id='restaurantName'
+                name='restaurantName'
                 value={formData.restaurantName}
                 onChange={handleChange}
                 className={styles.input}
@@ -319,29 +317,29 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="restaurantSlug" className={styles.label}>
+              <label htmlFor='restaurantSlug' className={styles.label}>
                 {t.register.restaurantSlug}
               </label>
               <input
-                type="text"
-                id="restaurantSlug"
-                name="restaurantSlug"
+                type='text'
+                id='restaurantSlug'
+                name='restaurantSlug'
                 value={formData.restaurantSlug}
                 onChange={handleChange}
                 className={styles.input}
-                pattern="[a-z0-9-]+"
+                pattern='[a-z0-9-]+'
                 required
               />
               <span className={styles.hint}>{t.register.slugHint}</span>
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="restaurantDescription" className={styles.label}>
+              <label htmlFor='restaurantDescription' className={styles.label}>
                 {t.register.restaurantDescription}
               </label>
               <textarea
-                id="restaurantDescription"
-                name="restaurantDescription"
+                id='restaurantDescription'
+                name='restaurantDescription'
                 value={formData.restaurantDescription}
                 onChange={handleChange}
                 className={styles.textarea}
@@ -351,13 +349,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
             <div className={styles.row}>
               <div className={styles.field}>
-                <label htmlFor="restaurantEmail" className={styles.label}>
+                <label htmlFor='restaurantEmail' className={styles.label}>
                   {t.register.restaurantEmail}
                 </label>
                 <input
-                  type="email"
-                  id="restaurantEmail"
-                  name="restaurantEmail"
+                  type='email'
+                  id='restaurantEmail'
+                  name='restaurantEmail'
                   value={formData.restaurantEmail}
                   onChange={handleChange}
                   className={styles.input}
@@ -365,13 +363,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="restaurantPhone" className={styles.label}>
+                <label htmlFor='restaurantPhone' className={styles.label}>
                   {t.register.restaurantPhone}
                 </label>
                 <input
-                  type="tel"
-                  id="restaurantPhone"
-                  name="restaurantPhone"
+                  type='tel'
+                  id='restaurantPhone'
+                  name='restaurantPhone'
                   value={formData.restaurantPhone}
                   onChange={handleChange}
                   className={styles.input}
@@ -381,28 +379,28 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="restaurantWebsite" className={styles.label}>
+              <label htmlFor='restaurantWebsite' className={styles.label}>
                 {t.register.restaurantWebsite}
               </label>
               <input
-                type="url"
-                id="restaurantWebsite"
-                name="restaurantWebsite"
+                type='url'
+                id='restaurantWebsite'
+                name='restaurantWebsite'
                 value={formData.restaurantWebsite}
                 onChange={handleChange}
                 className={styles.input}
-                placeholder="https://"
+                placeholder='https://'
               />
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="restaurantAddress" className={styles.label}>
+              <label htmlFor='restaurantAddress' className={styles.label}>
                 {t.register.address}
               </label>
               <input
-                type="text"
-                id="restaurantAddress"
-                name="restaurantAddress"
+                type='text'
+                id='restaurantAddress'
+                name='restaurantAddress'
                 value={formData.restaurantAddress}
                 onChange={handleChange}
                 className={styles.input}
@@ -412,13 +410,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
             <div className={styles.row}>
               <div className={styles.field}>
-                <label htmlFor="restaurantCity" className={styles.label}>
+                <label htmlFor='restaurantCity' className={styles.label}>
                   {t.register.city}
                 </label>
                 <input
-                  type="text"
-                  id="restaurantCity"
-                  name="restaurantCity"
+                  type='text'
+                  id='restaurantCity'
+                  name='restaurantCity'
                   value={formData.restaurantCity}
                   onChange={handleChange}
                   className={styles.input}
@@ -426,13 +424,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="restaurantPostalCode" className={styles.label}>
+                <label htmlFor='restaurantPostalCode' className={styles.label}>
                   {t.register.postalCode}
                 </label>
                 <input
-                  type="text"
-                  id="restaurantPostalCode"
-                  name="restaurantPostalCode"
+                  type='text'
+                  id='restaurantPostalCode'
+                  name='restaurantPostalCode'
                   value={formData.restaurantPostalCode}
                   onChange={handleChange}
                   className={styles.input}
@@ -441,13 +439,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="restaurantCountry" className={styles.label}>
+              <label htmlFor='restaurantCountry' className={styles.label}>
                 {t.register.country}
               </label>
               <input
-                type="text"
-                id="restaurantCountry"
-                name="restaurantCountry"
+                type='text'
+                id='restaurantCountry'
+                name='restaurantCountry'
                 value={formData.restaurantCountry}
                 onChange={handleChange}
                 className={styles.input}
@@ -457,18 +455,14 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
             <div className={styles.buttonRow}>
               <button
-                type="button"
+                type='button'
                 className={styles.backButton}
                 onClick={() => setStep('user')}
                 disabled={isLoading}
               >
                 {t.common.back}
               </button>
-              <button
-                type="submit"
-                className={styles.submitButton}
-                disabled={isLoading}
-              >
+              <button type='submit' className={styles.submitButton} disabled={isLoading}>
                 {isLoading ? t.common.loading : t.register.createRestaurant}
               </button>
             </div>

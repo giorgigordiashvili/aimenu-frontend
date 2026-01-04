@@ -28,43 +28,40 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
   const addItem = useCallback((item: Omit<CartItem, 'quantity'>) => {
-    setItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.id === item.id);
+    setItems(prevItems => {
+      const existingItem = prevItems.find(i => i.id === item.id);
       if (existingItem) {
-        return prevItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-        );
+        return prevItems.map(i => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i));
       }
       return [...prevItems, { ...item, quantity: 1 }];
     });
   }, []);
 
   const removeItem = useCallback((id: string) => {
-    setItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.id === id);
+    setItems(prevItems => {
+      const existingItem = prevItems.find(i => i.id === id);
       if (existingItem && existingItem.quantity > 1) {
-        return prevItems.map((i) =>
-          i.id === id ? { ...i, quantity: i.quantity - 1 } : i
-        );
+        return prevItems.map(i => (i.id === id ? { ...i, quantity: i.quantity - 1 } : i));
       }
-      return prevItems.filter((i) => i.id !== id);
+      return prevItems.filter(i => i.id !== id);
     });
   }, []);
 
   const updateQuantity = useCallback((id: string, quantity: number) => {
     if (quantity <= 0) {
-      setItems((prevItems) => prevItems.filter((i) => i.id !== id));
+      setItems(prevItems => prevItems.filter(i => i.id !== id));
     } else {
-      setItems((prevItems) =>
-        prevItems.map((i) => (i.id === id ? { ...i, quantity } : i))
-      );
+      setItems(prevItems => prevItems.map(i => (i.id === id ? { ...i, quantity } : i)));
     }
   }, []);
 
-  const getItemQuantity = useCallback((id: string) => {
-    const item = items.find((i) => i.id === id);
-    return item?.quantity || 0;
-  }, [items]);
+  const getItemQuantity = useCallback(
+    (id: string) => {
+      const item = items.find(i => i.id === id);
+      return item?.quantity || 0;
+    },
+    [items]
+  );
 
   const getTotalItems = useCallback(() => {
     return items.reduce((total, item) => total + item.quantity, 0);

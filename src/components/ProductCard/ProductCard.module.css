@@ -11,7 +11,9 @@
 
 .clickable {
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 .clickable:hover {
@@ -95,7 +97,9 @@
   border-radius: 10px;
   box-shadow: var(--shadow-sm);
   color: var(--gray-500);
-  transition: transform 0.1s ease, color 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    color 0.1s ease;
   cursor: pointer;
 }
 
@@ -117,7 +121,9 @@
     gap: 0;
     border-radius: 14px;
     overflow: hidden;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    transition:
+      transform 0.1s ease,
+      box-shadow 0.1s ease;
   }
 
   .clickable:hover {

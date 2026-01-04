@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+
+import type { RestaurantCategory } from '@/api/generated/interfaces';
 import { Header, RestaurantCard, RestaurantListSkeleton, CategoryTabsSkeleton } from '@/components';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useRestaurants } from '@/hooks/useRestaurants';
-import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { getTranslation } from '@/utils/translations';
-import type { RestaurantCategory } from '@/api/generated/interfaces';
+
 import styles from './page.module.css';
 
 interface CategoryWithIcon {
@@ -46,7 +48,7 @@ export default function Home() {
   const { locale } = useLocale();
   const t = useTranslations();
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, _setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 300);
   const [activeCategory, setActiveCategory] = useState('all');
 
@@ -55,30 +57,26 @@ export default function Home() {
   // Extract unique categories from restaurants
   const categories = useMemo((): CategoryWithIcon[] => {
     const categoryMap = new Map<string, RestaurantCategory>();
-    restaurants.forEach((restaurant) => {
+    restaurants.forEach(restaurant => {
       if (restaurant.category && !categoryMap.has(restaurant.category.id)) {
         categoryMap.set(restaurant.category.id, restaurant.category);
       }
     });
 
-    const extractedCategories: CategoryWithIcon[] = Array.from(categoryMap.values()).map((cat) => ({
+    const extractedCategories: CategoryWithIcon[] = Array.from(categoryMap.values()).map(cat => ({
       id: cat.id,
       name: getTranslation(parseTranslations(cat.translations), 'name', locale) || cat.slug,
       icon: getCategoryIcon(cat.slug),
     }));
 
-    return [
-      { id: 'all', name: t.home.allCategories, icon: '🍽️' },
-      ...extractedCategories,
-    ];
+    return [{ id: 'all', name: t.home.allCategories, icon: '🍽️' }, ...extractedCategories];
   }, [restaurants, t.home.allCategories, locale]);
 
   const filteredRestaurants = useMemo(() => {
-    return restaurants.filter((restaurant) => {
-      const matchesSearch = restaurant.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesCategory = activeCategory === 'all' || restaurant.category?.id === activeCategory;
+    return restaurants.filter(restaurant => {
+      const matchesSearch = restaurant.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        activeCategory === 'all' || restaurant.category?.id === activeCategory;
       return matchesSearch && matchesCategory;
     });
   }, [restaurants, searchQuery, activeCategory]);
@@ -104,7 +102,7 @@ export default function Home() {
           {loading ? (
             <CategoryTabsSkeleton count={5} />
           ) : (
-            categories.map((category) => (
+            categories.map(category => (
               <button
                 key={category.id}
                 className={`${styles.categoryTab} ${activeCategory === category.id ? styles.activeTab : ''}`}
@@ -125,7 +123,7 @@ export default function Home() {
           ) : filteredRestaurants.length === 0 ? (
             <div className={styles.emptyState}>{t.home.noRestaurantsFound}</div>
           ) : (
-            filteredRestaurants.map((restaurant) => (
+            filteredRestaurants.map(restaurant => (
               <RestaurantCard
                 key={restaurant.id}
                 id={restaurant.id}
@@ -138,7 +136,15 @@ export default function Home() {
                 totalReviews={restaurant.total_reviews}
                 isOpenNow={restaurant.is_open_now}
                 amenities={restaurant.amenities}
-                categoryName={restaurant.category ? getTranslation(parseTranslations(restaurant.category.translations), 'name', locale) || restaurant.category.slug : undefined}
+                categoryName={
+                  restaurant.category
+                    ? getTranslation(
+                        parseTranslations(restaurant.category.translations),
+                        'name',
+                        locale
+                      ) || restaurant.category.slug
+                    : undefined
+                }
                 locale={locale}
               />
             ))

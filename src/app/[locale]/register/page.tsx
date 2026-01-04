@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+
+import RegisterForm from '@/components/RegisterForm';
 import { Locale, isValidLocale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
-import RegisterForm from '@/components/RegisterForm';
-import { notFound } from 'next/navigation';
 
 interface RegisterPageProps {
   params: Promise<{ locale: string }>;

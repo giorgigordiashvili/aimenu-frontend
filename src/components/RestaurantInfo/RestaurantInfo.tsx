@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import styles from './RestaurantInfo.module.css';
 
 interface RestaurantInfoProps {
@@ -9,17 +11,12 @@ interface RestaurantInfoProps {
   rating?: number;
 }
 
-export default function RestaurantInfo({
-  name,
-  description,
-  logo,
-  rating,
-}: RestaurantInfoProps) {
+export default function RestaurantInfo({ name, description, logo, rating }: RestaurantInfoProps) {
   return (
     <div className={styles.container}>
       <div className={styles.imageContainer}>
         {logo ? (
-          <img src={logo} alt={name} className={styles.image} />
+          <Image src={logo} alt={name} className={styles.image} fill sizes='80px' />
         ) : (
           <div className={styles.imagePlaceholder} />
         )}

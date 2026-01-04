@@ -1,12 +1,12 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
-  title: "AiMenu - Restaurant Menu",
-  description: "Digital menu for restaurants",
+  title: 'AiMenu - Restaurant Menu',
+  description: 'Digital menu for restaurants',
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,

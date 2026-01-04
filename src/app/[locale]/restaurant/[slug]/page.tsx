@@ -1,7 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
+import {
+  restaurantsRetrieve,
+  restaurantsMenuCategoriesList,
+  tablesValidateRetrieve,
+} from '@/api/generated/api';
+import type { RestaurantDetail, MenuCategory } from '@/api/generated/interfaces';
 import {
   Header,
   BackButton,
@@ -11,32 +18,24 @@ import {
   TableIndicator,
   CategoryListSkeleton,
   Skeleton,
-} from "@/components";
-import {
-  restaurantsRetrieve,
-  restaurantsMenuCategoriesList,
-  tablesValidateRetrieve,
-} from "@/api/generated/api";
-import { useTable } from "@/context/TableContext";
-import { useLocale, useTranslations } from "@/context/LocaleContext";
-import { getTranslation } from "@/utils/translations";
-import type {
-  RestaurantDetail,
-  MenuCategory,
-} from "@/api/generated/interfaces";
-import styles from "./page.module.css";
+} from '@/components';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { useTable } from '@/context/TableContext';
+import { getTranslation } from '@/utils/translations';
+
+import styles from './page.module.css';
 
 export default function RestaurantDetailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const slug = params.slug as string;
-  const tableCode = searchParams.get("table");
+  const tableCode = searchParams.get('table');
 
   const { locale } = useLocale();
   const t = useTranslations();
   const { tableData, setTableData, setTableCode: storeTableCode } = useTable();
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +56,7 @@ export default function RestaurantDetailPage() {
             isValidated: true,
           });
         } catch (err) {
-          console.error("Failed to validate table code:", err);
+          console.error('Failed to validate table code:', err);
           // Store the code anyway but mark as not validated
           storeTableCode(tableCode);
         }
@@ -81,7 +80,7 @@ export default function RestaurantDetailPage() {
         setCategories(categoriesData.results);
         setError(null);
       } catch (err) {
-        console.error("Failed to fetch restaurant data:", err);
+        console.error('Failed to fetch restaurant data:', err);
         setError(t.restaurant.failedToLoad);
       } finally {
         setLoading(false);
@@ -93,13 +92,13 @@ export default function RestaurantDetailPage() {
     }
   }, [slug, t.restaurant.failedToLoad]);
 
-  const formattedCategories = categories.map((cat) => ({
+  const formattedCategories = categories.map(cat => ({
     id: cat.id,
     name: getTranslation(cat.translations, 'name', locale),
     image: cat.image,
   }));
 
-  const filteredCategories = formattedCategories.filter((category) =>
+  const filteredCategories = formattedCategories.filter(category =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -140,9 +139,7 @@ export default function RestaurantDetailPage() {
       <div className={styles.page}>
         <Header />
         <main className={styles.main}>
-          <div className={styles.errorState}>
-            {error || t.restaurant.notFound}
-          </div>
+          <div className={styles.errorState}>{error || t.restaurant.notFound}</div>
         </main>
       </div>
     );
@@ -160,9 +157,9 @@ export default function RestaurantDetailPage() {
 
         <RestaurantInfo
           name={restaurant.name}
-          description={`${restaurant.city || ""} • ${restaurant.description || ""}`}
+          description={`${restaurant.city || ''} • ${restaurant.description || ''}`}
           logo={restaurant.logo}
-          rating={parseFloat(restaurant.average_rating || "0")}
+          rating={parseFloat(restaurant.average_rating || '0')}
         />
 
         <div className={styles.searchSection}>

@@ -30,7 +30,7 @@ export default function CategoryTabs({
 }: CategoryTabsProps) {
   const allCategories = [
     { id: 'all', name: 'ყველა', icon: categoryIcons.all },
-    ...categories.map((cat) => ({
+    ...categories.map(cat => ({
       ...cat,
       icon: cat.icon || categoryIcons[cat.id] || '🍽️',
     })),
@@ -39,18 +39,15 @@ export default function CategoryTabs({
   return (
     <div className={styles.container}>
       <div className={styles.tabs}>
-        {allCategories.map((category) => (
+        {allCategories.map(category => (
           <button
             key={category.id}
             className={`${styles.tab} ${
-              (category.id === 'all' && activeCategory === null) ||
-              category.id === activeCategory
+              (category.id === 'all' && activeCategory === null) || category.id === activeCategory
                 ? styles.active
                 : ''
             }`}
-            onClick={() =>
-              onCategoryChange(category.id === 'all' ? null : category.id)
-            }
+            onClick={() => onCategoryChange(category.id === 'all' ? null : category.id)}
           >
             <span className={styles.icon}>{category.icon}</span>
             <span className={styles.name}>{category.name}</span>

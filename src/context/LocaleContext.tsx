@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode } from 'react';
+
 import { Locale, defaultLocale } from '@/i18n/config';
 import { Dictionary, getDictionary } from '@/i18n/getDictionary';
 
@@ -22,11 +23,7 @@ interface LocaleProviderProps {
 export function LocaleProvider({ children, locale }: LocaleProviderProps) {
   const dictionary = getDictionary(locale);
 
-  return (
-    <LocaleContext.Provider value={{ locale, dictionary }}>
-      {children}
-    </LocaleContext.Provider>
-  );
+  return <LocaleContext.Provider value={{ locale, dictionary }}>{children}</LocaleContext.Provider>;
 }
 
 export function useLocale() {

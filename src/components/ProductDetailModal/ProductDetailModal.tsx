@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useState, useEffect, useMemo } from 'react';
+
 import BackButton from '../BackButton';
+
 import styles from './ProductDetailModal.module.css';
 
 interface Modifier {
@@ -32,28 +34,36 @@ interface ProductDetailModalProps {
   };
 }
 
-export default function ProductDetailModal({
-  isOpen,
-  onClose,
-  product,
-}: ProductDetailModalProps) {
-  const [selectedModifiers, setSelectedModifiers] = useState<Record<string, string[]>>({});
+// Helper to compute initial selections
+function getInitialSelections(modifierGroups?: ModifierGroup[]): Record<string, string[]> {
+  const initialSelections: Record<string, string[]> = {};
+  modifierGroups?.forEach(group => {
+    if (group.type === 'single' && group.modifiers.length > 0) {
+      initialSelections[group.id] = [group.modifiers[0].id];
+    } else {
+      initialSelections[group.id] = [];
+    }
+  });
+  return initialSelections;
+}
+
+export default function ProductDetailModal({ isOpen, onClose, product }: ProductDetailModalProps) {
+  // Compute initial selections based on product
+  const initialSelections = useMemo(
+    () => getInitialSelections(product.modifierGroups),
+    [product.modifierGroups]
+  );
+
+  const [selectedModifiers, setSelectedModifiers] =
+    useState<Record<string, string[]>>(initialSelections);
 
   // Reset selections when modal opens with new product
   useEffect(() => {
     if (isOpen) {
-      const initialSelections: Record<string, string[]> = {};
-      product.modifierGroups?.forEach((group) => {
-        if (group.type === 'single' && group.modifiers.length > 0) {
-          // Select first option by default for single selection groups
-          initialSelections[group.id] = [group.modifiers[0].id];
-        } else {
-          initialSelections[group.id] = [];
-        }
-      });
-      setSelectedModifiers(initialSelections);
+      setSelectedModifiers(getInitialSelections(product.modifierGroups));
     }
-  }, [isOpen, product]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, product.id]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -70,19 +80,19 @@ export default function ProductDetailModal({
   if (!isOpen) return null;
 
   const handleSingleSelect = (groupId: string, modifierId: string) => {
-    setSelectedModifiers((prev) => ({
+    setSelectedModifiers(prev => ({
       ...prev,
       [groupId]: [modifierId],
     }));
   };
 
   const handleMultipleSelect = (groupId: string, modifierId: string) => {
-    setSelectedModifiers((prev) => {
+    setSelectedModifiers(prev => {
       const current = prev[groupId] || [];
       if (current.includes(modifierId)) {
         return {
           ...prev,
-          [groupId]: current.filter((id) => id !== modifierId),
+          [groupId]: current.filter(id => id !== modifierId),
         };
       }
       return {
@@ -94,10 +104,10 @@ export default function ProductDetailModal({
 
   const calculateTotalPrice = () => {
     let total = product.price;
-    product.modifierGroups?.forEach((group) => {
+    product.modifierGroups?.forEach(group => {
       const selected = selectedModifiers[group.id] || [];
-      selected.forEach((modId) => {
-        const modifier = group.modifiers.find((m) => m.id === modId);
+      selected.forEach(modId => {
+        const modifier = group.modifiers.find(m => m.id === modId);
         if (modifier) {
           total += modifier.price;
         }
@@ -110,7 +120,7 @@ export default function ProductDetailModal({
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
         {/* Product Image */}
         <div className={styles.imageContainer}>
           {product.image ? (
@@ -118,7 +128,7 @@ export default function ProductDetailModal({
               src={product.image}
               alt={product.name}
               fill
-              sizes="(min-width: 768px) 600px, 393px"
+              sizes='(min-width: 768px) 600px, 393px'
               className={styles.image}
               priority
             />
@@ -129,9 +139,15 @@ export default function ProductDetailModal({
             <BackButton onClick={onClose} />
           </div>
           {/* Desktop close button */}
-          <button className={styles.closeButton} onClick={onClose} aria-label="Close">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <button className={styles.closeButton} onClick={onClose} aria-label='Close'>
+            <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+              <path
+                d='M18 6L6 18M6 6L18 18'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
             </svg>
           </button>
         </div>
@@ -148,14 +164,12 @@ export default function ProductDetailModal({
           <div className={styles.divider} />
 
           {/* Modifier Groups */}
-          {product.modifierGroups?.map((group) => (
+          {product.modifierGroups?.map(group => (
             <div key={group.id} className={styles.modifierGroup}>
               <h3 className={styles.groupTitle}>{group.name}</h3>
               <div className={styles.optionsList}>
-                {group.modifiers.map((modifier) => {
-                  const isSelected = (selectedModifiers[group.id] || []).includes(
-                    modifier.id
-                  );
+                {group.modifiers.map(modifier => {
+                  const isSelected = (selectedModifiers[group.id] || []).includes(modifier.id);
                   return (
                     <button
                       key={modifier.id}
@@ -168,17 +182,13 @@ export default function ProductDetailModal({
                     >
                       <div className={styles.optionLeft}>
                         <div
-                          className={`${styles.radio} ${
-                            isSelected ? styles.radioSelected : ''
-                          }`}
+                          className={`${styles.radio} ${isSelected ? styles.radioSelected : ''}`}
                         >
                           {isSelected && <div className={styles.radioInner} />}
                         </div>
                         <span className={styles.optionName}>{modifier.name}</span>
                       </div>
-                      <span className={styles.optionPrice}>
-                        + {modifier.price.toFixed(2)} ₾
-                      </span>
+                      <span className={styles.optionPrice}>+ {modifier.price.toFixed(2)} ₾</span>
                     </button>
                   );
                 })}

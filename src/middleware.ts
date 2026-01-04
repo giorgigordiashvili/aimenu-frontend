@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { locales, defaultLocale, isValidLocale } from './i18n/config';
 
 function getLocaleFromRequest(request: NextRequest): string {
@@ -13,8 +14,8 @@ function getLocaleFromRequest(request: NextRequest): string {
   if (acceptLanguage) {
     const preferred = acceptLanguage
       .split(',')
-      .map((lang) => lang.split(';')[0].trim().substring(0, 2).toLowerCase())
-      .find((lang) => isValidLocale(lang));
+      .map(lang => lang.split(';')[0].trim().substring(0, 2).toLowerCase())
+      .find(lang => isValidLocale(lang));
     if (preferred) return preferred;
   }
 
@@ -36,7 +37,7 @@ export function middleware(request: NextRequest) {
 
   // Check if pathname already has a locale
   const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+    locale => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
   if (pathnameHasLocale) {
