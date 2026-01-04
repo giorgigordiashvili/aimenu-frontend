@@ -1,5 +1,6 @@
 'use client';
 
+import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -7,7 +8,262 @@ import axios from '@/api/axios';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 
-import styles from './RegisterForm.module.css';
+const Container = styled('div')({
+  minHeight: '100vh',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '24px',
+  background: '#f8fafc',
+  '@media (max-width: 600px)': {
+    padding: '16px',
+    alignItems: 'flex-start',
+    paddingTop: '40px',
+  },
+});
+
+const FormCard = styled('div')({
+  width: '100%',
+  maxWidth: '560px',
+  background: '#ffffff',
+  borderRadius: '26px',
+  boxShadow: '0px 16px 16px -8px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05)',
+  padding: '32px',
+  '@media (max-width: 600px)': {
+    padding: '24px',
+  },
+});
+
+const Header = styled('div')({
+  textAlign: 'center',
+  marginBottom: '24px',
+});
+
+const Title = styled('h1')({
+  fontSize: '24px',
+  fontWeight: 700,
+  color: '#0f172a',
+  marginBottom: '8px',
+  margin: 0,
+  '@media (max-width: 600px)': {
+    fontSize: '20px',
+  },
+});
+
+const Subtitle = styled('p')({
+  fontSize: '14px',
+  color: '#62748e',
+  margin: 0,
+});
+
+const Steps = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: '32px',
+  gap: '12px',
+  '@media (max-width: 600px)': {
+    flexWrap: 'wrap',
+  },
+});
+
+const Step = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+});
+
+interface StepNumberProps {
+  isActive?: boolean;
+  isCompleted?: boolean;
+}
+
+const StepNumber = styled('span')<StepNumberProps>({
+  width: '28px',
+  height: '28px',
+  borderRadius: '50%',
+  background: '#e2e8f0',
+  color: '#62748e',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '14px',
+  fontWeight: 600,
+  variants: [
+    {
+      props: { isActive: true },
+      style: {
+        background: '#ec003f',
+        color: '#ffffff',
+      },
+    },
+    {
+      props: { isCompleted: true },
+      style: {
+        background: '#7ccf00',
+        color: '#ffffff',
+      },
+    },
+  ],
+});
+
+interface StepLabelProps {
+  isActive?: boolean;
+  isCompleted?: boolean;
+}
+
+const StepLabel = styled('span')<StepLabelProps>({
+  fontSize: '14px',
+  color: '#62748e',
+  fontWeight: 500,
+  '@media (max-width: 600px)': {
+    display: 'none',
+  },
+  variants: [
+    {
+      props: { isActive: true },
+      style: {
+        color: '#0f172a',
+      },
+    },
+    {
+      props: { isCompleted: true },
+      style: {
+        color: '#0f172a',
+      },
+    },
+  ],
+});
+
+const StepDivider = styled('div')({
+  width: '40px',
+  height: '2px',
+  background: '#e2e8f0',
+  '@media (max-width: 600px)': {
+    width: '24px',
+  },
+});
+
+const ErrorMessage = styled('div')({
+  background: '#fff1f2',
+  color: '#ec003f',
+  padding: '12px 16px',
+  borderRadius: '8px',
+  fontSize: '14px',
+  marginBottom: '24px',
+});
+
+const Form = styled('form')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '20px',
+});
+
+const Row = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '16px',
+  '@media (max-width: 600px)': {
+    gridTemplateColumns: '1fr',
+  },
+});
+
+const Field = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+});
+
+const Label = styled('label')({
+  fontSize: '14px',
+  fontWeight: 500,
+  color: '#0f172a',
+});
+
+const inputStyles = {
+  padding: '12px 16px',
+  border: '1px solid #e2e8f0',
+  borderRadius: '8px',
+  fontSize: '14px',
+  color: '#0f172a',
+  background: '#ffffff',
+  transition: 'border-color 0.2s, box-shadow 0.2s',
+  outline: 'none',
+  '&:focus': {
+    borderColor: '#ec003f',
+    boxShadow: '0 0 0 3px #fff1f2',
+  },
+  '&::placeholder': {
+    color: '#9c9c9c',
+  },
+};
+
+const Input = styled('input')(inputStyles);
+
+const Textarea = styled('textarea')({
+  ...inputStyles,
+  resize: 'vertical',
+  minHeight: '80px',
+});
+
+const Hint = styled('span')({
+  fontSize: '12px',
+  color: '#62748e',
+});
+
+const ButtonRow = styled('div')({
+  display: 'flex',
+  gap: '12px',
+  marginTop: '8px',
+  '@media (max-width: 600px)': {
+    flexDirection: 'column-reverse',
+  },
+});
+
+const SubmitButton = styled('button')({
+  flex: 1,
+  padding: '14px 24px',
+  background: '#ec003f',
+  color: '#ffffff',
+  borderRadius: '8px',
+  fontSize: '16px',
+  fontWeight: 600,
+  border: 'none',
+  cursor: 'pointer',
+  transition: 'background 0.2s, transform 0.1s',
+  '&:hover:not(:disabled)': {
+    background: '#d10038',
+  },
+  '&:active:not(:disabled)': {
+    transform: 'scale(0.98)',
+  },
+  '&:disabled': {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
+});
+
+const BackButton = styled('button')({
+  padding: '14px 24px',
+  background: '#f1f5f9',
+  color: '#0f172a',
+  borderRadius: '8px',
+  fontSize: '16px',
+  fontWeight: 600,
+  border: 'none',
+  cursor: 'pointer',
+  transition: 'background 0.2s',
+  '&:hover:not(:disabled)': {
+    background: '#e2e8f0',
+  },
+  '&:disabled': {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
+  '@media (max-width: 600px)': {
+    width: '100%',
+  },
+});
 
 interface RegisterFormProps {
   locale: Locale;
@@ -34,12 +290,12 @@ interface FormData {
   restaurantCountry: string;
 }
 
-type Step = 'user' | 'restaurant';
+type StepType = 'user' | 'restaurant';
 
 export default function RegisterForm({ locale }: RegisterFormProps) {
   const router = useRouter();
   const t = getDictionary(locale);
-  const [step, setStep] = useState<Step>('user');
+  const [step, setStep] = useState<StepType>('user');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tokens, setTokens] = useState<{ access: string; refresh: string } | null>(null);
@@ -175,300 +431,249 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.formCard}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            {step === 'user' ? t.register.createAccount : t.register.restaurantDetails}
-          </h1>
-          <p className={styles.subtitle}>
+    <Container>
+      <FormCard>
+        <Header>
+          <Title>{step === 'user' ? t.register.createAccount : t.register.restaurantDetails}</Title>
+          <Subtitle>
             {step === 'user' ? t.register.userSubtitle : t.register.restaurantSubtitle}
-          </p>
-        </div>
+          </Subtitle>
+        </Header>
 
-        <div className={styles.steps}>
-          <div className={`${styles.step} ${step === 'user' ? styles.active : styles.completed}`}>
-            <span className={styles.stepNumber}>1</span>
-            <span className={styles.stepLabel}>{t.register.accountStep}</span>
-          </div>
-          <div className={styles.stepDivider} />
-          <div className={`${styles.step} ${step === 'restaurant' ? styles.active : ''}`}>
-            <span className={styles.stepNumber}>2</span>
-            <span className={styles.stepLabel}>{t.register.restaurantStep}</span>
-          </div>
-        </div>
+        <Steps>
+          <Step>
+            <StepNumber isActive={step === 'user'} isCompleted={step === 'restaurant'}>
+              1
+            </StepNumber>
+            <StepLabel isActive={step === 'user'} isCompleted={step === 'restaurant'}>
+              {t.register.accountStep}
+            </StepLabel>
+          </Step>
+          <StepDivider />
+          <Step>
+            <StepNumber isActive={step === 'restaurant'}>2</StepNumber>
+            <StepLabel isActive={step === 'restaurant'}>{t.register.restaurantStep}</StepLabel>
+          </Step>
+        </Steps>
 
-        {error && <div className={styles.error}>{error}</div>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
 
         {step === 'user' ? (
-          <form onSubmit={handleUserSubmit} className={styles.form}>
-            <div className={styles.row}>
-              <div className={styles.field}>
-                <label htmlFor='firstName' className={styles.label}>
-                  {t.register.firstName}
-                </label>
-                <input
+          <Form onSubmit={handleUserSubmit}>
+            <Row>
+              <Field>
+                <Label htmlFor='firstName'>{t.register.firstName}</Label>
+                <Input
                   type='text'
                   id='firstName'
                   name='firstName'
                   value={formData.firstName}
                   onChange={handleChange}
-                  className={styles.input}
                   required
                 />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor='lastName' className={styles.label}>
-                  {t.register.lastName}
-                </label>
-                <input
+              </Field>
+              <Field>
+                <Label htmlFor='lastName'>{t.register.lastName}</Label>
+                <Input
                   type='text'
                   id='lastName'
                   name='lastName'
                   value={formData.lastName}
                   onChange={handleChange}
-                  className={styles.input}
                   required
                 />
-              </div>
-            </div>
+              </Field>
+            </Row>
 
-            <div className={styles.field}>
-              <label htmlFor='email' className={styles.label}>
-                {t.register.email}
-              </label>
-              <input
+            <Field>
+              <Label htmlFor='email'>{t.register.email}</Label>
+              <Input
                 type='email'
                 id='email'
                 name='email'
                 value={formData.email}
                 onChange={handleChange}
-                className={styles.input}
                 required
               />
-            </div>
+            </Field>
 
-            <div className={styles.field}>
-              <label htmlFor='phoneNumber' className={styles.label}>
-                {t.register.phoneNumber}
-              </label>
-              <input
+            <Field>
+              <Label htmlFor='phoneNumber'>{t.register.phoneNumber}</Label>
+              <Input
                 type='tel'
                 id='phoneNumber'
                 name='phoneNumber'
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className={styles.input}
                 placeholder='+995 XXX XXX XXX'
               />
-            </div>
+            </Field>
 
-            <div className={styles.field}>
-              <label htmlFor='password' className={styles.label}>
-                {t.register.password}
-              </label>
-              <input
+            <Field>
+              <Label htmlFor='password'>{t.register.password}</Label>
+              <Input
                 type='password'
                 id='password'
                 name='password'
                 value={formData.password}
                 onChange={handleChange}
-                className={styles.input}
                 required
                 minLength={8}
               />
-            </div>
+            </Field>
 
-            <div className={styles.field}>
-              <label htmlFor='passwordConfirm' className={styles.label}>
-                {t.register.confirmPassword}
-              </label>
-              <input
+            <Field>
+              <Label htmlFor='passwordConfirm'>{t.register.confirmPassword}</Label>
+              <Input
                 type='password'
                 id='passwordConfirm'
                 name='passwordConfirm'
                 value={formData.passwordConfirm}
                 onChange={handleChange}
-                className={styles.input}
                 required
                 minLength={8}
               />
-            </div>
+            </Field>
 
-            <button type='submit' className={styles.submitButton} disabled={isLoading}>
+            <SubmitButton type='submit' disabled={isLoading}>
               {isLoading ? t.common.loading : t.register.continue}
-            </button>
-          </form>
+            </SubmitButton>
+          </Form>
         ) : (
-          <form onSubmit={handleRestaurantSubmit} className={styles.form}>
-            <div className={styles.field}>
-              <label htmlFor='restaurantName' className={styles.label}>
-                {t.register.restaurantName}
-              </label>
-              <input
+          <Form onSubmit={handleRestaurantSubmit}>
+            <Field>
+              <Label htmlFor='restaurantName'>{t.register.restaurantName}</Label>
+              <Input
                 type='text'
                 id='restaurantName'
                 name='restaurantName'
                 value={formData.restaurantName}
                 onChange={handleChange}
-                className={styles.input}
                 required
               />
-            </div>
+            </Field>
 
-            <div className={styles.field}>
-              <label htmlFor='restaurantSlug' className={styles.label}>
-                {t.register.restaurantSlug}
-              </label>
-              <input
+            <Field>
+              <Label htmlFor='restaurantSlug'>{t.register.restaurantSlug}</Label>
+              <Input
                 type='text'
                 id='restaurantSlug'
                 name='restaurantSlug'
                 value={formData.restaurantSlug}
                 onChange={handleChange}
-                className={styles.input}
                 pattern='[a-z0-9-]+'
                 required
               />
-              <span className={styles.hint}>{t.register.slugHint}</span>
-            </div>
+              <Hint>{t.register.slugHint}</Hint>
+            </Field>
 
-            <div className={styles.field}>
-              <label htmlFor='restaurantDescription' className={styles.label}>
-                {t.register.restaurantDescription}
-              </label>
-              <textarea
+            <Field>
+              <Label htmlFor='restaurantDescription'>{t.register.restaurantDescription}</Label>
+              <Textarea
                 id='restaurantDescription'
                 name='restaurantDescription'
                 value={formData.restaurantDescription}
                 onChange={handleChange}
-                className={styles.textarea}
                 rows={3}
               />
-            </div>
+            </Field>
 
-            <div className={styles.row}>
-              <div className={styles.field}>
-                <label htmlFor='restaurantEmail' className={styles.label}>
-                  {t.register.restaurantEmail}
-                </label>
-                <input
+            <Row>
+              <Field>
+                <Label htmlFor='restaurantEmail'>{t.register.restaurantEmail}</Label>
+                <Input
                   type='email'
                   id='restaurantEmail'
                   name='restaurantEmail'
                   value={formData.restaurantEmail}
                   onChange={handleChange}
-                  className={styles.input}
                   placeholder={formData.email}
                 />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor='restaurantPhone' className={styles.label}>
-                  {t.register.restaurantPhone}
-                </label>
-                <input
+              </Field>
+              <Field>
+                <Label htmlFor='restaurantPhone'>{t.register.restaurantPhone}</Label>
+                <Input
                   type='tel'
                   id='restaurantPhone'
                   name='restaurantPhone'
                   value={formData.restaurantPhone}
                   onChange={handleChange}
-                  className={styles.input}
                   placeholder={formData.phoneNumber}
                 />
-              </div>
-            </div>
+              </Field>
+            </Row>
 
-            <div className={styles.field}>
-              <label htmlFor='restaurantWebsite' className={styles.label}>
-                {t.register.restaurantWebsite}
-              </label>
-              <input
+            <Field>
+              <Label htmlFor='restaurantWebsite'>{t.register.restaurantWebsite}</Label>
+              <Input
                 type='url'
                 id='restaurantWebsite'
                 name='restaurantWebsite'
                 value={formData.restaurantWebsite}
                 onChange={handleChange}
-                className={styles.input}
                 placeholder='https://'
               />
-            </div>
+            </Field>
 
-            <div className={styles.field}>
-              <label htmlFor='restaurantAddress' className={styles.label}>
-                {t.register.address}
-              </label>
-              <input
+            <Field>
+              <Label htmlFor='restaurantAddress'>{t.register.address}</Label>
+              <Input
                 type='text'
                 id='restaurantAddress'
                 name='restaurantAddress'
                 value={formData.restaurantAddress}
                 onChange={handleChange}
-                className={styles.input}
                 required
               />
-            </div>
+            </Field>
 
-            <div className={styles.row}>
-              <div className={styles.field}>
-                <label htmlFor='restaurantCity' className={styles.label}>
-                  {t.register.city}
-                </label>
-                <input
+            <Row>
+              <Field>
+                <Label htmlFor='restaurantCity'>{t.register.city}</Label>
+                <Input
                   type='text'
                   id='restaurantCity'
                   name='restaurantCity'
                   value={formData.restaurantCity}
                   onChange={handleChange}
-                  className={styles.input}
                   required
                 />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor='restaurantPostalCode' className={styles.label}>
-                  {t.register.postalCode}
-                </label>
-                <input
+              </Field>
+              <Field>
+                <Label htmlFor='restaurantPostalCode'>{t.register.postalCode}</Label>
+                <Input
                   type='text'
                   id='restaurantPostalCode'
                   name='restaurantPostalCode'
                   value={formData.restaurantPostalCode}
                   onChange={handleChange}
-                  className={styles.input}
                 />
-              </div>
-            </div>
+              </Field>
+            </Row>
 
-            <div className={styles.field}>
-              <label htmlFor='restaurantCountry' className={styles.label}>
-                {t.register.country}
-              </label>
-              <input
+            <Field>
+              <Label htmlFor='restaurantCountry'>{t.register.country}</Label>
+              <Input
                 type='text'
                 id='restaurantCountry'
                 name='restaurantCountry'
                 value={formData.restaurantCountry}
                 onChange={handleChange}
-                className={styles.input}
                 required
               />
-            </div>
+            </Field>
 
-            <div className={styles.buttonRow}>
-              <button
-                type='button'
-                className={styles.backButton}
-                onClick={() => setStep('user')}
-                disabled={isLoading}
-              >
+            <ButtonRow>
+              <BackButton type='button' onClick={() => setStep('user')} disabled={isLoading}>
                 {t.common.back}
-              </button>
-              <button type='submit' className={styles.submitButton} disabled={isLoading}>
+              </BackButton>
+              <SubmitButton type='submit' disabled={isLoading}>
                 {isLoading ? t.common.loading : t.register.createRestaurant}
-              </button>
-            </div>
-          </form>
+              </SubmitButton>
+            </ButtonRow>
+          </Form>
         )}
-      </div>
-    </div>
+      </FormCard>
+    </Container>
   );
 }

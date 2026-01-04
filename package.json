@@ -17,17 +17,19 @@
   "dependencies": {
     "@gordela/api-generator": "^1.2.0",
     "@microsoft/clarity": "^1.0.2",
-    "next": "16.0.7",
+    "@pigment-css/react": "^0.0.30",
+    "eslint-config-next": "^15.5.9",
+    "next": "^15.5.9",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "swr": "^2.3.7"
   },
   "devDependencies": {
+    "@pigment-css/nextjs-plugin": "^0.0.30",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.0.7",
     "prettier": "^3.4.2",
     "typescript": "^5"
   }

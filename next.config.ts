@@ -1,3 +1,4 @@
+import { withPigment } from '@pigment-css/nextjs-plugin';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -34,4 +35,31 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPigment(nextConfig, {
+  theme: {
+    colors: {
+      background: '#f8fafc',
+      foreground: '#0f172a',
+      primary: '#ec003f',
+      primaryLight: '#fff1f2',
+      secondary: '#7ccf00',
+      gray: {
+        100: '#f1f5f9',
+        200: '#e2e8f0',
+        400: '#9c9c9c',
+        500: '#62748e',
+      },
+      white: '#ffffff',
+    },
+    shadows: {
+      sm: '0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)',
+      md: '0px 16px 16px -8px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05)',
+    },
+    borderRadius: {
+      sm: '8px',
+      md: '14px',
+      lg: '26px',
+      full: '120px',
+    },
+  },
+});

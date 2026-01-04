@@ -1,10 +1,52 @@
 'use client';
 
+import { styled } from '@pigment-css/react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { Locale, locales, localeNames } from '@/i18n/config';
 
-import styles from './LanguageSwitcher.module.css';
+const Container = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  background: '#f1f5f9',
+  borderRadius: '8px',
+  padding: '4px',
+});
+
+interface ButtonProps {
+  isActive?: boolean;
+}
+
+const Button = styled('button')<ButtonProps>({
+  padding: '6px 10px',
+  border: 'none',
+  borderRadius: '6px',
+  background: 'transparent',
+  fontSize: '12px',
+  fontWeight: 500,
+  color: '#62748e',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease',
+  boxShadow: 'none',
+  '&:hover': {
+    background: '#e2e8f0',
+    color: '#0f172a',
+  },
+  variants: [
+    {
+      props: { isActive: true },
+      style: {
+        background: '#ffffff',
+        color: '#0f172a',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        '&:hover': {
+          background: '#ffffff',
+        },
+      },
+    },
+  ],
+});
 
 interface LanguageSwitcherProps {
   currentLocale: Locale;
@@ -15,7 +57,6 @@ export default function LanguageSwitcher({ currentLocale }: LanguageSwitcherProp
   const router = useRouter();
 
   const switchLocale = (newLocale: Locale) => {
-    // Remove current locale from pathname
     const segments = pathname.split('/');
     if (locales.includes(segments[1] as Locale)) {
       segments[1] = newLocale;
@@ -24,25 +65,23 @@ export default function LanguageSwitcher({ currentLocale }: LanguageSwitcherProp
     }
     const newPath = segments.join('/') || '/';
 
-    // Set cookie for persistence
-    // eslint-disable-next-line react-hooks/immutability
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
 
     router.push(newPath);
   };
 
   return (
-    <div className={styles.container}>
+    <Container>
       {locales.map(locale => (
-        <button
+        <Button
           key={locale}
           onClick={() => switchLocale(locale)}
-          className={`${styles.button} ${locale === currentLocale ? styles.active : ''}`}
+          isActive={locale === currentLocale}
           aria-label={`Switch to ${localeNames[locale]}`}
         >
           {locale.toUpperCase()}
-        </button>
+        </Button>
       ))}
-    </div>
+    </Container>
   );
 }

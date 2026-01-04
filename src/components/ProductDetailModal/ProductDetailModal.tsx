@@ -1,11 +1,306 @@
 'use client';
 
+import { styled, keyframes } from '@pigment-css/react';
 import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 
 import BackButton from '../BackButton';
 
-import styles from './ProductDetailModal.module.css';
+const slideUp = keyframes({
+  from: { transform: 'translateY(100%)' },
+  to: { transform: 'translateY(0)' },
+});
+
+const fadeIn = keyframes({
+  from: { opacity: 0, transform: 'scale(0.95)' },
+  to: { opacity: 1, transform: 'scale(1)' },
+});
+
+const Overlay = styled('div')({
+  position: 'fixed',
+  inset: 0,
+  background: 'rgba(0, 0, 0, 0.5)',
+  zIndex: 1000,
+  display: 'flex',
+  alignItems: 'flex-end',
+  justifyContent: 'center',
+  '@media (min-width: 768px)': {
+    alignItems: 'center',
+    padding: '40px',
+  },
+});
+
+const Modal = styled('div')({
+  background: '#ffffff',
+  width: '100%',
+  height: '100dvh',
+  borderRadius: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
+  animation: `${slideUp} 0.3s ease-out`,
+  '@media (min-width: 768px)': {
+    width: '100%',
+    maxWidth: '600px',
+    height: 'auto',
+    maxHeight: '90vh',
+    borderRadius: '24px',
+    animation: `${fadeIn} 0.2s ease-out`,
+  },
+});
+
+const ImageContainer = styled('div')({
+  position: 'relative',
+  width: '100%',
+  height: '383px',
+  flexShrink: 0,
+  '@media (min-width: 768px)': {
+    height: '300px',
+    borderRadius: '24px 24px 0 0',
+  },
+});
+
+const StyledImage = styled(Image)({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  borderBottomLeftRadius: '8px',
+  borderBottomRightRadius: '8px',
+  '@media (min-width: 768px)': {
+    borderRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+});
+
+const ImagePlaceholder = styled('div')({
+  width: '100%',
+  height: '100%',
+  background: '#e2e8f0',
+  borderBottomLeftRadius: '8px',
+  borderBottomRightRadius: '8px',
+  '@media (min-width: 768px)': {
+    borderRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+});
+
+const BackButtonContainer = styled('div')({
+  position: 'absolute',
+  top: '67px',
+  left: '20px',
+  '@media (min-width: 768px)': {
+    display: 'none',
+  },
+});
+
+const CloseButton = styled('button')({
+  display: 'none',
+  '@media (min-width: 768px)': {
+    display: 'flex',
+    position: 'absolute',
+    top: '16px',
+    right: '16px',
+    width: '36px',
+    height: '36px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(255, 255, 255, 0.9)',
+    border: 'none',
+    borderRadius: '50%',
+    cursor: 'pointer',
+    transition: 'background 0.2s ease',
+    zIndex: 10,
+    '&:hover': {
+      background: '#ffffff',
+    },
+    '& svg': {
+      width: '20px',
+      height: '20px',
+      color: '#0f172a',
+    },
+  },
+});
+
+const Content = styled('div')({
+  flex: 1,
+  overflowY: 'auto',
+  padding: '0 20px',
+  background: '#ffffff',
+  marginTop: '-70px',
+  borderTopLeftRadius: '24px',
+  borderTopRightRadius: '24px',
+  position: 'relative',
+  zIndex: 1,
+  '@media (min-width: 768px)': {
+    marginTop: 0,
+    borderRadius: 0,
+    padding: '0 24px',
+  },
+});
+
+const Header = styled('div')({
+  paddingTop: '24px',
+  paddingBottom: '16px',
+  '@media (min-width: 768px)': {
+    paddingTop: '20px',
+    paddingBottom: '16px',
+  },
+});
+
+const ProductName = styled('h2')({
+  fontSize: '20px',
+  fontWeight: 700,
+  color: '#0f172a',
+  lineHeight: 1.2,
+  marginBottom: '8px',
+  margin: 0,
+  '@media (min-width: 768px)': {
+    fontSize: '24px',
+  },
+});
+
+const ProductDescription = styled('p')({
+  fontSize: '13px',
+  fontWeight: 400,
+  color: '#62748e',
+  lineHeight: '20px',
+  margin: 0,
+  '@media (min-width: 768px)': {
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+});
+
+const Divider = styled('div')({
+  height: '1px',
+  background: '#e2e8f0',
+  margin: '0 0 20px',
+});
+
+const ModifierGroup = styled('div')({
+  marginBottom: '24px',
+});
+
+const GroupTitle = styled('h3')({
+  fontSize: '14px',
+  fontWeight: 600,
+  color: '#0f172a',
+  marginBottom: '16px',
+  margin: 0,
+  '@media (min-width: 768px)': {
+    fontSize: '16px',
+  },
+});
+
+const OptionsList = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
+
+const OptionItem = styled('button')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '8px 0',
+  background: 'none',
+  width: '100%',
+  textAlign: 'left',
+  border: 'none',
+  cursor: 'pointer',
+});
+
+const OptionLeft = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+});
+
+interface RadioProps {
+  isSelected?: boolean;
+}
+
+const Radio = styled('div')<RadioProps>({
+  width: '20px',
+  height: '20px',
+  borderRadius: '50%',
+  border: '1px solid #e2e8f0',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+  transition: 'all 0.2s ease',
+  background: 'transparent',
+  variants: [
+    {
+      props: { isSelected: true },
+      style: {
+        border: '1px solid #ec003f',
+        background: '#ec003f',
+      },
+    },
+  ],
+});
+
+const RadioInner = styled('div')({
+  width: '8px',
+  height: '8px',
+  borderRadius: '50%',
+  background: '#ffffff',
+});
+
+const OptionName = styled('span')({
+  fontSize: '14px',
+  fontWeight: 400,
+  color: '#0f172a',
+  '@media (min-width: 768px)': {
+    fontSize: '15px',
+  },
+});
+
+const OptionPrice = styled('span')({
+  fontSize: '14px',
+  fontWeight: 500,
+  color: '#0f172a',
+  '@media (min-width: 768px)': {
+    fontSize: '15px',
+  },
+});
+
+const Footer = styled('div')({
+  padding: '20px',
+  background: '#ffffff',
+  boxShadow: '0px -15px 42.5px 0px rgba(0, 0, 0, 0.05)',
+  flexShrink: 0,
+  '@media (min-width: 768px)': {
+    padding: '20px 24px',
+    borderRadius: '0 0 24px 24px',
+  },
+});
+
+const PriceDisplay = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '12px 0',
+});
+
+const PriceLabel = styled('span')({
+  fontSize: '16px',
+  fontWeight: 500,
+  color: '#62748e',
+});
+
+const PriceValue = styled('span')({
+  fontSize: '20px',
+  fontWeight: 700,
+  color: '#0f172a',
+  '@media (min-width: 768px)': {
+    fontSize: '22px',
+  },
+});
 
 interface Modifier {
   id: string;
@@ -13,7 +308,7 @@ interface Modifier {
   price: number;
 }
 
-interface ModifierGroup {
+interface ModifierGroupType {
   id: string;
   name: string;
   type: 'single' | 'multiple';
@@ -30,12 +325,12 @@ interface ProductDetailModalProps {
     description?: string;
     price: number;
     image?: string;
-    modifierGroups?: ModifierGroup[];
+    modifierGroups?: ModifierGroupType[];
   };
 }
 
 // Helper to compute initial selections
-function getInitialSelections(modifierGroups?: ModifierGroup[]): Record<string, string[]> {
+function getInitialSelections(modifierGroups?: ModifierGroupType[]): Record<string, string[]> {
   const initialSelections: Record<string, string[]> = {};
   modifierGroups?.forEach(group => {
     if (group.type === 'single' && group.modifiers.length > 0) {
@@ -119,27 +414,26 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
   const totalPrice = calculateTotalPrice();
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+    <Overlay onClick={onClose}>
+      <Modal onClick={e => e.stopPropagation()}>
         {/* Product Image */}
-        <div className={styles.imageContainer}>
+        <ImageContainer>
           {product.image ? (
-            <Image
+            <StyledImage
               src={product.image}
               alt={product.name}
               fill
               sizes='(min-width: 768px) 600px, 393px'
-              className={styles.image}
               priority
             />
           ) : (
-            <div className={styles.imagePlaceholder} />
+            <ImagePlaceholder />
           )}
-          <div className={styles.backButtonContainer}>
+          <BackButtonContainer>
             <BackButton onClick={onClose} />
-          </div>
+          </BackButtonContainer>
           {/* Desktop close button */}
-          <button className={styles.closeButton} onClick={onClose} aria-label='Close'>
+          <CloseButton onClick={onClose} aria-label='Close'>
             <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
               <path
                 d='M18 6L6 18M6 6L18 18'
@@ -149,62 +443,55 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
                 strokeLinejoin='round'
               />
             </svg>
-          </button>
-        </div>
+          </CloseButton>
+        </ImageContainer>
 
         {/* Content */}
-        <div className={styles.content}>
-          <div className={styles.header}>
-            <h2 className={styles.productName}>{product.name}</h2>
-            {product.description && (
-              <p className={styles.productDescription}>{product.description}</p>
-            )}
-          </div>
+        <Content>
+          <Header>
+            <ProductName>{product.name}</ProductName>
+            {product.description && <ProductDescription>{product.description}</ProductDescription>}
+          </Header>
 
-          <div className={styles.divider} />
+          <Divider />
 
           {/* Modifier Groups */}
           {product.modifierGroups?.map(group => (
-            <div key={group.id} className={styles.modifierGroup}>
-              <h3 className={styles.groupTitle}>{group.name}</h3>
-              <div className={styles.optionsList}>
+            <ModifierGroup key={group.id}>
+              <GroupTitle>{group.name}</GroupTitle>
+              <OptionsList>
                 {group.modifiers.map(modifier => {
                   const isSelected = (selectedModifiers[group.id] || []).includes(modifier.id);
                   return (
-                    <button
+                    <OptionItem
                       key={modifier.id}
-                      className={styles.optionItem}
                       onClick={() =>
                         group.type === 'single'
                           ? handleSingleSelect(group.id, modifier.id)
                           : handleMultipleSelect(group.id, modifier.id)
                       }
                     >
-                      <div className={styles.optionLeft}>
-                        <div
-                          className={`${styles.radio} ${isSelected ? styles.radioSelected : ''}`}
-                        >
-                          {isSelected && <div className={styles.radioInner} />}
-                        </div>
-                        <span className={styles.optionName}>{modifier.name}</span>
-                      </div>
-                      <span className={styles.optionPrice}>+ {modifier.price.toFixed(2)} ₾</span>
-                    </button>
+                      <OptionLeft>
+                        <Radio isSelected={isSelected}>{isSelected && <RadioInner />}</Radio>
+                        <OptionName>{modifier.name}</OptionName>
+                      </OptionLeft>
+                      <OptionPrice>+ {modifier.price.toFixed(2)} ₾</OptionPrice>
+                    </OptionItem>
                   );
                 })}
-              </div>
-            </div>
+              </OptionsList>
+            </ModifierGroup>
           ))}
-        </div>
+        </Content>
 
         {/* Price Display */}
-        <div className={styles.footer}>
-          <div className={styles.priceDisplay}>
-            <span className={styles.priceLabel}>ჯამი:</span>
-            <span className={styles.priceValue}>{totalPrice.toFixed(2)} ₾</span>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Footer>
+          <PriceDisplay>
+            <PriceLabel>ჯამი:</PriceLabel>
+            <PriceValue>{totalPrice.toFixed(2)} ₾</PriceValue>
+          </PriceDisplay>
+        </Footer>
+      </Modal>
+    </Overlay>
   );
 }

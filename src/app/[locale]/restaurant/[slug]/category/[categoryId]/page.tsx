@@ -1,5 +1,6 @@
 'use client';
 
+import { styled, keyframes } from '@pigment-css/react';
 import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import { useState, useMemo } from 'react';
@@ -13,16 +14,150 @@ import {
   CartButton,
   ProductListSkeleton,
   CategoryTabsSkeleton,
-  Skeleton,
 } from '@/components';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useCategoryProducts } from '@/hooks/useMenuData';
 
-import styles from './page.module.css';
+const shimmer = keyframes({
+  '0%': { backgroundPosition: '-200% 0' },
+  '100%': { backgroundPosition: '200% 0' },
+});
 
 // Lazy load the modal
 const ProductDetailModal = dynamic(() => import('@/components/ProductDetailModal'), { ssr: false });
+
+const Page = styled('div')({
+  minHeight: '100vh',
+  background: '#f8fafc',
+  paddingBottom: '80px',
+});
+
+const Main = styled('main')({
+  padding: '10px 20px 40px',
+  '@media (min-width: 768px)': {
+    padding: '24px 80px 100px',
+    maxWidth: '1280px',
+    margin: '0 auto',
+  },
+});
+
+const TitleSection = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  marginBottom: '16px',
+  '@media (min-width: 768px)': {
+    marginBottom: '24px',
+  },
+});
+
+const PageTitle = styled('h1')({
+  flex: 1,
+  fontSize: '14px',
+  fontWeight: 600,
+  color: '#0f172a',
+  textAlign: 'center',
+  marginRight: '44px',
+  margin: 0,
+  '@media (min-width: 768px)': {
+    fontSize: '24px',
+    fontWeight: 700,
+    marginRight: 0,
+    textAlign: 'left',
+    flex: 'none',
+  },
+});
+
+const SearchSection = styled('div')({
+  marginBottom: '16px',
+  '@media (min-width: 768px)': {
+    marginBottom: '24px',
+    maxWidth: '400px',
+  },
+});
+
+const TabsSection = styled('div')({
+  marginBottom: '24px',
+  '@media (min-width: 768px)': {
+    marginBottom: '32px',
+  },
+});
+
+const SectionTitle = styled('div')({
+  marginBottom: '12px',
+  '@media (min-width: 768px)': {
+    marginBottom: '20px',
+  },
+  '& h2': {
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#0f172a',
+    margin: 0,
+    '@media (min-width: 768px)': {
+      fontSize: '20px',
+      fontWeight: 700,
+    },
+  },
+});
+
+const ProductsList = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+  '@media (min-width: 768px)': {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '16px',
+  },
+  '@media (min-width: 1024px)': {
+    gridTemplateColumns: 'repeat(3, 1fr)',
+  },
+  '@media (min-width: 1280px)': {
+    gridTemplateColumns: 'repeat(4, 1fr)',
+  },
+});
+
+const EmptyState = styled('div')({
+  textAlign: 'center',
+  padding: '40px 20px',
+  color: '#62748e',
+  fontSize: '14px',
+});
+
+// Skeleton styles
+const TitleSkeleton = styled('div')({
+  flex: 1,
+  height: '20px',
+  marginRight: '44px',
+  borderRadius: '4px',
+  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
+  backgroundSize: '200% 100%',
+  animation: `${shimmer} 1.5s infinite`,
+  '@media (min-width: 768px)': {
+    height: '32px',
+    maxWidth: '200px',
+    marginRight: 0,
+  },
+});
+
+const SearchSkeleton = styled('div')({
+  height: '48px',
+  width: '100%',
+  borderRadius: '12px',
+  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
+  backgroundSize: '200% 100%',
+  animation: `${shimmer} 1.5s infinite`,
+});
+
+const SectionTitleSkeleton = styled('div')({
+  height: '20px',
+  width: '100px',
+  borderRadius: '4px',
+  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
+  backgroundSize: '200% 100%',
+  animation: `${shimmer} 1.5s infinite`,
+});
 
 interface FormattedProduct {
   id: string;
@@ -80,67 +215,67 @@ export default function CategoryPage() {
 
   if (loading) {
     return (
-      <div className={styles.page}>
+      <Page>
         <Header />
-        <main className={styles.main}>
-          <div className={styles.titleSection}>
+        <Main>
+          <TitleSection>
             <BackButton />
-            <Skeleton className={styles.titleSkeleton} />
-          </div>
+            <TitleSkeleton />
+          </TitleSection>
 
-          <div className={styles.searchSection}>
-            <Skeleton className={styles.searchSkeleton} />
-          </div>
+          <SearchSection>
+            <SearchSkeleton />
+          </SearchSection>
 
-          <div className={styles.tabsSection}>
+          <TabsSection>
             <CategoryTabsSkeleton count={5} />
-          </div>
+          </TabsSection>
 
-          <div className={styles.sectionTitle}>
-            <Skeleton className={styles.sectionTitleSkeleton} />
-          </div>
+          <SectionTitle>
+            <SectionTitleSkeleton />
+          </SectionTitle>
 
-          <div className={styles.productsList}>
+          <ProductsList>
             <ProductListSkeleton count={4} />
-          </div>
-        </main>
-      </div>
+          </ProductsList>
+        </Main>
+      </Page>
     );
   }
 
   return (
-    <div className={styles.page}>
+    <Page>
       <Header />
 
-      <main className={styles.main}>
-        <div className={styles.titleSection}>
+      <Main>
+        <TitleSection>
           <BackButton />
-          <h1 className={styles.pageTitle}>{pageTitle}</h1>
-        </div>
+          <PageTitle>{pageTitle}</PageTitle>
+        </TitleSection>
 
-        <div className={styles.searchSection}>
+        <SearchSection>
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
             placeholder={t.restaurant.searchPlaceholder}
           />
-        </div>
+        </SearchSection>
 
-        <div className={styles.tabsSection}>
+        <TabsSection>
           <CategoryTabs
             categories={categories}
             activeCategory={activeCategory}
             onCategoryChange={setActiveCategory}
           />
-        </div>
+        </TabsSection>
 
-        <div className={styles.sectionTitle}>
+        <SectionTitle>
           <h2>{pageTitle}</h2>
-        </div>
+        </SectionTitle>
 
-        <div className={styles.productsList}>
+        <ProductsList>
           {filteredProducts.length === 0 ? (
-            <div className={styles.emptyState}>{t.restaurant.noProductsFound}</div>
+            <EmptyState>{t.restaurant.noProductsFound}</EmptyState>
           ) : (
             filteredProducts.map(product => (
               <ProductCard
@@ -154,8 +289,8 @@ export default function CategoryPage() {
               />
             ))
           )}
-        </div>
-      </main>
+        </ProductsList>
+      </Main>
 
       <CartButton />
 
@@ -166,6 +301,6 @@ export default function CategoryPage() {
           product={selectedProduct}
         />
       )}
-    </div>
+    </Page>
   );
 }
