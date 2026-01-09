@@ -10,8 +10,8 @@ function Page() {
       <MainButton variant='outline' title='Outline Button' />
       <MainButton variant='secondary' title='Secondary Button' />
       <MainButton variant='ghost' title='Ghost Button' />
-      <MainButton variant='rose cta' title='Rose CTA Button' />
-      <MainButton variant='slate cta' title='Slate CTA Button' />
+      <MainButton variant='rose_cta' title='Rose CTA Button' />
+      <MainButton variant='slate_cta' title='Slate CTA Button' />
       <>
         <MainButton size='small' title='Small Button' />
         <MainButton title='Default Button' />

@@ -2,14 +2,18 @@
 
 import { styled } from '@pigment-css/react';
 
+import CalendarIcon from '@/icons/Calendar';
+import HeartIcon from '@/icons/Heart';
+import SearchIcon from '@/icons/Search';
+
 type Variant =
   | 'default'
   | 'destructive'
   | 'outline'
   | 'secondary'
   | 'ghost'
-  | 'rose cta'
-  | 'slate cta';
+  | 'rose_cta'
+  | 'slate_cta';
 
 type IconName = 'heart' | 'search' | 'calendar';
 
@@ -20,27 +24,26 @@ type Props = {
   icon?: IconName;
 };
 
-const ICON_CONFIG: Record<IconName, { src: string; defaultVariant: Variant; rounded?: boolean }> = {
+type IconComponent = React.ComponentType;
+
+const ICON_CONFIG: Record<
+  IconName,
+  { Icon: IconComponent; defaultVariant: Variant; rounded?: boolean }
+> = {
   heart: {
-    src: '/images/heart.png',
+    Icon: HeartIcon,
     defaultVariant: 'default',
   },
   search: {
-    src: '/images/search.png',
+    Icon: SearchIcon,
     defaultVariant: 'outline',
   },
   calendar: {
-    src: '/images/calendar.png',
-    defaultVariant: 'rose cta',
+    Icon: CalendarIcon,
+    defaultVariant: 'rose_cta',
     rounded: true,
   },
 };
-
-const IconImg = styled("img")({
-  width: 16,
-  height: 16,
-  display: 'block',
-});
 
 const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'default' | 'large' }>({
   padding: '8px 16px',
@@ -59,6 +62,9 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
       style: {
         backgroundColor: '#030213',
         color: '#ffffff',
+        '&:hover': {
+          backgroundColor: '#030213E6',
+        },
       },
     },
     {
@@ -66,6 +72,9 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
       style: {
         backgroundColor: '#D4183D',
         color: '#ffffff',
+        '&:hover': {
+          backgroundColor: '#D4183DE6',
+        },
       },
     },
     {
@@ -74,6 +83,9 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
         backgroundColor: 'transparent',
         color: '#0A0A0A',
         border: '1px solid #0000001A',
+        '&:hover': {
+          backgroundColor: '#e9ebef',
+        },
       },
     },
     {
@@ -81,6 +93,9 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
       style: {
         backgroundColor: '#ECEEF2',
         color: '#030213',
+        '&:hover': {
+          backgroundColor: '#ECEEF2CC',
+        },
       },
     },
     {
@@ -88,20 +103,29 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
       style: {
         backgroundColor: 'transparent',
         color: '#0A0A0A',
+        '&:hover': {
+          backgroundColor: '#e9ebef',
+        },
       },
     },
     {
-      props: { variant: 'rose cta' },
+      props: { variant: 'rose_cta' },
       style: {
         backgroundColor: '#EC003F',
         color: '#ffffff',
+        '&:hover': {
+          backgroundColor: '#BE123C',
+        },
       },
     },
     {
-      props: { variant: 'slate cta' },
+      props: { variant: 'slate_cta' },
       style: {
         backgroundColor: '#0F172B',
         color: '#ffffff',
+        '&:hover': {
+          backgroundColor: '#1E293B',
+        },
       },
     },
     {
@@ -133,11 +157,23 @@ function MainButton({ title, variant, size = 'default', icon }: Props) {
         ...(iconCfg?.rounded ? { borderRadius: 50 } : {}),
       }}
     >
-      {iconCfg ? <IconImg src={iconCfg.src} alt={icon} /> : null}
+      {iconCfg ? (
+        <span
+          style={{
+            width: 16,
+            height: 16,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <iconCfg.Icon />
+        </span>
+      ) : null}
+
       {title}
     </DefaultButton>
   );
 }
-
 
 export default MainButton;
