@@ -2,10 +2,6 @@
 
 import { styled } from '@pigment-css/react';
 
-import CalendarIcon from '@/icons/Calendar';
-import HeartIcon from '@/icons/Heart';
-import SearchIcon from '@/icons/Search';
-
 type Variant =
   | 'default'
   | 'destructive'
@@ -15,35 +11,15 @@ type Variant =
   | 'rose_cta'
   | 'slate_cta';
 
-type IconName = 'heart' | 'search' | 'calendar';
-
 type Props = {
   variant?: Variant;
   title?: string;
   size?: 'small' | 'default' | 'large';
-  icon?: IconName;
+  icon?: IconComponent;
+  rounded?: boolean;
 };
 
 type IconComponent = React.ComponentType;
-
-const ICON_CONFIG: Record<
-  IconName,
-  { Icon: IconComponent; defaultVariant: Variant; rounded?: boolean }
-> = {
-  heart: {
-    Icon: HeartIcon,
-    defaultVariant: 'default',
-  },
-  search: {
-    Icon: SearchIcon,
-    defaultVariant: 'outline',
-  },
-  calendar: {
-    Icon: CalendarIcon,
-    defaultVariant: 'rose_cta',
-    rounded: true,
-  },
-};
 
 const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'default' | 'large' }>({
   padding: '8px 16px',
@@ -143,21 +119,17 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
   ],
 });
 
-function MainButton({ title, variant, size = 'default', icon }: Props) {
-  const iconCfg = icon ? ICON_CONFIG[icon] : null;
-
-  const finalVariant: Variant = variant ?? iconCfg?.defaultVariant ?? 'default';
-
+function MainButton({ title, variant = 'default', size = 'default', icon: Icon, rounded }: Props) {
   return (
     <DefaultButton
-      variant={finalVariant}
+      variant={variant}
       size={size}
       style={{
-        ...(icon ? { display: 'flex', alignItems: 'center', gap: 6 } : {}),
-        ...(iconCfg?.rounded ? { borderRadius: 50 } : {}),
+        ...(Icon ? { display: 'flex', alignItems: 'center', gap: 6 } : {}),
+        ...(rounded ? { borderRadius: 50 } : {}),
       }}
     >
-      {iconCfg ? (
+      {Icon ? (
         <span
           style={{
             width: 16,
@@ -167,7 +139,7 @@ function MainButton({ title, variant, size = 'default', icon }: Props) {
             justifyContent: 'center',
           }}
         >
-          <iconCfg.Icon />
+          <Icon />
         </span>
       ) : null}
 
