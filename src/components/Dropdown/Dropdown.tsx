@@ -26,7 +26,6 @@ const DropdownButton = styled('button')({
   borderRadius: '8px',
   padding: '8px 12px',
   cursor: 'pointer',
-  border: 'none',
   fontSize: '14px',
   fontFamily: 'Inter',
   lineHeight: '17px',
@@ -37,6 +36,12 @@ const DropdownButton = styled('button')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+  border: '1px solid transparent',
+
+  '&:hover:not(:disabled)': {
+    border: '1px solid #A1A1A1',
+    boxShadow: '0 0 0 3px #a1a1a180',
+  },
 
   '&:disabled': {
     cursor: 'not-allowed',
@@ -72,6 +77,7 @@ const LeftIconWrapper = styled('span')({
 const ArrowWrapper = styled('span')({
   display: 'flex',
   alignItems: 'center',
+  transition: 'transform 0.2s ease',
 });
 
 const DropdownList = styled('ul')({
@@ -179,7 +185,7 @@ function Dropdown({
             <span>{selectedOption?.label ?? placeholder}</span>
           </LeftContent>
 
-          <ArrowWrapper>
+          <ArrowWrapper style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
             <DropdownArrow />
           </ArrowWrapper>
         </DropdownButton>
