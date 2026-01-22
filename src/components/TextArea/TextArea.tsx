@@ -27,7 +27,7 @@ const StyledTextArea = styled('textarea')({
   lineHeight: '17px',
   letterSpacing: '-0.15px',
   fontWeight: 400,
-  border: '2px solid transparent',
+  border: '1px solid transparent',
   color: '#717182',
   borderRadius: '8px',
   padding: '10px 12px',
