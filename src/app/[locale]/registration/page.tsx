@@ -2,35 +2,14 @@
 
 import React from 'react';
 
-import Dropdown from '@/components/Dropdown/Dropdown';
-import PeopleIcon from '@/icons/People';
+import Checkbox from '@/components/Checkbox/Checkbox';
 
 function Page() {
-  const [department, setDepartment] = React.useState<string>('');
   return (
     <>
-      <Dropdown
-        label='Department'
-        placeholder='Choose department'
-        value={department}
-        onChange={setDepartment}
-        icon={<PeopleIcon />}
-        options={[
-          { label: 'Design', value: 'design' },
-          { label: 'Development', value: 'dev' },
-        ]}
-      />
-      <Dropdown
-        label='Department (disabled)'
-        placeholder='Choose department'
-        value={department}
-        onChange={setDepartment}
-        options={[
-          { label: 'Design', value: 'design' },
-          { label: 'Development', value: 'dev' },
-        ]}
-        disabled
-      />
+      <Checkbox label='Accept Terms and Conditions' />
+      <Checkbox label='Accept Privacy Policy' />
+      <Checkbox label='Accept Marketing Communications' disabled />
     </>
   );
 }
