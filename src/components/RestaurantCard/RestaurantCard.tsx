@@ -166,7 +166,6 @@ const ButtonGroup = styled('div')({
   marginTop: '24px',
 });
 
-// === XL Variant Styled Components ===
 
 const XlContainer = styled('div')({
   display: 'flex',
@@ -281,10 +280,6 @@ const XlButtonGroup = styled('div')({
   gap: '12px',
   marginTop: '8px',
 });
-
-// === End XL Variant ===
-
-// === Compact Variant Styled Components ===
 
 const CompactContainer = styled('div')({
   display: 'flex',
