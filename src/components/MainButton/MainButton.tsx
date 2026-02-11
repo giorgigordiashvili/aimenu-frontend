@@ -17,6 +17,7 @@ type Props = {
   size?: 'small' | 'default' | 'large';
   icon?: IconComponent;
   rounded?: boolean;
+  fullWidth?: boolean;
 };
 
 type IconComponent = React.ComponentType;
@@ -119,7 +120,14 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
   ],
 });
 
-function MainButton({ title, variant = 'default', size = 'default', icon: Icon, rounded }: Props) {
+function MainButton({
+  title,
+  variant = 'default',
+  size = 'default',
+  icon: Icon,
+  rounded,
+  fullWidth,
+}: Props) {
   return (
     <DefaultButton
       variant={variant}
@@ -127,6 +135,7 @@ function MainButton({ title, variant = 'default', size = 'default', icon: Icon, 
       style={{
         ...(Icon ? { display: 'flex', alignItems: 'center', gap: 6 } : {}),
         ...(rounded ? { borderRadius: 50 } : {}),
+        ...(fullWidth ? { width: '100%' } : {}),
       }}
     >
       {Icon ? (
