@@ -6,7 +6,13 @@ type StarProps = {
 };
 
 const Star = ({ color = '#0F172B', size = 10 }: StarProps) => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={size} height={size} fill='none'>
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width={size}
+    height={size}
+    viewBox='-0.5 -0.5 12 12'
+    fill='none'
+  >
     <path
       fill={color}
       stroke={color}

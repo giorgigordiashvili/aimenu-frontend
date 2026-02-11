@@ -4,6 +4,7 @@ import { styled } from '@pigment-css/react';
 import { useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
+import CalendarIcon from '@/icons/Calendar';
 import HeartOutlined from '@/icons/HeartOutlined';
 import LocationIcon from '@/icons/Location';
 import Star from '@/icons/Star';
@@ -30,18 +31,6 @@ const ContentTop = styled('div')({
   height: '160px',
   padding: '8px',
   overflow: 'hidden',
-});
-
-const FilterButton = styled('div')({
-  width: 'fit-content',
-  height: 'auto',
-  padding: '2px 4px',
-  backgroundColor: '#ffffffE6',
-  color: '#0F172B',
-  borderRadius: '8px',
-  fontSize: '10px',
-  fontWeight: '500',
-  lineHeight: '15px',
 });
 
 const FavoriteYellow = styled('div')({
@@ -76,23 +65,6 @@ const FavoriteButton = styled('div')({
     width: '44px',
     height: '44px',
   },
-});
-
-const Rating = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '4px',
-  width: 'min-content',
-  height: 'min-content',
-  backgroundColor: '#ffffffE6',
-  padding: '2px 6px',
-  borderRadius: '50px',
-  fontFamily: 'Inter',
-  fontSize: '10px',
-  fontWeight: '500',
-  lineHeight: '15px',
-  color: '#0F172B',
-  marginLeft: 'auto',
 });
 
 const FavoriteGroup = styled('div')({
@@ -194,6 +166,125 @@ const ButtonGroup = styled('div')({
   marginTop: '24px',
 });
 
+// === XL Variant Styled Components ===
+
+const XlContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  width: '1120px',
+  height: '561px',
+  borderRadius: '14px',
+  border: '1px solid #E2E8F0',
+  overflow: 'hidden',
+  backgroundColor: '#FFFFFF',
+  '&:hover': {
+    boxShadow: '0px 4px 6px -4px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1)',
+  },
+  '&:hover img': {
+    transform: 'scale(1.1)',
+  },
+});
+
+const XlImageContainer = styled('div')({
+  position: 'relative',
+  width: '50%',
+  height: '100%',
+  overflow: 'hidden',
+  flexShrink: 0,
+});
+
+const XlImage = styled('img')({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  objectPosition: 'center',
+  transition: 'transform 0.3s ease',
+});
+
+const XlFavoriteYellowOverlay = styled('div')({
+  position: 'absolute',
+  top: '16px',
+  left: '16px',
+  zIndex: 1,
+});
+
+const XlContent = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  padding: '40px',
+  flex: 1,
+  gap: '8px',
+});
+
+const XlTopRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  marginBottom: '4px',
+});
+
+const XlTitle = styled('h2')({
+  fontFamily: 'Inter',
+  fontSize: '30px',
+  fontWeight: '700',
+  lineHeight: '36px',
+  color: '#0F172B',
+  margin: 0,
+});
+
+const XlRatingLocationRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '16px',
+  marginBottom: '8px',
+});
+
+const XlRating = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  fontFamily: 'Inter',
+  fontSize: '16px',
+  fontWeight: '500',
+  lineHeight: '24px',
+  color: '#45556C',
+  '& svg': {
+    display: 'block',
+  },
+});
+
+const XlLocation = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  fontFamily: 'Inter',
+  fontSize: '16px',
+  fontWeight: '400',
+  lineHeight: '24px',
+  color: '#62748E',
+});
+
+const XlDescription = styled('p')({
+  fontFamily: 'Inter',
+  fontSize: '16px',
+  fontWeight: '400',
+  lineHeight: '24px',
+  color: '#62748E',
+  margin: 0,
+  marginBottom: '16px',
+  
+});
+
+const XlButtonGroup = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  marginTop: '8px',
+});
+
+// === End XL Variant ===
+
 interface RestaurantCardProps {
   filterText?: string;
   rating?: number;
@@ -207,6 +298,8 @@ interface RestaurantCardProps {
   detailsVariant?: 'filled' | 'outlined';
   showDetailsButton?: boolean;
   showBookButton?: boolean;
+  variant?: 'default' | 'xl';
+  descriptionText?: string;
 }
 
 function RestaurantCard({
@@ -222,8 +315,73 @@ function RestaurantCard({
   detailsVariant = 'filled',
   showDetailsButton = true,
   showBookButton = true,
+  variant = 'default',
+  descriptionText,
 }: RestaurantCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+
+  if (variant === 'xl') {
+    return (
+      <XlContainer>
+        <XlImageContainer>
+          <XlImage src={imageSrc} alt='Restaurant' />
+          {showFavoriteYellow && (
+            <XlFavoriteYellowOverlay>
+              <FavoriteYellow>
+                <Star color='#0F172B' size={12} />
+                რჩეული
+              </FavoriteYellow>
+            </XlFavoriteYellowOverlay>
+          )}
+        </XlImageContainer>
+        <XlContent>
+          <XlTopRow>
+            {showFilterText && filterText && (
+              <MainButton variant='rose_cta' title={filterText} size='extra_small' />
+            )}
+            <PriceWrapper>
+              <MainButton variant='outline' title='₾₾₾' size='extra_small' />
+            </PriceWrapper>
+          </XlTopRow>
+          {restaurantTitle && <XlTitle>{restaurantTitle}</XlTitle>}
+          <XlRatingLocationRow>
+            {showRating && (
+              <XlRating>
+                <Star color='#F0B100' size={18} />
+                {rating}
+              </XlRating>
+            )}
+            {locationText && (
+              <XlLocation>
+                <LocationIcon color='#62748E' size={18} />
+                {locationText}
+              </XlLocation>
+            )}
+          </XlRatingLocationRow>
+          {descriptionText && <XlDescription>{descriptionText}</XlDescription>}
+          <XlButtonGroup>
+            {showBookButton && (
+              <MainButton
+                variant='rose_cta'
+                title='დაჯავშნა'
+                size='large'
+                fullWidth
+                icon={() => <CalendarIcon />}
+              />
+            )}
+            {showFavoriteButton && (
+              <MainButton
+                variant='outline'
+                title='შენახვა'
+                size='large'
+                icon={() => <HeartOutlined variant={isFavorite ? 'filled' : 'outlined'} />}
+              />
+            )}
+          </XlButtonGroup>
+        </XlContent>
+      </XlContainer>
+    );
+  }
 
   return (
     <ContentGroup>
@@ -243,12 +401,16 @@ function RestaurantCard({
           )}
         </FavoriteGroup>
         <FilterRatingGroup>
-          {showFilterText && filterText && <FilterButton>{filterText}</FilterButton>}
+          {showFilterText && filterText && (
+            <MainButton variant='secondary' title={filterText} size='extra_small' />
+          )}
           {showRating && (
-            <Rating>
-              <Star color='#F0B100' size={10} />
-              {rating}
-            </Rating>
+            <MainButton
+              variant='secondary'
+              title={String(rating)}
+              size='extra_small'
+              icon={() => <Star color='#F0B100' size={10} />}
+            />
           )}
         </FilterRatingGroup>
       </ContentTop>
