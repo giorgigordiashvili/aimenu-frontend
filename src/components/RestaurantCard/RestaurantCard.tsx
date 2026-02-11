@@ -273,7 +273,6 @@ const XlDescription = styled('p')({
   color: '#62748E',
   margin: 0,
   marginBottom: '16px',
-  
 });
 
 const XlButtonGroup = styled('div')({
@@ -284,6 +283,118 @@ const XlButtonGroup = styled('div')({
 });
 
 // === End XL Variant ===
+
+// === Compact Variant Styled Components ===
+
+const CompactContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  width: '100%',
+  borderRadius: '14px',
+  border: '1px solid #E2E8F0',
+  overflow: 'hidden',
+  backgroundColor: '#FFFFFF',
+  padding: '12px',
+  gap: '16px',
+  alignItems: 'stretch',
+  '&:hover': {
+    boxShadow: '0px 4px 6px -4px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1)',
+  },
+  '&:hover img': {
+    transform: 'scale(1.1)',
+  },
+});
+
+const CompactImageContainer = styled('div')({
+  position: 'relative',
+  width: '140px',
+  height: '140px',
+  borderRadius: '10px',
+  overflow: 'hidden',
+  flexShrink: 0,
+});
+
+const CompactImage = styled('img')({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  objectPosition: 'center',
+  transition: 'transform 0.3s ease',
+});
+
+const CompactFavoriteYellowOverlay = styled('div')({
+  position: 'absolute',
+  top: '8px',
+  left: '8px',
+  zIndex: 1,
+});
+
+const CompactContent = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  flex: 1,
+  justifyContent: 'space-between',
+  minWidth: 0,
+});
+
+const CompactInfoGroup = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+});
+
+const CompactTopRow = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+});
+
+const CompactTitle = styled('span')({
+  fontFamily: 'Inter',
+  fontSize: '18px',
+  fontWeight: '700',
+  lineHeight: '28px',
+  color: '#0F172B',
+});
+
+const CompactRatingFilterRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  fontFamily: 'Inter',
+  fontSize: '14px',
+  fontWeight: '400',
+  lineHeight: '20px',
+  color: '#62748E',
+  '& svg': {
+    display: 'block',
+  },
+});
+
+const CompactDot = styled('span')({
+  color: '#62748E',
+});
+
+const CompactLocation = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  fontFamily: 'Inter',
+  fontSize: '14px',
+  fontWeight: '400',
+  lineHeight: '20px',
+  color: '#62748E',
+  '& svg': {
+    display: 'block',
+  },
+});
+
+const CompactButtonGroup = styled('div')({
+  display: 'flex',
+  marginTop: '8px',
+});
+
+// === End Compact Variant ===
 
 interface RestaurantCardProps {
   filterText?: string;
@@ -298,7 +409,7 @@ interface RestaurantCardProps {
   detailsVariant?: 'filled' | 'outlined';
   showDetailsButton?: boolean;
   showBookButton?: boolean;
-  variant?: 'default' | 'xl';
+  variant?: 'default' | 'xl' | 'compact';
   descriptionText?: string;
 }
 
@@ -319,6 +430,55 @@ function RestaurantCard({
   descriptionText,
 }: RestaurantCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+
+  if (variant === 'compact') {
+    return (
+      <CompactContainer>
+        <CompactImageContainer>
+          <CompactImage src={imageSrc} alt='Restaurant' />
+          {showFavoriteYellow && (
+            <CompactFavoriteYellowOverlay>
+              <FavoriteYellow>
+                <Star color='#0F172B' size={12} />
+                რჩეული
+              </FavoriteYellow>
+            </CompactFavoriteYellowOverlay>
+          )}
+        </CompactImageContainer>
+        <CompactContent>
+          <CompactInfoGroup>
+            <CompactTopRow>
+              {restaurantTitle && <CompactTitle>{restaurantTitle}</CompactTitle>}
+              <PriceWrapper>
+                <MainButton variant='outline' title='₾₾₾' size='extra_small' />
+              </PriceWrapper>
+            </CompactTopRow>
+            <CompactRatingFilterRow>
+              {showRating && (
+                <>
+                  <Star color='#F0B100' size={14} />
+                  {rating}
+                </>
+              )}
+              {showRating && showFilterText && filterText && <CompactDot>•</CompactDot>}
+              {showFilterText && filterText && <span>{filterText}</span>}
+            </CompactRatingFilterRow>
+            {locationText && (
+              <CompactLocation>
+                <LocationIcon color='#62748E' size={14} />
+                {locationText}
+              </CompactLocation>
+            )}
+          </CompactInfoGroup>
+          <CompactButtonGroup>
+            {showBookButton && (
+              <MainButton variant='rose_cta' title='დაჯავშნა' size='small' fullWidth />
+            )}
+          </CompactButtonGroup>
+        </CompactContent>
+      </CompactContainer>
+    );
+  }
 
   if (variant === 'xl') {
     return (

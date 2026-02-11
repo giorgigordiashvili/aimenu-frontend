@@ -33,6 +33,18 @@ export default function page() {
         showDetailsButton={false}
         descriptionText='გამორჩეული ატმოსფერო და უნიკალური კერძები. იდეალურია როგორც ოჯახური, ისე ბიზნეს შეხვედრებისთვის.'
       />
+      <RestaurantCard
+        variant='compact'
+        filterText='ტრადიციული'
+        rating={4.5}
+        showFavoriteButton={false}
+        showFavoriteYellow={true}
+        showRating={true}
+        showFilterText={true}
+        restaurantTitle='ხინკლის სახლი'
+        locationText='თბილისი'
+        showBookButton={true}
+      />
     </>
   );
 }
