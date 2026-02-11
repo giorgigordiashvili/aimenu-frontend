@@ -72,6 +72,10 @@ const FavoriteButton = styled('div')({
   '&:hover': {
     backgroundColor: '#ffffff',
   },
+  '@media (max-width: 768px)': {
+    width: '44px',
+    height: '44px',
+  },
 });
 
 const Rating = styled('div')({
@@ -139,6 +143,9 @@ const RestaurantTitle = styled('span')({
   color: '#0F172B',
   '@media (max-width: 768px)': {
     width: '100%',
+    fontSize: '18px',
+    fontWeight: '700',
+    lineHeight: '28px',
   },
 });
 
@@ -157,6 +164,27 @@ const LocationContainer = styled('div')({
   fontWeight: '400',
   lineHeight: '15px',
   paddingTop: '12px',
+  '@media (max-width: 768px)': {
+    fontSize: '14px',
+    fontWeight: '400',
+    lineHeight: '20px',
+  },
+});
+
+const LocationIconWrapper = styled('span')({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '12px',
+  height: '12px',
+  '& svg': {
+    width: '100%',
+    height: '100%',
+  },
+  '@media (max-width: 768px)': {
+    width: '16px',
+    height: '16px',
+  },
 });
 
 const ButtonGroup = styled('div')({
@@ -228,12 +256,14 @@ function RestaurantCard({
         <BottomGroup>
           {restaurantTitle && <RestaurantTitle>{restaurantTitle}</RestaurantTitle>}
           <PriceWrapper>
-            <MainButton variant='outline' title='₾₾₾' size='small' />
+            <MainButton variant='outline' title='₾₾₾' size='extra_small' />
           </PriceWrapper>
         </BottomGroup>
         {locationText && (
           <LocationContainer>
-            <LocationIcon color='#62748E' size={12} />
+            <LocationIconWrapper>
+              <LocationIcon color='#62748E' size={12} />
+            </LocationIconWrapper>
             {locationText}
           </LocationContainer>
         )}

@@ -14,7 +14,7 @@ type Variant =
 type Props = {
   variant?: Variant;
   title?: string;
-  size?: 'small' | 'default' | 'large';
+  size?: 'small' | 'default' | 'large' | 'extra_small';
   icon?: IconComponent;
   rounded?: boolean;
   fullWidth?: boolean;
@@ -22,7 +22,10 @@ type Props = {
 
 type IconComponent = React.ComponentType;
 
-const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'default' | 'large' }>({
+const DefaultButton = styled('button')<{
+  variant: Variant;
+  size: 'small' | 'default' | 'large' | 'extra_small';
+}>({
   padding: '8px 16px',
   borderRadius: '8px',
   border: 'none',
@@ -103,6 +106,17 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
         '&:hover': {
           backgroundColor: '#1E293B',
         },
+      },
+    },
+    {
+      props: { size: 'extra_small' },
+      style: {
+        padding: '2px 4px',
+        fontSize: '12px',
+        fontFamily: 'Inter',
+        lineHeight: '16px',
+        letterSpacing: '0',
+        fontWeight: 400,
       },
     },
     {
