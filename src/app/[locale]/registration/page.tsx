@@ -2,14 +2,54 @@
 
 import React from 'react';
 
-import SwitchButton from '@/components/SwitchButton/SwitchButton';
+import RestaurantCard from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 
 function Page() {
   return (
     <>
-      <SwitchButton label='Notifications' />
-      <SwitchButton label='Dark mode' />
-      <SwitchButton label='Disabled option' disabled />
+      <RestaurantCard
+        variant='default'
+        imageSrc='/RestaurantCardImage2.jpg'
+        filterText='ქართული ფიუჟენი'
+        rating={4.8}
+        showFavoriteButton={true}
+        showFavoriteYellow={true}
+        showRating={true}
+        showFilterText={true}
+        restaurantTitle='შავი ლომი'
+        locationText='თბილისი'
+        showBookButton={true}
+        showDetailsButton={false}
+        descriptionText='გამორჩეული ატმოსფერო და უნიკალური კერძები. იდეალურია როგორც ოჯახური, ისე ბიზნეს შეხვედრებისთვის.'
+      />
+      <RestaurantCard
+        imageSrc='/RestaurantCardImage2.jpg'
+        variant='xl'
+        filterText='ქართული ფიუჟენი'
+        rating={4.8}
+        showFavoriteButton={true}
+        showFavoriteYellow={true}
+        showRating={true}
+        showFilterText={true}
+        restaurantTitle='შავი ლომი'
+        locationText='თბილისი'
+        showBookButton={true}
+        showDetailsButton={false}
+        descriptionText='გამორჩეული ატმოსფერო და უნიკალური კერძები. იდეალურია როგორც ოჯახური, ისე ბიზნეს შეხვედრებისთვის.'
+      />
+      <RestaurantCard
+        imageSrc='/RestaurantCardImage.jpg'
+        variant='compact'
+        filterText='ტრადიციული'
+        rating={4.5}
+        showFavoriteButton={false}
+        showFavoriteYellow={true}
+        showRating={true}
+        showFilterText={true}
+        restaurantTitle='ხინკლის სახლი'
+        locationText='თბილისი'
+        showBookButton={true}
+      />
     </>
   );
 }
