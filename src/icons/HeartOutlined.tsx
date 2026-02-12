@@ -5,7 +5,14 @@ type HeartOutlinedProps = {
 } & React.SVGProps<SVGSVGElement>;
 
 const HeartOutlined = ({ variant = 'outlined', ...props }: HeartOutlinedProps) => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={14} height={12} viewBox='-0.3 -0.3 15 13' fill='none' {...props}>
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width={14}
+    height={12}
+    viewBox='-0.3 -0.3 15 13'
+    fill='none'
+    {...props}
+  >
     <path
       fill={variant === 'filled' ? '#EC003F' : 'none'}
       stroke={variant === 'filled' ? '#EC003F' : '#EC003F'}
