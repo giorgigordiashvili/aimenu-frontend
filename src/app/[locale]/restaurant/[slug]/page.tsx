@@ -15,7 +15,6 @@ import {
   BackButton,
   SearchBar,
   CategoryList,
-  RestaurantInfo,
   TableIndicator,
   CategoryListSkeleton,
 } from '@/components';
@@ -296,13 +295,6 @@ export default function RestaurantDetailPage() {
           <BackButton />
           <PageTitle>{t.restaurant.menu}</PageTitle>
         </TitleSection>
-
-        <RestaurantInfo
-          name={restaurant.name}
-          description={`${restaurant.city || ''} • ${restaurant.description || ''}`}
-          logo={restaurant.logo}
-          rating={parseFloat(restaurant.average_rating || '0')}
-        />
 
         <SearchSection>
           <SearchBar
