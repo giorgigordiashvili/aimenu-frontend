@@ -5,9 +5,7 @@ export { default as CategoryList } from './CategoryList';
 export { default as CategoryTabs } from './CategoryTabs';
 export { default as ProductCard } from './ProductCard';
 export { default as CartButton } from './CartButton';
-export { default as RestaurantInfo } from './RestaurantInfo';
 export { default as ProductDetailModal } from './ProductDetailModal';
-export { default as RestaurantCard } from './RestaurantCard';
 export { default as TableIndicator } from './TableIndicator';
 export { default as LanguageSwitcher } from './LanguageSwitcher';
 export {
