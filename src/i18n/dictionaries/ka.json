@@ -81,5 +81,27 @@
     "createRestaurant": "რესტორნის შექმნა",
     "registrationFailed": "რეგისტრაცია ვერ მოხერხდა. სცადეთ თავიდან.",
     "restaurantCreationFailed": "რესტორნის შექმნა ვერ მოხერხდა. სცადეთ თავიდან."
+  },
+  "login": {
+    "back": "უკან",
+    "title": "კეთილი იყოს თქვენი დაბრუნება",
+    "subtitle": "შეიყვანეთ თქვენი მონაცემები ანგარიშზე წვდომისთვის",
+    "email": "ელფოსტა",
+    "emailPlaceholder": "შეიყვანეთ ელფოსტა",
+    "password": "პაროლი",
+    "passwordPlaceholder": "შეიყვანეთ პაროლი",
+    "rememberMe": "დამახსოვრება",
+    "forgotPassword": "დაგავიწყდათ პაროლი?",
+    "signIn": "შესვლა",
+    "noAccount": "არ გაქვთ ანგარიში?",
+    "signUp": "რეგისტრაცია",
+    "orContinueWith": "ან გააგრძელეთ",
+    "continueWithGoogle": "Google-ით გაგრძელება",
+    "continueWithFacebook": "Facebook-ით გაგრძელება",
+    "invalidEmail": "გთხოვთ შეიყვანოთ სწორი ელფოსტის მისამართი",
+    "passwordRequired": "პაროლი აუცილებელია",
+    "invalidCredentials": "არასწორი ელფოსტა ან პაროლი. სცადეთ თავიდან.",
+    "networkError": "ქსელის შეცდომა. გთხოვთ შეამოწმოთ კავშირი და სცადოთ თავიდან.",
+    "loginFailed": "შესვლა ვერ მოხერხდა. სცადეთ თავიდან."
   }
 }

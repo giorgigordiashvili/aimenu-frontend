@@ -81,5 +81,27 @@
     "createRestaurant": "Создать ресторан",
     "registrationFailed": "Регистрация не удалась. Попробуйте снова.",
     "restaurantCreationFailed": "Не удалось создать ресторан. Попробуйте снова."
+  },
+  "login": {
+    "back": "Назад",
+    "title": "Добро пожаловать",
+    "subtitle": "Введите данные для входа в аккаунт",
+    "email": "Эл. почта",
+    "emailPlaceholder": "Введите эл. почту",
+    "password": "Пароль",
+    "passwordPlaceholder": "Введите пароль",
+    "rememberMe": "Запомнить меня",
+    "forgotPassword": "Забыли пароль?",
+    "signIn": "Войти",
+    "noAccount": "Нет аккаунта?",
+    "signUp": "Зарегистрироваться",
+    "orContinueWith": "или продолжить с",
+    "continueWithGoogle": "Продолжить с Google",
+    "continueWithFacebook": "Продолжить с Facebook",
+    "invalidEmail": "Пожалуйста, введите корректный адрес эл. почты",
+    "passwordRequired": "Пароль обязателен",
+    "invalidCredentials": "Неверный email или пароль. Попробуйте снова.",
+    "networkError": "Ошибка сети. Проверьте подключение и попробуйте снова.",
+    "loginFailed": "Вход не удался. Попробуйте снова."
   }
 }
