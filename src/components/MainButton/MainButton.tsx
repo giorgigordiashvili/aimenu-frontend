@@ -18,6 +18,7 @@ type Props = {
   icon?: IconComponent;
   rounded?: boolean;
   fullWidth?: boolean;
+  type?: 'button' | 'submit' | 'reset';
   onClick?: () => void;
 };
 
@@ -142,12 +143,14 @@ function MainButton({
   icon: Icon,
   rounded,
   fullWidth,
+  type = 'button',
   onClick,
 }: Props) {
   return (
     <DefaultButton
       variant={variant}
       size={size}
+      type={type}
       onClick={onClick}
       style={{
         ...(Icon ? { display: 'flex', alignItems: 'center', gap: 6 } : {}),
