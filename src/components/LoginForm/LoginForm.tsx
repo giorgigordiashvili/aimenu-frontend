@@ -155,7 +155,9 @@ export default function LoginForm({ locale }: LoginFormProps) {
           </Field>
 
           <RememberRow>
-            <div onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}>
+            <div
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}
+            >
               <CheckboxWithText label={t.login.rememberMe} />
             </div>
           </RememberRow>
@@ -163,7 +165,12 @@ export default function LoginForm({ locale }: LoginFormProps) {
           <ResponsiveButton
             style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
           >
-            <MainButton variant='rose_cta' fullWidth type='submit' title={isLoading ? '...' : t.login.signIn} />
+            <MainButton
+              variant='rose_cta'
+              fullWidth
+              type='submit'
+              title={isLoading ? '...' : t.login.signIn}
+            />
           </ResponsiveButton>
         </Form>
 
