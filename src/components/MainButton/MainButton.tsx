@@ -14,14 +14,19 @@ type Variant =
 type Props = {
   variant?: Variant;
   title?: string;
-  size?: 'small' | 'default' | 'large';
+  size?: 'small' | 'default' | 'large' | 'extra_small';
   icon?: IconComponent;
   rounded?: boolean;
+  fullWidth?: boolean;
+  onClick?: () => void;
 };
 
 type IconComponent = React.ComponentType;
 
-const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'default' | 'large' }>({
+const DefaultButton = styled('button')<{
+  variant: Variant;
+  size: 'small' | 'default' | 'large' | 'extra_small';
+}>({
   padding: '8px 16px',
   borderRadius: '8px',
   border: 'none',
@@ -105,6 +110,17 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
       },
     },
     {
+      props: { size: 'extra_small' },
+      style: {
+        padding: '2px 4px',
+        fontSize: '12px',
+        fontFamily: 'Inter',
+        lineHeight: '16px',
+        letterSpacing: '0',
+        fontWeight: 400,
+      },
+    },
+    {
       props: { size: 'small' },
       style: {
         padding: '6px 12px',
@@ -119,14 +135,24 @@ const DefaultButton = styled('button')<{ variant: Variant; size: 'small' | 'defa
   ],
 });
 
-function MainButton({ title, variant = 'default', size = 'default', icon: Icon, rounded }: Props) {
+function MainButton({
+  title,
+  variant = 'default',
+  size = 'default',
+  icon: Icon,
+  rounded,
+  fullWidth,
+  onClick,
+}: Props) {
   return (
     <DefaultButton
       variant={variant}
       size={size}
+      onClick={onClick}
       style={{
         ...(Icon ? { display: 'flex', alignItems: 'center', gap: 6 } : {}),
         ...(rounded ? { borderRadius: 50 } : {}),
+        ...(fullWidth ? { width: '100%' } : {}),
       }}
     >
       {Icon ? (
