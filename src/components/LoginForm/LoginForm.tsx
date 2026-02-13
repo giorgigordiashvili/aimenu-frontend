@@ -154,12 +154,10 @@ export default function LoginForm({ locale }: LoginFormProps) {
             <ForgotLink href={`/${locale}/forgot-password`}>{t.login.forgotPassword}</ForgotLink>
           </Field>
 
-          <RememberRow>
-            <div
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}
-            >
-              <CheckboxWithText label={t.login.rememberMe} />
-            </div>
+          <RememberRow
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}
+          >
+            <CheckboxWithText label={t.login.rememberMe} />
           </RememberRow>
 
           <ResponsiveButton
