@@ -23,8 +23,10 @@ import { FavoriteYellow, PriceWrapper, RestaurantCardProps } from './shared';
 const XlContainer = styled('div')({
   display: 'flex',
   flexDirection: 'row',
-  width: '1120px',
-  height: '561px',
+  maxWidth: '1120px',
+  width: '100%',
+  maxHeight: '561px',
+  height: '100%',
   borderRadius: radiusMd,
   border: `1px solid ${border}`,
   overflow: 'hidden',
@@ -161,7 +163,7 @@ export default function XlVariant({
   return (
     <XlContainer>
       <XlImageContainer>
-        <XlImage src={imageSrc} alt='Restaurant' />
+        <XlImage src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
         {showFavoriteYellow && (
           <XlFavoriteYellowOverlay>
             <FavoriteYellow>

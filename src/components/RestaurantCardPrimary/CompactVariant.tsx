@@ -137,7 +137,7 @@ export default function CompactVariant({
   return (
     <CompactContainer>
       <CompactImageContainer>
-        <CompactImage src={imageSrc} alt='Restaurant' />
+        <CompactImage src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
         {showFavoriteYellow && (
           <CompactFavoriteYellowOverlay>
             <FavoriteYellow>

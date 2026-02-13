@@ -1,10 +1,15 @@
 'use client';
 
+import { notFound } from 'next/navigation';
 import React from 'react';
 
 import RestaurantCard from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 
 function Page() {
+  if (process.env.NODE_ENV === 'production') {
+    notFound();
+  }
+
   return (
     <>
       <RestaurantCard

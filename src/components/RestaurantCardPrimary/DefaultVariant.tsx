@@ -153,7 +153,7 @@ export default function DefaultVariant({
   return (
     <ContentGroup>
       <ContentTop>
-        <Image src={imageSrc} alt='Restaurant' />
+        <Image src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
         <FavoriteGroup>
           {showFavoriteYellow && (
             <FavoriteYellow>

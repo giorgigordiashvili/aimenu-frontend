@@ -19,11 +19,13 @@ export const FavoriteYellow = styled('div')({
   gap: '8px',
 });
 
-export const FavoriteButton = styled('div')({
+export const FavoriteButton = styled('button')({
   width: '32px',
   height: '32px',
   borderRadius: '50%',
   cursor: 'pointer',
+  border: 'none',
+  padding: 0,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
