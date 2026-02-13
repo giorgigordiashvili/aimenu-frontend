@@ -1,8 +1,14 @@
 import * as React from 'react';
-const SvgComponent = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
+
+type ArrowProps = {
+  color?: string;
+  size?: number;
+};
+
+const ArrowIcon = ({ color = '#62748E', size = 16 }: ArrowProps) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width={size} height={size} fill='none'>
     <path
-      stroke='#62748E'
+      stroke={color}
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}
@@ -10,4 +16,4 @@ const SvgComponent = () => (
     />
   </svg>
 );
-export default SvgComponent;
+export default ArrowIcon;

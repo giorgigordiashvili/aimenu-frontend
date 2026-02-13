@@ -116,6 +116,11 @@ export const ResponsiveButton = styled('div')({
   },
 });
 
+export const RememberRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
 export const Divider = styled('div')({
   display: 'flex',
   alignItems: 'center',

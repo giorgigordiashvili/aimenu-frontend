@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { authLoginCreate } from '@/api/generated';
+import CheckboxWithText from '@/components/Checkbox/Checkbox';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { getDictionary } from '@/i18n/getDictionary';
@@ -29,6 +30,7 @@ import {
   Header,
   LoginFormProps,
   Page,
+  RememberRow,
   ResponsiveButton,
   SocialButtonWrapper,
   SocialRow,
@@ -42,6 +44,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -74,8 +77,9 @@ export default function LoginForm({ locale }: LoginFormProps) {
 
       const { access, refresh } = response as { access: string; refresh: string };
 
-      sessionStorage.setItem('access', access);
-      sessionStorage.setItem('refresh', refresh);
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem('access', access);
+      storage.setItem('refresh', refresh);
 
       router.push(`/${locale}`);
     } catch (err: unknown) {
@@ -150,10 +154,16 @@ export default function LoginForm({ locale }: LoginFormProps) {
             <ForgotLink href={`/${locale}/forgot-password`}>{t.login.forgotPassword}</ForgotLink>
           </Field>
 
+          <RememberRow>
+            <div onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}>
+              <CheckboxWithText label={t.login.rememberMe} />
+            </div>
+          </RememberRow>
+
           <ResponsiveButton
             style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
           >
-            <MainButton variant='rose_cta' fullWidth title={isLoading ? '...' : t.login.signIn} />
+            <MainButton variant='rose_cta' fullWidth type='submit' title={isLoading ? '...' : t.login.signIn} />
           </ResponsiveButton>
         </Form>
 
