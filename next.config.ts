@@ -38,22 +38,47 @@ const nextConfig: NextConfig = {
 export default withPigment(nextConfig, {
   theme: {
     colors: {
-      background: '#f8fafc',
-      foreground: '#0f172a',
-      primary: '#ec003f',
-      primaryLight: '#fff1f2',
-      secondary: '#7ccf00',
-      gray: {
-        100: '#f1f5f9',
-        200: '#e2e8f0',
-        400: '#9c9c9c',
-        500: '#62748e',
+      background: '#F8FAFC',
+      foreground: '#0F172B',
+      primary: '#EC003F',
+      primaryLight: '#FFF1F2',
+      secondary: '#7CCF00',
+      white: '#FFFFFF',
+      slate: {
+        50: '#F8FAFC',
+        100: '#F1F5F9',
+        200: '#E2E8F0',
+        500: '#62748E',
+        600: '#475569',
+        900: '#0F172B',
       },
-      white: '#ffffff',
+      rose: {
+        600: '#EC003F',
+        700: '#BE123C',
+      },
+      yellow: {
+        500: '#F0B100',
+      },
+      green: {
+        600: '#16A34A',
+      },
+      red: {
+        600: '#DC2626',
+      },
+      sky: {
+        600: '#0284C7',
+      },
+      gray: {
+        100: '#F1F5F9',
+        200: '#E2E8F0',
+        400: '#9C9C9C',
+        500: '#62748E',
+      },
     },
     shadows: {
       sm: '0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)',
       md: '0px 16px 16px -8px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05)',
+      card: '0px 4px 6px -4px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1)',
     },
     borderRadius: {
       sm: '8px',
