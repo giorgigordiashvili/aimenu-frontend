@@ -177,10 +177,10 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
           <Field>
             <TextInput
               label={t.passwordReset.newPassword}
-              id="new-password"
-              type="password"
+              id='new-password'
+              type='password'
               placeholder={t.passwordReset.newPasswordPlaceholder}
-              autoComplete="new-password"
+              autoComplete='new-password'
               required
               value={password}
               errorMessage={errors.password}
@@ -195,10 +195,10 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
           <Field>
             <TextInput
               label={t.passwordReset.confirmPassword}
-              id="confirm-password"
-              type="password"
+              id='confirm-password'
+              type='password'
               placeholder={t.passwordReset.confirmPasswordPlaceholder}
-              autoComplete="new-password"
+              autoComplete='new-password'
               required
               value={confirmPassword}
               errorMessage={errors.confirmPassword}
@@ -215,9 +215,9 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
             style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
           >
             <MainButton
-              variant="rose_cta"
+              variant='rose_cta'
               fullWidth
-              type="submit"
+              type='submit'
               title={isLoading ? '...' : t.passwordReset.resetPassword}
             />
           </ResponsiveButton>
