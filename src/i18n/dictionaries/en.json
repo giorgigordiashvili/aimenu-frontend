@@ -103,5 +103,33 @@
     "invalidCredentials": "Invalid email or password. Please try again.",
     "networkError": "Network error. Please check your connection and try again.",
     "loginFailed": "Login failed. Please try again."
+  },
+  "passwordReset": {
+    "back": "Back",
+    "requestTitle": "Reset Password",
+    "requestSubtitle": "Enter your email address and we'll send you a link to reset your password",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "sendLink": "Send Reset Link",
+    "backToLogin": "Back to Login",
+    "successTitle": "Check Your Email",
+    "successSubtitle": "We've sent a password reset link to your email address. Please check your inbox.",
+    "invalidEmail": "Please enter a valid email address",
+    "emailNotFound": "No account found with this email address",
+    "requestFailed": "Failed to send reset link. Please try again.",
+    "networkError": "Network error. Please check your connection and try again.",
+    "confirmTitle": "Set New Password",
+    "confirmSubtitle": "Enter your new password below",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm new password",
+    "resetPassword": "Reset Password",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "invalidToken": "Invalid or expired reset link. Please request a new one.",
+    "resetSuccess": "Password reset successfully! You can now log in with your new password.",
+    "resetFailed": "Failed to reset password. Please try again."
   }
 }

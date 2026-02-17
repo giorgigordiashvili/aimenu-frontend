@@ -151,7 +151,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
                 if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
               }}
             />
-            <ForgotLink href={`/${locale}/forgot-password`}>{t.login.forgotPassword}</ForgotLink>
+            <ForgotLink href={`/${locale}/password-reset`}>{t.login.forgotPassword}</ForgotLink>
           </Field>
 
           <RememberRow

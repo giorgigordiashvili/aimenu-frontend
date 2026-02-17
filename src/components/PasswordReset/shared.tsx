@@ -8,13 +8,14 @@ import * as tokens from '@/tokens';
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export interface LoginFormProps {
+export interface PasswordResetProps {
   locale: Locale;
 }
 
 export interface FormErrors {
   email?: string;
   password?: string;
+  confirmPassword?: string;
 }
 
 export const Page = styled('div')({
@@ -93,64 +94,7 @@ export const Field = styled('div')({
   gap: '6px',
 });
 
-export const ForgotLink = styled(Link)({
-  display: 'block',
-  textAlign: 'right',
-  fontSize: '14px',
-  fontWeight: 500,
-  color: tokens.muted,
-  textDecoration: 'none',
-  marginTop: '8px',
-  '&:hover': {
-    textDecoration: 'underline',
-  },
-});
-
 export const ResponsiveButton = styled('div')({
-  '& button': {
-    justifyContent: 'center',
-  },
-  '@media (max-width: 768px)': {
-    '& button': {
-      padding: '10px 24px',
-    },
-  },
-});
-
-export const RememberRow = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-});
-
-export const Divider = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-  margin: '24px 0',
-});
-
-export const DividerLine = styled('div')({
-  flex: 1,
-  height: '1px',
-  background: tokens.border,
-});
-
-export const DividerText = styled('span')({
-  fontSize: '14px',
-  color: tokens.muted,
-  whiteSpace: 'nowrap',
-});
-
-export const SocialRow = styled('div')({
-  display: 'flex',
-  gap: '12px',
-  '@media (max-width: 400px)': {
-    flexDirection: 'column',
-  },
-});
-
-export const SocialButtonWrapper = styled('div')({
-  flex: 1,
   '& button': {
     justifyContent: 'center',
   },
@@ -183,4 +127,29 @@ export const AlertBox = styled('div')({
   borderRadius: tokens.radiusSm,
   fontSize: '14px',
   lineHeight: '20px',
+});
+
+export const SuccessBox = styled('div')({
+  background: `${tokens.green600}0D`,
+  color: tokens.green600,
+  padding: '12px 16px',
+  borderRadius: tokens.radiusSm,
+  fontSize: '14px',
+  lineHeight: '20px',
+});
+
+export const SuccessIcon = styled('div')({
+  width: '64px',
+  height: '64px',
+  borderRadius: '50%',
+  background: `${tokens.green600}1A`,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: '0 auto 24px',
+  '& svg': {
+    width: '32px',
+    height: '32px',
+    color: tokens.green600,
+  },
 });
