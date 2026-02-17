@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import { PasswordResetConfirm } from '@/components/PasswordReset';
 import { Locale, isValidLocale } from '@/i18n/config';
@@ -33,5 +34,9 @@ export default async function PasswordResetConfirmPage({ params }: PasswordReset
     notFound();
   }
 
-  return <PasswordResetConfirm locale={locale as Locale} />;
+  return (
+    <Suspense fallback={null}>
+      <PasswordResetConfirm locale={locale as Locale} />
+    </Suspense>
+  );
 }
