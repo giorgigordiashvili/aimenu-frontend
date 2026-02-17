@@ -6,10 +6,12 @@ import { Inter, Noto_Sans_Georgian } from 'next/font/google';
 import { notFound } from 'next/navigation';
 
 import ClarityProvider from '@/components/ClarityProvider';
+import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import { LocaleProvider } from '@/context/LocaleContext';
 import { TableProvider } from '@/context/TableContext';
 import { locales, Locale, isValidLocale } from '@/i18n/config';
+import '@/lib/axiosInterceptor';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -57,11 +59,14 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={locale} className={`${inter.variable} ${notoSansGeorgian.variable}`}>
       <body>
         <ClarityProvider />
-        <LocaleProvider locale={locale as Locale}>
-          <TableProvider>
-            <CartProvider>{children}</CartProvider>
-          </TableProvider>
-        </LocaleProvider>
+
+        <AuthProvider>
+          <LocaleProvider locale={locale as Locale}>
+            <TableProvider>
+              <CartProvider>{children}</CartProvider>
+            </TableProvider>
+          </LocaleProvider>
+        </AuthProvider>
       </body>
     </html>
   );

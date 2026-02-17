@@ -8,6 +8,7 @@ import { authLoginCreate } from '@/api/generated';
 import CheckboxWithText from '@/components/Checkbox/Checkbox';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
+import { useAuth } from '@/context/AuthContext';
 import { getDictionary } from '@/i18n/getDictionary';
 import ArrowIcon from '@/icons/Arrow';
 import EyeIcon from '@/icons/Eye';
@@ -40,6 +41,7 @@ import {
 
 export default function LoginForm({ locale }: LoginFormProps) {
   const router = useRouter();
+  const { login } = useAuth();
   const t = getDictionary(locale);
 
   const [email, setEmail] = useState('');
@@ -77,9 +79,13 @@ export default function LoginForm({ locale }: LoginFormProps) {
 
       const { access, refresh } = response as { access: string; refresh: string };
 
-      const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem('access', access);
-      storage.setItem('refresh', refresh);
+      // Use AuthContext login to set tokens and fetch user
+      await login({ access, refresh });
+
+      // Also set sessionStorage if rememberMe is false (for session-only persistence)
+      if (!rememberMe) {
+        sessionStorage.setItem('session_only', 'true');
+      }
 
       router.push(`/${locale}`);
     } catch (err: unknown) {
