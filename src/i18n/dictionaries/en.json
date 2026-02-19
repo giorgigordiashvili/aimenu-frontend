@@ -131,5 +131,23 @@
     "invalidToken": "Invalid or expired reset link. Please request a new one.",
     "resetSuccess": "Password reset successfully! You can now log in with your new password.",
     "resetFailed": "Failed to reset password. Please try again."
+  },
+  "restaurantDetail": {
+    "photos": "Photos",
+    "viewPhotos": "View Photos",
+    "amenities": "Amenities",
+    "additionalInfo": "Additional Information",
+    "workingHours": "Working Hours",
+    "mondayFriday": "Mon-Fri",
+    "phone": "Phone",
+    "priceRange": "Moderate",
+    "openNow": "Open Now",
+    "closed": "Closed",
+    "viewOnMap": "View on Map",
+    "call": "Call",
+    "website": "Website",
+    "reviews": "Reviews",
+    "failedToLoad": "Failed to load restaurant details",
+    "notFound": "Restaurant not found"
   }
 }
