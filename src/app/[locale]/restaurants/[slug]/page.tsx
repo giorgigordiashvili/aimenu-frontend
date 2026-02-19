@@ -10,7 +10,8 @@ import { Header } from '@/components';
 import ContactInfo from '@/components/ContactInfo';
 import PhotoGallery from '@/components/PhotoGallery';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
-import { useLocale } from '@/context/LocaleContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { primary } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
 const Page = styled('div')({
@@ -27,30 +28,92 @@ const Main = styled('main')({
   },
 });
 
+const LoadingContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: '400px',
+});
+
+const Spinner = styled('div')({
+  width: '40px',
+  height: '40px',
+  border: `3px solid #e2e8f0`,
+  borderTop: `3px solid ${primary}`,
+  borderRadius: '50%',
+  animation: 'spin 0.8s linear infinite',
+  '@keyframes spin': {
+    '0%': { transform: 'rotate(0deg)' },
+    '100%': { transform: 'rotate(360deg)' },
+  },
+});
+
+const ErrorContainer = styled('div')({
+  textAlign: 'center',
+  padding: '40px 20px',
+  minHeight: '400px',
+});
+
+const ErrorText = styled('p')({
+  fontSize: '16px',
+  color: primary,
+  marginBottom: '20px',
+});
+
 export default function RestaurantDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
   const { locale } = useLocale();
+  const t = useTranslations();
 
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchRestaurant() {
       try {
+        setLoading(true);
         const data = await restaurantsRetrieve(slug);
         setRestaurant(data);
+        setError(null);
       } catch (err) {
         console.error('Failed to fetch restaurant:', err);
+        setError(t.restaurantDetail.failedToLoad);
+      } finally {
+        setLoading(false);
       }
     }
 
     if (slug) {
       fetchRestaurant();
     }
-  }, [slug]);
+  }, [slug, t.restaurantDetail.failedToLoad]);
 
-  if (!restaurant) {
-    return null;
+  if (loading) {
+    return (
+      <Page>
+        <Header />
+        <Main>
+          <LoadingContainer>
+            <Spinner />
+          </LoadingContainer>
+        </Main>
+      </Page>
+    );
+  }
+
+  if (error || !restaurant) {
+    return (
+      <Page>
+        <Header />
+        <Main>
+          <ErrorContainer>
+            <ErrorText>{error || t.restaurantDetail.notFound}</ErrorText>
+          </ErrorContainer>
+        </Main>
+      </Page>
+    );
   }
 
   // Prepare images array

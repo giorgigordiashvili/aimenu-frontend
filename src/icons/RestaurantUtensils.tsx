@@ -1,8 +1,11 @@
 import * as React from 'react';
+
+import { iconStroke } from '@/tokens';
+
 const RestaurantUtensils = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
     <g
-      stroke='#90A1B9'
+      stroke={iconStroke}
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}

@@ -1,8 +1,11 @@
 import * as React from 'react';
+
+import { muted } from '@/tokens';
+
 const Share = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
     <g
-      stroke='#62748E'
+      stroke={muted}
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}
