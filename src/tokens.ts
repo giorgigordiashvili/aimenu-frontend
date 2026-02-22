@@ -4,6 +4,7 @@
  */
 
 // ── Slate ────────────────────────────────────────────────────────────────
+export const slate25 = '#FBFDFD';
 export const slate50 = '#F8FAFC';
 export const slate100 = '#F1F5F9';
 export const slate200 = '#E2E8F0';
@@ -17,6 +18,8 @@ export const slate900 = '#0F172B';
 export const iconStroke = '#90A1B9';
 
 // ── Rose ─────────────────────────────────────────────────────────────────
+export const rose50 = '#FFF0F3';
+export const rose100 = '#FFE0E8';
 export const rose600 = '#EC003F';
 export const rose700 = '#BE123C';
 
@@ -24,6 +27,8 @@ export const rose700 = '#BE123C';
 export const yellow500 = '#F0B100';
 
 // ── Green ────────────────────────────────────────────────────────────────
+export const green50 = '#F0FDF4';
+export const green500 = '#8CC63E';
 export const green600 = '#16A34A';
 export const lime500 = '#9AE600';
 

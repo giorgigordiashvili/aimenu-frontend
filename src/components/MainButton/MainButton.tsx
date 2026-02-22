@@ -9,13 +9,16 @@ type Variant =
   | 'secondary'
   | 'ghost'
   | 'rose_cta'
-  | 'slate_cta';
+  | 'slate_cta'
+  | 'green_cta';
 
 type Props = {
   variant?: Variant;
   title?: string;
   size?: 'small' | 'default' | 'large' | 'extra_small';
   icon?: IconComponent;
+  iconGap?: number;
+  iconPosition?: 'left' | 'right';
   rounded?: boolean;
   fullWidth?: boolean;
   type?: 'button' | 'submit' | 'reset';
@@ -111,6 +114,16 @@ const DefaultButton = styled('button')<{
       },
     },
     {
+      props: { variant: 'green_cta' },
+      style: {
+        backgroundColor: '#8CC63E',
+        color: '#ffffff',
+        '&:hover': {
+          backgroundColor: '#7AB234',
+        },
+      },
+    },
+    {
       props: { size: 'extra_small' },
       style: {
         padding: '2px 4px',
@@ -141,11 +154,19 @@ function MainButton({
   variant = 'default',
   size = 'default',
   icon: Icon,
+  iconGap = 6,
+  iconPosition = 'left',
   rounded,
   fullWidth,
   type = 'button',
   onClick,
 }: Props) {
+  const iconEl = Icon ? (
+    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Icon />
+    </span>
+  ) : null;
+
   return (
     <DefaultButton
       variant={variant}
@@ -153,26 +174,16 @@ function MainButton({
       type={type}
       onClick={onClick}
       style={{
-        ...(Icon ? { display: 'flex', alignItems: 'center', gap: 6 } : {}),
+        ...(Icon
+          ? { display: 'flex', alignItems: 'center', gap: iconGap, justifyContent: 'center' }
+          : {}),
         ...(rounded ? { borderRadius: 50 } : {}),
         ...(fullWidth ? { width: '100%' } : {}),
       }}
     >
-      {Icon ? (
-        <span
-          style={{
-            width: 16,
-            height: 16,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Icon />
-        </span>
-      ) : null}
-
+      {iconPosition === 'left' ? iconEl : null}
       {title}
+      {iconPosition === 'right' ? iconEl : null}
     </DefaultButton>
   );
 }
