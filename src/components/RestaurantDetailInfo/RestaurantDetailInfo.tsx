@@ -8,7 +8,7 @@ import MainButton from '@/components/MainButton/MainButton';
 import TagButton from '@/components/TagButton';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
-import Checkmark from '@/icons/Checkmark';
+import ChefHat from '@/icons/ChefHat';
 import HeartOutline from '@/icons/HeartOutline';
 import Location from '@/icons/Location';
 import RestaurantUtensils from '@/icons/RestaurantUtensils';
@@ -271,7 +271,7 @@ export default function RestaurantDetailInfo({
           {amenities.slice(0, 3).map(amenity => {
             const amenityName =
               getTranslation(amenity.translations, 'name', locale) || amenity.slug;
-            return <TagButton key={amenity.id} icon={Checkmark} text={amenityName} size='small' />;
+            return <TagButton key={amenity.id} icon={ChefHat} text={amenityName} size='small' />;
           })}
         </AmenitiesRow>
       )}
