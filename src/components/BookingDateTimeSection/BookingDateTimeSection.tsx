@@ -3,7 +3,7 @@
 import { styled } from '@pigment-css/react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useTranslations } from '@/context/LocaleContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
 import {
   background,
@@ -35,24 +35,7 @@ type Props = {
   maxGuests?: number;
 };
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-const DAY_NAMES_SHORT = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -60,13 +43,6 @@ function getDaysInMonth(year: number, month: number) {
 
 function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
-}
-
-function formatDisplayDate(d: Date) {
-  const day = d.getDate();
-  const month = MONTH_NAMES[d.getMonth()].slice(0, 3);
-  const year = d.getFullYear();
-  return `${day} ${month}, ${year}`;
 }
 
 // ─── Styled components ────────────────────────────────────────────────────────
@@ -403,6 +379,17 @@ export default function BookingDateTimeSection({
   maxGuests = 20,
 }: Props) {
   const t = useTranslations();
+  const { locale } = useLocale();
+
+  // Locale-aware date formatters (no state dependency)
+  const formatDisplayDate = (d: Date) =>
+    new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(d);
+
+  // Sunday-first day names (Jan 7 2024 = Sunday)
+  const dayNamesShort = Array.from({ length: 7 }, (_, i) =>
+    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, 7 + i))
+  );
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -412,6 +399,12 @@ export default function BookingDateTimeSection({
   const [showCalendar, setShowCalendar] = useState(false);
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  // Depends on viewYear/viewMonth state
+  const monthYearLabel = new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(viewYear, viewMonth, 1));
   const calendarRef = useRef<HTMLDivElement>(null);
 
   const [showTimePanel, setShowTimePanel] = useState(false);
@@ -503,17 +496,15 @@ export default function BookingDateTimeSection({
                 <CalNavBtn type='button' onClick={() => navigateMonth(-1)}>
                   ‹
                 </CalNavBtn>
-                <CalMonthYear>
-                  {MONTH_NAMES[viewMonth]} {viewYear}
-                </CalMonthYear>
+                <CalMonthYear>{monthYearLabel}</CalMonthYear>
                 <CalNavBtn type='button' onClick={() => navigateMonth(1)}>
                   ›
                 </CalNavBtn>
               </CalHeader>
 
               <CalGrid>
-                {DAY_NAMES_SHORT.map(d => (
-                  <CalDayName key={d}>{d}</CalDayName>
+                {dayNamesShort.map((d, i) => (
+                  <CalDayName key={i}>{d}</CalDayName>
                 ))}
 
                 {Array.from({ length: getFirstDayOfMonth(viewYear, viewMonth) }).map((_, i) => (

@@ -1,8 +1,11 @@
 import * as React from 'react';
+
+import { foreground } from '@/tokens';
+
 const CloseIcon = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
     <path
-      stroke='#0F172B'
+      stroke={foreground}
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}

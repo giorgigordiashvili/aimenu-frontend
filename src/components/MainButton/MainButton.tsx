@@ -2,6 +2,8 @@
 
 import { styled } from '@pigment-css/react';
 
+import { green500, lime600 } from '@/tokens';
+
 type Variant =
   | 'default'
   | 'destructive'
@@ -116,10 +118,10 @@ const DefaultButton = styled('button')<{
     {
       props: { variant: 'green_cta' },
       style: {
-        backgroundColor: '#8CC63E',
+        backgroundColor: green500,
         color: '#ffffff',
         '&:hover': {
-          backgroundColor: '#7AB234',
+          backgroundColor: lime600,
         },
       },
     },

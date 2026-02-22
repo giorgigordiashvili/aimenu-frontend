@@ -31,6 +31,7 @@ export const green50 = '#F0FDF4';
 export const green500 = '#8CC63E';
 export const green600 = '#16A34A';
 export const lime500 = '#9AE600';
+export const lime600 = '#7AB234';
 
 // ── Red ──────────────────────────────────────────────────────────────────
 export const red600 = '#DC2626';

@@ -20,20 +20,16 @@ export default function BookingPage() {
     }
   }, [slug]);
 
-  // TODO: remove fallbacks before production
-  const name = restaurant?.name ?? 'შავი ლომი';
-  const subtitle = restaurant?.city ?? 'თბილისი';
-  const rating = restaurant ? parseFloat(restaurant.average_rating) : 4.8;
-  const image = restaurant?.cover_image ?? restaurant?.logo ?? '/demo/RestaurantCardImage.jpg';
-
   return (
     <BookingForm
       slug={slug}
       onClose={() => router.back()}
-      restaurantName={name}
-      restaurantImage={image}
-      restaurantRating={rating}
-      restaurantSubtitle={subtitle}
+      restaurantName={restaurant?.name}
+      restaurantImage={
+        restaurant?.cover_image ?? restaurant?.logo ?? '/demo/RestaurantCardImage.jpg'
+      }
+      restaurantRating={restaurant ? parseFloat(restaurant.average_rating) : undefined}
+      restaurantSubtitle={restaurant?.city}
     />
   );
 }

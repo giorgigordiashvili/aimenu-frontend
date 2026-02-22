@@ -1,9 +1,12 @@
 import * as React from 'react';
+
+import { slate600 } from '@/tokens';
+
 const EditIcon = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width={12} height={12} fill='none'>
     <g clipPath='url(#a)'>
       <path
-        stroke='#45556C'
+        stroke={slate600}
         strokeLinecap='round'
         strokeLinejoin='round'
         strokeWidth={1.3}

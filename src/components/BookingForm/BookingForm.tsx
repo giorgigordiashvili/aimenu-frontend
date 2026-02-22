@@ -27,6 +27,7 @@ type BookingFormProps = {
 };
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
+// TODO: replace with cart/order data from API
 
 const MOCK_ORDER_ITEMS: OrderItem[] = [
   { id: '1', quantity: 3, name: 'სალათი ცეზარი', price: 54.0 },
@@ -40,6 +41,7 @@ const MOCK_ORDER_ITEMS: OrderItem[] = [
   { id: '3', quantity: 3, name: 'სუპი ხარჩო', price: 12.0 },
 ];
 
+// TODO: replace with deposit amount from API
 const DEPOSIT_AMOUNT = 10.0;
 
 const DEFAULT_MAX_ADVANCE_DAYS = 60;
