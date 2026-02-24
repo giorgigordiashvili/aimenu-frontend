@@ -6,7 +6,7 @@ import MainButton from '@/components/MainButton/MainButton';
 import { useTranslations } from '@/context/LocaleContext';
 import InvitePeopleIcon from '@/icons/InvitePeople';
 import SuccessIcon from '@/icons/Success';
-import { foreground, slate100, slate50, slate500, slate950 } from '@/tokens';
+import { foreground, rose600, rose700, slate100, slate50, slate500, slate950 } from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -102,7 +102,7 @@ const InviteButton = styled('button')({
   padding: '10px 24px',
   border: 'none',
   borderRadius: '50px',
-  backgroundColor: '#EC003F',
+  backgroundColor: rose600,
   color: '#ffffff',
   fontSize: '14px',
   fontFamily: 'Inter',
@@ -110,7 +110,7 @@ const InviteButton = styled('button')({
   lineHeight: '20px',
   letterSpacing: '-0.15px',
   cursor: 'pointer',
-  '&:hover': { backgroundColor: '#BE123C' },
+  '&:hover': { backgroundColor: rose700 },
 });
 
 const InviteIconWrap = styled('span')({
@@ -149,6 +149,8 @@ export default function BookingSuccessPanel({ reservationId, onGoHome, onMyReser
           onClick={() => {
             if (navigator.share) {
               navigator.share({ title: t.booking.successTitle, text: code ?? '' }).catch(() => {});
+            } else {
+              navigator.clipboard.writeText(code ?? '').catch(() => {});
             }
           }}
         >

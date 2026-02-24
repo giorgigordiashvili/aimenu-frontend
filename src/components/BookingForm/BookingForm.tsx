@@ -4,7 +4,6 @@ import { styled } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
-import { reservationsCreateCreate } from '@/api/generated/api';
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
 import BookingDateTimeSection from '@/components/BookingDateTimeSection/BookingDateTimeSection';
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
@@ -46,9 +45,7 @@ const MOCK_ORDER_ITEMS: OrderItem[] = [
   { id: '3', quantity: 3, name: 'სუპი ხარჩო', price: 12.0 },
 ];
 
-// TODO: replace with deposit amount from API
-const DEPOSIT_AMOUNT = 10.0;
-
+const DEFAULT_depositAmount = 10.0;
 const DEFAULT_MAX_ADVANCE_DAYS = 60;
 const DEFAULT_MIN_GUESTS = 1;
 const DEFAULT_MAX_GUESTS = 20;
@@ -313,6 +310,7 @@ export default function BookingForm({
   const [maxAdvanceDays, setMaxAdvanceDays] = useState(DEFAULT_MAX_ADVANCE_DAYS);
   const [minGuests, setMinGuests] = useState(DEFAULT_MIN_GUESTS);
   const [maxGuests, setMaxGuests] = useState(DEFAULT_MAX_GUESTS);
+  const [depositAmount, setDepositAmount] = useState(DEFAULT_depositAmount);
 
   // Fetch reservation settings
   useEffect(() => {
@@ -327,6 +325,8 @@ export default function BookingForm({
           setMinGuests(d.min_party_size);
         if (d?.max_party_size !== null && d?.max_party_size !== undefined)
           setMaxGuests(d.max_party_size);
+        if (d?.deposit_amount !== null && d?.deposit_amount !== undefined)
+          setDepositAmount(parseFloat(d.deposit_amount));
       })
       .catch(() => {});
   }, [slug]);
@@ -362,7 +362,7 @@ export default function BookingForm({
     setPaymentError(null);
 
     try {
-      const result = await reservationsCreateCreate({
+      const result = await axiosInstance.post<{ id?: string }>('/api/v1/reservations/create/', {
         guest_name: name,
         guest_phone: phone,
         guest_email: email || undefined,
@@ -370,9 +370,10 @@ export default function BookingForm({
         reservation_time: time,
         party_size: guests,
         special_requests: notes || undefined,
+        ...(slug ? { restaurant_slug: slug } : {}),
       });
 
-      const id = (result as unknown as { id?: string }).id ?? null;
+      const id = result.data.id ?? null;
       setReservationId(id);
       setMobileStep('success');
     } catch (_err) {
@@ -416,7 +417,7 @@ export default function BookingForm({
               minGuests={minGuests}
               maxGuests={maxGuests}
             />
-            <BookingOrderSummary items={MOCK_ORDER_ITEMS} depositAmount={DEPOSIT_AMOUNT} />
+            <BookingOrderSummary items={MOCK_ORDER_ITEMS} depositAmount={depositAmount} />
 
             {/* Contact form — mobile only */}
             <MobileContactSection>
@@ -437,7 +438,7 @@ export default function BookingForm({
 
           {/* ── Right panel — desktop only, self-contained ───────────────── */}
           <BookingRightPanel
-            depositAmount={DEPOSIT_AMOUNT}
+            depositAmount={depositAmount}
             name={name}
             phone={phone}
             email={email}
@@ -484,8 +485,8 @@ export default function BookingForm({
 
           <OverlayContent>
             <BookingPaymentForm
-              depositAmount={DEPOSIT_AMOUNT}
-              savedCard={{ last4: '4488', brand: 'Mastercard' }}
+              depositAmount={depositAmount}
+              savedCard={null}
               isLoading={isPaymentLoading}
               error={paymentError}
               onPay={handlePay}
@@ -498,12 +499,13 @@ export default function BookingForm({
               title={
                 isPaymentLoading
                   ? t.common.loading
-                  : `${t.booking.pay} ${DEPOSIT_AMOUNT.toFixed(2)} ₾`
+                  : `${t.booking.pay} ${depositAmount.toFixed(2)} ₾`
               }
               size='large'
               fullWidth
+              disabled={isPaymentLoading}
               type='button'
-              onClick={isPaymentLoading ? undefined : handlePay}
+              onClick={handlePay}
             />
           </OverlayFooter>
         </MobilePaymentOverlay>

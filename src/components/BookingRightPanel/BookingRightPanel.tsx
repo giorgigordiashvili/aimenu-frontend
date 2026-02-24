@@ -124,7 +124,7 @@ export default function BookingRightPanel({
       {step === 'payment' && (
         <BookingPaymentForm
           depositAmount={depositAmount}
-          savedCard={{ last4: '4488', brand: 'Mastercard' }}
+          savedCard={null}
           isLoading={isPaymentLoading}
           error={paymentError}
           onBack={() => setStep('contact')}

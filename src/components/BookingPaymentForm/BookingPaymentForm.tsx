@@ -356,7 +356,8 @@ export default function BookingPaymentForm({
         </MethodOption>
       </MethodList>
 
-      {/* Card form */}
+      {/* Card form — UI placeholder only; fields are collected here but payment processing
+          will be handled by a payment gateway (e.g. Stripe/BOG) in a future integration */}
       {method === 'card' && (
         <CardForm>
           <div>
@@ -448,8 +449,9 @@ export default function BookingPaymentForm({
           title={isLoading ? t.common.loading : `${t.booking.pay} ${depositAmount.toFixed(2)} ₾`}
           size='large'
           fullWidth
+          disabled={isLoading}
           type='button'
-          onClick={isLoading ? undefined : onPay}
+          onClick={onPay}
         />
       </ButtonGroup>
     </Container>
