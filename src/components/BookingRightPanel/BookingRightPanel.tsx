@@ -98,6 +98,11 @@ export default function BookingRightPanel({
     if (paymentError) setStep('fail');
   }, [paymentError]);
 
+  // When a retry starts, return to the payment form so the user sees loading state
+  useEffect(() => {
+    if (isPaymentLoading) setStep('payment');
+  }, [isPaymentLoading]);
+
   return (
     <Panel>
       <CloseRow>

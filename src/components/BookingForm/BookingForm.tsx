@@ -284,8 +284,9 @@ export default function BookingForm({
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [reservationId, setReservationId] = useState<string | null>(null);
 
-  // DEV: force a visual state via ?state=success|fail in the URL (client-only to avoid hydration mismatch)
+  // DEV-only: force a visual state via ?state=success|fail in the URL
   useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
     const testState = new URLSearchParams(window.location.search).get('state') as
       | 'success'
       | 'fail'
