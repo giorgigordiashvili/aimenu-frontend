@@ -43,6 +43,10 @@ const DefaultButton = styled('button')<{
   lineHeight: '20px',
   letterSpacing: '-0.15px',
   fontWeight: 500,
+  '&:disabled': {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
 
   variants: [
     {

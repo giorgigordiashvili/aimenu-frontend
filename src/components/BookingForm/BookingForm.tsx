@@ -1,8 +1,9 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
@@ -278,27 +279,55 @@ export default function BookingForm({
   const { locale } = useLocale();
   const router = useRouter();
 
-  // Mobile-only step state (desktop step is managed inside BookingRightPanel)
-  const [mobileStep, setMobileStep] = useState<'contact' | 'payment' | 'success' | 'fail'>(
+  // internalStep captures user-driven navigation (contact ↔ payment).
+  // The rendered step is derived below so success/fail never need to be set manually.
+  const [internalStep, setInternalStep] = useState<'contact' | 'payment' | 'success' | 'fail'>(
     'contact'
   );
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [reservationId, setReservationId] = useState<string | null>(null);
+  const [isCardFormValid, setIsCardFormValid] = useState(false);
 
-  // DEV-only: force a visual state via ?state=success|fail in the URL
+  // Derived step: API outcomes take priority over local navigation state, which
+  // prevents the three competing useEffects that previously caused flickering on retry.
+  const step = reservationId
+    ? 'success'
+    : paymentError
+      ? 'fail'
+      : isPaymentLoading
+        ? 'payment'
+        : internalStep;
+
+  // Callback passed to BookingPaymentForm so the mobile pay button can be gated
+  // on card-form validity without lifting all card field state to this component.
+  const handleCardValidChange = useCallback((valid: boolean) => {
+    setIsCardFormValid(valid);
+  }, []);
+
+  // Passed to BookingRightPanel for user-initiated step transitions.
+  // Clearing paymentError when advancing to payment lets the panel escape the
+  // derived 'fail' state (e.g. after a failed payment the user retries).
+  const handleStepChange = useCallback((s: 'contact' | 'payment') => {
+    setInternalStep(s);
+    if (s === 'payment') setPaymentError(null);
+  }, []);
+
+  // DEV-only: pre-set a visual state via ?state=success|fail in the URL so you can
+  // inspect the success/fail UI without making real API calls.
+  // NOTE: This guard relies on NODE_ENV==='production' being set correctly in your
+  // staging environment. If staging uses a different NODE_ENV value, adjust accordingly.
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') return;
     const testState = new URLSearchParams(window.location.search).get('state') as
       | 'success'
       | 'fail'
       | null;
+    // Setting reservationId / paymentError is enough — step is derived from them.
     if (testState === 'success') {
       setReservationId('MG-2271-TEST');
-      setMobileStep('success');
     } else if (testState === 'fail') {
-      setPaymentError('error');
-      setMobileStep('fail');
+      setPaymentError('test-error');
     }
   }, []);
 
@@ -377,11 +406,15 @@ export default function BookingForm({
       });
 
       const id = result.data.id ?? null;
-      setReservationId(id);
-      setMobileStep('success');
-    } catch (_err) {
-      setPaymentError(t.common.error);
-      setMobileStep('fail');
+      setReservationId(id); // step derives to 'success'
+    } catch (err: unknown) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('[BookingForm] handlePay error:', err);
+      }
+      const msg = isAxiosError(err)
+        ? ((err.response?.data as { detail?: string } | undefined)?.detail ?? null)
+        : null;
+      setPaymentError(msg ?? t.common.error); // step derives to 'fail'
     } finally {
       setIsPaymentLoading(false);
     }
@@ -455,6 +488,8 @@ export default function BookingForm({
             reservationId={reservationId}
             onClose={onClose}
             onPay={handlePay}
+            step={step}
+            onStepChange={handleStepChange}
           />
         </ContentArea>
 
@@ -469,16 +504,16 @@ export default function BookingForm({
             size='large'
             fullWidth
             type='button'
-            onClick={() => setMobileStep('payment')}
+            onClick={() => setInternalStep('payment')}
           />
         </MobileFooter>
 
         {/* ── Mobile payment overlay ─────────────────────────────────────── */}
-        <MobilePaymentOverlay data-active={mobileStep === 'payment' ? 'true' : 'false'}>
+        <MobilePaymentOverlay data-active={step === 'payment' ? 'true' : 'false'}>
           <OverlayHeader>
             <OverlayBackButton
               type='button'
-              onClick={() => setMobileStep('contact')}
+              onClick={() => setInternalStep('contact')}
               aria-label={t.booking.close}
             >
               <CloseIcon />
@@ -493,6 +528,7 @@ export default function BookingForm({
               isLoading={isPaymentLoading}
               error={paymentError}
               onPay={handlePay}
+              onValidChange={handleCardValidChange}
             />
           </OverlayContent>
 
@@ -506,7 +542,7 @@ export default function BookingForm({
               }
               size='large'
               fullWidth
-              disabled={isPaymentLoading}
+              disabled={isPaymentLoading || !isCardFormValid}
               type='button'
               onClick={handlePay}
             />
@@ -514,7 +550,7 @@ export default function BookingForm({
         </MobilePaymentOverlay>
 
         {/* ── Mobile success overlay ─────────────────────────────────────── */}
-        <MobilePaymentOverlay data-active={mobileStep === 'success' ? 'true' : 'false'}>
+        <MobilePaymentOverlay data-active={step === 'success' ? 'true' : 'false'}>
           <OverlayHeader>
             <OverlayBackButton type='button' onClick={onClose} aria-label={t.booking.close}>
               <CloseIcon />
@@ -532,11 +568,14 @@ export default function BookingForm({
         </MobilePaymentOverlay>
 
         {/* ── Mobile fail overlay ────────────────────────────────────────── */}
-        <MobilePaymentOverlay data-active={mobileStep === 'fail' ? 'true' : 'false'}>
+        <MobilePaymentOverlay data-active={step === 'fail' ? 'true' : 'false'}>
           <OverlayHeader>
             <OverlayBackButton
               type='button'
-              onClick={() => setMobileStep('payment')}
+              onClick={() => {
+                setInternalStep('payment');
+                setPaymentError(null);
+              }}
               aria-label={t.booking.close}
             >
               <CloseIcon />
@@ -545,7 +584,12 @@ export default function BookingForm({
           </OverlayHeader>
 
           <OverlayContent>
-            <BookingFailPanel onGoBack={() => setMobileStep('payment')} />
+            <BookingFailPanel
+              onGoBack={() => {
+                setInternalStep('payment');
+                setPaymentError(null);
+              }}
+            />
           </OverlayContent>
         </MobilePaymentOverlay>
       </PageShell>

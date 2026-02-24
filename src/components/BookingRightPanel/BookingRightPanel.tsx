@@ -2,7 +2,6 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
@@ -29,6 +28,8 @@ type Props = {
   reservationId?: string | null;
   onClose?: () => void;
   onPay: () => void;
+  step: 'contact' | 'payment' | 'success' | 'fail';
+  onStepChange: (step: 'contact' | 'payment') => void;
 };
 
 // ─── Styled components ────────────────────────────────────────────────────────
@@ -85,25 +86,12 @@ export default function BookingRightPanel({
   reservationId,
   onClose,
   onPay,
+  step,
+  onStepChange,
 }: Props) {
   const t = useTranslations();
   const { locale } = useLocale();
   const router = useRouter();
-  const [step, setStep] = useState<'contact' | 'payment' | 'success' | 'fail'>('contact');
-
-  // Transition to success/fail based on API result
-  useEffect(() => {
-    if (reservationId) setStep('success');
-  }, [reservationId]);
-
-  useEffect(() => {
-    if (paymentError) setStep('fail');
-  }, [paymentError]);
-
-  // When a retry starts, return to the payment form so the user sees loading state
-  useEffect(() => {
-    if (isPaymentLoading) setStep('payment');
-  }, [isPaymentLoading]);
 
   return (
     <Panel>
@@ -124,7 +112,7 @@ export default function BookingRightPanel({
           onEmail={onEmail}
           onNotes={onNotes}
           showSubmitButton
-          onSubmit={() => setStep('payment')}
+          onSubmit={() => onStepChange('payment')}
         />
       )}
 
@@ -134,7 +122,7 @@ export default function BookingRightPanel({
           savedCard={null}
           isLoading={isPaymentLoading}
           error={paymentError}
-          onBack={() => setStep('contact')}
+          onBack={() => onStepChange('contact')}
           onPay={onPay}
         />
       )}
@@ -147,7 +135,7 @@ export default function BookingRightPanel({
         />
       )}
 
-      {step === 'fail' && <BookingFailPanel onGoBack={() => setStep('payment')} />}
+      {step === 'fail' && <BookingFailPanel onGoBack={() => onStepChange('payment')} />}
     </Panel>
   );
 }

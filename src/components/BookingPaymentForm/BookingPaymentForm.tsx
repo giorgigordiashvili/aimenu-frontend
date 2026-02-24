@@ -1,7 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
@@ -36,6 +36,7 @@ type Props = {
   error?: string | null;
   onBack?: () => void;
   onPay: () => void;
+  onValidChange?: (valid: boolean) => void;
 };
 
 // ─── Inline icons ─────────────────────────────────────────────────────────────
@@ -50,7 +51,6 @@ function CardFieldIcon(_props?: { open?: boolean }) {
 const Container = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  gap: '0',
 });
 
 const Header = styled('div')({
@@ -279,6 +279,19 @@ const ButtonGroup = styled('div')({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+// Returns true when the expiry string (MM/YY) represents a card that is not yet expired.
+function isExpiryValid(val: string): boolean {
+  if (!/^\d{2}\/\d{2}$/.test(val)) return false;
+  const [mm, yy] = val.split('/').map(Number);
+  if (mm < 1 || mm > 12) return false;
+  const now = new Date();
+  const currentYear = now.getFullYear() % 100;
+  const currentMonth = now.getMonth() + 1;
+  if (yy < currentYear) return false;
+  if (yy === currentYear && mm < currentMonth) return false;
+  return true;
+}
+
 export default function BookingPaymentForm({
   depositAmount,
   savedCard,
@@ -286,6 +299,7 @@ export default function BookingPaymentForm({
   error,
   onBack,
   onPay,
+  onValidChange,
 }: Props) {
   const t = useTranslations();
   const [method, setMethod] = useState<PaymentMethod>(savedCard ? 'saved' : 'card');
@@ -294,9 +308,22 @@ export default function BookingPaymentForm({
   const [cvv, setCvv] = useState('');
   const [cardHolder, setCardHolder] = useState('');
 
+  // true when the card form is sufficiently filled to attempt payment
+  const isCardValid =
+    method !== 'card' ||
+    (cardNumber.replace(/\s/g, '').length === 16 &&
+      isExpiryValid(expiry) &&
+      cvv.length >= 3 &&
+      cardHolder.trim().length > 0);
+
+  // Notify parent whenever validity changes (e.g. to gate the mobile pay button)
+  useEffect(() => {
+    onValidChange?.(isCardValid);
+  }, [isCardValid, onValidChange]);
+
   function formatCardNumber(val: string) {
     const digits = val.replace(/\D/g, '').slice(0, 16);
-    return digits.replace(/(.{4})/g, '$1 ').trim();
+    return digits.match(/.{1,4}/g)?.join(' ') ?? '';
   }
 
   function formatExpiry(val: string) {
@@ -449,7 +476,7 @@ export default function BookingPaymentForm({
           title={isLoading ? t.common.loading : `${t.booking.pay} ${depositAmount.toFixed(2)} ₾`}
           size='large'
           fullWidth
-          disabled={isLoading}
+          disabled={isLoading || !isCardValid}
           type='button'
           onClick={onPay}
         />
