@@ -45,7 +45,7 @@ const MOCK_ORDER_ITEMS: OrderItem[] = [
   { id: '3', quantity: 3, name: 'სუპი ხარჩო', price: 12.0 },
 ];
 
-const DEFAULT_depositAmount = 10.0;
+const DEFAULT_DEPOSIT_AMOUNT = 10.0;
 const DEFAULT_MAX_ADVANCE_DAYS = 60;
 const DEFAULT_MIN_GUESTS = 1;
 const DEFAULT_MAX_GUESTS = 20;
@@ -310,7 +310,7 @@ export default function BookingForm({
   const [maxAdvanceDays, setMaxAdvanceDays] = useState(DEFAULT_MAX_ADVANCE_DAYS);
   const [minGuests, setMinGuests] = useState(DEFAULT_MIN_GUESTS);
   const [maxGuests, setMaxGuests] = useState(DEFAULT_MAX_GUESTS);
-  const [depositAmount, setDepositAmount] = useState(DEFAULT_depositAmount);
+  const [depositAmount, setDepositAmount] = useState(DEFAULT_DEPOSIT_AMOUNT);
 
   // Fetch reservation settings
   useEffect(() => {
