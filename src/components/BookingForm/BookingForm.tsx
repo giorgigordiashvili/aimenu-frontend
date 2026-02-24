@@ -1,6 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
@@ -275,6 +276,7 @@ export default function BookingForm({
 }: BookingFormProps) {
   const t = useTranslations();
   const { locale } = useLocale();
+  const router = useRouter();
 
   // Mobile-only step state (desktop step is managed inside BookingRightPanel)
   const [mobileStep, setMobileStep] = useState<'contact' | 'payment' | 'success' | 'fail'>(
@@ -523,8 +525,8 @@ export default function BookingForm({
           <OverlayContent>
             <BookingSuccessPanel
               reservationId={reservationId}
-              onGoHome={() => (window.location.href = `/${locale}`)}
-              onMyReservations={() => (window.location.href = `/${locale}/reservations`)}
+              onGoHome={() => router.push(`/${locale}`)}
+              onMyReservations={() => router.push(`/${locale}/reservations`)}
             />
           </OverlayContent>
         </MobilePaymentOverlay>
@@ -543,10 +545,7 @@ export default function BookingForm({
           </OverlayHeader>
 
           <OverlayContent>
-            <BookingFailPanel
-              reservationId={reservationId}
-              onGoBack={() => setMobileStep('payment')}
-            />
+            <BookingFailPanel onGoBack={() => setMobileStep('payment')} />
           </OverlayContent>
         </MobilePaymentOverlay>
       </PageShell>

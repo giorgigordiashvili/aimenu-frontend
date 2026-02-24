@@ -1,6 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
@@ -87,6 +88,7 @@ export default function BookingRightPanel({
 }: Props) {
   const t = useTranslations();
   const { locale } = useLocale();
+  const router = useRouter();
   const [step, setStep] = useState<'contact' | 'payment' | 'success' | 'fail'>('contact');
 
   // Transition to success/fail based on API result
@@ -140,14 +142,12 @@ export default function BookingRightPanel({
       {step === 'success' && (
         <BookingSuccessPanel
           reservationId={reservationId}
-          onGoHome={() => (window.location.href = `/${locale}`)}
-          onMyReservations={() => (window.location.href = `/${locale}/reservations`)}
+          onGoHome={() => router.push(`/${locale}`)}
+          onMyReservations={() => router.push(`/${locale}/reservations`)}
         />
       )}
 
-      {step === 'fail' && (
-        <BookingFailPanel reservationId={reservationId} onGoBack={() => setStep('payment')} />
-      )}
+      {step === 'fail' && <BookingFailPanel onGoBack={() => setStep('payment')} />}
     </Panel>
   );
 }

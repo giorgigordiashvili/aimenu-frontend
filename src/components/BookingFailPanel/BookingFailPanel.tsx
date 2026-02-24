@@ -5,12 +5,11 @@ import { styled } from '@pigment-css/react';
 import MainButton from '@/components/MainButton/MainButton';
 import { useTranslations } from '@/context/LocaleContext';
 import FailIcon from '@/icons/Fail';
-import { foreground, slate100, slate50, slate500 } from '@/tokens';
+import { foreground, slate500 } from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Props = {
-  reservationId?: string | null;
   onGoBack: () => void;
 };
 
@@ -47,37 +46,10 @@ const Description = styled('p')({
   maxWidth: '320px',
 });
 
-const CodeBox = styled('div')({
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  backgroundColor: slate50,
-  border: `1px solid ${slate100}`,
-  borderRadius: '14px',
-  padding: '14px 16px',
-  marginBottom: '24px',
-});
-
-const CodeLabel = styled('span')({
-  fontSize: '14px',
-  color: slate500,
-  lineHeight: '20px',
-});
-
-const CodeValue = styled('span')({
-  fontSize: '14px',
-  fontWeight: 700,
-  color: foreground,
-  lineHeight: '20px',
-});
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function BookingFailPanel({ reservationId, onGoBack }: Props) {
+export default function BookingFailPanel({ onGoBack }: Props) {
   const t = useTranslations();
-
-  const code = reservationId ? `#${reservationId.slice(0, 7).toUpperCase()}` : null;
 
   return (
     <Container>
@@ -87,13 +59,6 @@ export default function BookingFailPanel({ reservationId, onGoBack }: Props) {
 
       <Title>{t.booking.failTitle}</Title>
       <Description>{t.booking.failDescription}</Description>
-
-      {code && (
-        <CodeBox>
-          <CodeLabel>{t.booking.bookingCode}</CodeLabel>
-          <CodeValue>{code}</CodeValue>
-        </CodeBox>
-      )}
 
       <MainButton
         variant='green_cta'
