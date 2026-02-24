@@ -4,13 +4,18 @@ import { styled } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
+import { reservationsCreateCreate } from '@/api/generated/api';
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
 import BookingDateTimeSection from '@/components/BookingDateTimeSection/BookingDateTimeSection';
+import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
 import BookingOrderSummary from '@/components/BookingOrderSummary/BookingOrderSummary';
 import type { OrderItem } from '@/components/BookingOrderSummary/BookingOrderSummary';
+import BookingPaymentForm from '@/components/BookingPaymentForm/BookingPaymentForm';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
+import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel';
+import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import MainButton from '@/components/MainButton/MainButton';
-import { useTranslations } from '@/context/LocaleContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 import ArrowIcon from '@/icons/Arrow';
 import CloseIcon from '@/icons/Close';
 import { background, border, foreground, slate100, slate600, white } from '@/tokens';
@@ -111,12 +116,6 @@ const PageHeader = styled('div')({
   },
 });
 
-const DesktopCloseRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  marginBottom: '24px',
-});
-
 const HeaderTitle = styled('h1')({
   fontSize: '16px',
   fontWeight: 600,
@@ -126,7 +125,7 @@ const HeaderTitle = styled('h1')({
   lineHeight: '24px',
 });
 
-const CloseButton = styled('button')({
+const MobileCloseButton = styled('button')({
   background: 'none',
   border: 'none',
   cursor: 'pointer',
@@ -135,19 +134,14 @@ const CloseButton = styled('button')({
   alignItems: 'center',
   justifyContent: 'center',
   color: slate600,
-  fontSize: '18px',
-  lineHeight: 1,
   borderRadius: '6px',
-  '&:hover': {
-    backgroundColor: slate100,
-  },
-});
-
-const MobileCloseButton = styled(CloseButton)({
   position: 'absolute',
   left: '16px',
   top: '50%',
   transform: 'translateY(-50%)',
+  '&:hover': {
+    backgroundColor: slate100,
+  },
 });
 
 const ContentArea = styled('div')({
@@ -168,20 +162,6 @@ const LeftColumn = styled('div')({
     paddingBottom: '40px',
     backgroundColor: background,
     minHeight: '100vh',
-  },
-});
-
-const RightColumn = styled('div')({
-  display: 'none',
-  '@media (min-width: 768px)': {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: white,
-    padding: '32px',
-    position: 'sticky',
-    top: 0,
-    minHeight: '100vh',
-    alignSelf: 'start',
   },
 });
 
@@ -222,6 +202,70 @@ const MobileFooter = styled('div')({
   },
 });
 
+// Mobile payment overlay — covers entire screen on mobile when step = 'payment'
+const MobilePaymentOverlay = styled('div')({
+  display: 'none',
+  '&[data-active="true"]': {
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: white,
+    zIndex: 200,
+    overflowY: 'auto',
+  },
+  '@media (min-width: 768px)': {
+    display: 'none !important',
+  },
+});
+
+const OverlayHeader = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '16px 20px',
+  backgroundColor: white,
+  borderBottom: `1px solid ${border}`,
+  position: 'sticky',
+  top: 0,
+  zIndex: 10,
+  flexShrink: 0,
+});
+
+const OverlayBackButton = styled('button')({
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+  padding: '6px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'absolute',
+  left: '16px',
+  borderRadius: '6px',
+  '&:hover': {
+    backgroundColor: slate100,
+  },
+});
+
+const OverlayContent = styled('div')({
+  flex: 1,
+  padding: '20px',
+  paddingBottom: '20px',
+});
+
+const OverlayFooter = styled('div')({
+  padding: '12px 20px 20px',
+  backgroundColor: white,
+  borderTop: `1px solid ${border}`,
+  flexShrink: 0,
+  position: 'sticky',
+  bottom: 0,
+});
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function BookingForm({
@@ -233,6 +277,30 @@ export default function BookingForm({
   restaurantImage,
 }: BookingFormProps) {
   const t = useTranslations();
+  const { locale } = useLocale();
+
+  // Mobile-only step state (desktop step is managed inside BookingRightPanel)
+  const [mobileStep, setMobileStep] = useState<'contact' | 'payment' | 'success' | 'fail'>(
+    'contact'
+  );
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [reservationId, setReservationId] = useState<string | null>(null);
+
+  // DEV: force a visual state via ?state=success|fail in the URL (client-only to avoid hydration mismatch)
+  useEffect(() => {
+    const testState = new URLSearchParams(window.location.search).get('state') as
+      | 'success'
+      | 'fail'
+      | null;
+    if (testState === 'success') {
+      setReservationId('MG-2271-TEST');
+      setMobileStep('success');
+    } else if (testState === 'fail') {
+      setPaymentError('error');
+      setMobileStep('fail');
+    }
+  }, []);
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [time, setTime] = useState('');
@@ -246,7 +314,7 @@ export default function BookingForm({
   const [minGuests, setMinGuests] = useState(DEFAULT_MIN_GUESTS);
   const [maxGuests, setMaxGuests] = useState(DEFAULT_MAX_GUESTS);
 
-  // Fetch reservation settings (advance booking window, guest bounds)
+  // Fetch reservation settings
   useEffect(() => {
     if (!slug) return;
     axiosInstance
@@ -260,24 +328,19 @@ export default function BookingForm({
         if (d?.max_party_size !== null && d?.max_party_size !== undefined)
           setMaxGuests(d.max_party_size);
       })
-      .catch(() => {
-        // endpoint not available — keep defaults
-      });
+      .catch(() => {});
   }, [slug]);
 
   // Fetch available time slots when date changes
   useEffect(() => {
     if (!selectedDate || !slug) return;
-
     const dateStr = selectedDate.toISOString().split('T')[0];
-
     axiosInstance
       .get('/api/v1/reservations/availability/', {
         params: { restaurant_slug: slug, date: dateStr },
       })
       .then(res => {
         const data = res.data;
-        // Try to extract slots from various possible response shapes
         const slots: string[] = Array.isArray(data)
           ? data.filter((s: unknown) => typeof s === 'string')
           : Array.isArray(data?.available_slots)
@@ -292,14 +355,38 @@ export default function BookingForm({
       });
   }, [selectedDate, slug]);
 
-  function handleSubmit() {
-    // UI only — no API call
+  async function handlePay() {
+    if (!selectedDate || !time || !name || !phone) return;
+
+    setIsPaymentLoading(true);
+    setPaymentError(null);
+
+    try {
+      const result = await reservationsCreateCreate({
+        guest_name: name,
+        guest_phone: phone,
+        guest_email: email || undefined,
+        reservation_date: selectedDate.toISOString().split('T')[0],
+        reservation_time: time,
+        party_size: guests,
+        special_requests: notes || undefined,
+      });
+
+      const id = (result as unknown as { id?: string }).id ?? null;
+      setReservationId(id);
+      setMobileStep('success');
+    } catch (_err) {
+      setPaymentError(t.common.error);
+      setMobileStep('fail');
+    } finally {
+      setIsPaymentLoading(false);
+    }
   }
 
   return (
     <Wrapper>
       <PageShell>
-        {/* ── Header ────────────────────────────────────────────────────────── */}
+        {/* ── Mobile header ──────────────────────────────────────────────── */}
         <PageHeader>
           <MobileCloseButton type='button' onClick={onClose} aria-label={t.booking.close}>
             <CloseIcon />
@@ -308,7 +395,7 @@ export default function BookingForm({
         </PageHeader>
 
         <ContentArea>
-          {/* ── Left column ──────────────────────────────────────────────────── */}
+          {/* ── Left column ──────────────────────────────────────────────── */}
           <LeftColumn>
             <BookingRestaurantCard
               name={restaurantName}
@@ -331,7 +418,7 @@ export default function BookingForm({
             />
             <BookingOrderSummary items={MOCK_ORDER_ITEMS} depositAmount={DEPOSIT_AMOUNT} />
 
-            {/* Contact form — mobile only (right column shows it on desktop) */}
+            {/* Contact form — mobile only */}
             <MobileContactSection>
               <Section>
                 <BookingContactForm
@@ -348,29 +435,26 @@ export default function BookingForm({
             </MobileContactSection>
           </LeftColumn>
 
-          {/* ── Right column — desktop only ───────────────────────────────────── */}
-          <RightColumn>
-            <DesktopCloseRow>
-              <CloseButton type='button' onClick={onClose} aria-label={t.booking.close}>
-                <CloseIcon />
-              </CloseButton>
-            </DesktopCloseRow>
-            <BookingContactForm
-              name={name}
-              phone={phone}
-              email={email}
-              notes={notes}
-              onName={setName}
-              onPhone={setPhone}
-              onEmail={setEmail}
-              onNotes={setNotes}
-              showSubmitButton
-              onSubmit={handleSubmit}
-            />
-          </RightColumn>
+          {/* ── Right panel — desktop only, self-contained ───────────────── */}
+          <BookingRightPanel
+            depositAmount={DEPOSIT_AMOUNT}
+            name={name}
+            phone={phone}
+            email={email}
+            notes={notes}
+            onName={setName}
+            onPhone={setPhone}
+            onEmail={setEmail}
+            onNotes={setNotes}
+            isPaymentLoading={isPaymentLoading}
+            paymentError={paymentError}
+            reservationId={reservationId}
+            onClose={onClose}
+            onPay={handlePay}
+          />
         </ContentArea>
 
-        {/* ── Mobile sticky footer (hidden on desktop) ──────────────────────── */}
+        {/* ── Mobile sticky footer ───────────────────────────────────────── */}
         <MobileFooter>
           <MainButton
             variant='green_cta'
@@ -381,9 +465,87 @@ export default function BookingForm({
             size='large'
             fullWidth
             type='button'
-            onClick={handleSubmit}
+            onClick={() => setMobileStep('payment')}
           />
         </MobileFooter>
+
+        {/* ── Mobile payment overlay ─────────────────────────────────────── */}
+        <MobilePaymentOverlay data-active={mobileStep === 'payment' ? 'true' : 'false'}>
+          <OverlayHeader>
+            <OverlayBackButton
+              type='button'
+              onClick={() => setMobileStep('contact')}
+              aria-label={t.booking.close}
+            >
+              <CloseIcon />
+            </OverlayBackButton>
+            <HeaderTitle>{t.booking.payment}</HeaderTitle>
+          </OverlayHeader>
+
+          <OverlayContent>
+            <BookingPaymentForm
+              depositAmount={DEPOSIT_AMOUNT}
+              savedCard={{ last4: '4488', brand: 'Mastercard' }}
+              isLoading={isPaymentLoading}
+              error={paymentError}
+              onPay={handlePay}
+            />
+          </OverlayContent>
+
+          <OverlayFooter>
+            <MainButton
+              variant='green_cta'
+              title={
+                isPaymentLoading
+                  ? t.common.loading
+                  : `${t.booking.pay} ${DEPOSIT_AMOUNT.toFixed(2)} ₾`
+              }
+              size='large'
+              fullWidth
+              type='button'
+              onClick={isPaymentLoading ? undefined : handlePay}
+            />
+          </OverlayFooter>
+        </MobilePaymentOverlay>
+
+        {/* ── Mobile success overlay ─────────────────────────────────────── */}
+        <MobilePaymentOverlay data-active={mobileStep === 'success' ? 'true' : 'false'}>
+          <OverlayHeader>
+            <OverlayBackButton type='button' onClick={onClose} aria-label={t.booking.close}>
+              <CloseIcon />
+            </OverlayBackButton>
+            <HeaderTitle>{t.booking.order}</HeaderTitle>
+          </OverlayHeader>
+
+          <OverlayContent>
+            <BookingSuccessPanel
+              reservationId={reservationId}
+              onGoHome={() => (window.location.href = `/${locale}`)}
+              onMyReservations={() => (window.location.href = `/${locale}/reservations`)}
+            />
+          </OverlayContent>
+        </MobilePaymentOverlay>
+
+        {/* ── Mobile fail overlay ────────────────────────────────────────── */}
+        <MobilePaymentOverlay data-active={mobileStep === 'fail' ? 'true' : 'false'}>
+          <OverlayHeader>
+            <OverlayBackButton
+              type='button'
+              onClick={() => setMobileStep('payment')}
+              aria-label={t.booking.close}
+            >
+              <CloseIcon />
+            </OverlayBackButton>
+            <HeaderTitle>{t.booking.payment}</HeaderTitle>
+          </OverlayHeader>
+
+          <OverlayContent>
+            <BookingFailPanel
+              reservationId={reservationId}
+              onGoBack={() => setMobileStep('payment')}
+            />
+          </OverlayContent>
+        </MobilePaymentOverlay>
       </PageShell>
     </Wrapper>
   );
