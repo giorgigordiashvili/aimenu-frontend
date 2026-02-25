@@ -23,6 +23,7 @@ type Props = {
   iconPosition?: 'left' | 'right';
   rounded?: boolean;
   fullWidth?: boolean;
+  disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   onClick?: () => void;
 };
@@ -42,6 +43,10 @@ const DefaultButton = styled('button')<{
   lineHeight: '20px',
   letterSpacing: '-0.15px',
   fontWeight: 500,
+  '&:disabled': {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
 
   variants: [
     {
@@ -160,6 +165,7 @@ function MainButton({
   iconPosition = 'left',
   rounded,
   fullWidth,
+  disabled,
   type = 'button',
   onClick,
 }: Props) {
@@ -174,6 +180,7 @@ function MainButton({
       variant={variant}
       size={size}
       type={type}
+      disabled={disabled}
       onClick={onClick}
       style={{
         ...(Icon
