@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 import { authLogoutCreate, usersMeRetrieve, User } from '@/api/generated';
+import '@/lib/axiosInterceptor';
 
 interface AuthState {
   user: User | null;
@@ -33,16 +34,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token = localStorage.getItem('access_token');
 
       if (!token) {
+        setAuthCookie(null); // Clear any stale cookie left over from a previous session
         setIsLoading(false);
         return;
       }
 
       try {
         const user = await usersMeRetrieve();
+        setAuthCookie(token); // Restore cookie so middleware allows protected routes
         setUser(user);
       } catch {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        setAuthCookie(null);
       } finally {
         setIsLoading(false);
       }

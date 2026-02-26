@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { authLoginCreate } from '@/api/generated';
@@ -41,6 +41,7 @@ import {
 
 export default function LoginForm({ locale }: LoginFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const t = getDictionary(locale);
 
@@ -87,7 +88,8 @@ export default function LoginForm({ locale }: LoginFormProps) {
         sessionStorage.setItem('session_only', 'true');
       }
 
-      router.push(`/${locale}`);
+      const redirect = searchParams.get('redirect');
+      router.push(redirect || `/${locale}`);
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
         const axiosErr = err as { response?: { status?: number; data?: { detail?: string } } };

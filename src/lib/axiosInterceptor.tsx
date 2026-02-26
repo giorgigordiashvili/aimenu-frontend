@@ -1,8 +1,7 @@
-import axios from 'axios';
-
+import axiosInstance from '@/api/axios';
 import { authTokenRefreshCreate } from '@/api/generated';
 
-axios.interceptors.request.use(config => {
+axiosInstance.interceptors.request.use(config => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('access_token');
 
@@ -14,7 +13,7 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
-axios.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   response => response,
   async error => {
     if (typeof window === 'undefined') {
@@ -29,6 +28,7 @@ axios.interceptors.response.use(
       const refreshToken = localStorage.getItem('refresh_token');
 
       if (!refreshToken) {
+        document.cookie = 'access_token=; path=/; max-age=0';
         window.location.href = '/login';
         return Promise.reject(error);
       }
@@ -39,15 +39,17 @@ axios.interceptors.response.use(
         });
 
         localStorage.setItem('access_token', response.access);
+        document.cookie = `access_token=${response.access}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
 
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${response.access}`;
         }
 
-        return axios(originalRequest);
+        return axiosInstance(originalRequest);
       } catch {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        document.cookie = 'access_token=; path=/; max-age=0';
         window.location.href = '/login';
       }
     }
