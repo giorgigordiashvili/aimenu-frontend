@@ -9,8 +9,44 @@ const MOCK_PAGE_SIZE = 3;
 const TODAY = new Date().toISOString().split('T')[0];
 
 // ─── Mock ─────────────────────────────────────────────────────────────────────
-// Set to false to use real API data
-export const MOCK_MODE = true;
+export const MOCK_MODE = process.env.NODE_ENV !== 'production';
+
+export const MOCK_PROFILE = {
+  name: 'George Beridze',
+  email: 'giorgi@example.com',
+  phone: '+995 555 12 34 56',
+  location: 'Tbilisi, Georgia',
+};
+
+const MOCK_RESTAURANTS = [
+  {
+    restaurantName: 'Black Lion',
+    restaurantImage: '/demo/RestaurantCardImage.jpg',
+    restaurantCity: 'Tbilisi',
+    restaurantCuisine: 'Georgian Fusion',
+    restaurantRating: '4.8',
+  },
+  {
+    restaurantName: 'Old Metekhi',
+    restaurantImage: '/demo/RestaurantCardImage2.jpg',
+    restaurantCity: 'Tbilisi',
+    restaurantCuisine: 'Georgian Cuisine',
+    restaurantRating: '4.5',
+  },
+  {
+    restaurantName: 'Parnavazi',
+    restaurantImage: '/demo/RestaurantCardImage.jpg',
+    restaurantCity: 'Tbilisi',
+    restaurantCuisine: 'Georgian Cuisine',
+    restaurantRating: '4.7',
+  },
+];
+
+export function getMockRestaurantData(id: string) {
+  const num = parseInt(id.replace('mock-', ''), 10);
+  if (isNaN(num)) return null;
+  return MOCK_RESTAURANTS[(num - 1) % MOCK_RESTAURANTS.length];
+}
 
 const MOCK_ACTIVE: ReservationList[] = [
   {

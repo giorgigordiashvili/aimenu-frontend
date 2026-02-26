@@ -210,7 +210,7 @@
     "history": "ისტორია",
     "noUpcoming": "თქვენ არ გაქვთ აქტიური ჯავშნები",
     "noPast": "ჯავშნების ისტორია ცარიელია",
-    "dishes": "კერძი",
+    "guests": "სტუმარი",
     "cancelReservation": "შეკვეთის გაუქმება",
     "cancelConfirmTitle": "ნამდვილად გსურთ შეკვეთის გაუქმება?",
     "cancelConfirmMessage": "დარწმუნებული ხართ, რომ გსურთ ამ ჯავშნის გაუქმება? ეს მოქმედება ვერ გაუქმდება.",
@@ -240,14 +240,6 @@
     "loyaltyPoints": "ქულა",
     "loyaltyUpTo": "-მდე",
     "loyaltyDescPre": "დააგროვეთ კიდევ",
-    "loyaltyDescPost": "ქულა და მიიღეთ 10% ფასდაქლება ყველა რესტორანში.",
-    "mockName": "გიორგი ბერიძე",
-    "mockLocation": "თბილისი, საქართველო",
-    "mockRestaurant1": "შავი ლომი",
-    "mockRestaurant2": "ძველი მეთეხი",
-    "mockRestaurant3": "ფარნავაზი",
-    "mockCity": "თბილისი",
-    "mockCuisine1": "ქართული ფიუჟენი",
-    "mockCuisine2": "ქართული სამზარეულო"
+    "loyaltyDescPost": "ქულა და მიიღეთ 10% ფასდაქლება ყველა რესტორანში."
   }
 }

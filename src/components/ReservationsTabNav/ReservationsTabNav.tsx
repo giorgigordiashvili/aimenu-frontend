@@ -6,7 +6,7 @@ import { useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
 import CreditCardIcon from '@/icons/CreditCard';
 import PeopleIcon from '@/icons/People';
-import { background, border, radiusMd, radiusSm, slate500, white } from '@/tokens';
+import { background, border, foreground, radiusMd, radiusSm, slate500, white } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
@@ -44,12 +44,16 @@ const TabItem = styled('button')<{ active: boolean }>({
   borderRadius: radiusSm,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
+  '&:disabled': {
+    opacity: 0.4,
+    cursor: 'not-allowed',
+  },
   variants: [
     {
       props: { active: true },
       style: {
         color: white,
-        background: '#030213',
+        background: foreground,
       },
     },
   ],
@@ -67,11 +71,11 @@ export default function ReservationsTabNav() {
           <CalendarIcon />
           {t.reservations.tabs}
         </TabItem>
-        <TabItem active={false} onClick={() => {}}>
+        <TabItem active={false} disabled>
           <PeopleIcon />
           {t.reservations.profileTab}
         </TabItem>
-        <TabItem active={false} onClick={() => {}}>
+        <TabItem active={false} disabled>
           <CreditCardIcon />
           {t.reservations.paymentTab}
         </TabItem>

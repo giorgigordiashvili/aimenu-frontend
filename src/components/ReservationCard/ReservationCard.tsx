@@ -190,7 +190,7 @@ const CardVariant = styled('div')({
   width: '100%',
   padding: '16px',
   background: white,
-  border: '1px solid #E5E5E5',
+  border: `1px solid ${border}`,
   borderRadius: '14px',
   cursor: 'pointer',
   textAlign: 'left',
@@ -230,7 +230,7 @@ export default function ReservationCard({
 
   const subtitle = [restaurantCity, restaurantCuisine].filter(Boolean).join(' • ');
 
-  const guestLabel = `${reservation.party_size} ${t.reservations.dishes}`;
+  const guestLabel = `${reservation.party_size} ${t.reservations.guests}`;
 
   return (
     <Card onClick={() => onClick(reservation.id)}>
@@ -247,16 +247,7 @@ export default function ReservationCard({
         {subtitle && <Subtitle>{subtitle}</Subtitle>}
         {restaurantRating && (
           <RatingBadge>
-            <svg width={11} height={11} viewBox='0 0 12 12' fill='none'>
-              <path
-                d='M6 1L7.545 4.13L11 4.635L8.5 7.07L9.09 10.51L6 8.885L2.91 10.51L3.5 7.07L1 4.635L4.455 4.13L6 1Z'
-                fill='#FFB800'
-                stroke='#FFB800'
-                strokeWidth='1'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
-            </svg>
+            <Star color='#FFB800' size={11} />
             <RatingText>{restaurantRating}</RatingText>
           </RatingBadge>
         )}
@@ -313,7 +304,7 @@ export function ReservationCardVariant({
 
   const subtitle = [restaurantCity, restaurantCuisine].filter(Boolean).join(' • ');
 
-  const guestLabel = `${reservation.party_size} ${t.reservations.dishes}`;
+  const guestLabel = `${reservation.party_size} ${t.reservations.guests}`;
 
   return (
     <CardVariant onClick={() => onClick(reservation.id)}>

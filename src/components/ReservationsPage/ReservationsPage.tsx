@@ -14,7 +14,13 @@ import { ReservationsSidebarProps } from '@/components/ReservationsSidebar/Reser
 import ReservationsTabNav from '@/components/ReservationsTabNav';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from '@/context/LocaleContext';
-import { useActiveReservations, useHistoryReservations, MOCK_MODE } from '@/hooks/useReservations';
+import {
+  getMockRestaurantData,
+  MOCK_MODE,
+  MOCK_PROFILE,
+  useActiveReservations,
+  useHistoryReservations,
+} from '@/hooks/useReservations';
 import { Locale } from '@/i18n/config';
 import ClockIcon from '@/icons/Clock';
 import HistoryIcon from '@/icons/History';
@@ -175,13 +181,6 @@ const Toast = styled('div')({
   boxShadow: shadowCard,
 });
 
-// ─── Mock data (remove when API provides this) ─────────────────────────────────
-
-const MOCK_PROFILE = {
-  email: 'giorgi@example.com',
-  phone: '+995 555 12 34 56',
-};
-
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 interface ReservationsPageProps {
@@ -192,122 +191,6 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
   const t = useTranslations();
   const router = useRouter();
 
-  const MOCK_RESTAURANT_DATA: Record<
-    string,
-    {
-      restaurantName: string;
-      restaurantImage: string;
-      restaurantCity: string;
-      restaurantCuisine: string;
-      restaurantRating: string;
-    }
-  > = {
-    'mock-1': {
-      restaurantName: t.reservations.mockRestaurant1,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine1,
-      restaurantRating: '4.8',
-    },
-    'mock-2': {
-      restaurantName: t.reservations.mockRestaurant2,
-      restaurantImage: '/demo/RestaurantCardImage2.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.5',
-    },
-    'mock-3': {
-      restaurantName: t.reservations.mockRestaurant1,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine1,
-      restaurantRating: '4.8',
-    },
-    'mock-4': {
-      restaurantName: t.reservations.mockRestaurant2,
-      restaurantImage: '/demo/RestaurantCardImage2.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.5',
-    },
-    'mock-5': {
-      restaurantName: t.reservations.mockRestaurant1,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine1,
-      restaurantRating: '4.8',
-    },
-    'mock-6': {
-      restaurantName: t.reservations.mockRestaurant3,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.7',
-    },
-    'mock-7': {
-      restaurantName: t.reservations.mockRestaurant2,
-      restaurantImage: '/demo/RestaurantCardImage2.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.5',
-    },
-    'mock-8': {
-      restaurantName: t.reservations.mockRestaurant1,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine1,
-      restaurantRating: '4.8',
-    },
-    'mock-9': {
-      restaurantName: t.reservations.mockRestaurant3,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.7',
-    },
-    'mock-10': {
-      restaurantName: t.reservations.mockRestaurant2,
-      restaurantImage: '/demo/RestaurantCardImage2.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.5',
-    },
-    'mock-11': {
-      restaurantName: t.reservations.mockRestaurant1,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine1,
-      restaurantRating: '4.8',
-    },
-    'mock-12': {
-      restaurantName: t.reservations.mockRestaurant3,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.7',
-    },
-    'mock-13': {
-      restaurantName: t.reservations.mockRestaurant2,
-      restaurantImage: '/demo/RestaurantCardImage2.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.5',
-    },
-    'mock-14': {
-      restaurantName: t.reservations.mockRestaurant1,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine1,
-      restaurantRating: '4.8',
-    },
-    'mock-15': {
-      restaurantName: t.reservations.mockRestaurant3,
-      restaurantImage: '/demo/RestaurantCardImage.jpg',
-      restaurantCity: t.reservations.mockCity,
-      restaurantCuisine: t.reservations.mockCuisine2,
-      restaurantRating: '4.7',
-    },
-  };
   const { user, isLoading: authLoading, logout } = useAuth();
 
   const [activePage, setActivePage] = useState(1);
@@ -391,11 +274,11 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
   if (authLoading || !user) return null;
 
   const displayName = MOCK_MODE
-    ? t.reservations.mockName
+    ? MOCK_PROFILE.name
     : user.full_name || `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
   const displayEmail = MOCK_MODE ? MOCK_PROFILE.email : user.email;
   const displayPhone = MOCK_MODE ? MOCK_PROFILE.phone : user.phone_number;
-  const displayLocation = MOCK_MODE ? t.reservations.mockLocation : null;
+  const displayLocation = MOCK_MODE ? MOCK_PROFILE.location : null;
 
   const initials = displayName
     .split(' ')
@@ -466,7 +349,7 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
                         key={r.id}
                         reservation={r}
                         onClick={setSelectedId}
-                        {...MOCK_RESTAURANT_DATA[r.id]}
+                        {...(getMockRestaurantData(r.id) ?? {})}
                       />
                     ))}
                     {activeHasMore ? (
@@ -513,7 +396,7 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
                         key={r.id}
                         reservation={r}
                         onClick={setSelectedId}
-                        {...MOCK_RESTAURANT_DATA[r.id]}
+                        {...(getMockRestaurantData(r.id) ?? {})}
                       />
                     ))}
                     {historyHasMore ? (
@@ -550,18 +433,18 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
         reservationId={selectedId}
         onClose={() => setSelectedId(null)}
         onConfirmCancel={handleCancel}
-        restaurantName={selectedId ? MOCK_RESTAURANT_DATA[selectedId]?.restaurantName : undefined}
-        restaurantImage={selectedId ? MOCK_RESTAURANT_DATA[selectedId]?.restaurantImage : undefined}
-        restaurantSubtitle={
-          selectedId && MOCK_RESTAURANT_DATA[selectedId]
-            ? `${MOCK_RESTAURANT_DATA[selectedId].restaurantCity} · ${MOCK_RESTAURANT_DATA[selectedId].restaurantCuisine}`
-            : undefined
+        restaurantName={selectedId ? getMockRestaurantData(selectedId)?.restaurantName : undefined}
+        restaurantImage={
+          selectedId ? getMockRestaurantData(selectedId)?.restaurantImage : undefined
         }
-        restaurantRating={
-          selectedId
-            ? parseFloat(MOCK_RESTAURANT_DATA[selectedId]?.restaurantRating ?? '0') || undefined
-            : undefined
-        }
+        restaurantSubtitle={(() => {
+          const d = selectedId ? getMockRestaurantData(selectedId) : null;
+          return d ? `${d.restaurantCity} · ${d.restaurantCuisine}` : undefined;
+        })()}
+        restaurantRating={(() => {
+          const d = selectedId ? getMockRestaurantData(selectedId) : null;
+          return d ? parseFloat(d.restaurantRating) || undefined : undefined;
+        })()}
       />
 
       {toast && <Toast>{toast}</Toast>}

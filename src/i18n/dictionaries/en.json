@@ -210,7 +210,7 @@
     "history": "History",
     "noUpcoming": "You don't have any active reservations",
     "noPast": "No past reservations yet",
-    "dishes": "dish",
+    "guests": "guests",
     "cancelReservation": "Cancel Reservation",
     "cancelConfirmTitle": "Cancel Reservation?",
     "cancelConfirmMessage": "Are you sure you want to cancel this reservation? This action cannot be undone.",
@@ -241,14 +241,6 @@
     "loyaltyUpTo": " max",
     "loyaltyDescPre": "Collect",
 
-    "loyaltyDescPost": "more points to get 10% discount at all restaurants.",
-    "mockName": "George Beridze",
-    "mockLocation": "Tbilisi, Georgia",
-    "mockRestaurant1": "Black Lion",
-    "mockRestaurant2": "Old Metekhi",
-    "mockRestaurant3": "Parnavazi",
-    "mockCity": "Tbilisi",
-    "mockCuisine1": "Georgian Fusion",
-    "mockCuisine2": "Georgian Cuisine"
+    "loyaltyDescPost": "more points to get 10% discount at all restaurants."
   }
 }
