@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import LoginForm from '@/components/LoginForm';
 import { Locale, isValidLocale } from '@/i18n/config';
@@ -31,5 +32,9 @@ export default async function LoginPage({ params }: LoginPageProps) {
     notFound();
   }
 
-  return <LoginForm locale={locale as Locale} />;
+  return (
+    <Suspense fallback={null}>
+      <LoginForm locale={locale as Locale} />
+    </Suspense>
+  );
 }

@@ -21,8 +21,10 @@ export const iconStroke = '#90A1B9';
 // ── Rose ─────────────────────────────────────────────────────────────────
 export const rose50 = '#FFF0F3';
 export const rose100 = '#FFE0E8';
+export const rose200 = '#FFE4E6';
 export const rose600 = '#EC003F';
 export const rose700 = '#BE123C';
+export const rose800 = '#C70036';
 
 // ── Yellow ───────────────────────────────────────────────────────────────
 export const yellow500 = '#F0B100';
@@ -43,6 +45,7 @@ export const sky600 = '#0284C7';
 // ── Neutrals ─────────────────────────────────────────────────────────────
 export const white = '#FFFFFF';
 export const whiteTranslucent = '#ffffffE6';
+export const blackAlpha10 = '#0000001A';
 
 // ── Semantic aliases ─────────────────────────────────────────────────────
 export const foreground = slate900;
