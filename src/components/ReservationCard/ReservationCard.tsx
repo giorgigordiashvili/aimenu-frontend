@@ -42,6 +42,22 @@ const Card = styled('button')({
   },
 });
 
+const CardAlt = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '16px',
+  width: '100%',
+  padding: '16px',
+  background: white,
+  border: `1px solid ${border}`,
+  borderRadius: '14px',
+  cursor: 'pointer',
+  textAlign: 'left',
+  '&:hover': {
+    boxShadow: '0px 4px 12px rgba(0,0,0,0.08)',
+  },
+});
+
 const Thumbnail = styled('div')({
   width: '80px',
   height: '80px',
@@ -105,6 +121,10 @@ const RatingText = styled('span')({
   lineHeight: '16px',
 });
 
+const RatingWrapper = styled('div')({
+  width: 'fit-content',
+});
+
 const Right = styled('div')({
   display: 'flex',
   alignItems: 'center',
@@ -120,6 +140,18 @@ const GuestBadge = styled('span')({
   lineHeight: '18px',
   backgroundColor: `${rose600}18`,
   color: rose600,
+  whiteSpace: 'nowrap',
+});
+
+const GuestBadgeAlt = styled('span')({
+  padding: '4px 12px',
+  borderRadius: radiusSm,
+  fontSize: '13px',
+  fontWeight: 500,
+  lineHeight: '18px',
+  backgroundColor: rose50,
+  border: `1px solid ${rose200}`,
+  color: rose800,
   whiteSpace: 'nowrap',
 });
 
@@ -181,29 +213,16 @@ export function ReservationCardSkeleton() {
   );
 }
 
-// ─── Variant card shell ─────────────────────────────────────────────────────────
-
-const CardVariant = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '16px',
-  width: '100%',
-  padding: '16px',
-  background: white,
-  border: `1px solid ${border}`,
-  borderRadius: '14px',
-  cursor: 'pointer',
-  textAlign: 'left',
-  '&:hover': {
-    boxShadow: '0px 4px 12px rgba(0,0,0,0.08)',
-  },
-});
-
 // ─── Component ─────────────────────────────────────────────────────────────────
+
+function AltRatingStarIcon() {
+  return <Star color={foreground} size={10} />;
+}
 
 interface ReservationCardProps {
   reservation: ReservationList;
   onClick: (id: string) => void;
+  variant?: 'default' | 'alt';
   restaurantName?: string;
   restaurantImage?: string;
   restaurantCity?: string;
@@ -214,6 +233,7 @@ interface ReservationCardProps {
 export default function ReservationCard({
   reservation,
   onClick,
+  variant = 'default',
   restaurantName,
   restaurantImage,
   restaurantCity,
@@ -229,116 +249,71 @@ export default function ReservationCard({
       : `#${reservation.confirmation_code}`);
 
   const subtitle = [restaurantCity, restaurantCuisine].filter(Boolean).join(' • ');
-
   const guestLabel = `${reservation.party_size} ${t.reservations.guests}`;
 
-  return (
-    <Card onClick={() => onClick(reservation.id)}>
-      <Thumbnail>
-        {restaurantImage ? (
-          <Image src={restaurantImage} alt={title} fill style={{ objectFit: 'cover' }} />
-        ) : (
-          <ThumbnailPlaceholder />
-        )}
-      </Thumbnail>
-
-      <Content>
-        <RestaurantName>{title}</RestaurantName>
-        {subtitle && <Subtitle>{subtitle}</Subtitle>}
-        {restaurantRating && (
-          <RatingBadge>
-            <Star color='#FFB800' size={11} />
-            <RatingText>{restaurantRating}</RatingText>
-          </RatingBadge>
-        )}
-      </Content>
-
-      <Right>
-        <GuestBadge>{guestLabel}</GuestBadge>
-        <ChevronWrapper>
-          <SecondArrow />
-        </ChevronWrapper>
-      </Right>
-    </Card>
+  const thumbnail = (
+    <Thumbnail>
+      {restaurantImage ? (
+        <Image src={restaurantImage} alt={title} fill sizes='80px' style={{ objectFit: 'cover' }} />
+      ) : (
+        <ThumbnailPlaceholder />
+      )}
+    </Thumbnail>
   );
-}
 
-const VariantRatingWrapper = styled('div')({
-  width: 'fit-content',
-});
-
-const VariantGuestBadge = styled('span')({
-  padding: '4px 12px',
-  borderRadius: radiusSm,
-  fontSize: '13px',
-  fontWeight: 500,
-  lineHeight: '18px',
-  backgroundColor: rose50,
-  border: `1px solid ${rose200}`,
-  color: rose800,
-  whiteSpace: 'nowrap',
-});
-
-// ─── Variant ────────────────────────────────────────────────────────────────────
-
-function VariantRatingStarIcon() {
-  return <Star color={foreground} size={10} />;
-}
-
-export function ReservationCardVariant({
-  reservation,
-  onClick,
-  restaurantName,
-  restaurantImage,
-  restaurantCity,
-  restaurantCuisine,
-  restaurantRating,
-}: ReservationCardProps) {
-  const t = useTranslations();
-
-  const title =
-    restaurantName ||
-    (reservation.table_number
-      ? `${t.reservations.table} ${reservation.table_number}`
-      : `#${reservation.confirmation_code}`);
-
-  const subtitle = [restaurantCity, restaurantCuisine].filter(Boolean).join(' • ');
-
-  const guestLabel = `${reservation.party_size} ${t.reservations.guests}`;
-
-  return (
-    <CardVariant onClick={() => onClick(reservation.id)}>
-      <Thumbnail>
-        {restaurantImage ? (
-          <Image src={restaurantImage} alt={title} fill style={{ objectFit: 'cover' }} />
-        ) : (
-          <ThumbnailPlaceholder />
-        )}
-      </Thumbnail>
-
-      <Content>
-        <RestaurantName>{title}</RestaurantName>
-        {subtitle && <Subtitle>{subtitle}</Subtitle>}
-        {restaurantRating && (
-          <VariantRatingWrapper>
+  const content = (
+    <Content>
+      <RestaurantName>{title}</RestaurantName>
+      {subtitle && <Subtitle>{subtitle}</Subtitle>}
+      {restaurantRating &&
+        (variant === 'alt' ? (
+          <RatingWrapper>
             <MainButton
               variant='outline'
               size='extra_small'
               title={restaurantRating}
-              icon={VariantRatingStarIcon}
+              icon={AltRatingStarIcon}
               iconGap={4}
               iconPosition='right'
             />
-          </VariantRatingWrapper>
-        )}
-      </Content>
+          </RatingWrapper>
+        ) : (
+          <RatingBadge>
+            <Star color='#FFB800' size={11} />
+            <RatingText>{restaurantRating}</RatingText>
+          </RatingBadge>
+        ))}
+    </Content>
+  );
 
-      <Right>
-        <VariantGuestBadge>{guestLabel}</VariantGuestBadge>
-        <ChevronWrapper>
-          <SecondArrow />
-        </ChevronWrapper>
-      </Right>
-    </CardVariant>
+  const right = (
+    <Right>
+      {variant === 'alt' ? (
+        <GuestBadgeAlt>{guestLabel}</GuestBadgeAlt>
+      ) : (
+        <GuestBadge>{guestLabel}</GuestBadge>
+      )}
+      <ChevronWrapper>
+        <SecondArrow />
+      </ChevronWrapper>
+    </Right>
+  );
+
+  if (variant === 'alt') {
+    return (
+      <CardAlt onClick={() => onClick(reservation.id)}>
+        {thumbnail}
+        {content}
+        {right}
+      </CardAlt>
+    );
+  }
+
+  return (
+    <Card onClick={() => onClick(reservation.id)}>
+      {thumbnail}
+      {content}
+      {right}
+    </Card>
   );
 }

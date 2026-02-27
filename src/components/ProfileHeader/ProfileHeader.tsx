@@ -5,7 +5,6 @@ import Image from 'next/image';
 
 import MainButton from '@/components/MainButton/MainButton';
 import { useTranslations } from '@/context/LocaleContext';
-import { Locale } from '@/i18n/config';
 import EmailIcon from '@/icons/Email';
 import LocationIcon from '@/icons/Location';
 import LogoutIcon from '@/icons/Logout';
@@ -71,17 +70,6 @@ const AvatarCircle = styled('div')({
     width: '80px',
     height: '80px',
   },
-});
-
-const OnlineDot = styled('div')({
-  position: 'absolute',
-  bottom: '4px',
-  right: '4px',
-  width: '14px',
-  height: '14px',
-  borderRadius: '50%',
-  backgroundColor: '#22c55e',
-  border: `2px solid ${white}`,
 });
 
 const AvatarInitials = styled('span')({
@@ -168,7 +156,6 @@ interface ProfileHeaderProps {
   displayLocation?: string | null;
   initials: string;
   avatar?: string | null;
-  locale: Locale;
   logout: () => void;
   onHome: () => void;
 }
@@ -194,12 +181,17 @@ export default function ProfileHeader({
           <AvatarWrapper>
             <AvatarCircle>
               {avatar ? (
-                <Image src={avatar} alt={displayName} fill style={{ objectFit: 'cover' }} />
+                <Image
+                  src={avatar}
+                  alt={displayName}
+                  fill
+                  sizes='80px'
+                  style={{ objectFit: 'cover' }}
+                />
               ) : (
                 <AvatarInitials>{initials}</AvatarInitials>
               )}
             </AvatarCircle>
-            <OnlineDot />
           </AvatarWrapper>
 
           <ProfileMeta>

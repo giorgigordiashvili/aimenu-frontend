@@ -34,7 +34,8 @@ function formatDate(dateStr: string): string {
       month: 'short',
       year: 'numeric',
     });
-  } catch {
+  } catch (err) {
+    console.warn('Failed to parse date:', dateStr, err);
     return dateStr;
   }
 }
@@ -281,7 +282,7 @@ function DetailSkeleton() {
   );
 }
 
-// ─── Mock order items (replace when API provides this) ─────────────────────────
+// TODO: Replace with real API data once reservation detail endpoint includes order items
 
 const MOCK_ORDER_ITEMS: Record<string, OrderItem[]> = {
   'mock-1': [

@@ -9,7 +9,7 @@ const MOCK_PAGE_SIZE = 3;
 const TODAY = new Date().toISOString().split('T')[0];
 
 // ─── Mock ─────────────────────────────────────────────────────────────────────
-export const MOCK_MODE = process.env.NODE_ENV !== 'production';
+export const MOCK_MODE = process.env.NEXT_PUBLIC_USE_MOCK_RESERVATIONS === 'true';
 
 export const MOCK_PROFILE = {
   name: 'George Beridze',

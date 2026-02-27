@@ -1,1 +1,1 @@
-export { default, ReservationCardSkeleton, ReservationCardVariant } from './ReservationCard';
+export { default, ReservationCardSkeleton } from './ReservationCard';

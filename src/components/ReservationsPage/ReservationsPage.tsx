@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { reservationsMyCancelCreate } from '@/api/generated';
 import { ReservationList } from '@/api/generated/interfaces';
 import ProfileHeader from '@/components/ProfileHeader';
-import { ReservationCardSkeleton, ReservationCardVariant } from '@/components/ReservationCard';
+import ReservationCard, { ReservationCardSkeleton } from '@/components/ReservationCard';
 import ReservationDetailModal from '@/components/ReservationDetailModal';
 import ReservationsSidebar from '@/components/ReservationsSidebar';
 import { ReservationsSidebarProps } from '@/components/ReservationsSidebar/ReservationsSidebar';
@@ -217,32 +217,42 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
     mutate: mutateHistory,
   } = useHistoryReservations(historyPage);
 
+  // Stable string keys derived from IDs so effects only fire when the
+  // actual items change, not on every SWR revalidation that returns a
+  // new array reference with unchanged contents.
+  const activeKey = activeData.map(r => r.id).join(',');
+  const historyKey = historyData.map(r => r.id).join(',');
+
+  // Keep refs so effects can read current data without being in the dep array.
+  const activeDataRef = useRef(activeData);
+  activeDataRef.current = activeData;
+  const historyDataRef = useRef(historyData);
+  historyDataRef.current = historyData;
+
   // Accumulate pages
   useEffect(() => {
-    if (!activeLoading && activeData.length > 0) {
+    const data = activeDataRef.current;
+    if (!activeLoading && data.length > 0) {
       setAllActive(prev =>
-        activePage === 1
-          ? activeData
-          : [...prev, ...activeData.filter(r => !prev.find(p => p.id === r.id))]
+        activePage === 1 ? data : [...prev, ...data.filter(r => !prev.find(p => p.id === r.id))]
       );
     }
-    if (activePage === 1 && !activeLoading && activeData.length === 0) {
+    if (activePage === 1 && !activeLoading && data.length === 0) {
       setAllActive(prev => (prev.length === 0 ? prev : []));
     }
-  }, [activeData, activePage, activeLoading]);
+  }, [activeKey, activePage, activeLoading]);
 
   useEffect(() => {
-    if (!historyLoading && historyData.length > 0) {
+    const data = historyDataRef.current;
+    if (!historyLoading && data.length > 0) {
       setAllHistory(prev =>
-        historyPage === 1
-          ? historyData
-          : [...prev, ...historyData.filter(r => !prev.find(p => p.id === r.id))]
+        historyPage === 1 ? data : [...prev, ...data.filter(r => !prev.find(p => p.id === r.id))]
       );
     }
-    if (historyPage === 1 && !historyLoading && historyData.length === 0) {
+    if (historyPage === 1 && !historyLoading && data.length === 0) {
       setAllHistory(prev => (prev.length === 0 ? prev : []));
     }
-  }, [historyData, historyPage, historyLoading]);
+  }, [historyKey, historyPage, historyLoading]);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -316,7 +326,6 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
         displayLocation={displayLocation}
         initials={initials}
         avatar={user.avatar}
-        locale={locale}
         logout={logout}
         onHome={() => router.push(`/${locale}`)}
       />
@@ -345,8 +354,9 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
                 ) : (
                   <>
                     {allActive.map(r => (
-                      <ReservationCardVariant
+                      <ReservationCard
                         key={r.id}
+                        variant='alt'
                         reservation={r}
                         onClick={setSelectedId}
                         {...(getMockRestaurantData(r.id) ?? {})}
@@ -392,8 +402,9 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
                 ) : (
                   <>
                     {allHistory.map(r => (
-                      <ReservationCardVariant
+                      <ReservationCard
                         key={r.id}
+                        variant='alt'
                         reservation={r}
                         onClick={setSelectedId}
                         {...(getMockRestaurantData(r.id) ?? {})}
