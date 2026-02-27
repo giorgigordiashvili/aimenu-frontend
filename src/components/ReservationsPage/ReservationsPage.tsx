@@ -2,10 +2,9 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { reservationsMyCancelCreate } from '@/api/generated';
-import { ReservationList } from '@/api/generated/interfaces';
 import ProfileHeader from '@/components/ProfileHeader';
 import ReservationCard, { ReservationCardSkeleton } from '@/components/ReservationCard';
 import ReservationDetailModal from '@/components/ReservationDetailModal';
@@ -14,13 +13,9 @@ import { ReservationsSidebarProps } from '@/components/ReservationsSidebar/Reser
 import ReservationsTabNav from '@/components/ReservationsTabNav';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from '@/context/LocaleContext';
-import {
-  getMockRestaurantData,
-  MOCK_MODE,
-  MOCK_PROFILE,
-  useActiveReservations,
-  useHistoryReservations,
-} from '@/hooks/useReservations';
+import { getMockRestaurantData, MOCK_MODE, MOCK_PROFILE } from '@/hooks/useReservations';
+import { useReservationsPagination } from '@/hooks/useReservationsPagination';
+import { useToast } from '@/hooks/useToast';
 import { Locale } from '@/i18n/config';
 import ClockIcon from '@/icons/Clock';
 import HistoryIcon from '@/icons/History';
@@ -192,86 +187,34 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
   const router = useRouter();
 
   const { user, isLoading: authLoading, logout } = useAuth();
-
-  const [activePage, setActivePage] = useState(1);
-  const [historyPage, setHistoryPage] = useState(1);
-  const [allActive, setAllActive] = useState<ReservationList[]>([]);
-  const [allHistory, setAllHistory] = useState<ReservationList[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { toast, showToast } = useToast();
 
   const {
-    reservations: activeData,
-    count: activeCount,
-    hasMore: activeHasMore,
-    isLoading: activeLoading,
-    mutate: mutateActive,
-  } = useActiveReservations(activePage);
-
-  const {
-    reservations: historyData,
-    count: historyCount,
-    hasMore: historyHasMore,
-    isLoading: historyLoading,
-    mutate: mutateHistory,
-  } = useHistoryReservations(historyPage);
-
-  // Stable string keys derived from IDs so effects only fire when the
-  // actual items change, not on every SWR revalidation that returns a
-  // new array reference with unchanged contents.
-  const activeKey = activeData.map(r => r.id).join(',');
-  const historyKey = historyData.map(r => r.id).join(',');
-
-  // Keep refs so effects can read current data without being in the dep array.
-  const activeDataRef = useRef(activeData);
-  activeDataRef.current = activeData;
-  const historyDataRef = useRef(historyData);
-  historyDataRef.current = historyData;
-
-  // Accumulate pages
-  useEffect(() => {
-    const data = activeDataRef.current;
-    if (!activeLoading && data.length > 0) {
-      setAllActive(prev =>
-        activePage === 1 ? data : [...prev, ...data.filter(r => !prev.find(p => p.id === r.id))]
-      );
-    }
-    if (activePage === 1 && !activeLoading && data.length === 0) {
-      setAllActive(prev => (prev.length === 0 ? prev : []));
-    }
-  }, [activeKey, activePage, activeLoading]);
-
-  useEffect(() => {
-    const data = historyDataRef.current;
-    if (!historyLoading && data.length > 0) {
-      setAllHistory(prev =>
-        historyPage === 1 ? data : [...prev, ...data.filter(r => !prev.find(p => p.id === r.id))]
-      );
-    }
-    if (historyPage === 1 && !historyLoading && data.length === 0) {
-      setAllHistory(prev => (prev.length === 0 ? prev : []));
-    }
-  }, [historyKey, historyPage, historyLoading]);
-
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 3000);
-  }, []);
+    allActive,
+    allHistory,
+    activeCount,
+    historyCount,
+    activeHasMore,
+    historyHasMore,
+    activeLoading,
+    historyLoading,
+    activePage,
+    historyPage,
+    loadMoreActive,
+    collapseActive,
+    loadMoreHistory,
+    collapseHistory,
+    resetPagination,
+  } = useReservationsPagination();
 
   const handleCancel = useCallback(
     async (id: string) => {
       await reservationsMyCancelCreate(id);
-      setActivePage(1);
-      setHistoryPage(1);
-      setAllActive([]);
-      setAllHistory([]);
-      mutateActive();
-      mutateHistory();
+      resetPagination();
       showToast(t.reservations.cancelSuccess);
     },
-    [mutateActive, mutateHistory, showToast, t.reservations.cancelSuccess]
+    [resetPagination, showToast, t.reservations.cancelSuccess]
   );
 
   // Auth redirect
@@ -316,6 +259,8 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
     loyaltyPoints,
     totalSpent,
   };
+
+  const selectedRestaurant = selectedId ? getMockRestaurantData(selectedId) : null;
 
   return (
     <PageWrapper>
@@ -363,16 +308,11 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
                       />
                     ))}
                     {activeHasMore ? (
-                      <LoadMoreText onClick={() => setActivePage(p => p + 1)}>
+                      <LoadMoreText onClick={loadMoreActive}>
                         {t.reservations.loadMore}
                       </LoadMoreText>
                     ) : activePage > 1 ? (
-                      <LoadMoreText
-                        onClick={() => {
-                          setActivePage(1);
-                          setAllActive([]);
-                        }}
-                      >
+                      <LoadMoreText onClick={collapseActive}>
                         {t.reservations.loadLess}
                       </LoadMoreText>
                     ) : null}
@@ -411,16 +351,11 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
                       />
                     ))}
                     {historyHasMore ? (
-                      <LoadMoreText onClick={() => setHistoryPage(p => p + 1)}>
+                      <LoadMoreText onClick={loadMoreHistory}>
                         {t.reservations.loadMore}
                       </LoadMoreText>
                     ) : historyPage > 1 ? (
-                      <LoadMoreText
-                        onClick={() => {
-                          setHistoryPage(1);
-                          setAllHistory([]);
-                        }}
-                      >
+                      <LoadMoreText onClick={collapseHistory}>
                         {t.reservations.loadLess}
                       </LoadMoreText>
                     ) : null}
@@ -444,18 +379,18 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
         reservationId={selectedId}
         onClose={() => setSelectedId(null)}
         onConfirmCancel={handleCancel}
-        restaurantName={selectedId ? getMockRestaurantData(selectedId)?.restaurantName : undefined}
-        restaurantImage={
-          selectedId ? getMockRestaurantData(selectedId)?.restaurantImage : undefined
+        restaurantName={selectedRestaurant?.restaurantName}
+        restaurantImage={selectedRestaurant?.restaurantImage}
+        restaurantSubtitle={
+          selectedRestaurant
+            ? `${selectedRestaurant.restaurantCity} · ${selectedRestaurant.restaurantCuisine}`
+            : undefined
         }
-        restaurantSubtitle={(() => {
-          const d = selectedId ? getMockRestaurantData(selectedId) : null;
-          return d ? `${d.restaurantCity} · ${d.restaurantCuisine}` : undefined;
-        })()}
-        restaurantRating={(() => {
-          const d = selectedId ? getMockRestaurantData(selectedId) : null;
-          return d ? parseFloat(d.restaurantRating) || undefined : undefined;
-        })()}
+        restaurantRating={
+          selectedRestaurant
+            ? parseFloat(selectedRestaurant.restaurantRating) || undefined
+            : undefined
+        }
       />
 
       {toast && <Toast>{toast}</Toast>}

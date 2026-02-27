@@ -33,7 +33,7 @@ export default async function LoginPage({ params }: LoginPageProps) {
   }
 
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <LoginForm locale={locale as Locale} />
     </Suspense>
   );

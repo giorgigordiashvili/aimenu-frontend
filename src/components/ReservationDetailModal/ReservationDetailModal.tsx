@@ -3,7 +3,7 @@
 import { styled, keyframes } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
 
-import BookingOrderSummary, { OrderItem } from '@/components/BookingOrderSummary';
+import BookingOrderSummary from '@/components/BookingOrderSummary';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import MainButton from '@/components/MainButton/MainButton';
 import { useTranslations } from '@/context/LocaleContext';
@@ -12,6 +12,7 @@ import CalendarIcon from '@/icons/Calendar';
 import CloseIcon from '@/icons/Close';
 import DeleteIcon from '@/icons/Delete';
 import PeopleIcon from '@/icons/People';
+import { MOCK_DEPOSIT, MOCK_ORDER_ITEMS } from '@/mocks/reservations';
 import {
   background,
   border,
@@ -34,8 +35,7 @@ function formatDate(dateStr: string): string {
       month: 'short',
       year: 'numeric',
     });
-  } catch (err) {
-    console.warn('Failed to parse date:', dateStr, err);
+  } catch {
     return dateStr;
   }
 }
@@ -272,39 +272,32 @@ const SkeletonBase = styled('div')({
   animation: `${shimmer} 1.5s infinite`,
 });
 
+const SkeletonWrapper = styled('div')({
+  padding: '20px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '16px',
+});
+
+const SkeletonSm = styled(SkeletonBase)({ height: '80px' });
+const SkeletonMd = styled(SkeletonBase)({ height: '120px' });
+const SkeletonLg = styled(SkeletonBase)({ height: '200px' });
+
 function DetailSkeleton() {
   return (
-    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <SkeletonBase style={{ height: '80px' }} />
-      <SkeletonBase style={{ height: '120px' }} />
-      <SkeletonBase style={{ height: '200px' }} />
-    </div>
+    <SkeletonWrapper>
+      <SkeletonSm />
+      <SkeletonMd />
+      <SkeletonLg />
+    </SkeletonWrapper>
   );
 }
 
-// TODO: Replace with real API data once reservation detail endpoint includes order items
-
-const MOCK_ORDER_ITEMS: Record<string, OrderItem[]> = {
-  'mock-1': [
-    { id: 'item-1a', quantity: 2, name: 'ხინკალი (5 ცალი)', price: 15.0 },
-    { id: 'item-1b', quantity: 1, name: 'გარდამა', price: 18.5 },
-  ],
-  'mock-2': [
-    { id: 'item-2a', quantity: 1, name: 'შემწვარი ქათამი', price: 22.0 },
-    { id: 'item-2b', quantity: 2, name: 'ხაჭაფური', price: 12.0 },
-    { id: 'item-2c', quantity: 1, name: 'ბოსტნეულის სალათი', price: 9.0 },
-  ],
-  'mock-3': [
-    { id: 'item-3a', quantity: 3, name: 'ხინკალი (5 ცალი)', price: 22.5 },
-    { id: 'item-3b', quantity: 1, name: 'ოსტრი', price: 16.0 },
-  ],
-  'mock-6': [
-    { id: 'item-6a', quantity: 2, name: 'ჩაშუშული', price: 28.0 },
-    { id: 'item-6b', quantity: 1, name: 'ეგგ ბენედიქტი', price: 14.0 },
-  ],
-};
-
-const MOCK_DEPOSIT = 10.0;
+const GuestsContent = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2px',
+});
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
@@ -401,12 +394,12 @@ export default function ReservationDetailModal({
                   <SectionIconWrap>
                     <PeopleIcon />
                   </SectionIconWrap>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <GuestsContent>
                     <FieldLabel>{t.booking.guests}</FieldLabel>
                     <FieldValue>
                       {reservation.party_size} {t.booking.persons}
                     </FieldValue>
-                  </div>
+                  </GuestsContent>
                 </GuestsBox>
               </ReservationSection>
 

@@ -42,7 +42,7 @@ const Card = styled('button')({
   },
 });
 
-const CardAlt = styled('div')({
+const CardAlt = styled('button')({
   display: 'flex',
   alignItems: 'center',
   gap: '16px',
@@ -222,6 +222,8 @@ function AltRatingStarIcon() {
 interface ReservationCardProps {
   reservation: ReservationList;
   onClick: (id: string) => void;
+  // 'default' — shadowed card with yellow star rating badge; used in compact list contexts
+  // 'alt'     — borderless flat card with outline rating button; used in the My Reservations page
   variant?: 'default' | 'alt';
   restaurantName?: string;
   restaurantImage?: string;
