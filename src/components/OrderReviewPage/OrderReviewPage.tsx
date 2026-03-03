@@ -194,11 +194,11 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     <Wrapper>
       <ContentContainer>
         {/* Restaurant Card */}
-        {/* TODO: Replace hardcoded restaurant data with dynamic data from cart context or API */}
+        {/* TODO: Fetch restaurant data from API using restaurantSlug from cart context */}
         <BookingRestaurantCard
-          name='სტეფანო'
-          subtitle='იტალიური სამზარეულო'
-          rating={4.8}
+          name={t.orderReview.restaurantPlaceholder}
+          subtitle={t.orderReview.cuisinePlaceholder}
+          rating={0}
           image='/demo/RestaurantCardImage.jpg'
         />
 
@@ -224,7 +224,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
           </CancelButton>
           <SendInvitationButton type='button' onClick={handleSendInvitation}>
             {t.orderReview.sendInvitation}
-            <ArrowRightIcon color='#ffffff' />
+            <ArrowRightIcon color={white} />
           </SendInvitationButton>
         </ActionButtonsContainer>
       </ContentContainer>
