@@ -10,7 +10,7 @@ import AddPeopleIcon from '@/icons/AddPeople';
 import CloseIcon from '@/icons/Close';
 import EmailIcon from '@/icons/Email';
 import PeopleIcon from '@/icons/People';
-import { border, foreground, slate500, white, primary } from '@/tokens';
+import { border, foreground, slate500, white, primary, slate50, red50, slate100 } from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,7 +43,7 @@ const AddGuestCard = styled('div')({
   gap: '12px',
   padding: '20px 24px',
   borderRadius: '12px',
-  backgroundColor: '#F8FAFC',
+  backgroundColor: slate50,
   marginBottom: '16px',
   border: `1px solid ${border}`,
   overflow: 'hidden',
@@ -84,7 +84,7 @@ const GuestAvatar = styled('div')({
   width: '40px',
   height: '40px',
   borderRadius: '50%',
-  backgroundColor: '#FEE2E2',
+  backgroundColor: red50,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -130,7 +130,7 @@ const RemoveButton = styled('button')({
   cursor: 'pointer',
   transition: 'all 0.2s ease',
   '&:hover': {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: slate100,
   },
 });
 

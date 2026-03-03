@@ -1,8 +1,8 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useState, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState, useCallback } from 'react';
 
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import GuestAddSection from '@/components/GuestAddSection';
@@ -13,15 +13,15 @@ import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
 import { Locale } from '@/i18n/config';
 import ArrowRightIcon from '@/icons/ArrowRight';
-import { background, border, foreground, slate500, white } from '@/tokens';
+import { background, border, foreground, slate500, white, slate100, lime500, lime600 } from '@/tokens';
 
-// Types
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface OrderReviewPageProps {
   locale: Locale;
 }
 
-// Styled components
+// ─── Styled components ────────────────────────────────────────────────────────
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -70,6 +70,7 @@ const PageSubtitle = styled('p')({
   lineHeight: '22px',
 });
 
+// Empty state
 const EmptyState = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -110,7 +111,7 @@ const CancelButton = styled('button')({
   cursor: 'pointer',
   transition: 'background-color 0.2s ease',
   '&:hover': {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: slate100,
   },
 });
 
@@ -123,7 +124,7 @@ const SendInvitationButton = styled('button')({
   padding: '16px 32px',
   borderRadius: '12px',
   border: 'none',
-  backgroundColor: '#84CC16',
+  backgroundColor: lime500,
   color: white,
   fontSize: '16px',
   fontWeight: 500,
@@ -131,55 +132,38 @@ const SendInvitationButton = styled('button')({
   cursor: 'pointer',
   transition: 'background-color 0.2s ease',
   '&:hover': {
-    backgroundColor: '#65A30D',
+    backgroundColor: lime600,
   },
 });
 
-const LoadingWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  minHeight: '100vh',
-  backgroundColor: background,
-});
+// ─── Component ────────────────────────────────────────────────────────────────
 
-// Mock Data
-
-const MOCK_CART_ITEMS = [
-  { id: 'mock-1', name: 'სალათი ცეზარი', price: 18 },
-  { id: 'mock-2', name: 'მარგარიტა პიცა', price: 24 },
-];
-
-// Inner component that uses useSearchParams
-function OrderReviewPageContent({ locale }: OrderReviewPageProps) {
+export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const t = useTranslations();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { items: cartItems, restaurantSlug } = useCart();
-
-  const useMockData = searchParams.get('mock') === 'true';
-  const items = useMemo(() => {
-    return useMockData ? MOCK_CART_ITEMS : cartItems;
-  }, [useMockData, cartItems]);
+  const { items } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('iWillPay');
 
   const handleBackToMenu = useCallback(() => {
-    if (restaurantSlug) {
-      router.push(`/${locale}/restaurant/${restaurantSlug}`);
-    } else {
-      router.push(`/${locale}/restaurants`);
-    }
-  }, [locale, restaurantSlug, router]);
+    router.push(`/${locale}`);
+  }, [locale, router]);
 
   const handleCancel = useCallback(() => {
+    // Navigate back to the previous page or restaurant page
     router.back();
   }, [router]);
 
   const handleSendInvitation = useCallback(() => {
     // TODO: Implement send invitation logic
+    // This should:
+    // 1. Validate that at least one guest has been added or invite link was created
+    // 2. Send invitation emails/SMS to all guests
+    // 3. Create order record in backend with payment method and guest list
+    // 4. Navigate to order confirmation or payment page
   }, []);
 
+  // Empty cart state
   if (items.length === 0) {
     return (
       <Wrapper>
@@ -200,6 +184,8 @@ function OrderReviewPageContent({ locale }: OrderReviewPageProps) {
   return (
     <Wrapper>
       <ContentContainer>
+        {/* Restaurant Card */}
+        {/* TODO: Replace hardcoded restaurant data with dynamic data from cart context or API */}
         <BookingRestaurantCard
           name='სტეფანო'
           subtitle='იტალიური სამზარეულო'
@@ -209,15 +195,20 @@ function OrderReviewPageContent({ locale }: OrderReviewPageProps) {
 
         <Divider />
 
+        {/* Title Section */}
         <PageTitle>{t.orderReview.title}</PageTitle>
         <PageSubtitle>{t.orderReview.subtitle}</PageSubtitle>
 
+        {/* Payment Method Section */}
         <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
 
+        {/* Invite Link Section */}
         <InviteFriendsSection locale={locale} paymentMethod={paymentMethod} />
 
+        {/* Guest Add Section */}
         <GuestAddSection />
 
+        {/* Action Buttons */}
         <ActionButtonsContainer>
           <CancelButton type='button' onClick={handleCancel}>
             {t.orderReview.cancel}
@@ -229,14 +220,5 @@ function OrderReviewPageContent({ locale }: OrderReviewPageProps) {
         </ActionButtonsContainer>
       </ContentContainer>
     </Wrapper>
-  );
-}
-
-// Main component wrapped with Suspense
-export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
-  return (
-    <Suspense fallback={<LoadingWrapper>Loading...</LoadingWrapper>}>
-      <OrderReviewPageContent locale={locale} />
-    </Suspense>
   );
 }

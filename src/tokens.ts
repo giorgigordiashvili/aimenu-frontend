@@ -33,11 +33,17 @@ export const yellow500 = '#F0B100';
 export const green50 = '#F0FDF4';
 export const green500 = '#8CC63E';
 export const green600 = '#16A34A';
-export const lime500 = '#9AE600';
-export const lime600 = '#7AB234';
+export const lime500 = '#84CC16';
+export const lime600 = '#65A30D';
+export const lime700 = '#7AB234';
 
 // ── Red ──────────────────────────────────────────────────────────────────
+export const red50 = '#FEE2E2';
 export const red600 = '#DC2626';
+
+// ── Blue ─────────────────────────────────────────────────────────────────
+export const blue50 = '#EFF6FF';
+export const blue500 = '#3B82F6';
 
 // ── Sky ──────────────────────────────────────────────────────────────────
 export const sky600 = '#0284C7';

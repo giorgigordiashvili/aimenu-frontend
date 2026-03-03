@@ -5,7 +5,7 @@ import { styled } from '@pigment-css/react';
 import { useTranslations } from '@/context/LocaleContext';
 import CreditCardIcon from '@/icons/CreditCard';
 import People from '@/icons/People';
-import { border, foreground, primary, slate500, white, rose50 } from '@/tokens';
+import { border, foreground, primary, slate500, white, rose50, iconStroke } from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -125,7 +125,7 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
           onClick={() => onChange('iWillPay')}
         >
           <PaymentCardIcon>
-            <CreditCardIcon color={value === 'iWillPay' ? '#0F172B' : '#90A1B9'} />
+            <CreditCardIcon color={value === 'iWillPay' ? foreground : iconStroke} />
           </PaymentCardIcon>
           <PaymentCardTitle>{t.orderReview.iWillPay}</PaymentCardTitle>
           <PaymentCardDescription>{t.orderReview.iWillPayDescription}</PaymentCardDescription>

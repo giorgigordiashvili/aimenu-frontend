@@ -6,9 +6,19 @@ import { useState, useCallback } from 'react';
 import MainButton from '@/components/MainButton/MainButton';
 import { useTranslations } from '@/context/LocaleContext';
 import { Locale } from '@/i18n/config';
+import CheckmarkIcon from '@/icons/Checkmark';
 import CopyIcon from '@/icons/Copy';
 import InviteArrow from '@/icons/InviteArrow';
-import { background, border, foreground, slate500, white } from '@/tokens';
+import {
+  background,
+  border,
+  foreground,
+  slate500,
+  white,
+  slate50,
+  blue50,
+  blue500,
+} from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -103,7 +113,7 @@ const CopyButton = styled('button')({
   transition: 'all 0.2s ease',
   flexShrink: 0,
   '&:hover': {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: slate50,
   },
 });
 
@@ -113,7 +123,7 @@ const InfoMessage = styled('div')({
   gap: '12px',
   padding: '16px',
   borderRadius: '12px',
-  backgroundColor: '#EFF6FF',
+  backgroundColor: blue50,
   border: 'none',
 });
 
@@ -121,7 +131,7 @@ const InfoText = styled('p')({
   margin: 0,
   fontSize: '14px',
   fontWeight: 400,
-  color: '#3B82F6',
+  color: blue500,
   lineHeight: '20px',
 });
 
@@ -132,7 +142,7 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
 
   const [isCreatingLink, setIsCreatingLink] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
-  const [_linkCopied, setLinkCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const handleCreateLink = useCallback(async () => {
     setIsCreatingLink(true);
@@ -158,7 +168,8 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
     } catch {
-      // Fallback for browsers that don't support clipboard API
+      // Legacy fallback for browsers that don't support clipboard API
+      // Note: document.execCommand('copy') is deprecated but still works in most browsers
       const textArea = document.createElement('textarea');
       textArea.value = generatedLink;
       document.body.appendChild(textArea);
@@ -213,8 +224,8 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
           <LinkInputWrapper>
             <LinkInput type='text' value={generatedLink} readOnly />
           </LinkInputWrapper>
-          <CopyButton onClick={handleCopyLink}>
-            <CopyIcon />
+          <CopyButton onClick={handleCopyLink} title={linkCopied ? t.orderReview.linkCopied : undefined}>
+            {linkCopied ? <CheckmarkIcon /> : <CopyIcon />}
           </CopyButton>
         </GeneratedLinkRow>
         <InfoMessage>
