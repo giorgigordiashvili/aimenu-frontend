@@ -224,7 +224,10 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
           <LinkInputWrapper>
             <LinkInput type='text' value={generatedLink} readOnly />
           </LinkInputWrapper>
-          <CopyButton onClick={handleCopyLink} title={linkCopied ? t.orderReview.linkCopied : undefined}>
+          <CopyButton
+            onClick={handleCopyLink}
+            title={linkCopied ? t.orderReview.linkCopied : undefined}
+          >
             {linkCopied ? <CheckmarkIcon /> : <CopyIcon />}
           </CopyButton>
         </GeneratedLinkRow>

@@ -13,7 +13,16 @@ import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
 import { Locale } from '@/i18n/config';
 import ArrowRightIcon from '@/icons/ArrowRight';
-import { background, border, foreground, slate500, white, slate100, lime500, lime600 } from '@/tokens';
+import {
+  background,
+  border,
+  foreground,
+  slate500,
+  white,
+  slate100,
+  lime500,
+  lime600,
+} from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
