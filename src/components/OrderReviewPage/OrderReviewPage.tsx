@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useCallback, useMemo } from 'react';
+import { Suspense, useState, useCallback, useMemo } from 'react';
 
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import GuestAddSection from '@/components/GuestAddSection';
@@ -135,6 +135,14 @@ const SendInvitationButton = styled('button')({
   },
 });
 
+const LoadingWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: '100vh',
+  backgroundColor: background,
+});
+
 // Mock Data
 
 const MOCK_CART_ITEMS = [
@@ -142,9 +150,8 @@ const MOCK_CART_ITEMS = [
   { id: 'mock-2', name: 'მარგარიტა პიცა', price: 24 },
 ];
 
-// Component
-
-export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
+// Inner component that uses useSearchParams
+function OrderReviewPageContent({ locale }: OrderReviewPageProps) {
   const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -222,5 +229,14 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
         </ActionButtonsContainer>
       </ContentContainer>
     </Wrapper>
+  );
+}
+
+// Main component wrapped with Suspense
+export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
+  return (
+    <Suspense fallback={<LoadingWrapper>Loading...</LoadingWrapper>}>
+      <OrderReviewPageContent locale={locale} />
+    </Suspense>
   );
 }
