@@ -293,6 +293,8 @@
     "addGuestTitle": "დაამატეთ სტუმარი",
     "namePlaceholder": "სახელი და გვარი",
     "contactPlaceholder": "ელ-ფოსტა ან ტელეფონი",
-    "addToList": "დამატება სიაში"
+    "addToList": "დამატება სიაში",
+    "restaurantPlaceholder": "რესტორანი",
+    "cuisinePlaceholder": "სამზარეულო"
   }
 }

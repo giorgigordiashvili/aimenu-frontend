@@ -293,6 +293,8 @@
     "addGuestTitle": "Add Guest",
     "namePlaceholder": "Name and surname",
     "contactPlaceholder": "Email or phone",
-    "addToList": "Add to list"
+    "addToList": "Add to list",
+    "restaurantPlaceholder": "Restaurant",
+    "cuisinePlaceholder": "Cuisine"
   }
 }

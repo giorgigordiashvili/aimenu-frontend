@@ -293,6 +293,8 @@
     "addGuestTitle": "Добавить гостя",
     "namePlaceholder": "Имя и фамилия",
     "contactPlaceholder": "Email или телефон",
-    "addToList": "Добавить в список"
+    "addToList": "Добавить в список",
+    "restaurantPlaceholder": "Ресторан",
+    "cuisinePlaceholder": "Кухня"
   }
 }
