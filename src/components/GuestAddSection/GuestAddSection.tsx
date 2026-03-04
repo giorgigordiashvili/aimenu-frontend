@@ -142,9 +142,39 @@ export default function GuestAddSection() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
+  const [contactError, setContactError] = useState<string | null>(null);
+
+  // Basic email/phone validation - defined outside component or as stable references
+  const isValidContact = useCallback((value: string): boolean => {
+    const trimmed = value.trim();
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(trimmed)) return true;
+    // Phone validation - accepts formats: +1234567890, 123-456-7890, (123) 456-7890, etc.
+    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{6,}$/;
+    return phoneRegex.test(trimmed.replace(/\s/g, ''));
+  }, []);
+
+  const handleContactChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setContact(value);
+      // Clear error when user starts typing again
+      if (contactError) {
+        setContactError(null);
+      }
+    },
+    [contactError]
+  );
 
   const handleAddGuest = useCallback(() => {
     if (!name.trim() || !contact.trim()) return;
+
+    // Validate contact before adding
+    if (!isValidContact(contact)) {
+      setContactError('Please enter a valid email or phone number');
+      return;
+    }
 
     const newGuest: Guest = {
       id: crypto.randomUUID(),
@@ -155,7 +185,8 @@ export default function GuestAddSection() {
     setGuests(prev => [...prev, newGuest]);
     setName('');
     setContact('');
-  }, [name, contact]);
+    setContactError(null);
+  }, [name, contact, isValidContact]);
 
   const handleRemoveGuest = useCallback((id: string) => {
     setGuests(prev => prev.filter(guest => guest.id !== id));
@@ -207,7 +238,8 @@ export default function GuestAddSection() {
           icon={EmailIcon}
           placeholder={t.orderReview.contactPlaceholder}
           value={contact}
-          onChange={e => setContact(e.target.value)}
+          onChange={handleContactChange}
+          errorMessage={contactError || undefined}
         />
         <MainButton
           variant='outline'

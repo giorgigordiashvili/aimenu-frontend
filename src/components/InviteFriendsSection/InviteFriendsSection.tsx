@@ -147,9 +147,15 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
   const handleCreateLink = useCallback(async () => {
     setIsCreatingLink(true);
     try {
-      // TODO: Call API to create invitation link
+      // TODO: IMPORTANT - Replace with backend API call to create validated invitation link
+      // Current implementation uses client-side UUID which creates dead URLs
+      // Backend should:
+      // 1. Generate a unique, validated invite code
+      // 2. Store it with order/session data
+      // 3. Return the shareable URL
+      // Example: const response = await api.post('/invitations', { orderId, locale });
       await new Promise(resolve => setTimeout(resolve, 1000));
-      // Generate a UUID-based link
+      // Generate a UUID-based link (temporary - needs backend validation)
       const uuid = crypto.randomUUID();
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
       const inviteLink = `${baseUrl}/${locale}/order-review/invite/${uuid}`;
@@ -170,14 +176,23 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
     } catch {
       // Legacy fallback for browsers that don't support clipboard API
       // Note: document.execCommand('copy') is deprecated but still works in most browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = generatedLink;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setLinkCopied(true);
-      setTimeout(() => setLinkCopied(false), 2000);
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = generatedLink;
+        // Make the textarea invisible
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+      } catch {
+        // If both methods fail, silently ignore - user can manually copy
+        console.warn('Failed to copy link to clipboard');
+      }
     }
   }, [generatedLink]);
 

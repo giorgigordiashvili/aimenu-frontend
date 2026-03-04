@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import GuestAddSection from '@/components/GuestAddSection';
@@ -11,6 +11,7 @@ import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
 import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
+import { useToast } from '@/hooks/useToast';
 import { Locale } from '@/i18n/config';
 import ArrowRightIcon from '@/icons/ArrowRight';
 import {
@@ -145,14 +146,50 @@ const SendInvitationButton = styled('button')({
   },
 });
 
+const ToastContainer = styled('div')({
+  position: 'fixed',
+  bottom: '24px',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  backgroundColor: foreground,
+  color: white,
+  padding: '12px 24px',
+  borderRadius: '8px',
+  fontSize: '14px',
+  fontWeight: 500,
+  zIndex: 1000,
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+});
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const t = useTranslations();
   const router = useRouter();
-  const { items } = useCart();
+  const { items, restaurantSlug } = useCart();
+  const { toast, showToast } = useToast();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('iWillPay');
+
+  // Restaurant data state - TODO: Replace with actual API call when backend is ready
+  const [restaurantData, setRestaurantData] = useState({
+    name: t.orderReview.restaurantPlaceholder,
+    subtitle: t.orderReview.cuisinePlaceholder,
+    rating: 0,
+    image: '/demo/RestaurantCardImage.jpg',
+  });
+
+  // Fetch restaurant data when slug is available
+  useEffect(() => {
+    if (!restaurantSlug) return;
+
+    // TODO: Replace with actual API call: fetchRestaurantBySlug(restaurantSlug)
+    // For now, use slug as a display name fallback
+    setRestaurantData(prev => ({
+      ...prev,
+      name: restaurantSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+    }));
+  }, [restaurantSlug]);
 
   const handleBackToMenu = useCallback(() => {
     router.push(`/${locale}`);
@@ -170,7 +207,8 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     // 2. Send invitation emails/SMS to all guests
     // 3. Create order record in backend with payment method and guest list
     // 4. Navigate to order confirmation or payment page
-  }, []);
+    showToast('Coming soon! This feature is under development.');
+  }, [showToast]);
 
   // Empty cart state
   if (items.length === 0) {
@@ -194,12 +232,11 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     <Wrapper>
       <ContentContainer>
         {/* Restaurant Card */}
-        {/* TODO: Fetch restaurant data from API using restaurantSlug from cart context */}
         <BookingRestaurantCard
-          name={t.orderReview.restaurantPlaceholder}
-          subtitle={t.orderReview.cuisinePlaceholder}
-          rating={0}
-          image='/demo/RestaurantCardImage.jpg'
+          name={restaurantData.name}
+          subtitle={restaurantData.subtitle}
+          rating={restaurantData.rating}
+          image={restaurantData.image}
         />
 
         <Divider />
@@ -228,6 +265,9 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
           </SendInvitationButton>
         </ActionButtonsContainer>
       </ContentContainer>
+
+      {/* Toast notification */}
+      {toast && <ToastContainer>{toast}</ToastContainer>}
     </Wrapper>
   );
 }
