@@ -295,6 +295,7 @@
     "contactPlaceholder": "Email or phone",
     "addToList": "Add to list",
     "restaurantPlaceholder": "Restaurant",
-    "cuisinePlaceholder": "Cuisine"
+    "cuisinePlaceholder": "Cuisine",
+    "invalidContact": "Please enter a valid email or phone number"
   }
 }

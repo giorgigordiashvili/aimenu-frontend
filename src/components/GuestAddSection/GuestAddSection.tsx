@@ -172,7 +172,7 @@ export default function GuestAddSection() {
 
     // Validate contact before adding
     if (!isValidContact(contact)) {
-      setContactError('Please enter a valid email or phone number');
+      setContactError(t.orderReview.invalidContact);
       return;
     }
 
@@ -186,7 +186,7 @@ export default function GuestAddSection() {
     setName('');
     setContact('');
     setContactError(null);
-  }, [name, contact, isValidContact]);
+  }, [name, contact, isValidContact, t.orderReview.invalidContact]);
 
   const handleRemoveGuest = useCallback((id: string) => {
     setGuests(prev => prev.filter(guest => guest.id !== id));

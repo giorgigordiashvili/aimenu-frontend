@@ -295,6 +295,7 @@
     "contactPlaceholder": "Email или телефон",
     "addToList": "Добавить в список",
     "restaurantPlaceholder": "Ресторан",
-    "cuisinePlaceholder": "Кухня"
+    "cuisinePlaceholder": "Кухня",
+    "invalidContact": "Пожалуйста, введите корректный email или номер телефона"
   }
 }
