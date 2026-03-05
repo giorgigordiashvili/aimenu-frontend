@@ -1,8 +1,10 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { useRouter } from 'next/navigation';
 
 import { useCart } from '@/context/CartContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 
 const CartButtonStyled = styled('button')({
   position: 'fixed',
@@ -68,19 +70,33 @@ interface CartButtonProps {
 }
 
 export default function CartButton({ onClick }: CartButtonProps) {
-  const { getTotalItems } = useCart();
+  const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations();
+  const { getTotalItems, getTotalPrice } = useCart();
   const totalItems = getTotalItems();
+  const totalPrice = getTotalPrice();
 
   if (totalItems === 0) {
     return null;
   }
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      router.push(`/${locale}/order-review`);
+    }
+  };
+
   return (
-    <CartButtonStyled onClick={onClick}>
+    <CartButtonStyled onClick={handleClick}>
       <Badge>
         <BadgeText>x{totalItems}</BadgeText>
       </Badge>
-      <Text>შეკვეთის გაფორმება</Text>
+      <Text>
+        {t.common.checkout} • {totalPrice.toFixed(2)} ₾
+      </Text>
       <Arrow>
         <svg
           width='24'

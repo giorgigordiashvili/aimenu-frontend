@@ -10,6 +10,10 @@ export { default as ProductDetailModal } from './ProductDetailModal';
 export { default as RestaurantCard } from './RestaurantCard';
 export { default as TableIndicator } from './TableIndicator';
 export { default as LanguageSwitcher } from './LanguageSwitcher';
+export { default as OrderReviewPage } from './OrderReviewPage';
+export { default as InviteFriendsSection } from './InviteFriendsSection';
+export { default as GuestAddSection } from './GuestAddSection';
+export { default as PaymentMethodSelector } from './PaymentMethodSelector';
 export {
   Skeleton,
   RestaurantCardSkeleton,

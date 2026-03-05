@@ -33,11 +33,20 @@ export const yellow500 = '#F0B100';
 export const green50 = '#F0FDF4';
 export const green500 = '#8CC63E';
 export const green600 = '#16A34A';
+// Original lime colors - do not change without checking all usages
 export const lime500 = '#9AE600';
 export const lime600 = '#7AB234';
+// Additional Tailwind-style lime shades if needed
+export const lime400 = '#84CC16';
+export const lime700 = '#65A30D';
 
 // ── Red ──────────────────────────────────────────────────────────────────
+export const red50 = '#FEE2E2';
 export const red600 = '#DC2626';
+
+// ── Blue ─────────────────────────────────────────────────────────────────
+export const blue50 = '#EFF6FF';
+export const blue500 = '#3B82F6';
 
 // ── Sky ──────────────────────────────────────────────────────────────────
 export const sky600 = '#0284C7';
