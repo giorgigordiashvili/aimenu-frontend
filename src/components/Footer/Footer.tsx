@@ -113,7 +113,11 @@ const Copyright = styled('p')({
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function Footer() {
+interface FooterProps {
+  locale?: string;
+}
+
+export default function Footer({ locale: _locale }: FooterProps = {}) {
   return (
     <FooterWrapper>
       <Grid>

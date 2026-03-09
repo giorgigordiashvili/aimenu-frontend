@@ -8,8 +8,11 @@ import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
 import { Header } from '@/components';
 import ContactInfo from '@/components/ContactInfo';
+import Footer from '@/components/Footer';
+import MenuSection from '@/components/MenuSection';
 import PhotoGallery from '@/components/PhotoGallery';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
+import SimilarRestaurants from '@/components/SimilarRestaurants';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { primary } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
@@ -77,8 +80,7 @@ export default function RestaurantDetailPage() {
         const data = await restaurantsRetrieve(slug);
         setRestaurant(data);
         setError(null);
-      } catch (err) {
-        console.error('Failed to fetch restaurant:', err);
+      } catch {
         setError(t.restaurantDetail.failedToLoad);
       } finally {
         setLoading(false);
@@ -153,7 +155,19 @@ export default function RestaurantDetailPage() {
           isOpenNow={restaurant.is_open_now}
           locale={locale}
         />
+
+        {/* Menu */}
+        <MenuSection slug={slug} locale={locale} />
+
+        {/* Similar Restaurants */}
+        <SimilarRestaurants
+          cuisineType={restaurant.category?.slug ?? ''}
+          currentSlug={slug}
+          locale={locale}
+        />
       </Main>
+
+      <Footer locale={locale} />
     </Page>
   );
 }

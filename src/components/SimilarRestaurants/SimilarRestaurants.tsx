@@ -95,7 +95,7 @@ export default function SimilarRestaurants({
           return (
             <CardWrapper
               key={restaurant.id}
-              onClick={() => router.push(`/${locale}/restaurant/${restaurant.slug}`)}
+              onClick={() => router.push(`/${locale}/restaurants/${restaurant.slug}`)}
             >
               <RestaurantCardPrimary
                 variant='default'
