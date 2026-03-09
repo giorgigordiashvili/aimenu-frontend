@@ -16,6 +16,7 @@ import { getTranslation } from '@/utils/translations';
 
 const Section = styled('section')({
   marginBottom: '24px',
+  overflow: 'visible',
   '@media (min-width: 768px)': {
     marginBottom: '40px',
   },
@@ -37,11 +38,16 @@ const ScrollRow = styled('div')({
   display: 'flex',
   gap: '16px',
   overflowX: 'auto',
-  paddingBottom: '8px',
+  paddingBottom: '12px',
+  paddingTop: '4px',
   // hide scrollbar
   scrollbarWidth: 'none',
   '&::-webkit-scrollbar': {
     display: 'none',
+  },
+  '@media (max-width: 767px)': {
+    flexDirection: 'column',
+    overflowX: 'visible',
   },
 });
 
@@ -49,6 +55,9 @@ const CardWrapper = styled('div')({
   flexShrink: 0,
   cursor: 'pointer',
   width: '264px',
+  '@media (max-width: 767px)': {
+    width: '100%',
+  },
 });
 
 // ── Component ─────────────────────────────────────────────────────────────────
