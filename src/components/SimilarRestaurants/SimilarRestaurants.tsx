@@ -48,6 +48,7 @@ const ScrollRow = styled('div')({
 const CardWrapper = styled('div')({
   flexShrink: 0,
   cursor: 'pointer',
+  width: '264px',
 });
 
 // ── Component ─────────────────────────────────────────────────────────────────
