@@ -38,8 +38,8 @@ const ScrollRow = styled('div')({
   display: 'flex',
   gap: '16px',
   overflowX: 'auto',
-  paddingBottom: '12px',
-  paddingTop: '4px',
+  padding: '8px 8px 16px',
+  margin: '0 -8px',
   // hide scrollbar
   scrollbarWidth: 'none',
   '&::-webkit-scrollbar': {
