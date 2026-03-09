@@ -28,7 +28,17 @@
     "searchPlaceholder": "მოძებნე კერძი სახელით",
     "noProductsFound": "პროდუქტები ვერ მოიძებნა",
     "failedToLoad": "ვერ მოხერხდა რესტორნის ჩატვირთვა",
-    "notFound": "რესტორანი ვერ მოიძებნა"
+    "notFound": "რესტორანი ვერ მოიძებნა",
+    "reviews": "შეფასება",
+    "priceRange": "ფასის კატეგორია",
+    "amenities": "სერვისები",
+    "allCategories": "ყველა",
+    "additionalInfo": "დამატებითი ინფორმაცია",
+    "workingHours": "სამუშაო საათები",
+    "phone": "ტელეფონი",
+    "website": "ვებ-გვერდი",
+    "similar": "მსგავსი რესტორნები",
+    "addToCart": "კალათაში დამატება"
   },
   "product": {
     "total": "ჯამი"

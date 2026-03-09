@@ -28,7 +28,17 @@
     "searchPlaceholder": "Search for a dish by name",
     "noProductsFound": "No products found",
     "failedToLoad": "Failed to load restaurant",
-    "notFound": "Restaurant not found"
+    "notFound": "Restaurant not found",
+    "reviews": "reviews",
+    "priceRange": "Price Range",
+    "amenities": "Amenities",
+    "allCategories": "All",
+    "additionalInfo": "Additional Info",
+    "workingHours": "Working Hours",
+    "phone": "Phone",
+    "website": "Website",
+    "similar": "Similar Restaurants",
+    "addToCart": "Add to Cart"
   },
   "product": {
     "total": "Total"

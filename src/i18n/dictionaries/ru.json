@@ -28,7 +28,17 @@
     "searchPlaceholder": "Поиск блюда по названию",
     "noProductsFound": "Продукты не найдены",
     "failedToLoad": "Не удалось загрузить ресторан",
-    "notFound": "Ресторан не найден"
+    "notFound": "Ресторан не найден",
+    "reviews": "отзывов",
+    "priceRange": "Ценовая категория",
+    "amenities": "Удобства",
+    "allCategories": "Все",
+    "additionalInfo": "Дополнительно",
+    "workingHours": "Режим работы",
+    "phone": "Телефон",
+    "website": "Сайт",
+    "similar": "Похожие рестораны",
+    "addToCart": "В корзину"
   },
   "product": {
     "total": "Итого"

@@ -1,4 +1,10 @@
 export { default as Header } from './Header';
+export { default as MenuSection } from './MenuSection';
+export { default as SimilarRestaurants } from './SimilarRestaurants';
+export { default as Footer } from './Footer';
+export { default as PhotoGallery } from './PhotoGallery';
+export { default as RestaurantDetailInfo } from './RestaurantDetailInfo';
+export { default as ContactInfo } from './ContactInfo';
 export { default as BackButton } from './BackButton';
 export { default as SearchBar } from './SearchBar';
 export { default as CategoryList } from './CategoryList';
