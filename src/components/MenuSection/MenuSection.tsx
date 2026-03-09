@@ -9,7 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { useMenuData } from '@/hooks/useMenuData';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
-import { border, foreground, muted, rose600, slate100, slate200, slate900, white } from '@/tokens';
+import { border, foreground, muted, rose600, slate200, slate900, white } from '@/tokens';
 
 // ── Containers ────────────────────────────────────────────────────────────────
 
@@ -101,18 +101,10 @@ const ItemCard = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  padding: '12px 0',
-  borderBottom: `1px solid ${border}`,
+  padding: '12px 8px',
+  border: `1px solid ${border}`,
+  borderRadius: '8px',
   cursor: 'pointer',
-  transition: 'background 0.15s ease',
-  '&:last-child': {
-    borderBottom: 'none',
-  },
-  '&:hover': {
-    background: slate100,
-    borderRadius: '8px',
-    padding: '12px 8px',
-  },
 });
 
 const ItemImageWrapper = styled('div')({
