@@ -73,7 +73,7 @@ export default function SimilarRestaurants({
       try {
         const data = await restaurantsList();
         const filtered = data.results
-          .filter(r => r.slug !== currentSlug && r.category.slug === cuisineType)
+          .filter(r => r.slug !== currentSlug && r.category?.slug === cuisineType)
           .slice(0, 4);
         setRestaurants(filtered);
       } catch {
