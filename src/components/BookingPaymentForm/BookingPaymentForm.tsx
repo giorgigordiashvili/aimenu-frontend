@@ -476,7 +476,7 @@ export default function BookingPaymentForm({
         )}
         <MainButton
           variant='green_cta'
-          title={isLoading ? t.common.loading : `${t.booking.pay} ${depositAmount.toFixed(2)} ₾`}
+          title={isLoading ? t.common.loading : `${t.booking.pay} ${total.toFixed(2)} ₾`}
           size='large'
           fullWidth
           disabled={isLoading || !isCardValid}
