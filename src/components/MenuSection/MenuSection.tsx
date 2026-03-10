@@ -4,12 +4,12 @@ import { styled } from '@pigment-css/react';
 import Image from 'next/image';
 import { useState } from 'react';
 
+import MainButton from '@/components/MainButton/MainButton';
 import ProductDetailModal from '@/components/ProductDetailModal';
 import { useCart } from '@/context/CartContext';
 import { useMenuData } from '@/hooks/useMenuData';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
-import MainButton from '@/components/MainButton/MainButton';
 import {
   border,
   foreground,
