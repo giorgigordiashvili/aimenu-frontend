@@ -319,5 +319,18 @@
     "datePlaceholder": "Выберите дату",
     "timePlaceholder": "Время",
     "guestsPlaceholder": "Гости"
+  },
+  "footer": {
+    "navigation": "Навигация",
+    "help": "Помощь",
+    "contact": "Контакт",
+    "brandDescription": "Умная платформа меню для грузинских ресторанов",
+    "home": "Главная",
+    "restaurants": "Рестораны",
+    "blog": "Блог",
+    "faq": "FAQ",
+    "privacy": "Политика конфиденциальности",
+    "terms": "Условия использования",
+    "copyright": "© {year} AiMenu. Все права защищены."
   }
 }

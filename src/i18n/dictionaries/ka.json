@@ -319,5 +319,18 @@
     "datePlaceholder": "თარიღი",
     "timePlaceholder": "დრო",
     "guestsPlaceholder": "სტუმრები"
+  },
+  "footer": {
+    "navigation": "ნავიგაცია",
+    "help": "დახმარება",
+    "contact": "კონტაქტი",
+    "brandDescription": "ქართული რესტორნების ჭკვიანი მენიუ პლატფორმა",
+    "home": "მთავარი",
+    "restaurants": "რესტორნები",
+    "blog": "ბლოგი",
+    "faq": "FAQ",
+    "privacy": "კონფიდენციალურობა",
+    "terms": "მომსახურების პირობები",
+    "copyright": "© {year} AiMenu. ყველა უფლება დაცულია."
   }
 }

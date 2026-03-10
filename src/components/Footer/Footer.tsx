@@ -1,5 +1,7 @@
 import { styled } from '@pigment-css/react';
 
+import { Locale } from '@/i18n/config';
+import { getDictionary } from '@/i18n/getDictionary';
 import { slate400, white, slate900 } from '@/tokens';
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -65,16 +67,6 @@ const LinksList = styled('ul')({
   gap: '10px',
 });
 
-const LinkItem = styled('li')({
-  fontSize: '14px',
-  color: slate400,
-  cursor: 'pointer',
-  transition: 'color 0.2s ease',
-  '&:hover': {
-    color: white,
-  },
-});
-
 const NavLink = styled('a')({
   fontSize: '14px',
   color: slate400,
@@ -114,61 +106,68 @@ const Copyright = styled('p')({
 // ── Component ─────────────────────────────────────────────────────────────────
 
 interface FooterProps {
-  locale?: string;
+  locale?: Locale;
 }
 
-export default function Footer({ locale: _locale }: FooterProps = {}) {
+export default function Footer({ locale = 'ka' }: FooterProps) {
+  const t = getDictionary(locale);
+  const year = new Date().getFullYear();
+  const copyright = t.footer.copyright.replace('{year}', String(year));
+
   return (
     <FooterWrapper>
       <Grid>
         {/* Brand Column */}
         <Column>
-          <BrandName>Magida</BrandName>
-          <BrandDescription>
-            აღმოაჩინეთ საუკეთესო რესტორნები, დაჯავშნეთ მაგიდა და ისიამოვნეთ გამორჩეული კულინარიით.
-          </BrandDescription>
+          <BrandName>AiMenu</BrandName>
+          <BrandDescription>{t.footer.brandDescription}</BrandDescription>
         </Column>
 
         {/* Navigation Column */}
         <Column>
-          <ColumnTitle>ნავიგაცია</ColumnTitle>
+          <ColumnTitle>{t.footer.navigation}</ColumnTitle>
           <LinksList>
             <li>
-              <NavLink href='/'>მთავარი</NavLink>
+              <NavLink href={`/${locale}/`}>{t.footer.home}</NavLink>
             </li>
             <li>
-              <NavLink href='/restaurants'>რესტორნები</NavLink>
+              <NavLink href={`/${locale}/restaurants`}>{t.footer.restaurants}</NavLink>
             </li>
             <li>
-              <NavLink href='/blog'>ბლოგი</NavLink>
+              <NavLink href={`/${locale}/blog`}>{t.footer.blog}</NavLink>
             </li>
           </LinksList>
         </Column>
 
         {/* Help Column */}
         <Column>
-          <ColumnTitle>დახმარება</ColumnTitle>
+          <ColumnTitle>{t.footer.help}</ColumnTitle>
           <LinksList>
-            <LinkItem>ხშირად დასმული კითხვები</LinkItem>
-            <LinkItem>კონფიდენციალობა</LinkItem>
-            <LinkItem>წესები და პირობები</LinkItem>
+            <li>
+              <NavLink href={`/${locale}/faq`}>{t.footer.faq}</NavLink>
+            </li>
+            <li>
+              <NavLink href={`/${locale}/privacy`}>{t.footer.privacy}</NavLink>
+            </li>
+            <li>
+              <NavLink href={`/${locale}/terms`}>{t.footer.terms}</NavLink>
+            </li>
           </LinksList>
         </Column>
 
         {/* Contact Column */}
         <Column>
-          <ColumnTitle>კონტაქტი</ColumnTitle>
+          <ColumnTitle>{t.footer.contact}</ColumnTitle>
           <div>
-            <ContactItem>info@magida.ge</ContactItem>
+            <ContactItem>info@aimenu.ge</ContactItem>
             <ContactItem>+995 32 2 00 00 00</ContactItem>
-            <ContactItem>თბილისი, ჭავჭავაძის 1</ContactItem>
           </div>
         </Column>
       </Grid>
 
       <Divider />
 
-      <Copyright>© 2024 Magida ყველა უფლება დაცულია</Copyright>
+      <Copyright>{copyright}</Copyright>
     </FooterWrapper>
   );
 }

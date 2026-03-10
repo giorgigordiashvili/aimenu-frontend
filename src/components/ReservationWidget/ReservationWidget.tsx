@@ -4,9 +4,11 @@ import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
+import { reservationsSettingsRetrieve } from '@/api/generated/api';
 import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
+import ChevronDownIcon from '@/icons/ChevronDown';
 import ClockIcon from '@/icons/Clock';
 import {
   border,
@@ -19,6 +21,7 @@ import {
   slate200,
   slate400,
   slate500,
+  slate50,
   white,
 } from '@/tokens';
 
@@ -326,7 +329,7 @@ const CheckMark = styled('span')({
 // ─── Price Summary ────────────────────────────────────────────────────────────
 
 const PriceSummary = styled('div')({
-  backgroundColor: '#F8FAFC',
+  backgroundColor: slate50,
   borderRadius: '12px',
   padding: '16px',
 });
@@ -384,6 +387,16 @@ const FooterText = styled('span')({
   color: muted,
 });
 
+const IconWrap = styled('span')({
+  display: 'flex',
+  alignItems: 'center',
+  color: slate400,
+});
+
+const GuestsTextWrap = styled('span')({
+  flex: 1,
+});
+
 // ─── Date Field Wrapper ───────────────────────────────────────────────────────
 
 const DateFieldWrap = styled('div')({
@@ -404,8 +417,17 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   const t = useTranslations();
   const { locale: ctxLocale } = useLocale();
   const { getTotalItems, getTotalPrice } = useCart();
-  const DEPOSIT = 10.0;
   const cartTotal = getTotalPrice();
+  const [depositAmount, setDepositAmount] = useState(10.0);
+
+  useEffect(() => {
+    reservationsSettingsRetrieve()
+      .then((d: { deposit_amount?: string | null }) => {
+        if (d?.deposit_amount !== null && d?.deposit_amount !== undefined)
+          setDepositAmount(parseFloat(d.deposit_amount));
+      })
+      .catch(() => undefined);
+  }, []);
 
   const activeLocale = locale || ctxLocale;
 
@@ -516,9 +538,9 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
             if (e.key === 'Enter' || e.key === ' ') setShowCalendar(s => !s);
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', color: slate400 }}>
+          <IconWrap>
             <CalendarIcon />
-          </span>
+          </IconWrap>
           {selectedDate ? (
             <FieldText isPlaceholder={false}>
               {formatDateValue(selectedDate, activeLocale)}
@@ -644,26 +666,14 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
               if (e.key === 'Enter' || e.key === ' ') setShowGuestsDropdown(s => !s);
             }}
           >
-            <FieldText isPlaceholder={false} style={{ flex: 1 }}>
-              {guests} {t.booking.persons}
-            </FieldText>
-            <span style={{ display: 'flex', alignItems: 'center', color: slate400 }}>
-              <svg
-                width='16'
-                height='16'
-                viewBox='0 0 16 16'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-              >
-                <path
-                  d='M4 6L8 10L12 6'
-                  stroke={slate400}
-                  strokeWidth='1.333'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-            </span>
+            <GuestsTextWrap>
+              <FieldText isPlaceholder={false}>
+                {guests} {t.booking.persons}
+              </FieldText>
+            </GuestsTextWrap>
+            <IconWrap>
+              <ChevronDownIcon color={slate400} size={16} />
+            </IconWrap>
           </FieldInput>
 
           {showGuestsDropdown && (
@@ -697,12 +707,12 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
       <PriceSummary>
         <PriceRow>
           <PriceLabel bold={false}>{t.reservationWidget.deposit}</PriceLabel>
-          <PriceValue highlight={false}>{DEPOSIT.toFixed(2)} ₾</PriceValue>
+          <PriceValue highlight={false}>{depositAmount.toFixed(2)} ₾</PriceValue>
         </PriceRow>
         <PriceSeparator />
         <PriceRow>
           <PriceLabel bold={true}>{t.reservationWidget.grandTotal}</PriceLabel>
-          <PriceValue highlight={true}>{(cartTotal + DEPOSIT).toFixed(2)} ₾</PriceValue>
+          <PriceValue highlight={true}>{(cartTotal + depositAmount).toFixed(2)} ₾</PriceValue>
         </PriceRow>
       </PriceSummary>
 

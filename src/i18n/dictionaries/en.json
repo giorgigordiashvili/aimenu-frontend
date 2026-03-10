@@ -319,5 +319,18 @@
     "datePlaceholder": "Select date",
     "timePlaceholder": "Time",
     "guestsPlaceholder": "Guests"
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "help": "Help",
+    "contact": "Contact",
+    "brandDescription": "The smart menu platform for Georgian restaurants",
+    "home": "Home",
+    "restaurants": "Restaurants",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© {year} AiMenu. All rights reserved."
   }
 }
