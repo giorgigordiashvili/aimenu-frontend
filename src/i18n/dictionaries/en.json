@@ -307,5 +307,15 @@
     "restaurantPlaceholder": "Restaurant",
     "cuisinePlaceholder": "Cuisine",
     "invalidContact": "Please enter a valid email or phone number"
+  },
+  "reservationWidget": {
+    "title": "Reservation",
+    "book": "Book",
+    "deposit": "Deposit",
+    "grandTotal": "Grand Total",
+    "freeCancellation": "Free cancellation 24 hours before",
+    "datePlaceholder": "Select date",
+    "timePlaceholder": "Time",
+    "guestsPlaceholder": "Guests"
   }
 }

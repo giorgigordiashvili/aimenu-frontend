@@ -307,5 +307,15 @@
     "restaurantPlaceholder": "რესტორანი",
     "cuisinePlaceholder": "სამზარეულო",
     "invalidContact": "გთხოვთ შეიყვანოთ სწორი ელ-ფოსტა ან ტელეფონის ნომერი"
+  },
+  "reservationWidget": {
+    "title": "ჯავშანი",
+    "book": "დაჯავშნა",
+    "deposit": "დეპოზიტი",
+    "grandTotal": "სულ ჯამი",
+    "freeCancellation": "უფასო გაუქმება 24 საათით ადრე",
+    "datePlaceholder": "თარიღი",
+    "timePlaceholder": "დრო",
+    "guestsPlaceholder": "სტუმრები"
   }
 }

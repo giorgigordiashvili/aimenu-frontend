@@ -307,5 +307,15 @@
     "restaurantPlaceholder": "Ресторан",
     "cuisinePlaceholder": "Кухня",
     "invalidContact": "Пожалуйста, введите корректный email или номер телефона"
+  },
+  "reservationWidget": {
+    "title": "Бронирование",
+    "book": "Забронировать",
+    "deposit": "Депозит",
+    "grandTotal": "Итого",
+    "freeCancellation": "Бесплатная отмена за 24 часа",
+    "datePlaceholder": "Выберите дату",
+    "timePlaceholder": "Время",
+    "guestsPlaceholder": "Гости"
   }
 }

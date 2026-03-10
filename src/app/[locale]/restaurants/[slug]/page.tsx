@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
-import { Header } from '@/components';
+import { Header, ReservationWidget } from '@/components';
 import ContactInfo from '@/components/ContactInfo';
 import Footer from '@/components/Footer';
 import MenuSection from '@/components/MenuSection';
@@ -28,6 +28,39 @@ const Main = styled('main')({
     padding: '32px 80px 100px',
     maxWidth: '1280px',
     margin: '0 auto',
+  },
+});
+
+const ContentLayout = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  '@media (min-width: 1024px)': {
+    flexDirection: 'row',
+    gap: '32px',
+    alignItems: 'flex-start',
+  },
+});
+
+const LeftColumn = styled('div')({
+  flex: 1,
+  minWidth: 0,
+});
+
+const RightColumn = styled('div')({
+  display: 'none',
+  '@media (min-width: 1024px)': {
+    display: 'block',
+    width: '380px',
+    flexShrink: 0,
+    position: 'sticky',
+    top: '24px',
+  },
+});
+
+const MobileReservation = styled('div')({
+  display: 'block',
+  '@media (min-width: 1024px)': {
+    display: 'none',
   },
 });
 
@@ -126,45 +159,66 @@ export default function RestaurantDetailPage() {
     ? getTranslation(restaurant.category.translations, 'name', locale)
     : undefined;
 
+  const showWidget = restaurant.accepts_reservations === true;
+
   return (
     <Page>
       <Header />
 
       <Main>
-        {/* Photo Gallery */}
-        <PhotoGallery images={images} restaurantName={restaurant.name} />
+        <ContentLayout>
+          {/* Left column — main content */}
+          <LeftColumn>
+            {/* Photo Gallery */}
+            <PhotoGallery images={images} restaurantName={restaurant.name} />
 
-        {/* Restaurant Info */}
-        <RestaurantDetailInfo
-          name={restaurant.name}
-          description={restaurant.description}
-          city={restaurant.city}
-          averageRating={restaurant.average_rating}
-          totalReviews={restaurant.total_reviews}
-          categoryName={categoryName}
-          amenities={restaurant.amenities}
-          locale={locale}
-        />
+            {/* Restaurant Info */}
+            <RestaurantDetailInfo
+              name={restaurant.name}
+              description={restaurant.description}
+              city={restaurant.city}
+              averageRating={restaurant.average_rating}
+              totalReviews={restaurant.total_reviews}
+              categoryName={categoryName}
+              amenities={restaurant.amenities}
+              locale={locale}
+            />
 
-        {/* Contact & Hours */}
-        <ContactInfo
-          operatingHours={restaurant.operating_hours}
-          phone={restaurant.phone}
-          website={restaurant.website}
-          email={restaurant.email}
-          isOpenNow={restaurant.is_open_now}
-          locale={locale}
-        />
+            {/* ReservationWidget — mobile only (between RestaurantDetailInfo and MenuSection) */}
+            {showWidget && (
+              <MobileReservation>
+                <ReservationWidget slug={slug} locale={locale} />
+              </MobileReservation>
+            )}
 
-        {/* Menu */}
-        <MenuSection slug={slug} locale={locale} />
+            {/* Menu */}
+            <MenuSection slug={slug} locale={locale} />
 
-        {/* Similar Restaurants */}
-        <SimilarRestaurants
-          cuisineType={restaurant.category?.slug ?? ''}
-          currentSlug={slug}
-          locale={locale}
-        />
+            {/* Contact & Hours */}
+            <ContactInfo
+              operatingHours={restaurant.operating_hours}
+              phone={restaurant.phone}
+              website={restaurant.website}
+              email={restaurant.email}
+              isOpenNow={restaurant.is_open_now}
+              locale={locale}
+            />
+
+            {/* Similar Restaurants */}
+            <SimilarRestaurants
+              cuisineType={restaurant.category?.slug ?? ''}
+              currentSlug={slug}
+              locale={locale}
+            />
+          </LeftColumn>
+
+          {/* Right column — sticky widget (desktop only) */}
+          {showWidget && (
+            <RightColumn>
+              <ReservationWidget slug={slug} locale={locale} />
+            </RightColumn>
+          )}
+        </ContentLayout>
       </Main>
 
       <Footer locale={locale} />

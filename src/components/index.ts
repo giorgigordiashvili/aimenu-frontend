@@ -20,6 +20,7 @@ export { default as OrderReviewPage } from './OrderReviewPage';
 export { default as InviteFriendsSection } from './InviteFriendsSection';
 export { default as GuestAddSection } from './GuestAddSection';
 export { default as PaymentMethodSelector } from './PaymentMethodSelector';
+export { default as ReservationWidget } from './ReservationWidget';
 export {
   Skeleton,
   RestaurantCardSkeleton,
