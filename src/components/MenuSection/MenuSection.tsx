@@ -306,7 +306,8 @@ export default function MenuSection({ slug, locale }: MenuSectionProps) {
         <TabsList>
           <MainButton
             variant={activeCategoryId === null ? 'slate_cta' : 'secondary'}
-            size='small'
+            size='default'
+            rounded
             title={t.restaurant.allCategories}
             onClick={() => setActiveCategoryId(null)}
           />
@@ -314,7 +315,8 @@ export default function MenuSection({ slug, locale }: MenuSectionProps) {
             <MainButton
               key={cat.id}
               variant={activeCategoryId === cat.id ? 'slate_cta' : 'secondary'}
-              size='small'
+              size='default'
+              rounded
               title={cat.name}
               onClick={() => setActiveCategoryId(cat.id)}
             />
