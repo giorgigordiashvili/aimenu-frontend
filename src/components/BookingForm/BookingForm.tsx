@@ -262,7 +262,8 @@ export default function BookingForm({
   restaurantImage,
 }: BookingFormProps) {
   const t = useTranslations();
-  const { items: cartItems } = useCart();
+  const { items: cartItems, getTotalPrice } = useCart();
+  const cartTotal = getTotalPrice();
 
   const orderItems: OrderItem[] = cartItems.map(item => ({
     id: item.id,
