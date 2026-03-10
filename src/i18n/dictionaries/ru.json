@@ -28,7 +28,18 @@
     "searchPlaceholder": "Поиск блюда по названию",
     "noProductsFound": "Продукты не найдены",
     "failedToLoad": "Не удалось загрузить ресторан",
-    "notFound": "Ресторан не найден"
+    "notFound": "Ресторан не найден",
+    "reviews": "отзывов",
+    "priceRange": "Ценовая категория",
+    "amenities": "Удобства",
+    "allCategories": "Все",
+    "additionalInfo": "Дополнительно",
+    "workingHours": "Режим работы",
+    "phone": "Телефон",
+    "website": "Сайт",
+    "similar": "Похожие рестораны",
+    "addToCart": "В корзину",
+    "selectedItems": "Выбрано {count} блюд"
   },
   "product": {
     "total": "Итого"
@@ -297,5 +308,29 @@
     "restaurantPlaceholder": "Ресторан",
     "cuisinePlaceholder": "Кухня",
     "invalidContact": "Пожалуйста, введите корректный email или номер телефона"
+  },
+  "reservationWidget": {
+    "title": "Бронирование",
+    "book": "Забронировать",
+    "bookWithOrder": "Заказать и забронировать",
+    "deposit": "Депозит",
+    "grandTotal": "Итого",
+    "freeCancellation": "Бесплатная отмена за 24 часа",
+    "datePlaceholder": "Выберите дату",
+    "timePlaceholder": "Время",
+    "guestsPlaceholder": "Гости"
+  },
+  "footer": {
+    "navigation": "Навигация",
+    "help": "Помощь",
+    "contact": "Контакт",
+    "brandDescription": "Умная платформа меню для грузинских ресторанов",
+    "home": "Главная",
+    "restaurants": "Рестораны",
+    "blog": "Блог",
+    "faq": "FAQ",
+    "privacy": "Политика конфиденциальности",
+    "terms": "Условия использования",
+    "copyright": "© {year} AiMenu. Все права защищены."
   }
 }

@@ -2,8 +2,8 @@
 
 import { styled } from '@pigment-css/react';
 import { isAxiosError } from 'axios';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
@@ -11,6 +11,7 @@ import BookingDateTimeSection from '@/components/BookingDateTimeSection/BookingD
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
 import BookingOrderSummary from '@/components/BookingOrderSummary/BookingOrderSummary';
 import type { OrderItem } from '@/components/BookingOrderSummary/BookingOrderSummary';
+import { useCart } from '@/context/CartContext';
 import BookingPaymentForm from '@/components/BookingPaymentForm/BookingPaymentForm';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel';
@@ -31,21 +32,6 @@ type BookingFormProps = {
   restaurantRating?: number;
   restaurantImage?: string;
 };
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// TODO: replace with cart/order data from API
-
-const MOCK_ORDER_ITEMS: OrderItem[] = [
-  { id: '1', quantity: 3, name: 'სალათი ცეზარი', price: 54.0 },
-  {
-    id: '2',
-    quantity: 3,
-    name: 'სალათი ცეზარი',
-    price: 54.0,
-    notes: ['დიდი მენიუ, ქვარცხის გარეშე', 'დიდი მენიუ', 'პატარა მენიუ'],
-  },
-  { id: '3', quantity: 3, name: 'სუპი ხარჩო', price: 12.0 },
-];
 
 const DEFAULT_DEPOSIT_AMOUNT = 10.0;
 const DEFAULT_MAX_ADVANCE_DAYS = 60;
@@ -276,6 +262,16 @@ export default function BookingForm({
   restaurantImage,
 }: BookingFormProps) {
   const t = useTranslations();
+  const { items: cartItems, getTotalPrice } = useCart();
+  const cartTotal = getTotalPrice();
+
+  const orderItems: OrderItem[] = cartItems.map(item => ({
+    id: item.id,
+    quantity: item.quantity,
+    name: item.name,
+    price: item.price,
+    notes: item.specialInstructions ? [item.specialInstructions] : undefined,
+  }));
   const { locale } = useLocale();
   const router = useRouter();
 
@@ -331,9 +327,25 @@ export default function BookingForm({
     }
   }, []);
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [time, setTime] = useState('');
-  const [guests, setGuests] = useState(2);
+  const searchParams = useSearchParams();
+
+  const initialDate = useMemo(() => {
+    const d = searchParams.get('date');
+    if (!d) return null;
+    const parsed = new Date(d);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  }, [searchParams]);
+
+  const initialTime = useMemo(() => searchParams.get('time') ?? '', [searchParams]);
+  const initialGuests = useMemo(() => {
+    const g = searchParams.get('guests');
+    const n = g ? parseInt(g, 10) : NaN;
+    return isNaN(n) ? 2 : n;
+  }, [searchParams]);
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate);
+  const [time, setTime] = useState(initialTime);
+  const [guests, setGuests] = useState(initialGuests);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -453,7 +465,7 @@ export default function BookingForm({
               minGuests={minGuests}
               maxGuests={maxGuests}
             />
-            <BookingOrderSummary items={MOCK_ORDER_ITEMS} depositAmount={depositAmount} />
+            <BookingOrderSummary items={orderItems} depositAmount={depositAmount} />
 
             {/* Contact form — mobile only */}
             <MobileContactSection>
@@ -475,6 +487,7 @@ export default function BookingForm({
           {/* ── Right panel — desktop only, self-contained ───────────────── */}
           <BookingRightPanel
             depositAmount={depositAmount}
+            grandTotal={cartTotal + depositAmount}
             name={name}
             phone={phone}
             email={email}
@@ -524,6 +537,7 @@ export default function BookingForm({
           <OverlayContent>
             <BookingPaymentForm
               depositAmount={depositAmount}
+              grandTotal={cartTotal + depositAmount}
               savedCard={null}
               isLoading={isPaymentLoading}
               error={paymentError}
@@ -538,7 +552,7 @@ export default function BookingForm({
               title={
                 isPaymentLoading
                   ? t.common.loading
-                  : `${t.booking.pay} ${depositAmount.toFixed(2)} ₾`
+                  : `${t.booking.pay} ${(cartTotal + depositAmount).toFixed(2)} ₾`
               }
               size='large'
               fullWidth

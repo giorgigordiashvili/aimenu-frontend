@@ -242,7 +242,7 @@ const CheckIconWrap = styled('span')({
 
 export default function BookingOrderSummary({ items, depositAmount }: Props) {
   const t = useTranslations();
-  const foodTotal = items.reduce((acc, item) => acc + item.price, 0);
+  const foodTotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <>
@@ -284,7 +284,7 @@ export default function BookingOrderSummary({ items, depositAmount }: Props) {
         </PaymentRow>
         <TotalRow>
           <TotalLabel>{t.booking.grandTotal}</TotalLabel>
-          <TotalValue>{depositAmount.toFixed(2)} ₾</TotalValue>
+          <TotalValue>{(foodTotal + depositAmount).toFixed(2)} ₾</TotalValue>
         </TotalRow>
         <SecureBadge>
           <CheckIconWrap>

@@ -28,7 +28,18 @@
     "searchPlaceholder": "მოძებნე კერძი სახელით",
     "noProductsFound": "პროდუქტები ვერ მოიძებნა",
     "failedToLoad": "ვერ მოხერხდა რესტორნის ჩატვირთვა",
-    "notFound": "რესტორანი ვერ მოიძებნა"
+    "notFound": "რესტორანი ვერ მოიძებნა",
+    "reviews": "შეფასება",
+    "priceRange": "ფასის კატეგორია",
+    "amenities": "სერვისები",
+    "allCategories": "ყველა",
+    "additionalInfo": "დამატებითი ინფორმაცია",
+    "workingHours": "სამუშაო საათები",
+    "phone": "ტელეფონი",
+    "website": "ვებ-გვერდი",
+    "similar": "მსგავსი რესტორნები",
+    "addToCart": "კალათაში დამატება",
+    "selectedItems": "არჩეულია {count} კერძი"
   },
   "product": {
     "total": "ჯამი"
@@ -297,5 +308,29 @@
     "restaurantPlaceholder": "რესტორანი",
     "cuisinePlaceholder": "სამზარეულო",
     "invalidContact": "გთხოვთ შეიყვანოთ სწორი ელ-ფოსტა ან ტელეფონის ნომერი"
+  },
+  "reservationWidget": {
+    "title": "ჯავშანი",
+    "book": "დაჯავშნა",
+    "bookWithOrder": "შეკვეთა და დაჯავშნა",
+    "deposit": "დეპოზიტი",
+    "grandTotal": "სულ ჯამი",
+    "freeCancellation": "უფასო გაუქმება 24 საათით ადრე",
+    "datePlaceholder": "თარიღი",
+    "timePlaceholder": "დრო",
+    "guestsPlaceholder": "სტუმრები"
+  },
+  "footer": {
+    "navigation": "ნავიგაცია",
+    "help": "დახმარება",
+    "contact": "კონტაქტი",
+    "brandDescription": "ქართული რესტორნების ჭკვიანი მენიუ პლატფორმა",
+    "home": "მთავარი",
+    "restaurants": "რესტორნები",
+    "blog": "ბლოგი",
+    "faq": "FAQ",
+    "privacy": "კონფიდენციალურობა",
+    "terms": "მომსახურების პირობები",
+    "copyright": "© {year} AiMenu. ყველა უფლება დაცულია."
   }
 }

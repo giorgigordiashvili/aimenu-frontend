@@ -15,6 +15,7 @@ import { slate100, slate600, white } from '@/tokens';
 
 type Props = {
   depositAmount: number;
+  grandTotal?: number;
   name: string;
   phone: string;
   email: string;
@@ -73,6 +74,7 @@ const CloseButton = styled('button')({
 
 export default function BookingRightPanel({
   depositAmount,
+  grandTotal,
   name,
   phone,
   email,
@@ -119,6 +121,7 @@ export default function BookingRightPanel({
       {step === 'payment' && (
         <BookingPaymentForm
           depositAmount={depositAmount}
+          grandTotal={grandTotal}
           savedCard={null}
           isLoading={isPaymentLoading}
           error={paymentError}

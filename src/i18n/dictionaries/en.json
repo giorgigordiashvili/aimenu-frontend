@@ -28,7 +28,18 @@
     "searchPlaceholder": "Search for a dish by name",
     "noProductsFound": "No products found",
     "failedToLoad": "Failed to load restaurant",
-    "notFound": "Restaurant not found"
+    "notFound": "Restaurant not found",
+    "reviews": "reviews",
+    "priceRange": "Price Range",
+    "amenities": "Amenities",
+    "allCategories": "All",
+    "additionalInfo": "Additional Info",
+    "workingHours": "Working Hours",
+    "phone": "Phone",
+    "website": "Website",
+    "similar": "Similar Restaurants",
+    "addToCart": "Add to Cart",
+    "selectedItems": "{count} dishes selected"
   },
   "product": {
     "total": "Total"
@@ -297,5 +308,29 @@
     "restaurantPlaceholder": "Restaurant",
     "cuisinePlaceholder": "Cuisine",
     "invalidContact": "Please enter a valid email or phone number"
+  },
+  "reservationWidget": {
+    "title": "Reservation",
+    "book": "Book",
+    "bookWithOrder": "Order & Book",
+    "deposit": "Deposit",
+    "grandTotal": "Grand Total",
+    "freeCancellation": "Free cancellation 24 hours before",
+    "datePlaceholder": "Select date",
+    "timePlaceholder": "Time",
+    "guestsPlaceholder": "Guests"
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "help": "Help",
+    "contact": "Contact",
+    "brandDescription": "The smart menu platform for Georgian restaurants",
+    "home": "Home",
+    "restaurants": "Restaurants",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© {year} AiMenu. All rights reserved."
   }
 }
