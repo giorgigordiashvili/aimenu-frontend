@@ -80,7 +80,11 @@ export default function SimilarRestaurants({
   useEffect(() => {
     async function fetchRestaurants() {
       try {
-        const data = await restaurantsList();
+        // Pass pageSize=20 to reduce over-fetching; filter client-side for category/exclude
+        const data = await restaurantsList(
+          undefined, undefined, undefined, undefined, undefined, undefined,
+          undefined, undefined, 1, 20,
+        );
         const filtered = data.results
           .filter(r => r.slug !== currentSlug && r.category?.slug === cuisineType)
           .slice(0, 4);

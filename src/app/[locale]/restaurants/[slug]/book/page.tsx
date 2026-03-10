@@ -1,13 +1,13 @@
 'use client';
 
+import { Suspense, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
 import BookingForm from '@/components/BookingForm/BookingForm';
 
-export default function BookingPage() {
+function BookingPageInner() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
@@ -31,5 +31,13 @@ export default function BookingPage() {
       restaurantRating={restaurant ? parseFloat(restaurant.average_rating) : undefined}
       restaurantSubtitle={restaurant?.city}
     />
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense>
+      <BookingPageInner />
+    </Suspense>
   );
 }

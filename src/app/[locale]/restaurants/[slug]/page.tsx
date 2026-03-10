@@ -114,7 +114,8 @@ export default function RestaurantDetailPage() {
         const data = await restaurantsRetrieve(slug);
         setRestaurant(data);
         setError(null);
-      } catch {
+      } catch (err) {
+        if (process.env.NODE_ENV !== 'production') console.error('[RestaurantDetail]', err);
         setError(t.restaurantDetail.failedToLoad);
       } finally {
         setLoading(false);

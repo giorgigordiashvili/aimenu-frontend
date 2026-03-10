@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { reservationsSettingsRetrieve } from '@/api/generated/api';
 import { useCart } from '@/context/CartContext';
@@ -440,10 +440,17 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [showGuestsDropdown, setShowGuestsDropdown] = useState(false);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const maxDate = new Date(today);
-  maxDate.setDate(today.getDate() + 60);
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const maxDate = useMemo(() => {
+    const d = new Date(today);
+    d.setDate(today.getDate() + 60);
+    return d;
+  }, [today]);
 
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());

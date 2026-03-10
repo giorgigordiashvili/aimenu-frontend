@@ -1,6 +1,7 @@
 import { styled } from '@pigment-css/react';
 
 import { Locale } from '@/i18n/config';
+import { CONTACT_EMAIL, CONTACT_PHONE } from '@/config/contact';
 import { getDictionary } from '@/i18n/getDictionary';
 import { slate400, white, slate900 } from '@/tokens';
 
@@ -159,8 +160,8 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
         <Column>
           <ColumnTitle>{t.footer.contact}</ColumnTitle>
           <div>
-            <ContactItem>info@aimenu.ge</ContactItem>
-            <ContactItem>+995 32 2 00 00 00</ContactItem>
+            <ContactItem>{CONTACT_EMAIL}</ContactItem>
+            <ContactItem>{CONTACT_PHONE}</ContactItem>
           </div>
         </Column>
       </Grid>

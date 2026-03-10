@@ -75,6 +75,9 @@ const TabsList = styled('div')({
 
 const CategoryGroup = styled('div')({
   marginBottom: '24px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
 });
 
 const CategoryHeading = styled('h3')({
