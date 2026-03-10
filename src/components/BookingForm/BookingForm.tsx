@@ -2,8 +2,8 @@
 
 import { styled } from '@pigment-css/react';
 import { isAxiosError } from 'axios';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
@@ -331,9 +331,25 @@ export default function BookingForm({
     }
   }, []);
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [time, setTime] = useState('');
-  const [guests, setGuests] = useState(2);
+  const searchParams = useSearchParams();
+
+  const initialDate = useMemo(() => {
+    const d = searchParams.get('date');
+    if (!d) return null;
+    const parsed = new Date(d);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  }, [searchParams]);
+
+  const initialTime = useMemo(() => searchParams.get('time') ?? '', [searchParams]);
+  const initialGuests = useMemo(() => {
+    const g = searchParams.get('guests');
+    const n = g ? parseInt(g, 10) : NaN;
+    return isNaN(n) ? 2 : n;
+  }, [searchParams]);
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate);
+  const [time, setTime] = useState(initialTime);
+  const [guests, setGuests] = useState(initialGuests);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
