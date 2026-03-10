@@ -305,7 +305,7 @@ export default function MenuSection({ slug, locale }: MenuSectionProps) {
       <TabsWrapper>
         <TabsList>
           <MainButton
-            variant={activeCategoryId === null ? 'slate_cta' : 'secondary'}
+            variant={activeCategoryId === null ? 'slate_cta' : 'outline'}
             size='default'
             rounded
             title={t.restaurant.allCategories}
@@ -314,7 +314,7 @@ export default function MenuSection({ slug, locale }: MenuSectionProps) {
           {categories.map(cat => (
             <MainButton
               key={cat.id}
-              variant={activeCategoryId === cat.id ? 'slate_cta' : 'secondary'}
+              variant={activeCategoryId === cat.id ? 'slate_cta' : 'outline'}
               size='default'
               rounded
               title={cat.name}
