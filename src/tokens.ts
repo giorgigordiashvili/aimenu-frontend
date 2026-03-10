@@ -19,6 +19,7 @@ export const slate950 = '#090909';
 export const iconStroke = '#90A1B9';
 
 // ── Rose ─────────────────────────────────────────────────────────────────
+export const rose25 = '#FFFBFB';
 export const rose50 = '#FFF0F3';
 export const rose100 = '#FFE0E8';
 export const rose200 = '#FFE4E6';

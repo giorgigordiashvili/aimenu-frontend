@@ -17,7 +17,7 @@ import {
   radiusSm,
   rose100,
   rose200,
-  rose50,
+  rose25,
   rose600,
   slate200,
   white,
@@ -99,7 +99,7 @@ const ItemCard = styled('div')<ItemCardProps>({
       props: { inCart: true },
       style: {
         border: `1.5px solid ${rose200}`,
-        background: rose50,
+        background: rose25,
       },
     },
   ],
