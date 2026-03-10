@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import Image from 'next/image';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import ProductDetailModal from '@/components/ProductDetailModal';
@@ -32,15 +32,24 @@ const Section = styled('section')({
   },
 });
 
+const SectionHeader = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: '16px',
+  '@media (min-width: 768px)': {
+    marginBottom: '20px',
+  },
+});
+
 const SectionTitle = styled('h2')({
   fontSize: '22px',
   fontWeight: 700,
   color: foreground,
   lineHeight: '32px',
-  margin: '0 0 16px',
+  margin: 0,
   '@media (min-width: 768px)': {
     fontSize: '24px',
-    marginBottom: '20px',
   },
 });
 
@@ -264,11 +273,12 @@ interface MenuProduct {
 interface MenuSectionProps {
   slug: string;
   locale: Locale;
+  headerRight?: React.ReactNode;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function MenuSection({ slug, locale }: MenuSectionProps) {
+export default function MenuSection({ slug, locale, headerRight }: MenuSectionProps) {
   const t = getDictionary(locale);
   const { products, categories, isLoading } = useMenuData(slug, locale);
   const { addItem, getItemQuantity, updateQuantity } = useCart();
@@ -299,7 +309,10 @@ export default function MenuSection({ slug, locale }: MenuSectionProps) {
 
   return (
     <Section>
-      <SectionTitle>{t.restaurant.menu}</SectionTitle>
+      <SectionHeader>
+        <SectionTitle>{t.restaurant.menu}</SectionTitle>
+        {headerRight}
+      </SectionHeader>
 
       {/* Category Tabs */}
       <TabsWrapper>

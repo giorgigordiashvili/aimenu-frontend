@@ -65,13 +65,6 @@ const MobileReservation = styled('div')({
   },
 });
 
-const CartBadgeRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  padding: '0 20px',
-  minHeight: '0px',
-});
-
 const LoadingContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
@@ -199,11 +192,7 @@ export default function RestaurantDetailPage() {
               </MobileReservation>
             )}
 
-            {/* Cart Badge + Menu */}
-            <CartBadgeRow>
-              <CartBadge />
-            </CartBadgeRow>
-            <MenuSection slug={slug} locale={locale} />
+            <MenuSection slug={slug} locale={locale} headerRight={<CartBadge />} />
 
             {/* Contact & Hours */}
             <ContactInfo
