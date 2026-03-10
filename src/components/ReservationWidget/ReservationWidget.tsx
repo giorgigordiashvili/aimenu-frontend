@@ -10,7 +10,6 @@ import ClockIcon from '@/icons/Clock';
 import {
   border,
   foreground,
-  green600,
   muted,
   rose600,
   shadowCard,
@@ -119,17 +118,17 @@ const FieldInput = styled('div')({
   userSelect: 'none',
 });
 
-const FieldText = styled('span')<{ placeholder?: boolean }>({
+const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
   fontSize: '15px',
   flex: 1,
   lineHeight: '20px',
   variants: [
     {
-      props: { placeholder: true },
+      props: { isPlaceholder: true },
       style: { color: muted },
     },
     {
-      props: { placeholder: false },
+      props: { isPlaceholder: false },
       style: { color: foreground },
     },
   ],
@@ -297,7 +296,6 @@ const DropdownRow = styled('div')<{ isSelected?: boolean; isLast?: boolean }>({
       props: { isSelected: true },
       style: {
         backgroundColor: slate100,
-        borderRight: `3px solid ${green600}`,
       },
     },
   ],
@@ -517,9 +515,9 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
             <CalendarIcon />
           </span>
           {selectedDate ? (
-            <FieldText placeholder={false}>{formatDateValue(selectedDate, activeLocale)}</FieldText>
+            <FieldText isPlaceholder={false}>{formatDateValue(selectedDate, activeLocale)}</FieldText>
           ) : (
-            <FieldText placeholder={true}>{t.reservationWidget.datePlaceholder}</FieldText>
+            <FieldText isPlaceholder={true}>{t.reservationWidget.datePlaceholder}</FieldText>
           )}
         </FieldInput>
 
@@ -594,9 +592,9 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
           >
             <ClockIcon size={16} color={slate400} />
             {selectedTime ? (
-              <FieldText placeholder={false}>{selectedTime}</FieldText>
+              <FieldText isPlaceholder={false}>{selectedTime}</FieldText>
             ) : (
-              <FieldText placeholder={true}>{t.reservationWidget.timePlaceholder}</FieldText>
+              <FieldText isPlaceholder={true}>{t.reservationWidget.timePlaceholder}</FieldText>
             )}
           </FieldInput>
 
@@ -639,7 +637,7 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
               if (e.key === 'Enter' || e.key === ' ') setShowGuestsDropdown(s => !s);
             }}
           >
-            <FieldText placeholder={false} style={{ flex: 1 }}>
+            <FieldText isPlaceholder={false} style={{ flex: 1 }}>
               {guests} {t.booking.persons}
             </FieldText>
             <span style={{ display: 'flex', alignItems: 'center', color: slate400 }}>
@@ -706,7 +704,6 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
         variant='rose_cta'
         fullWidth
         size='large'
-        rounded
         title={t.reservationWidget.book}
         onClick={handleBook}
       />
