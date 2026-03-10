@@ -10,6 +10,7 @@ import ClockIcon from '@/icons/Clock';
 import {
   border,
   foreground,
+  iconStroke,
   muted,
   rose600,
   shadowCard,
@@ -101,7 +102,7 @@ const CalendarIconWrap = styled('span')({
 const FieldLabel = styled('div')({
   fontSize: '13px',
   fontWeight: 500,
-  color: border,
+  color: iconStroke,
   marginBottom: '6px',
 });
 
