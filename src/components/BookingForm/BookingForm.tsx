@@ -11,6 +11,7 @@ import BookingDateTimeSection from '@/components/BookingDateTimeSection/BookingD
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
 import BookingOrderSummary from '@/components/BookingOrderSummary/BookingOrderSummary';
 import type { OrderItem } from '@/components/BookingOrderSummary/BookingOrderSummary';
+import { useCart } from '@/context/CartContext';
 import BookingPaymentForm from '@/components/BookingPaymentForm/BookingPaymentForm';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel';
@@ -31,21 +32,6 @@ type BookingFormProps = {
   restaurantRating?: number;
   restaurantImage?: string;
 };
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// TODO: replace with cart/order data from API
-
-const MOCK_ORDER_ITEMS: OrderItem[] = [
-  { id: '1', quantity: 3, name: 'სალათი ცეზარი', price: 54.0 },
-  {
-    id: '2',
-    quantity: 3,
-    name: 'სალათი ცეზარი',
-    price: 54.0,
-    notes: ['დიდი მენიუ, ქვარცხის გარეშე', 'დიდი მენიუ', 'პატარა მენიუ'],
-  },
-  { id: '3', quantity: 3, name: 'სუპი ხარჩო', price: 12.0 },
-];
 
 const DEFAULT_DEPOSIT_AMOUNT = 10.0;
 const DEFAULT_MAX_ADVANCE_DAYS = 60;
@@ -276,6 +262,15 @@ export default function BookingForm({
   restaurantImage,
 }: BookingFormProps) {
   const t = useTranslations();
+  const { items: cartItems } = useCart();
+
+  const orderItems: OrderItem[] = cartItems.map(item => ({
+    id: item.id,
+    quantity: item.quantity,
+    name: item.name,
+    price: item.price,
+    notes: item.specialInstructions ? [item.specialInstructions] : undefined,
+  }));
   const { locale } = useLocale();
   const router = useRouter();
 
@@ -469,7 +464,7 @@ export default function BookingForm({
               minGuests={minGuests}
               maxGuests={maxGuests}
             />
-            <BookingOrderSummary items={MOCK_ORDER_ITEMS} depositAmount={depositAmount} />
+            <BookingOrderSummary items={orderItems} depositAmount={depositAmount} />
 
             {/* Contact form — mobile only */}
             <MobileContactSection>
