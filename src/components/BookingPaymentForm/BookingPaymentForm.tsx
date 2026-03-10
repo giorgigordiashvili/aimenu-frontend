@@ -31,6 +31,7 @@ type SavedCard = {
 
 type Props = {
   depositAmount: number;
+  grandTotal?: number;
   savedCard?: SavedCard | null;
   isLoading?: boolean;
   error?: string | null;
@@ -294,6 +295,7 @@ function isExpiryValid(val: string): boolean {
 
 export default function BookingPaymentForm({
   depositAmount,
+  grandTotal,
   savedCard,
   isLoading,
   error,
@@ -301,6 +303,7 @@ export default function BookingPaymentForm({
   onPay,
   onValidChange,
 }: Props) {
+  const total = grandTotal ?? depositAmount;
   const t = useTranslations();
   const [method, setMethod] = useState<PaymentMethod>(savedCard ? 'saved' : 'card');
   const [cardNumber, setCardNumber] = useState('');
@@ -446,7 +449,7 @@ export default function BookingPaymentForm({
           </AmountRow>
           <TotalRow>
             <TotalLabel>{t.booking.grandTotal}</TotalLabel>
-            <TotalValue>{depositAmount.toFixed(2)} ₾</TotalValue>
+            <TotalValue>{total.toFixed(2)} ₾</TotalValue>
           </TotalRow>
         </AmountSection>
 

@@ -486,6 +486,7 @@ export default function BookingForm({
           {/* ── Right panel — desktop only, self-contained ───────────────── */}
           <BookingRightPanel
             depositAmount={depositAmount}
+            grandTotal={cartTotal + depositAmount}
             name={name}
             phone={phone}
             email={email}
@@ -535,6 +536,7 @@ export default function BookingForm({
           <OverlayContent>
             <BookingPaymentForm
               depositAmount={depositAmount}
+              grandTotal={cartTotal + depositAmount}
               savedCard={null}
               isLoading={isPaymentLoading}
               error={paymentError}
@@ -549,7 +551,7 @@ export default function BookingForm({
               title={
                 isPaymentLoading
                   ? t.common.loading
-                  : `${t.booking.pay} ${depositAmount.toFixed(2)} ₾`
+                  : `${t.booking.pay} ${(cartTotal + depositAmount).toFixed(2)} ₾`
               }
               size='large'
               fullWidth
