@@ -9,15 +9,17 @@ import { useCart } from '@/context/CartContext';
 import { useMenuData } from '@/hooks/useMenuData';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import MainButton from '@/components/MainButton/MainButton';
 import {
   border,
   foreground,
   muted,
+  radiusSm,
   rose100,
   rose200,
+  rose50,
   rose600,
   slate200,
-  slate900,
   white,
 } from '@/tokens';
 
@@ -60,33 +62,6 @@ const TabsList = styled('div')({
   width: 'max-content',
 });
 
-interface TabButtonProps {
-  isActive?: boolean;
-}
-
-const TabButton = styled('button')<TabButtonProps>({
-  padding: '8px 16px',
-  borderRadius: '20px',
-  fontSize: '13px',
-  fontWeight: 500,
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  whiteSpace: 'nowrap',
-  border: `1px solid ${slate200}`,
-  background: white,
-  color: foreground,
-  variants: [
-    {
-      props: { isActive: true },
-      style: {
-        background: slate900,
-        color: white,
-        border: `1px solid ${slate900}`,
-      },
-    },
-  ],
-});
-
 // ── Category Group ────────────────────────────────────────────────────────────
 
 const CategoryGroup = styled('div')({
@@ -124,6 +99,7 @@ const ItemCard = styled('div')<ItemCardProps>({
       props: { inCart: true },
       style: {
         border: `1.5px solid ${rose200}`,
+        background: rose50,
       },
     },
   ],
@@ -205,51 +181,54 @@ const AddButton = styled('button')({
   color: muted,
 });
 
-// Quantity control pill — shown when item is in cart
+// Quantity control — shown when item is in cart
 const QuantityControl = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  height: '44px',
+  gap: '4px',
+  padding: '6px 6px 6px 12px',
   border: `1px solid ${border}`,
-  borderRadius: '24px',
-  overflow: 'hidden',
-  flexShrink: 0,
+  borderRadius: '14px',
   background: white,
+  flexShrink: 0,
 });
 
 const QtyBtn = styled('button')({
-  width: '40px',
-  height: '44px',
+  width: '32px',
+  height: '32px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: '18px',
+  fontSize: '20px',
   cursor: 'pointer',
   border: 'none',
   background: 'transparent',
   color: muted,
   flexShrink: 0,
+  padding: 0,
 });
 
 const QtyBtnPlus = styled('button')({
   width: '40px',
-  height: '44px',
+  height: '40px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: '18px',
+  fontSize: '22px',
   cursor: 'pointer',
   border: 'none',
   background: rose100,
   color: rose600,
+  borderRadius: radiusSm,
   flexShrink: 0,
+  padding: 0,
 });
 
 const QtyCount = styled('span')({
-  minWidth: '28px',
+  minWidth: '24px',
   textAlign: 'center',
-  fontSize: '15px',
-  fontWeight: 600,
+  fontSize: '16px',
+  fontWeight: 700,
   color: foreground,
   userSelect: 'none',
 });
@@ -325,17 +304,20 @@ export default function MenuSection({ slug, locale }: MenuSectionProps) {
       {/* Category Tabs */}
       <TabsWrapper>
         <TabsList>
-          <TabButton isActive={activeCategoryId === null} onClick={() => setActiveCategoryId(null)}>
-            {t.restaurant.allCategories}
-          </TabButton>
+          <MainButton
+            variant={activeCategoryId === null ? 'slate_cta' : 'secondary'}
+            size='small'
+            title={t.restaurant.allCategories}
+            onClick={() => setActiveCategoryId(null)}
+          />
           {categories.map(cat => (
-            <TabButton
+            <MainButton
               key={cat.id}
-              isActive={activeCategoryId === cat.id}
+              variant={activeCategoryId === cat.id ? 'slate_cta' : 'secondary'}
+              size='small'
+              title={cat.name}
               onClick={() => setActiveCategoryId(cat.id)}
-            >
-              {cat.name}
-            </TabButton>
+            />
           ))}
         </TabsList>
       </TabsWrapper>
