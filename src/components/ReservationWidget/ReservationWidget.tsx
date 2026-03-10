@@ -403,7 +403,9 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   const router = useRouter();
   const t = useTranslations();
   const { locale: ctxLocale } = useLocale();
-  const { getTotalItems } = useCart();
+  const { getTotalItems, getTotalPrice } = useCart();
+  const DEPOSIT = 10.0;
+  const cartTotal = getTotalPrice();
 
   const activeLocale = locale || ctxLocale;
 
@@ -695,12 +697,12 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
       <PriceSummary>
         <PriceRow>
           <PriceLabel bold={false}>{t.reservationWidget.deposit}</PriceLabel>
-          <PriceValue highlight={false}>10.00 ₾</PriceValue>
+          <PriceValue highlight={false}>{DEPOSIT.toFixed(2)} ₾</PriceValue>
         </PriceRow>
         <PriceSeparator />
         <PriceRow>
           <PriceLabel bold={true}>{t.reservationWidget.grandTotal}</PriceLabel>
-          <PriceValue highlight={true}>10.00 ₾</PriceValue>
+          <PriceValue highlight={true}>{(cartTotal + DEPOSIT).toFixed(2)} ₾</PriceValue>
         </PriceRow>
       </PriceSummary>
 
