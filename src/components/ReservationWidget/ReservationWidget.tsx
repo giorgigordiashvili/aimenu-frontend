@@ -515,7 +515,9 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
             <CalendarIcon />
           </span>
           {selectedDate ? (
-            <FieldText isPlaceholder={false}>{formatDateValue(selectedDate, activeLocale)}</FieldText>
+            <FieldText isPlaceholder={false}>
+              {formatDateValue(selectedDate, activeLocale)}
+            </FieldText>
           ) : (
             <FieldText isPlaceholder={true}>{t.reservationWidget.datePlaceholder}</FieldText>
           )}
