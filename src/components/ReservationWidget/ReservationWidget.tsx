@@ -101,7 +101,7 @@ const CalendarIconWrap = styled('span')({
 const FieldLabel = styled('div')({
   fontSize: '13px',
   fontWeight: 500,
-  color: rose600,
+  color: border,
   marginBottom: '6px',
 });
 

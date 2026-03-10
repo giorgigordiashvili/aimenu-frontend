@@ -166,12 +166,12 @@ export default function RestaurantDetailPage() {
       <Header />
 
       <Main>
+        {/* Photo Gallery — full width above columns */}
+        <PhotoGallery images={images} restaurantName={restaurant.name} />
+
         <ContentLayout>
           {/* Left column — main content */}
           <LeftColumn>
-            {/* Photo Gallery */}
-            <PhotoGallery images={images} restaurantName={restaurant.name} />
-
             {/* Restaurant Info */}
             <RestaurantDetailInfo
               name={restaurant.name}
