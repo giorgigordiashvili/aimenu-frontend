@@ -9,7 +9,17 @@ import { useCart } from '@/context/CartContext';
 import { useMenuData } from '@/hooks/useMenuData';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
-import { border, foreground, muted, rose600, slate200, slate900, white } from '@/tokens';
+import {
+  border,
+  foreground,
+  muted,
+  rose100,
+  rose200,
+  rose600,
+  slate200,
+  slate900,
+  white,
+} from '@/tokens';
 
 // ── Containers ────────────────────────────────────────────────────────────────
 
@@ -97,7 +107,11 @@ const CategoryHeading = styled('h3')({
 
 // ── Menu Item Card ────────────────────────────────────────────────────────────
 
-const ItemCard = styled('div')({
+interface ItemCardProps {
+  inCart?: boolean;
+}
+
+const ItemCard = styled('div')<ItemCardProps>({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
@@ -105,6 +119,14 @@ const ItemCard = styled('div')({
   border: `1px solid ${border}`,
   borderRadius: '8px',
   cursor: 'pointer',
+  variants: [
+    {
+      props: { inCart: true },
+      style: {
+        border: `1.5px solid ${rose200}`,
+      },
+    },
+  ],
 });
 
 const ItemImageWrapper = styled('div')({
@@ -169,9 +191,9 @@ const ItemPrice = styled('p')({
 });
 
 const AddButton = styled('button')({
-  width: '36px',
-  height: '36px',
-  borderRadius: '50%',
+  width: '44px',
+  height: '44px',
+  borderRadius: '10px',
   border: `1px solid ${border}`,
   background: white,
   cursor: 'pointer',
@@ -179,14 +201,57 @@ const AddButton = styled('button')({
   alignItems: 'center',
   justifyContent: 'center',
   flexShrink: 0,
-  fontSize: '20px',
+  fontSize: '22px',
+  color: muted,
+});
+
+// Quantity control pill — shown when item is in cart
+const QuantityControl = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  height: '44px',
+  border: `1px solid ${border}`,
+  borderRadius: '24px',
+  overflow: 'hidden',
+  flexShrink: 0,
+  background: white,
+});
+
+const QtyBtn = styled('button')({
+  width: '40px',
+  height: '44px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '18px',
+  cursor: 'pointer',
+  border: 'none',
+  background: 'transparent',
+  color: muted,
+  flexShrink: 0,
+});
+
+const QtyBtnPlus = styled('button')({
+  width: '40px',
+  height: '44px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '18px',
+  cursor: 'pointer',
+  border: 'none',
+  background: rose100,
+  color: rose600,
+  flexShrink: 0,
+});
+
+const QtyCount = styled('span')({
+  minWidth: '28px',
+  textAlign: 'center',
+  fontSize: '15px',
+  fontWeight: 600,
   color: foreground,
-  transition: 'all 0.2s ease',
-  '&:hover': {
-    background: slate900,
-    color: white,
-    border: `1px solid ${slate900}`,
-  },
+  userSelect: 'none',
 });
 
 // ── Loading / Empty ───────────────────────────────────────────────────────────
@@ -227,7 +292,7 @@ interface MenuSectionProps {
 export default function MenuSection({ slug, locale }: MenuSectionProps) {
   const t = getDictionary(locale);
   const { products, categories, isLoading } = useMenuData(slug, locale);
-  const { addItem } = useCart();
+  const { addItem, getItemQuantity, updateQuantity } = useCart();
 
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<MenuProduct | null>(null);
@@ -287,7 +352,11 @@ export default function MenuSection({ slug, locale }: MenuSectionProps) {
             <CategoryGroup key={cat.id}>
               <CategoryHeading>{cat.name}</CategoryHeading>
               {catProducts.map(product => (
-                <ItemCard key={product.id} onClick={() => handleProductClick(product)}>
+                <ItemCard
+                  key={product.id}
+                  inCart={getItemQuantity(product.id) > 0}
+                  onClick={() => handleProductClick(product)}
+                >
                   {product.image ? (
                     <ItemImageWrapper>
                       <Image
@@ -308,12 +377,33 @@ export default function MenuSection({ slug, locale }: MenuSectionProps) {
                     )}
                     <ItemPrice>{product.price.toFixed(2)} ₾</ItemPrice>
                   </ItemContent>
-                  <AddButton
-                    onClick={e => handleAddToCart(e, product)}
-                    aria-label={t.restaurant.addToCart}
-                  >
-                    +
-                  </AddButton>
+                  {getItemQuantity(product.id) > 0 ? (
+                    <QuantityControl onClick={e => e.stopPropagation()}>
+                      <QtyBtn
+                        onClick={e => {
+                          e.stopPropagation();
+                          updateQuantity(product.id, getItemQuantity(product.id) - 1);
+                        }}
+                        aria-label='Remove one'
+                      >
+                        −
+                      </QtyBtn>
+                      <QtyCount>{getItemQuantity(product.id)}</QtyCount>
+                      <QtyBtnPlus
+                        onClick={e => handleAddToCart(e, product)}
+                        aria-label={t.restaurant.addToCart}
+                      >
+                        +
+                      </QtyBtnPlus>
+                    </QuantityControl>
+                  ) : (
+                    <AddButton
+                      onClick={e => handleAddToCart(e, product)}
+                      aria-label={t.restaurant.addToCart}
+                    >
+                      +
+                    </AddButton>
+                  )}
                 </ItemCard>
               ))}
             </CategoryGroup>
