@@ -79,6 +79,7 @@ const WidgetCard = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   gap: '16px',
+  marginBottom: '24px',
 });
 
 const WidgetHeader = styled('div')({
