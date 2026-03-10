@@ -38,7 +38,8 @@
     "phone": "Phone",
     "website": "Website",
     "similar": "Similar Restaurants",
-    "addToCart": "Add to Cart"
+    "addToCart": "Add to Cart",
+    "selectedItems": "{count} dishes selected"
   },
   "product": {
     "total": "Total"
@@ -311,6 +312,7 @@
   "reservationWidget": {
     "title": "Reservation",
     "book": "Book",
+    "bookWithOrder": "Order & Book",
     "deposit": "Deposit",
     "grandTotal": "Grand Total",
     "freeCancellation": "Free cancellation 24 hours before",

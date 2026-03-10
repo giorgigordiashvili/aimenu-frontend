@@ -38,7 +38,8 @@
     "phone": "Телефон",
     "website": "Сайт",
     "similar": "Похожие рестораны",
-    "addToCart": "В корзину"
+    "addToCart": "В корзину",
+    "selectedItems": "Выбрано {count} блюд"
   },
   "product": {
     "total": "Итого"
@@ -311,6 +312,7 @@
   "reservationWidget": {
     "title": "Бронирование",
     "book": "Забронировать",
+    "bookWithOrder": "Заказать и забронировать",
     "deposit": "Депозит",
     "grandTotal": "Итого",
     "freeCancellation": "Бесплатная отмена за 24 часа",

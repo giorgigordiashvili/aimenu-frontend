@@ -4,6 +4,7 @@ import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
+import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
 import ClockIcon from '@/icons/Clock';
@@ -402,6 +403,7 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   const router = useRouter();
   const t = useTranslations();
   const { locale: ctxLocale } = useLocale();
+  const { getTotalItems } = useCart();
 
   const activeLocale = locale || ctxLocale;
 
@@ -704,10 +706,10 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
 
       {/* CTA Button */}
       <MainButton
-        variant='rose_cta'
+        variant={getTotalItems() > 0 ? 'green_cta' : 'rose_cta'}
         fullWidth
         size='large'
-        title={t.reservationWidget.book}
+        title={getTotalItems() > 0 ? t.reservationWidget.bookWithOrder : t.reservationWidget.book}
         onClick={handleBook}
       />
 

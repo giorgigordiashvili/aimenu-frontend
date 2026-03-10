@@ -38,7 +38,8 @@
     "phone": "ტელეფონი",
     "website": "ვებ-გვერდი",
     "similar": "მსგავსი რესტორნები",
-    "addToCart": "კალათაში დამატება"
+    "addToCart": "კალათაში დამატება",
+    "selectedItems": "არჩეულია {count} კერძი"
   },
   "product": {
     "total": "ჯამი"
@@ -311,6 +312,7 @@
   "reservationWidget": {
     "title": "ჯავშანი",
     "book": "დაჯავშნა",
+    "bookWithOrder": "შეკვეთა და დაჯავშნა",
     "deposit": "დეპოზიტი",
     "grandTotal": "სულ ჯამი",
     "freeCancellation": "უფასო გაუქმება 24 საათით ადრე",

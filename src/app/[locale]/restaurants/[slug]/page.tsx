@@ -9,6 +9,7 @@ import type { RestaurantDetail } from '@/api/generated/interfaces';
 import { Header, ReservationWidget } from '@/components';
 import ContactInfo from '@/components/ContactInfo';
 import Footer from '@/components/Footer';
+import CartBadge from '@/components/CartBadge';
 import MenuSection from '@/components/MenuSection';
 import PhotoGallery from '@/components/PhotoGallery';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
@@ -62,6 +63,13 @@ const MobileReservation = styled('div')({
   '@media (min-width: 1024px)': {
     display: 'none',
   },
+});
+
+const CartBadgeRow = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  padding: '0 20px',
+  minHeight: '0px',
 });
 
 const LoadingContainer = styled('div')({
@@ -191,7 +199,10 @@ export default function RestaurantDetailPage() {
               </MobileReservation>
             )}
 
-            {/* Menu */}
+            {/* Cart Badge + Menu */}
+            <CartBadgeRow>
+              <CartBadge />
+            </CartBadgeRow>
             <MenuSection slug={slug} locale={locale} />
 
             {/* Contact & Hours */}
