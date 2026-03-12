@@ -331,6 +331,7 @@ interface ProductDetailModalProps {
     image?: string;
     modifierGroups?: ModifierGroupType[];
   };
+  initialModifiers?: Record<string, string[]>;
 }
 
 // Helper to compute initial selections
@@ -346,10 +347,16 @@ function getInitialSelections(modifierGroups?: ModifierGroupType[]): Record<stri
   return initialSelections;
 }
 
-export default function ProductDetailModal({ isOpen, onClose, product }: ProductDetailModalProps) {
-  // Compute initial selections based on product
+export default function ProductDetailModal({
+  isOpen,
+  onClose,
+  product,
+  initialModifiers,
+}: ProductDetailModalProps) {
+  // Compute initial selections based on product (or pre-loaded modifiers from cart)
   const initialSelections = useMemo(
-    () => getInitialSelections(product.modifierGroups),
+    () => initialModifiers ?? getInitialSelections(product.modifierGroups),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [product.modifierGroups]
   );
 
@@ -359,7 +366,7 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
   // Reset selections when modal opens with new product
   useEffect(() => {
     if (isOpen) {
-      setSelectedModifiers(getInitialSelections(product.modifierGroups));
+      setSelectedModifiers(initialModifiers ?? getInitialSelections(product.modifierGroups));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, product.id]);
@@ -429,8 +436,16 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
   });
 
   function handleAddToCart() {
+    // Generate a unique cart ID per modifier combination so different selections
+    // are stored as separate line items and don't overwrite each other's price.
+    const modKey = selectedModifiersList
+      .map(m => m.id)
+      .sort()
+      .join('_');
+    const cartItemId = modKey ? `${product.id}_${modKey}` : product.id;
+
     addItem({
-      id: product.id,
+      id: cartItemId,
       menuItemId: product.id,
       name: product.name,
       price: product.price,
