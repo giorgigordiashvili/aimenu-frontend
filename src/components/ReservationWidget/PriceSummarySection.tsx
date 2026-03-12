@@ -53,8 +53,10 @@ export const PriceValue = styled('span')<{ highlight?: boolean }>({
 interface PriceSummarySectionProps {
   depositLabel: string;
   totalLabel: string;
+  itemsLabel: string;
   depositAmount: number;
   cartTotal: number;
+  itemCount: number;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -62,11 +64,21 @@ interface PriceSummarySectionProps {
 export default function PriceSummarySection({
   depositLabel,
   totalLabel,
+  itemsLabel,
   depositAmount,
   cartTotal,
+  itemCount,
 }: PriceSummarySectionProps) {
   return (
     <PriceSummary>
+      {itemCount > 0 && (
+        <PriceRow>
+          <PriceLabel bold={false}>
+            {itemsLabel} ({itemCount})
+          </PriceLabel>
+          <PriceValue highlight={false}>{cartTotal.toFixed(2)} ₾</PriceValue>
+        </PriceRow>
+      )}
       <PriceRow>
         <PriceLabel bold={false}>{depositLabel}</PriceLabel>
         <PriceValue highlight={false}>{depositAmount.toFixed(2)} ₾</PriceValue>

@@ -11,12 +11,12 @@ import BookingDateTimeSection from '@/components/BookingDateTimeSection/BookingD
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
 import BookingOrderSummary from '@/components/BookingOrderSummary/BookingOrderSummary';
 import type { OrderItem } from '@/components/BookingOrderSummary/BookingOrderSummary';
-import { useCart } from '@/context/CartContext';
 import BookingPaymentForm from '@/components/BookingPaymentForm/BookingPaymentForm';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel';
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import MainButton from '@/components/MainButton/MainButton';
+import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import ArrowIcon from '@/icons/Arrow';
 import CloseIcon from '@/icons/Close';
@@ -265,13 +265,16 @@ export default function BookingForm({
   const { items: cartItems, getTotalPrice } = useCart();
   const cartTotal = getTotalPrice();
 
-  const orderItems: OrderItem[] = cartItems.map(item => ({
-    id: item.id,
-    quantity: item.quantity,
-    name: item.name,
-    price: item.price,
-    notes: item.specialInstructions ? [item.specialInstructions] : undefined,
-  }));
+  const orderItems: OrderItem[] = cartItems.map(item => {
+    const modifierTotal = item.modifiers?.reduce((s, m) => s + m.price, 0) ?? 0;
+    return {
+      id: item.id,
+      quantity: item.quantity,
+      name: item.name,
+      price: item.price + modifierTotal,
+      notes: item.specialInstructions ? [item.specialInstructions] : undefined,
+    };
+  });
   const { locale } = useLocale();
   const router = useRouter();
 

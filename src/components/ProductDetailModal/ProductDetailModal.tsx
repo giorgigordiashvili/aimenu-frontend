@@ -4,7 +4,11 @@ import { styled, keyframes } from '@pigment-css/react';
 import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 
+import { useCart } from '@/context/CartContext';
+import { useTranslations } from '@/context/LocaleContext';
+
 import BackButton from '../BackButton';
+import MainButton from '../MainButton/MainButton';
 
 const slideUp = keyframes({
   from: { transform: 'translateY(100%)' },
@@ -327,6 +331,7 @@ interface ProductDetailModalProps {
     image?: string;
     modifierGroups?: ModifierGroupType[];
   };
+  initialModifiers?: Record<string, string[]>;
 }
 
 // Helper to compute initial selections
@@ -342,10 +347,16 @@ function getInitialSelections(modifierGroups?: ModifierGroupType[]): Record<stri
   return initialSelections;
 }
 
-export default function ProductDetailModal({ isOpen, onClose, product }: ProductDetailModalProps) {
-  // Compute initial selections based on product
+export default function ProductDetailModal({
+  isOpen,
+  onClose,
+  product,
+  initialModifiers,
+}: ProductDetailModalProps) {
+  // Compute initial selections based on product (or pre-loaded modifiers from cart)
   const initialSelections = useMemo(
-    () => getInitialSelections(product.modifierGroups),
+    () => initialModifiers ?? getInitialSelections(product.modifierGroups),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [product.modifierGroups]
   );
 
@@ -355,7 +366,7 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
   // Reset selections when modal opens with new product
   useEffect(() => {
     if (isOpen) {
-      setSelectedModifiers(getInitialSelections(product.modifierGroups));
+      setSelectedModifiers(initialModifiers ?? getInitialSelections(product.modifierGroups));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, product.id]);
@@ -371,6 +382,9 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  const { addItem } = useCart();
+  const t = useTranslations();
 
   if (!isOpen) return null;
 
@@ -412,6 +426,34 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
   };
 
   const totalPrice = calculateTotalPrice();
+
+  const selectedModifiersList = Object.entries(selectedModifiers).flatMap(([groupId, modIds]) => {
+    const group = product.modifierGroups?.find(g => g.id === groupId);
+    return modIds.map(modId => {
+      const mod = group?.modifiers.find(m => m.id === modId);
+      return { id: modId, name: mod?.name ?? '', price: mod?.price ?? 0 };
+    });
+  });
+
+  function handleAddToCart() {
+    // Generate a unique cart ID per modifier combination so different selections
+    // are stored as separate line items and don't overwrite each other's price.
+    const modKey = selectedModifiersList
+      .map(m => m.id)
+      .sort()
+      .join('_');
+    const cartItemId = modKey ? `${product.id}_${modKey}` : product.id;
+
+    addItem({
+      id: cartItemId,
+      menuItemId: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      modifiers: selectedModifiersList,
+    });
+    onClose();
+  }
 
   return (
     <Overlay onClick={onClose}>
@@ -487,9 +529,15 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
         {/* Price Display */}
         <Footer>
           <PriceDisplay>
-            <PriceLabel>ჯამი:</PriceLabel>
+            <PriceLabel>{t.product.total}:</PriceLabel>
             <PriceValue>{totalPrice.toFixed(2)} ₾</PriceValue>
           </PriceDisplay>
+          <MainButton
+            variant='rose_cta'
+            title={t.restaurant.addToCart}
+            onClick={handleAddToCart}
+            fullWidth
+          />
         </Footer>
       </Modal>
     </Overlay>

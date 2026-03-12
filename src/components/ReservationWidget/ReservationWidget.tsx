@@ -428,8 +428,10 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
       <PriceSummarySection
         depositLabel={t.reservationWidget.deposit}
         totalLabel={t.reservationWidget.grandTotal}
+        itemsLabel={t.reservationWidget.items}
         depositAmount={depositAmount}
         cartTotal={cartTotal}
+        itemCount={getTotalItems()}
       />
 
       {/* CTA Button */}

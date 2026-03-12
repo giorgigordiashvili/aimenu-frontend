@@ -1,7 +1,7 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 
 import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';

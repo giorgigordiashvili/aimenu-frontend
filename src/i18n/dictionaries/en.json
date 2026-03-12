@@ -318,7 +318,8 @@
     "freeCancellation": "Free cancellation 24 hours before",
     "datePlaceholder": "Select date",
     "timePlaceholder": "Time",
-    "guestsPlaceholder": "Guests"
+    "guestsPlaceholder": "Guests",
+    "items": "Dishes"
   },
   "footer": {
     "navigation": "Navigation",

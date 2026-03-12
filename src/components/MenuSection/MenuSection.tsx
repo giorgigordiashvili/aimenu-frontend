@@ -284,28 +284,33 @@ interface MenuSectionProps {
 export default function MenuSection({ slug, locale, headerRight }: MenuSectionProps) {
   const t = getDictionary(locale);
   const { products, categories, isLoading } = useMenuData(slug, locale);
-  const { addItem, getItemQuantity, updateQuantity } = useCart();
+  const { items: cartItems, getTotalQuantityByMenuItemId, updateQuantity } = useCart();
 
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<MenuProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalInitialModifiers, setModalInitialModifiers] = useState<
+    Record<string, string[]> | undefined
+  >(undefined);
 
   const displayCategories =
     activeCategoryId === null ? categories : categories.filter(c => c.id === activeCategoryId);
 
-  const handleAddToCart = (e: React.MouseEvent, product: MenuProduct) => {
-    e.stopPropagation();
-    addItem({
-      id: product.id,
-      menuItemId: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      image: product.image,
-    });
-  };
-
-  const handleProductClick = (product: MenuProduct) => {
+  // Opens the modal; if the product is already in cart, pre-load its modifier selection.
+  const openModal = (product: MenuProduct, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const existingItem = cartItems.find(i => i.menuItemId === product.id);
+    const preloaded = existingItem?.modifiers
+      ? existingItem.modifiers.reduce<Record<string, string[]>>((acc, mod) => {
+          // Find which group this modifier belongs to
+          const group = product.modifierGroups?.find(g => g.modifiers.some(m => m.id === mod.id));
+          if (group) {
+            acc[group.id] = [...(acc[group.id] ?? []), mod.id];
+          }
+          return acc;
+        }, {})
+      : undefined;
+    setModalInitialModifiers(preloaded);
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
@@ -354,8 +359,8 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
               {catProducts.map(product => (
                 <ItemCard
                   key={product.id}
-                  inCart={getItemQuantity(product.id) > 0}
-                  onClick={() => handleProductClick(product)}
+                  inCart={getTotalQuantityByMenuItemId(product.id) > 0}
+                  onClick={() => openModal(product)}
                 >
                   {product.image ? (
                     <ItemImageWrapper>
@@ -377,20 +382,22 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
                     )}
                     <ItemPrice>{product.price.toFixed(2)} ₾</ItemPrice>
                   </ItemContent>
-                  {getItemQuantity(product.id) > 0 ? (
+                  {getTotalQuantityByMenuItemId(product.id) > 0 ? (
                     <QuantityControl onClick={e => e.stopPropagation()}>
                       <QtyBtn
                         onClick={e => {
                           e.stopPropagation();
-                          updateQuantity(product.id, getItemQuantity(product.id) - 1);
+                          // Decrement the first matching cart item
+                          const match = cartItems.find(i => i.menuItemId === product.id);
+                          if (match) updateQuantity(match.id, match.quantity - 1);
                         }}
                         aria-label='Remove one'
                       >
                         −
                       </QtyBtn>
-                      <QtyCount>{getItemQuantity(product.id)}</QtyCount>
+                      <QtyCount>{getTotalQuantityByMenuItemId(product.id)}</QtyCount>
                       <QtyBtnPlus
-                        onClick={e => handleAddToCart(e, product)}
+                        onClick={e => openModal(product, e)}
                         aria-label={t.restaurant.addToCart}
                       >
                         +
@@ -398,7 +405,7 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
                     </QuantityControl>
                   ) : (
                     <AddButton
-                      onClick={e => handleAddToCart(e, product)}
+                      onClick={e => openModal(product, e)}
                       aria-label={t.restaurant.addToCart}
                     >
                       +
@@ -416,6 +423,7 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           product={selectedProduct}
+          initialModifiers={modalInitialModifiers}
         />
       )}
     </Section>

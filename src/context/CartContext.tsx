@@ -29,6 +29,7 @@ interface CartContextType {
   updateQuantity: (id: string, quantity: number) => void;
   updateSpecialInstructions: (id: string, instructions: string) => void;
   getItemQuantity: (id: string) => number;
+  getTotalQuantityByMenuItemId: (menuItemId: string) => number;
   getTotalItems: () => number;
   getTotalPrice: () => number;
   getSubtotal: () => number;
@@ -87,6 +88,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [items]
   );
 
+  const getTotalQuantityByMenuItemId = useCallback(
+    (menuItemId: string) => {
+      return items.filter(i => i.menuItemId === menuItemId).reduce((sum, i) => sum + i.quantity, 0);
+    },
+    [items]
+  );
+
   const getTotalItems = useCallback(() => {
     return items.reduce((total, item) => total + item.quantity, 0);
   }, [items]);
@@ -118,6 +126,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         updateSpecialInstructions,
         getItemQuantity,
+        getTotalQuantityByMenuItemId,
         getTotalItems,
         getTotalPrice,
         getSubtotal,

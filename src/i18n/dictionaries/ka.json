@@ -318,7 +318,8 @@
     "freeCancellation": "უფასო გაუქმება 24 საათით ადრე",
     "datePlaceholder": "თარიღი",
     "timePlaceholder": "დრო",
-    "guestsPlaceholder": "სტუმრები"
+    "guestsPlaceholder": "სტუმრები",
+    "items": "კერძები"
   },
   "footer": {
     "navigation": "ნავიგაცია",

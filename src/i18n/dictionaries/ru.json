@@ -318,7 +318,8 @@
     "freeCancellation": "Бесплатная отмена за 24 часа",
     "datePlaceholder": "Выберите дату",
     "timePlaceholder": "Время",
-    "guestsPlaceholder": "Гости"
+    "guestsPlaceholder": "Гости",
+    "items": "Блюда"
   },
   "footer": {
     "navigation": "Навигация",
