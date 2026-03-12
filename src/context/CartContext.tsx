@@ -49,7 +49,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems(prevItems => {
       const existingItem = prevItems.find(i => i.id === item.id);
       if (existingItem) {
-        return prevItems.map(i => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i));
+        // Update price and modifiers in case the item was re-added via modal with
+        // a different modifier selection; quantity accumulates either way.
+        return prevItems.map(i =>
+          i.id === item.id
+            ? { ...i, price: item.price, modifiers: item.modifiers, quantity: i.quantity + 1 }
+            : i
+        );
       }
       return [...prevItems, { ...item, quantity: 1 }];
     });
