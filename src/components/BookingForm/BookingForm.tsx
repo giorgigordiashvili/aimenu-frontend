@@ -11,12 +11,12 @@ import BookingDateTimeSection from '@/components/BookingDateTimeSection/BookingD
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
 import BookingOrderSummary from '@/components/BookingOrderSummary/BookingOrderSummary';
 import type { OrderItem } from '@/components/BookingOrderSummary/BookingOrderSummary';
-import { useCart } from '@/context/CartContext';
 import BookingPaymentForm from '@/components/BookingPaymentForm/BookingPaymentForm';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel';
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import MainButton from '@/components/MainButton/MainButton';
+import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import ArrowIcon from '@/icons/Arrow';
 import CloseIcon from '@/icons/Close';

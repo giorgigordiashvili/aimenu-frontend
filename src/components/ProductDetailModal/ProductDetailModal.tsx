@@ -4,7 +4,11 @@ import { styled, keyframes } from '@pigment-css/react';
 import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 
+import { useCart } from '@/context/CartContext';
+import { useTranslations } from '@/context/LocaleContext';
+
 import BackButton from '../BackButton';
+import MainButton from '../MainButton/MainButton';
 
 const slideUp = keyframes({
   from: { transform: 'translateY(100%)' },
@@ -372,6 +376,9 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
     };
   }, [isOpen]);
 
+  const { addItem } = useCart();
+  const t = useTranslations();
+
   if (!isOpen) return null;
 
   const handleSingleSelect = (groupId: string, modifierId: string) => {
@@ -412,6 +419,26 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
   };
 
   const totalPrice = calculateTotalPrice();
+
+  const selectedModifiersList = Object.entries(selectedModifiers).flatMap(([groupId, modIds]) => {
+    const group = product.modifierGroups?.find(g => g.id === groupId);
+    return modIds.map(modId => {
+      const mod = group?.modifiers.find(m => m.id === modId);
+      return { id: modId, name: mod?.name ?? '', price: mod?.price ?? 0 };
+    });
+  });
+
+  function handleAddToCart() {
+    addItem({
+      id: product.id,
+      menuItemId: product.id,
+      name: product.name,
+      price: totalPrice,
+      image: product.image,
+      modifiers: selectedModifiersList,
+    });
+    onClose();
+  }
 
   return (
     <Overlay onClick={onClose}>
@@ -487,9 +514,15 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
         {/* Price Display */}
         <Footer>
           <PriceDisplay>
-            <PriceLabel>ჯამი:</PriceLabel>
+            <PriceLabel>{t.product.total}:</PriceLabel>
             <PriceValue>{totalPrice.toFixed(2)} ₾</PriceValue>
           </PriceDisplay>
+          <MainButton
+            variant='rose_cta'
+            title={t.restaurant.addToCart}
+            onClick={handleAddToCart}
+            fullWidth
+          />
         </Footer>
       </Modal>
     </Overlay>

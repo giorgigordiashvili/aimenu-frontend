@@ -1,7 +1,7 @@
 import { styled } from '@pigment-css/react';
 
-import { Locale } from '@/i18n/config';
 import { CONTACT_EMAIL, CONTACT_PHONE } from '@/config/contact';
+import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { slate400, white, slate900 } from '@/tokens';
 
