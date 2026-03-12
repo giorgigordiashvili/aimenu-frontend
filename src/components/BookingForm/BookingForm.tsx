@@ -265,13 +265,16 @@ export default function BookingForm({
   const { items: cartItems, getTotalPrice } = useCart();
   const cartTotal = getTotalPrice();
 
-  const orderItems: OrderItem[] = cartItems.map(item => ({
-    id: item.id,
-    quantity: item.quantity,
-    name: item.name,
-    price: item.price,
-    notes: item.specialInstructions ? [item.specialInstructions] : undefined,
-  }));
+  const orderItems: OrderItem[] = cartItems.map(item => {
+    const modifierTotal = item.modifiers?.reduce((s, m) => s + m.price, 0) ?? 0;
+    return {
+      id: item.id,
+      quantity: item.quantity,
+      name: item.name,
+      price: item.price + modifierTotal,
+      notes: item.specialInstructions ? [item.specialInstructions] : undefined,
+    };
+  });
   const { locale } = useLocale();
   const router = useRouter();
 

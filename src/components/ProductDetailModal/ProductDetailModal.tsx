@@ -433,7 +433,7 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
       id: product.id,
       menuItemId: product.id,
       name: product.name,
-      price: totalPrice,
+      price: product.price,
       image: product.image,
       modifiers: selectedModifiersList,
     });
