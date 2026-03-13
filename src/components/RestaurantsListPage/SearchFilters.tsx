@@ -116,6 +116,7 @@ const FieldInput = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
+  width: '100%',
   cursor: 'pointer',
   userSelect: 'none',
 });
@@ -218,7 +219,8 @@ const MobileSearchBtn = styled('button')({
 const MobileScanBtn = styled('button')({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
+  justifyContent: 'center',
+  gap: '8px',
   width: '100%',
   padding: '15px 20px',
   background: green500,
@@ -228,12 +230,6 @@ const MobileScanBtn = styled('button')({
   fontSize: '16px',
   fontWeight: 700,
   cursor: 'pointer',
-});
-
-const ScanLeft = styled('span')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px',
 });
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -414,10 +410,8 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           {t.common.search}
         </MobileSearchBtn>
         <MobileScanBtn type='button'>
-          <ScanLeft>
-            <ScanIcon />
-            დაასკანერე მენიუ
-          </ScanLeft>
+          <ScanIcon />
+          დაასკანერე მენიუ
           <ArrowRightIcon />
         </MobileScanBtn>
       </MobileButtonsWrap>
