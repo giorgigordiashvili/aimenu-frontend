@@ -347,7 +347,11 @@
     "myBookings": "My Bookings",
     "logout": "Log Out",
     "login": "Log In",
-    "register": "Register"
+    "register": "Register",
+    "home": "Home",
+    "restaurants": "Restaurants",
+    "about": "About Us",
+    "contact": "Contact"
   },
   "footer": {
     "navigation": "Navigation",

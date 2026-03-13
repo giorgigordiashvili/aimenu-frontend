@@ -3,6 +3,7 @@
 import { styled } from '@pigment-css/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -36,14 +37,15 @@ const HeaderWrapper = styled('header')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '12px 20px',
-  background: 'rgba(255, 255, 255, 0.85)',
+  padding: '0 20px',
+  background: 'rgba(255, 255, 255, 0.92)',
   backdropFilter: 'blur(12px)',
   zIndex: 200,
   height: '64px',
   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+  gap: '16px',
   '@media (min-width: 768px)': {
-    padding: '12px 40px',
+    padding: '0 40px',
   },
 });
 
@@ -63,20 +65,50 @@ const LogoText = styled('span')({
   color: primary,
 });
 
-// ── Right side ────────────────────────────────────────────────────────────────
+// ── Desktop Nav ───────────────────────────────────────────────────────────────
+
+const DesktopNav = styled('nav')({
+  display: 'none',
+  '@media (min-width: 768px)': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    flex: 1,
+    justifyContent: 'center',
+  },
+});
+
+const NavLink = styled(Link)<{ isActive?: boolean }>({
+  padding: '6px 14px',
+  borderRadius: '8px',
+  fontSize: '14px',
+  fontWeight: 500,
+  color: foreground,
+  textDecoration: 'none',
+  transition: 'background 0.15s, color 0.15s',
+  whiteSpace: 'nowrap',
+  '&:hover': { background: slate100 },
+  variants: [
+    {
+      props: { isActive: true },
+      style: { color: primary, background: rose50 },
+    },
+  ],
+});
+
+// ── Right group ───────────────────────────────────────────────────────────────
 
 const RightGroup = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  gap: '12px',
+  gap: '10px',
+  flexShrink: 0,
 });
-
-// ── Desktop controls ──────────────────────────────────────────────────────────
 
 const DesktopControls = styled('div')({
   display: 'none',
   alignItems: 'center',
-  gap: '12px',
+  gap: '10px',
   '@media (min-width: 768px)': {
     display: 'flex',
   },
@@ -100,10 +132,10 @@ const BurgerButton = styled('button')({
   },
 });
 
-// ── Auth buttons (desktop, logged-out) ────────────────────────────────────────
+// ── Auth buttons ──────────────────────────────────────────────────────────────
 
 const LoginButton = styled(Link)({
-  padding: '8px 16px',
+  padding: '7px 14px',
   border: `1px solid ${border}`,
   borderRadius: '8px',
   fontSize: '14px',
@@ -111,13 +143,12 @@ const LoginButton = styled(Link)({
   color: foreground,
   textDecoration: 'none',
   background: white,
-  cursor: 'pointer',
   transition: 'background 0.15s',
   '&:hover': { background: slate100 },
 });
 
 const RegisterButton = styled(Link)({
-  padding: '8px 16px',
+  padding: '7px 14px',
   border: 'none',
   borderRadius: '8px',
   fontSize: '14px',
@@ -125,7 +156,6 @@ const RegisterButton = styled(Link)({
   color: white,
   textDecoration: 'none',
   background: primary,
-  cursor: 'pointer',
   transition: 'opacity 0.15s',
   '&:hover': { opacity: 0.9 },
 });
@@ -136,7 +166,7 @@ const UserButton = styled('button')({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
-  padding: '6px 12px 6px 8px',
+  padding: '5px 12px 5px 6px',
   border: `1px solid ${border}`,
   borderRadius: '24px',
   background: white,
@@ -189,7 +219,7 @@ const DropdownItem = styled(Link)({
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
-  padding: '12px 16px',
+  padding: '11px 16px',
   fontSize: '14px',
   fontWeight: 400,
   color: foreground,
@@ -208,7 +238,7 @@ const LogoutItem = styled('button')({
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
-  padding: '12px 16px',
+  padding: '11px 16px',
   width: '100%',
   fontSize: '14px',
   fontWeight: 400,
@@ -227,13 +257,14 @@ const IconWrap = styled('span')({
   color: muted,
 });
 
-// ── Mobile Drawer ─────────────────────────────────────────────────────────────
+// ── Mobile Drawer (full width) ────────────────────────────────────────────────
 
 const DrawerOverlay = styled('div')<{ open: boolean }>({
   position: 'fixed',
   inset: 0,
-  background: 'rgba(0,0,0,0.4)',
+  background: 'rgba(0,0,0,0.5)',
   zIndex: 400,
+  transition: 'opacity 0.25s',
   variants: [
     { props: { open: true }, style: { opacity: 1, pointerEvents: 'auto' } },
     { props: { open: false }, style: { opacity: 0, pointerEvents: 'none' } },
@@ -243,14 +274,14 @@ const DrawerOverlay = styled('div')<{ open: boolean }>({
 const Drawer = styled('div')<{ open: boolean }>({
   position: 'fixed',
   top: 0,
+  left: 0,
   right: 0,
   bottom: 0,
-  width: '280px',
+  width: '100%',
   background: white,
   zIndex: 401,
   display: 'flex',
   flexDirection: 'column',
-  boxShadow: '-4px 0 24px rgba(0,0,0,0.12)',
   transition: 'transform 0.25s ease',
   variants: [
     { props: { open: true }, style: { transform: 'translateX(0)' } },
@@ -262,8 +293,10 @@ const DrawerHeader = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '16px 20px',
+  padding: '0 20px',
+  height: '64px',
   borderBottom: `1px solid ${slate200}`,
+  flexShrink: 0,
 });
 
 const DrawerLogoText = styled('span')({
@@ -273,8 +306,8 @@ const DrawerLogoText = styled('span')({
 });
 
 const DrawerCloseButton = styled('button')({
-  width: '36px',
-  height: '36px',
+  width: '40px',
+  height: '40px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -288,11 +321,36 @@ const DrawerCloseButton = styled('button')({
 const DrawerBody = styled('div')({
   flex: 1,
   overflowY: 'auto',
-  padding: '16px 0',
+  display: 'flex',
+  flexDirection: 'column',
 });
 
-const DrawerSection = styled('div')({
-  padding: '0 16px 16px',
+// Nav section in drawer
+const DrawerNav = styled('nav')({
+  padding: '8px 12px',
+  borderBottom: `1px solid ${slate200}`,
+});
+
+const DrawerNavItem = styled(Link)<{ isActive?: boolean }>({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+  padding: '14px 16px',
+  fontSize: '16px',
+  fontWeight: 500,
+  color: foreground,
+  textDecoration: 'none',
+  borderRadius: '10px',
+  transition: 'background 0.1s',
+  '&:hover': { background: slate100 },
+  variants: [
+    { props: { isActive: true }, style: { color: primary, background: rose50 } },
+  ],
+});
+
+const DrawerUserSection = styled('div')({
+  padding: '16px 12px',
+  flex: 1,
 });
 
 const DrawerUserInfo = styled('div')({
@@ -306,21 +364,21 @@ const DrawerUserInfo = styled('div')({
 });
 
 const DrawerUserName = styled('span')({
-  fontSize: '14px',
+  fontSize: '15px',
   fontWeight: 600,
   color: foreground,
 });
 
-const DrawerNavItem = styled(Link)({
+const DrawerMenuNavItem = styled(Link)({
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
-  padding: '12px 16px',
-  fontSize: '14px',
+  padding: '14px 16px',
+  fontSize: '15px',
   fontWeight: 400,
   color: foreground,
   textDecoration: 'none',
-  borderRadius: '8px',
+  borderRadius: '10px',
   transition: 'background 0.1s',
   '&:hover': { background: slate100 },
 });
@@ -329,39 +387,33 @@ const DrawerLogoutButton = styled('button')({
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
-  padding: '12px 16px',
+  padding: '14px 16px',
   width: '100%',
-  fontSize: '14px',
+  fontSize: '15px',
   fontWeight: 400,
   color: primary,
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',
-  borderRadius: '8px',
+  borderRadius: '10px',
   textAlign: 'left',
   transition: 'background 0.1s',
   '&:hover': { background: rose50 },
 });
 
-const DrawerDivider = styled('div')({
-  height: '1px',
-  background: slate200,
-  margin: '8px 16px',
-});
-
 const DrawerAuthButtons = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  gap: '8px',
-  padding: '0 16px',
+  gap: '10px',
+  padding: '16px 20px',
 });
 
 const DrawerLoginBtn = styled(Link)({
   display: 'block',
-  padding: '12px 16px',
+  padding: '14px 16px',
   border: `1px solid ${border}`,
-  borderRadius: '8px',
-  fontSize: '14px',
+  borderRadius: '10px',
+  fontSize: '16px',
   fontWeight: 500,
   color: foreground,
   textDecoration: 'none',
@@ -372,10 +424,10 @@ const DrawerLoginBtn = styled(Link)({
 
 const DrawerRegisterBtn = styled(Link)({
   display: 'block',
-  padding: '12px 16px',
+  padding: '14px 16px',
   border: 'none',
-  borderRadius: '8px',
-  fontSize: '14px',
+  borderRadius: '10px',
+  fontSize: '16px',
   fontWeight: 500,
   color: white,
   textDecoration: 'none',
@@ -385,10 +437,10 @@ const DrawerRegisterBtn = styled(Link)({
   '&:hover': { opacity: 0.9 },
 });
 
-const DrawerLangSection = styled('div')({
-  padding: '8px 16px',
-  marginTop: 'auto',
+const DrawerFooter = styled('div')({
+  padding: '16px 20px',
   borderTop: `1px solid ${slate200}`,
+  flexShrink: 0,
 });
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -397,12 +449,12 @@ export default function HeaderPrimary() {
   const { locale } = useLocale();
   const t = useTranslations();
   const { user, isAuthenticated, logout } = useAuth();
+  const pathname = usePathname();
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -413,15 +465,13 @@ export default function HeaderPrimary() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Lock body scroll when drawer is open
   useEffect(() => {
-    if (drawerOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = drawerOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [drawerOpen]);
+
+  // Close drawer on route change
+  useEffect(() => { setDrawerOpen(false); }, [pathname]);
 
   const handleLogout = async () => {
     setUserMenuOpen(false);
@@ -432,6 +482,13 @@ export default function HeaderPrimary() {
   const displayName = user
     ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
     : '';
+
+  const navLinks = [
+    { label: t.header.home, href: `/${locale}` },
+    { label: t.header.restaurants, href: `/${locale}/restaurants` },
+    { label: t.header.about, href: `/${locale}/about` },
+    { label: t.header.contact, href: `/${locale}/contact` },
+  ];
 
   return (
     <>
@@ -449,8 +506,21 @@ export default function HeaderPrimary() {
           <LogoText>AiMenu</LogoText>
         </LogoLink>
 
+        {/* Desktop center nav */}
+        <DesktopNav>
+          {navLinks.map(link => (
+            <NavLink
+              key={link.href}
+              href={link.href}
+              isActive={pathname === link.href}
+            >
+              {link.label}
+            </NavLink>
+          ))}
+        </DesktopNav>
+
         <RightGroup>
-          {/* Desktop controls */}
+          {/* Desktop auth controls */}
           <DesktopControls>
             <LanguageSwitcher currentLocale={locale} />
 
@@ -465,24 +535,15 @@ export default function HeaderPrimary() {
 
                 {userMenuOpen && (
                   <DropdownMenu>
-                    <DropdownItem
-                      href={`/${locale}/profile`}
-                      onClick={() => setUserMenuOpen(false)}
-                    >
+                    <DropdownItem href={`/${locale}/profile`} onClick={() => setUserMenuOpen(false)}>
                       <IconWrap><UserIcon width={16} height={16} /></IconWrap>
                       {t.header.profile}
                     </DropdownItem>
-                    <DropdownItem
-                      href={`/${locale}/profile?tab=favorites`}
-                      onClick={() => setUserMenuOpen(false)}
-                    >
+                    <DropdownItem href={`/${locale}/profile?tab=favorites`} onClick={() => setUserMenuOpen(false)}>
                       <IconWrap><HeartOutlineIcon variant='outlined' /></IconWrap>
                       {t.header.favorites}
                     </DropdownItem>
-                    <DropdownItem
-                      href={`/${locale}/profile/reservations`}
-                      onClick={() => setUserMenuOpen(false)}
-                    >
+                    <DropdownItem href={`/${locale}/profile/reservations`} onClick={() => setUserMenuOpen(false)}>
                       <IconWrap><HistoryIcon /></IconWrap>
                       {t.header.myBookings}
                     </DropdownItem>
@@ -509,7 +570,7 @@ export default function HeaderPrimary() {
         </RightGroup>
       </HeaderWrapper>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Full-Width Drawer */}
       <DrawerOverlay open={drawerOpen} onClick={() => setDrawerOpen(false)} />
       <Drawer open={drawerOpen}>
         <DrawerHeader>
@@ -520,69 +581,64 @@ export default function HeaderPrimary() {
         </DrawerHeader>
 
         <DrawerBody>
-          {isAuthenticated ? (
-            <DrawerSection>
-              <DrawerUserInfo>
-                <UserAvatar>
-                  <UserIcon width={16} height={16} />
-                </UserAvatar>
-                <DrawerUserName>{displayName}</DrawerUserName>
-              </DrawerUserInfo>
-
+          {/* Nav links */}
+          <DrawerNav>
+            {navLinks.map(link => (
               <DrawerNavItem
-                href={`/${locale}/profile`}
+                key={link.href}
+                href={link.href}
+                isActive={pathname === link.href}
                 onClick={() => setDrawerOpen(false)}
               >
-                <IconWrap><UserIcon width={16} height={16} /></IconWrap>
-                {t.header.profile}
+                {link.label}
               </DrawerNavItem>
-              <DrawerNavItem
-                href={`/${locale}/profile?tab=favorites`}
-                onClick={() => setDrawerOpen(false)}
-              >
-                <IconWrap><HeartOutlineIcon variant='outlined' /></IconWrap>
-                {t.header.favorites}
-              </DrawerNavItem>
-              <DrawerNavItem
-                href={`/${locale}/profile/reservations`}
-                onClick={() => setDrawerOpen(false)}
-              >
-                <IconWrap><HistoryIcon /></IconWrap>
-                {t.header.myBookings}
-              </DrawerNavItem>
+            ))}
+          </DrawerNav>
 
-              <DrawerDivider />
+          {/* User section */}
+          <DrawerUserSection>
+            {isAuthenticated ? (
+              <>
+                <DrawerUserInfo>
+                  <UserAvatar>
+                    <UserIcon width={16} height={16} />
+                  </UserAvatar>
+                  <DrawerUserName>{displayName}</DrawerUserName>
+                </DrawerUserInfo>
 
-              <DrawerLogoutButton onClick={handleLogout}>
-                <IconWrap><LogoutIcon /></IconWrap>
-                {t.header.logout}
-              </DrawerLogoutButton>
-            </DrawerSection>
-          ) : (
-            <>
+                <DrawerMenuNavItem href={`/${locale}/profile`} onClick={() => setDrawerOpen(false)}>
+                  <IconWrap><UserIcon width={16} height={16} /></IconWrap>
+                  {t.header.profile}
+                </DrawerMenuNavItem>
+                <DrawerMenuNavItem href={`/${locale}/profile?tab=favorites`} onClick={() => setDrawerOpen(false)}>
+                  <IconWrap><HeartOutlineIcon variant='outlined' /></IconWrap>
+                  {t.header.favorites}
+                </DrawerMenuNavItem>
+                <DrawerMenuNavItem href={`/${locale}/profile/reservations`} onClick={() => setDrawerOpen(false)}>
+                  <IconWrap><HistoryIcon /></IconWrap>
+                  {t.header.myBookings}
+                </DrawerMenuNavItem>
+                <DrawerLogoutButton onClick={handleLogout}>
+                  <IconWrap><LogoutIcon /></IconWrap>
+                  {t.header.logout}
+                </DrawerLogoutButton>
+              </>
+            ) : (
               <DrawerAuthButtons>
-                <DrawerLoginBtn
-                  href={`/${locale}/login`}
-                  onClick={() => setDrawerOpen(false)}
-                >
+                <DrawerLoginBtn href={`/${locale}/login`} onClick={() => setDrawerOpen(false)}>
                   {t.header.login}
                 </DrawerLoginBtn>
-                <DrawerRegisterBtn
-                  href={`/${locale}/register`}
-                  onClick={() => setDrawerOpen(false)}
-                >
+                <DrawerRegisterBtn href={`/${locale}/register`} onClick={() => setDrawerOpen(false)}>
                   {t.header.register}
                 </DrawerRegisterBtn>
               </DrawerAuthButtons>
-            </>
-          )}
-
-          <DrawerDivider />
-
-          <DrawerLangSection>
-            <LanguageSwitcher currentLocale={locale} />
-          </DrawerLangSection>
+            )}
+          </DrawerUserSection>
         </DrawerBody>
+
+        <DrawerFooter>
+          <LanguageSwitcher currentLocale={locale} />
+        </DrawerFooter>
       </Drawer>
     </>
   );

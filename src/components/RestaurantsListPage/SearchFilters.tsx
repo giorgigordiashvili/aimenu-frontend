@@ -42,69 +42,70 @@ const GUEST_OPTIONS = [1, 2, 3, 4, 5];
 function formatDateShort(date: Date, locale: string) {
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
-    month: 'short',
+    month: 'long',
   }).format(date);
 }
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 
+/** Outer pill container */
 const FiltersCard = styled('div')({
   background: white,
-  borderRadius: '16px',
-  boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-  padding: '16px',
+  borderRadius: '9999px',
+  boxShadow: '0 4px 32px rgba(0,0,0,0.18)',
+  padding: '6px 6px 6px 0',
   display: 'flex',
-  flexDirection: 'column',
-  gap: '12px',
-  '@media (min-width: 768px)': {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: '8px',
-    padding: '12px 16px',
+  alignItems: 'center',
+  width: '100%',
+  // On mobile stack vertically, lose the pill shape
+  '@media (max-width: 767px)': {
+    flexDirection: 'column',
+    borderRadius: '20px',
+    padding: '12px',
+    gap: '4px',
   },
 });
 
+/** Each filter section */
 const FieldWrap = styled('div')({
   position: 'relative',
   flex: 1,
   minWidth: 0,
+  padding: '8px 20px',
+  cursor: 'pointer',
+  '@media (max-width: 767px)': {
+    width: '100%',
+    padding: '6px 4px',
+  },
 });
 
 const FieldLabel = styled('div')({
   fontSize: '11px',
-  fontWeight: 600,
+  fontWeight: 700,
   color: muted,
-  marginBottom: '4px',
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
+  marginBottom: '3px',
+  letterSpacing: '0.04em',
+  userSelect: 'none',
 });
 
 const FieldInput = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
-  background: white,
-  border: `1px solid ${slate200}`,
-  borderRadius: '10px',
-  height: '44px',
-  padding: '0 12px',
   cursor: 'pointer',
   userSelect: 'none',
-  transition: 'border-color 0.15s',
-  '&:hover': {
-    borderColor: slate400,
-  },
 });
 
 const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
-  fontSize: '14px',
+  fontSize: '15px',
+  fontWeight: 500,
   flex: 1,
-  lineHeight: '20px',
+  lineHeight: '22px',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   variants: [
-    { props: { isPlaceholder: true }, style: { color: muted } },
+    { props: { isPlaceholder: true }, style: { color: slate400 } },
     { props: { isPlaceholder: false }, style: { color: foreground } },
   ],
 });
@@ -116,38 +117,40 @@ const IconWrap = styled('span')({
   color: slate400,
 });
 
-const Divider = styled('div')({
-  display: 'none',
+/** Vertical divider between fields */
+const FieldDivider = styled('div')({
   width: '1px',
-  height: '40px',
+  height: '36px',
   background: slate200,
   flexShrink: 0,
-  alignSelf: 'center',
-  '@media (min-width: 768px)': {
-    display: 'block',
+  '@media (max-width: 767px)': {
+    display: 'none',
   },
 });
 
+/** Circular red search button */
 const SearchButton = styled('button')({
+  width: '52px',
+  height: '52px',
+  borderRadius: '50%',
+  background: primary,
+  border: 'none',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '8px',
-  height: '44px',
-  padding: '0 20px',
-  background: primary,
-  border: 'none',
-  borderRadius: '10px',
-  color: white,
-  fontSize: '14px',
-  fontWeight: 600,
   cursor: 'pointer',
-  transition: 'opacity 0.15s',
   flexShrink: 0,
-  '&:hover': { opacity: 0.9 },
+  marginRight: '2px',
+  transition: 'opacity 0.15s, transform 0.1s',
+  '&:hover': { opacity: 0.9, transform: 'scale(1.05)' },
+  '&:active': { transform: 'scale(0.97)' },
+  '& svg': { color: white, stroke: white },
   '@media (max-width: 767px)': {
     width: '100%',
-    height: '48px',
+    height: '44px',
+    borderRadius: '10px',
+    marginTop: '6px',
+    marginRight: 0,
   },
 });
 
@@ -182,23 +185,18 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const timeRef = useRef<HTMLDivElement>(null);
   const guestsRef = useRef<HTMLDivElement>(null);
 
-  // Calendar navigation state
+  // Calendar state
   const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
+    const d = new Date(); d.setHours(0, 0, 0, 0); return d;
   }, []);
   const maxDate = useMemo(() => {
-    const d = new Date(today);
-    d.setDate(today.getDate() + 60);
-    return d;
+    const d = new Date(today); d.setDate(today.getDate() + 60); return d;
   }, [today]);
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
 
   const monthYearLabel = new Intl.DateTimeFormat(locale, {
-    month: 'long',
-    year: 'numeric',
+    month: 'long', year: 'numeric',
   }).format(new Date(viewYear, viewMonth, 1));
 
   const dayNamesShort = Array.from({ length: 7 }, (_, i) =>
@@ -206,12 +204,10 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   );
 
   function navigateMonth(dir: 1 | -1) {
-    let m = viewMonth + dir;
-    let y = viewYear;
+    let m = viewMonth + dir, y = viewYear;
     if (m < 0) { m = 11; y -= 1; }
     if (m > 11) { m = 0; y += 1; }
-    setViewMonth(m);
-    setViewYear(y);
+    setViewMonth(m); setViewYear(y);
   }
 
   function handleDaySelect(day: number) {
@@ -222,7 +218,6 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
     setShowCal(false);
   }
 
-  // Click-outside handler
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (cityRef.current && !cityRef.current.contains(e.target as Node)) setShowCity(false);
@@ -256,14 +251,13 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   return (
     <FiltersCard>
       {/* City */}
-      <FieldWrap ref={cityRef}>
+      <FieldWrap ref={cityRef} onClick={() => toggle('city')}>
         <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
-        <FieldInput onClick={() => toggle('city')}>
+        <FieldInput>
           <IconWrap><LocationIcon color={slate400} size={16} /></IconWrap>
           <FieldText isPlaceholder={!value.city}>{selectedCityLabel}</FieldText>
           <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
         </FieldInput>
-
         {showCity && (
           <DropdownList>
             {cities.map((c, idx) => {
@@ -274,7 +268,8 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                   key={c.label}
                   isSelected={isSelected}
                   isLast={isLast}
-                  onClick={() => {
+                  onClick={e => {
+                    e.stopPropagation();
                     onChange({ ...value, city: c.value });
                     setShowCity(false);
                   }}
@@ -288,18 +283,17 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
         )}
       </FieldWrap>
 
-      <Divider />
+      <FieldDivider />
 
       {/* Date */}
-      <FieldWrap ref={calRef}>
+      <FieldWrap ref={calRef} onClick={() => toggle('cal')}>
         <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
-        <FieldInput onClick={() => toggle('cal')}>
+        <FieldInput>
           <IconWrap><CalendarIcon /></IconWrap>
           <FieldText isPlaceholder={!value.date}>
             {value.date ? formatDateShort(value.date, locale) : t.reservationWidget.datePlaceholder}
           </FieldText>
         </FieldInput>
-
         <CalendarPicker
           show={showCal}
           selectedDate={value.date}
@@ -315,18 +309,18 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
         />
       </FieldWrap>
 
-      <Divider />
+      <FieldDivider />
 
       {/* Time */}
-      <FieldWrap ref={timeRef}>
+      <FieldWrap ref={timeRef} onClick={() => toggle('time')}>
         <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
-        <FieldInput onClick={() => toggle('time')}>
+        <FieldInput>
           <IconWrap><ClockIcon size={16} color={slate400} /></IconWrap>
           <FieldText isPlaceholder={!value.time}>
             {value.time || t.reservationWidget.timePlaceholder}
           </FieldText>
+          <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
         </FieldInput>
-
         <TimeDropdown
           show={showTime}
           slots={TIME_SLOTS}
@@ -336,19 +330,18 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
         />
       </FieldWrap>
 
-      <Divider />
+      <FieldDivider />
 
       {/* Guests */}
-      <FieldWrap ref={guestsRef}>
+      <FieldWrap ref={guestsRef} onClick={() => toggle('guests')}>
         <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
-        <FieldInput onClick={() => toggle('guests')}>
+        <FieldInput>
           <IconWrap><PeopleIcon /></IconWrap>
           <FieldText isPlaceholder={false}>
             {value.guests} {t.booking.persons}
           </FieldText>
           <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
         </FieldInput>
-
         <GuestsDropdown
           show={showGuests}
           options={GUEST_OPTIONS}
@@ -359,8 +352,8 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
         />
       </FieldWrap>
 
-      {/* Search button */}
-      <SearchButton onClick={onSearch}>
+      {/* Circular search button */}
+      <SearchButton onClick={e => { e.stopPropagation(); onSearch(); }} aria-label='Search'>
         <SearchIcon />
       </SearchButton>
     </FiltersCard>

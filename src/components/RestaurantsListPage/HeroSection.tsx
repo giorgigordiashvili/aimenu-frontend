@@ -49,6 +49,10 @@ const HeroContent = styled('div')({
   zIndex: 1,
   maxWidth: '1280px',
   margin: '0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  textAlign: 'center',
 });
 
 const Title = styled('h1')({
@@ -83,6 +87,7 @@ const Subtitle = styled('p')({
 
 const FiltersWrap = styled('div')({
   position: 'relative',
+  width: '100%',
   maxWidth: '900px',
 });
 

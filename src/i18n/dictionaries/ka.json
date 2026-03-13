@@ -347,7 +347,11 @@
     "myBookings": "ჩემი ჯავშნები",
     "logout": "გასვლა",
     "login": "შესვლა",
-    "register": "რეგისტრაცია"
+    "register": "რეგისტრაცია",
+    "home": "მთავარი",
+    "restaurants": "რესტორნები",
+    "about": "ჩვენს შესახებ",
+    "contact": "კონტაქტი"
   },
   "footer": {
     "navigation": "ნავიგაცია",

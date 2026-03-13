@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import type { RestaurantList } from '@/api/generated/interfaces';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import ArrowRightIcon from '@/icons/ArrowRight';
 import { foreground, muted, primary, slate100, slate200 } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
@@ -157,7 +156,6 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
         </TitleGroup>
         <ViewAllButton onClick={() => router.push(`/${locale}/restaurants`)}>
           {t.restaurantsList.viewAll}
-          <ArrowRightIcon />
         </ViewAllButton>
       </SectionHead>
 

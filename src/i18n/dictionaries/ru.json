@@ -347,7 +347,11 @@
     "myBookings": "Мои бронирования",
     "logout": "Выйти",
     "login": "Войти",
-    "register": "Регистрация"
+    "register": "Регистрация",
+    "home": "Главная",
+    "restaurants": "Рестораны",
+    "about": "О нас",
+    "contact": "Контакт"
   },
   "footer": {
     "navigation": "Навигация",
