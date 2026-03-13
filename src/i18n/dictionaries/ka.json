@@ -320,6 +320,35 @@
     "timePlaceholder": "დრო",
     "guestsPlaceholder": "სტუმრები"
   },
+  "restaurantsList": {
+    "heroTitle": "აღმოაჩინე და დაჯავშნე საუკეთესო გემოები",
+    "heroSubtitle": "მარტივი ჯავშანი საქართველოს საუკეთესო რესტორნებში",
+    "popularTitle": "პოპულარული რესტორნები",
+    "popularSubtitle": "რჩეული ადგილები მთელი საქართველოს მასშტაბით",
+    "viewAll": "ყველას ნახვა",
+    "details": "დეტალები",
+    "cityFilter": "ქალაქი",
+    "dateFilter": "თარიღი",
+    "timeFilter": "დრო",
+    "guestsFilter": "სტუმრები",
+    "noResults": "რესტორნები ვერ მოიძებნა",
+    "allCities": "ყველა ქალაქი",
+    "cities": {
+      "tbilisi": "თბილისი",
+      "batumi": "ბათუმი",
+      "rustavi": "რუსთავი",
+      "gori": "გორი",
+      "kutaisi": "ქუთაისი"
+    }
+  },
+  "header": {
+    "profile": "პროფილი",
+    "favorites": "ფავორიტები",
+    "myBookings": "ჩემი ჯავშნები",
+    "logout": "გასვლა",
+    "login": "შესვლა",
+    "register": "რეგისტრაცია"
+  },
   "footer": {
     "navigation": "ნავიგაცია",
     "help": "დახმარება",

@@ -1,6 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { useRouter } from 'next/navigation';
 
 import MainButton from '@/components/MainButton/MainButton';
 import HeartOutlined from '@/icons/HeartOutline';
@@ -149,20 +150,35 @@ export default function DefaultVariant({
   showBookButton = true,
   isFavorite,
   onToggleFavorite,
+  href,
+  priceLevel = '₾₾₾',
+  detailsLabel = 'დეტალები',
+  bookLabel = 'დაჯავშნა',
+  favoriteLabel = 'რჩეული',
 }: DefaultVariantProps) {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    if (href) router.push(href);
+  };
+
+  const stopAndDetails = () => { if (href) router.push(href); };
+  const stopAndBook = () => { if (href) router.push(`${href}/book`); };
+  const stopAndFavorite = () => { onToggleFavorite(); };
+
   return (
-    <ContentGroup>
+    <ContentGroup onClick={handleCardClick}>
       <ContentTop>
         <Image src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
         <FavoriteGroup>
           {showFavoriteYellow && (
             <FavoriteYellow>
               <Star color={foreground} size={12} />
-              რჩეული
+              {favoriteLabel}
             </FavoriteYellow>
           )}
           {showFavoriteButton && (
-            <FavoriteButton onClick={onToggleFavorite}>
+            <FavoriteButton onClick={e => { e.stopPropagation(); stopAndFavorite(); }}>
               <HeartOutlined variant={isFavorite ? 'filled' : 'outlined'} />
             </FavoriteButton>
           )}
@@ -185,7 +201,7 @@ export default function DefaultVariant({
         <BottomGroup>
           {restaurantTitle && <RestaurantTitle>{restaurantTitle}</RestaurantTitle>}
           <PriceWrapper>
-            <MainButton variant='outline' title='₾₾₾' size='extra_small' />
+            <MainButton variant='outline' title={priceLevel} size='extra_small' />
           </PriceWrapper>
         </BottomGroup>
         {locationText && (
@@ -196,17 +212,24 @@ export default function DefaultVariant({
             {locationText}
           </LocationContainer>
         )}
-        <ButtonGroup>
+        <ButtonGroup onClick={e => e.stopPropagation()}>
           {showDetailsButton && (
             <MainButton
               variant={detailsVariant === 'filled' ? 'slate_cta' : 'outline'}
-              title='დეტალები'
+              title={detailsLabel}
               size='small'
               fullWidth
+              onClick={stopAndDetails}
             />
           )}
           {showBookButton && (
-            <MainButton variant='rose_cta' title='დაჯავშნა' size='small' fullWidth />
+            <MainButton
+              variant='rose_cta'
+              title={bookLabel}
+              size='small'
+              fullWidth
+              onClick={stopAndBook}
+            />
           )}
         </ButtonGroup>
       </ContentBottom>

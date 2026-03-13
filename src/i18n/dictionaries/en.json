@@ -320,6 +320,35 @@
     "timePlaceholder": "Time",
     "guestsPlaceholder": "Guests"
   },
+  "restaurantsList": {
+    "heroTitle": "Discover and Book the Best Flavors",
+    "heroSubtitle": "Easy reservations at the best restaurants in Georgia",
+    "popularTitle": "Popular Restaurants",
+    "popularSubtitle": "Featured places from all over Georgia",
+    "viewAll": "View All",
+    "details": "Details",
+    "cityFilter": "City",
+    "dateFilter": "Date",
+    "timeFilter": "Time",
+    "guestsFilter": "Guests",
+    "noResults": "No restaurants found",
+    "allCities": "All Cities",
+    "cities": {
+      "tbilisi": "Tbilisi",
+      "batumi": "Batumi",
+      "rustavi": "Rustavi",
+      "gori": "Gori",
+      "kutaisi": "Kutaisi"
+    }
+  },
+  "header": {
+    "profile": "Profile",
+    "favorites": "Favorites",
+    "myBookings": "My Bookings",
+    "logout": "Log Out",
+    "login": "Log In",
+    "register": "Register"
+  },
   "footer": {
     "navigation": "Navigation",
     "help": "Help",

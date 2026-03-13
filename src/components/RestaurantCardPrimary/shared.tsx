@@ -46,6 +46,17 @@ export const PriceWrapper = styled('div')({
 });
 
 export interface RestaurantCardProps {
+  /** Card click / Details button destination */
+  href?: string;
+  /** e.g. '₾', '₾₾', '₾₾₾' – defaults to '₾₾₾' if omitted */
+  priceLevel?: string;
+  /** i18n label for the Details button – defaults to 'დეტალები' */
+  detailsLabel?: string;
+  /** i18n label for the Book button – defaults to 'დაჯავშნა' */
+  bookLabel?: string;
+  /** i18n label for the featured badge – defaults to 'რჩეული' */
+  favoriteLabel?: string;
+
   filterText?: string;
   rating?: number;
   showFavoriteYellow?: boolean;
