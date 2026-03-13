@@ -13,13 +13,21 @@ const Hero = styled('section')({
   position: 'relative',
   background: 'linear-gradient(135deg, #0F172B 0%, #1a2744 60%, #0f2035 100%)',
   padding: '64px 20px 96px',
-  overflow: 'hidden',
+  // NO overflow:hidden — dropdowns inside FiltersCard must be able to overflow
   '@media (min-width: 768px)': {
     padding: '80px 80px 112px',
   },
 });
 
-// Decorative blurred circles
+/** Clips only the decorative blobs so they don't overflow the page */
+const BlobClip = styled('div')({
+  position: 'absolute',
+  inset: 0,
+  overflow: 'hidden',
+  pointerEvents: 'none',
+  zIndex: 0,
+});
+
 const BlobA = styled('div')({
   position: 'absolute',
   top: '-80px',
@@ -112,8 +120,10 @@ export default function HeroSection({ filters, onFiltersChange, onSearch }: Hero
 
   return (
     <Hero>
-      <BlobA />
-      <BlobB />
+      <BlobClip>
+        <BlobA />
+        <BlobB />
+      </BlobClip>
       <HeroContent>
         <Title>
           {rest} <Accent>{lastTwo}</Accent>

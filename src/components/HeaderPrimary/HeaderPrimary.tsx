@@ -78,7 +78,7 @@ const DesktopNav = styled('nav')({
   },
 });
 
-const NavLink = styled(Link)<{ isActive?: boolean }>({
+const NavLink = styled(Link)({
   padding: '6px 14px',
   borderRadius: '8px',
   fontSize: '14px',
@@ -88,12 +88,7 @@ const NavLink = styled(Link)<{ isActive?: boolean }>({
   transition: 'background 0.15s, color 0.15s',
   whiteSpace: 'nowrap',
   '&:hover': { background: slate100 },
-  variants: [
-    {
-      props: { isActive: true },
-      style: { color: primary, background: rose50 },
-    },
-  ],
+  '&[data-active="true"]': { color: primary, background: rose50 },
 });
 
 // ── Right group ───────────────────────────────────────────────────────────────
@@ -331,7 +326,7 @@ const DrawerNav = styled('nav')({
   borderBottom: `1px solid ${slate200}`,
 });
 
-const DrawerNavItem = styled(Link)<{ isActive?: boolean }>({
+const DrawerNavItem = styled(Link)({
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
@@ -343,9 +338,7 @@ const DrawerNavItem = styled(Link)<{ isActive?: boolean }>({
   borderRadius: '10px',
   transition: 'background 0.1s',
   '&:hover': { background: slate100 },
-  variants: [
-    { props: { isActive: true }, style: { color: primary, background: rose50 } },
-  ],
+  '&[data-active="true"]': { color: primary, background: rose50 },
 });
 
 const DrawerUserSection = styled('div')({
@@ -512,7 +505,7 @@ export default function HeaderPrimary() {
             <NavLink
               key={link.href}
               href={link.href}
-              isActive={pathname === link.href}
+              data-active={pathname === link.href ? 'true' : undefined}
             >
               {link.label}
             </NavLink>
@@ -587,7 +580,7 @@ export default function HeaderPrimary() {
               <DrawerNavItem
                 key={link.href}
                 href={link.href}
-                isActive={pathname === link.href}
+                data-active={pathname === link.href ? 'true' : undefined}
                 onClick={() => setDrawerOpen(false)}
               >
                 {link.label}

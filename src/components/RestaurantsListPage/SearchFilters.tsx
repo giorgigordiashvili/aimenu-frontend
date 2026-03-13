@@ -19,8 +19,10 @@ import ClockIcon from '@/icons/Clock';
 import LocationIcon from '@/icons/Location';
 import PeopleIcon from '@/icons/People';
 import SearchIcon from '@/icons/Search';
+import ArrowRightIcon from '@/icons/ArrowRight';
 import {
   foreground,
+  green500,
   muted,
   primary,
   slate200,
@@ -40,44 +42,72 @@ const GUEST_OPTIONS = [1, 2, 3, 4, 5];
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatDateShort(date: Date, locale: string) {
-  return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'long',
-  }).format(date);
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' }).format(date);
 }
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 
-/** Outer pill container */
+/** Desktop: horizontal pill  |  Mobile: 2-column grid card */
 const FiltersCard = styled('div')({
   background: white,
-  borderRadius: '9999px',
   boxShadow: '0 4px 32px rgba(0,0,0,0.18)',
+
+  // ── Desktop ──────────────────────────────────────────────────────────────
+  borderRadius: '9999px',
   padding: '6px 6px 6px 0',
   display: 'flex',
   alignItems: 'center',
   width: '100%',
-  // On mobile stack vertically, lose the pill shape
+
+  // ── Mobile ───────────────────────────────────────────────────────────────
   '@media (max-width: 767px)': {
-    flexDirection: 'column',
     borderRadius: '20px',
-    padding: '12px',
-    gap: '4px',
+    padding: '0',
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
   },
 });
 
-/** Each filter section */
-const FieldWrap = styled('div')({
-  position: 'relative',
+// ─── Field wrappers ───────────────────────────────────────────────────────────
+
+const fieldBase = {
+  position: 'relative' as const,
+  cursor: 'pointer',
+  // desktop
   flex: 1,
   minWidth: 0,
   padding: '8px 20px',
-  cursor: 'pointer',
+};
+
+/** City, Guests — full row on mobile */
+const FieldWrapFull = styled('div')({
+  ...fieldBase,
   '@media (max-width: 767px)': {
-    width: '100%',
-    padding: '6px 4px',
+    gridColumn: '1 / -1',
+    padding: '14px 16px',
   },
 });
+
+/** Date — left half on mobile, has right border */
+const FieldWrapDate = styled('div')({
+  ...fieldBase,
+  '@media (max-width: 767px)': {
+    gridColumn: '1 / 2',
+    padding: '14px 16px',
+    borderRight: `1px solid ${slate200}`,
+  },
+});
+
+/** Time — right half on mobile */
+const FieldWrapTime = styled('div')({
+  ...fieldBase,
+  '@media (max-width: 767px)': {
+    gridColumn: '2 / 3',
+    padding: '14px 16px',
+  },
+});
+
+// ─── Field internals ──────────────────────────────────────────────────────────
 
 const FieldLabel = styled('div')({
   fontSize: '11px',
@@ -86,6 +116,9 @@ const FieldLabel = styled('div')({
   marginBottom: '3px',
   letterSpacing: '0.04em',
   userSelect: 'none',
+  '@media (max-width: 767px)': {
+    fontSize: '12px',
+  },
 });
 
 const FieldInput = styled('div')({
@@ -98,14 +131,17 @@ const FieldInput = styled('div')({
 
 const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
   fontSize: '15px',
-  fontWeight: 500,
+  fontWeight: 600,
   flex: 1,
   lineHeight: '22px',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  '@media (max-width: 767px)': {
+    fontSize: '16px',
+  },
   variants: [
-    { props: { isPlaceholder: true }, style: { color: slate400 } },
+    { props: { isPlaceholder: true }, style: { color: slate400, fontWeight: 400 } },
     { props: { isPlaceholder: false }, style: { color: foreground } },
   ],
 });
@@ -117,8 +153,10 @@ const IconWrap = styled('span')({
   color: slate400,
 });
 
-/** Vertical divider between fields */
-const FieldDivider = styled('div')({
+// ─── Separators ───────────────────────────────────────────────────────────────
+
+/** Vertical divider — desktop only, between fields in the pill */
+const VerticalDivider = styled('div')({
   width: '1px',
   height: '36px',
   background: slate200,
@@ -128,8 +166,21 @@ const FieldDivider = styled('div')({
   },
 });
 
-/** Circular red search button */
-const SearchButton = styled('button')({
+/** Horizontal divider — mobile only, between rows */
+const HorizontalDivider = styled('div')({
+  display: 'none',
+  '@media (max-width: 767px)': {
+    display: 'block',
+    gridColumn: '1 / -1',
+    height: '1px',
+    background: slate200,
+  },
+});
+
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+
+/** Desktop: circle  |  Mobile: hidden (replaced by MobileSearchButton) */
+const CircleSearchButton = styled('button')({
   width: '52px',
   height: '52px',
   borderRadius: '50%',
@@ -146,13 +197,70 @@ const SearchButton = styled('button')({
   '&:active': { transform: 'scale(0.97)' },
   '& svg': { color: white, stroke: white },
   '@media (max-width: 767px)': {
-    width: '100%',
-    height: '44px',
-    borderRadius: '10px',
-    marginTop: '6px',
-    marginRight: 0,
+    display: 'none',
   },
 });
+
+/** Mobile: full-width red pill with text */
+const MobileSearchButton = styled('button')({
+  display: 'none',
+  '@media (max-width: 767px)': {
+    display: 'flex',
+    gridColumn: '1 / -1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    margin: '12px 12px 6px',
+    padding: '15px 24px',
+    background: primary,
+    border: 'none',
+    borderRadius: '9999px',
+    color: white,
+    fontSize: '16px',
+    fontWeight: 700,
+    cursor: 'pointer',
+    '&:hover': { opacity: 0.9 },
+    '& svg': { color: white, stroke: white },
+  },
+});
+
+/** Mobile-only green scan button placeholder */
+const MobileScanButton = styled('button')({
+  display: 'none',
+  '@media (max-width: 767px)': {
+    display: 'flex',
+    gridColumn: '1 / -1',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    margin: '0 12px 12px',
+    padding: '15px 20px',
+    background: green500,
+    border: 'none',
+    borderRadius: '9999px',
+    color: white,
+    fontSize: '16px',
+    fontWeight: 700,
+    cursor: 'pointer',
+    '&:hover': { opacity: 0.9 },
+  },
+});
+
+const ScanLeft = styled('span')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+});
+
+// Simple scan/QR icon inline until scan.tsx is provided
+const ScanIcon = () => (
+  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+    <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+    <rect x={7} y={7} width={10} height={10} rx={1} />
+  </svg>
+);
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -185,73 +293,61 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const timeRef = useRef<HTMLDivElement>(null);
   const guestsRef = useRef<HTMLDivElement>(null);
 
-  // Calendar state
-  const today = useMemo(() => {
-    const d = new Date(); d.setHours(0, 0, 0, 0); return d;
-  }, []);
-  const maxDate = useMemo(() => {
-    const d = new Date(today); d.setDate(today.getDate() + 60); return d;
-  }, [today]);
+  const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
+  const maxDate = useMemo(() => { const d = new Date(today); d.setDate(today.getDate()+60); return d; }, [today]);
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
 
-  const monthYearLabel = new Intl.DateTimeFormat(locale, {
-    month: 'long', year: 'numeric',
-  }).format(new Date(viewYear, viewMonth, 1));
-
+  const monthYearLabel = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
+    .format(new Date(viewYear, viewMonth, 1));
   const dayNamesShort = Array.from({ length: 7 }, (_, i) =>
-    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, 7 + i))
+    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, 7+i))
   );
 
   function navigateMonth(dir: 1 | -1) {
     let m = viewMonth + dir, y = viewYear;
-    if (m < 0) { m = 11; y -= 1; }
-    if (m > 11) { m = 0; y += 1; }
+    if (m < 0) { m = 11; y -= 1; } if (m > 11) { m = 0; y += 1; }
     setViewMonth(m); setViewYear(y);
   }
-
   function handleDaySelect(day: number) {
-    const d = new Date(viewYear, viewMonth, day);
-    d.setHours(0, 0, 0, 0);
+    const d = new Date(viewYear, viewMonth, day); d.setHours(0,0,0,0);
     if (d < today || d > maxDate) return;
-    onChange({ ...value, date: d });
-    setShowCal(false);
+    onChange({ ...value, date: d }); setShowCal(false);
   }
 
   useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
+    function onOut(e: MouseEvent) {
       if (cityRef.current && !cityRef.current.contains(e.target as Node)) setShowCity(false);
       if (calRef.current && !calRef.current.contains(e.target as Node)) setShowCal(false);
       if (timeRef.current && !timeRef.current.contains(e.target as Node)) setShowTime(false);
       if (guestsRef.current && !guestsRef.current.contains(e.target as Node)) setShowGuests(false);
     }
-    document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
+    document.addEventListener('mousedown', onOut);
+    return () => document.removeEventListener('mousedown', onOut);
   }, []);
 
   const cities = [
     { value: undefined, label: t.restaurantsList.allCities },
-    { value: 'Tbilisi', label: t.restaurantsList.cities.tbilisi },
-    { value: 'Batumi', label: t.restaurantsList.cities.batumi },
-    { value: 'Rustavi', label: t.restaurantsList.cities.rustavi },
-    { value: 'Gori', label: t.restaurantsList.cities.gori },
-    { value: 'Kutaisi', label: t.restaurantsList.cities.kutaisi },
+    { value: 'Tbilisi',  label: t.restaurantsList.cities.tbilisi },
+    { value: 'Batumi',   label: t.restaurantsList.cities.batumi },
+    { value: 'Rustavi',  label: t.restaurantsList.cities.rustavi },
+    { value: 'Gori',     label: t.restaurantsList.cities.gori },
+    { value: 'Kutaisi',  label: t.restaurantsList.cities.kutaisi },
   ];
+  const selectedCityLabel = cities.find(c => c.value === value.city)?.label ?? t.restaurantsList.allCities;
 
-  const selectedCityLabel = cities.find(c => c.value === value.city)?.label
-    ?? t.restaurantsList.allCities;
-
-  const toggle = (which: 'city' | 'cal' | 'time' | 'guests') => {
-    setShowCity(which === 'city' ? s => !s : false);
-    setShowCal(which === 'cal' ? s => !s : false);
-    setShowTime(which === 'time' ? s => !s : false);
-    setShowGuests(which === 'guests' ? s => !s : false);
+  const toggle = (w: 'city'|'cal'|'time'|'guests') => {
+    setShowCity(w==='city' ? s=>!s : false);
+    setShowCal(w==='cal' ? s=>!s : false);
+    setShowTime(w==='time' ? s=>!s : false);
+    setShowGuests(w==='guests' ? s=>!s : false);
   };
 
   return (
     <FiltersCard>
-      {/* City */}
-      <FieldWrap ref={cityRef} onClick={() => toggle('city')}>
+
+      {/* ── City ── */}
+      <FieldWrapFull ref={cityRef} onClick={() => toggle('city')}>
         <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
         <FieldInput>
           <IconWrap><LocationIcon color={slate400} size={16} /></IconWrap>
@@ -261,58 +357,44 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
         {showCity && (
           <DropdownList>
             {cities.map((c, idx) => {
-              const isSelected = c.value === value.city;
-              const isLast = idx === cities.length - 1;
+              const isSel = c.value === value.city;
               return (
-                <DropdownRow
-                  key={c.label}
-                  isSelected={isSelected}
-                  isLast={isLast}
-                  onClick={e => {
-                    e.stopPropagation();
-                    onChange({ ...value, city: c.value });
-                    setShowCity(false);
-                  }}
-                >
-                  <DropdownRowText isSelected={isSelected}>{c.label}</DropdownRowText>
-                  {isSelected && <CheckMark>✓</CheckMark>}
+                <DropdownRow key={c.label} isSelected={isSel} isLast={idx===cities.length-1}
+                  onClick={e => { e.stopPropagation(); onChange({...value,city:c.value}); setShowCity(false); }}>
+                  <DropdownRowText isSelected={isSel}>{c.label}</DropdownRowText>
+                  {isSel && <CheckMark>✓</CheckMark>}
                 </DropdownRow>
               );
             })}
           </DropdownList>
         )}
-      </FieldWrap>
+      </FieldWrapFull>
 
-      <FieldDivider />
+      <HorizontalDivider />
+      <VerticalDivider />
 
-      {/* Date */}
-      <FieldWrap ref={calRef} onClick={() => toggle('cal')}>
+      {/* ── Date ── */}
+      <FieldWrapDate ref={calRef} onClick={() => toggle('cal')}>
         <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
         <FieldInput>
           <IconWrap><CalendarIcon /></IconWrap>
           <FieldText isPlaceholder={!value.date}>
             {value.date ? formatDateShort(value.date, locale) : t.reservationWidget.datePlaceholder}
           </FieldText>
+          <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
         </FieldInput>
         <CalendarPicker
-          show={showCal}
-          selectedDate={value.date}
-          today={today}
-          maxDate={maxDate}
-          viewYear={viewYear}
-          viewMonth={viewMonth}
-          onNavigate={navigateMonth}
-          onSelectDay={handleDaySelect}
-          monthYearLabel={monthYearLabel}
-          dayNamesShort={dayNamesShort}
-          containerRef={calRef}
+          show={showCal} selectedDate={value.date} today={today} maxDate={maxDate}
+          viewYear={viewYear} viewMonth={viewMonth} onNavigate={navigateMonth}
+          onSelectDay={handleDaySelect} monthYearLabel={monthYearLabel}
+          dayNamesShort={dayNamesShort} containerRef={calRef}
         />
-      </FieldWrap>
+      </FieldWrapDate>
 
-      <FieldDivider />
+      <VerticalDivider />
 
-      {/* Time */}
-      <FieldWrap ref={timeRef} onClick={() => toggle('time')}>
+      {/* ── Time ── */}
+      <FieldWrapTime ref={timeRef} onClick={() => toggle('time')}>
         <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
         <FieldInput>
           <IconWrap><ClockIcon size={16} color={slate400} /></IconWrap>
@@ -321,41 +403,49 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           </FieldText>
           <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
         </FieldInput>
-        <TimeDropdown
-          show={showTime}
-          slots={TIME_SLOTS}
-          selected={value.time}
-          onSelect={slot => { onChange({ ...value, time: slot }); setShowTime(false); }}
+        <TimeDropdown show={showTime} slots={TIME_SLOTS} selected={value.time}
+          onSelect={s => { onChange({...value,time:s}); setShowTime(false); }}
           containerRef={timeRef}
         />
-      </FieldWrap>
+      </FieldWrapTime>
 
-      <FieldDivider />
+      <HorizontalDivider />
+      <VerticalDivider />
 
-      {/* Guests */}
-      <FieldWrap ref={guestsRef} onClick={() => toggle('guests')}>
+      {/* ── Guests ── */}
+      <FieldWrapFull ref={guestsRef} onClick={() => toggle('guests')}>
         <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
         <FieldInput>
           <IconWrap><PeopleIcon /></IconWrap>
-          <FieldText isPlaceholder={false}>
-            {value.guests} {t.booking.persons}
-          </FieldText>
+          <FieldText isPlaceholder={false}>{value.guests} {t.booking.persons}</FieldText>
           <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
         </FieldInput>
-        <GuestsDropdown
-          show={showGuests}
-          options={GUEST_OPTIONS}
-          selected={value.guests}
-          onSelect={n => { onChange({ ...value, guests: n }); setShowGuests(false); }}
-          containerRef={guestsRef}
-          personsLabel={t.booking.persons}
+        <GuestsDropdown show={showGuests} options={GUEST_OPTIONS} selected={value.guests}
+          onSelect={n => { onChange({...value,guests:n}); setShowGuests(false); }}
+          containerRef={guestsRef} personsLabel={t.booking.persons}
         />
-      </FieldWrap>
+      </FieldWrapFull>
 
-      {/* Circular search button */}
-      <SearchButton onClick={e => { e.stopPropagation(); onSearch(); }} aria-label='Search'>
+      {/* Desktop circle button */}
+      <CircleSearchButton onClick={e => { e.stopPropagation(); onSearch(); }} aria-label='Search'>
         <SearchIcon />
-      </SearchButton>
+      </CircleSearchButton>
+
+      {/* Mobile full-width red pill "ძებნა" */}
+      <MobileSearchButton onClick={e => { e.stopPropagation(); onSearch(); }}>
+        <SearchIcon />
+        {t.common.search}
+      </MobileSearchButton>
+
+      {/* Mobile green scan button — scan.tsx will be integrated here */}
+      <MobileScanButton type='button'>
+        <ScanLeft>
+          <ScanIcon />
+          დაასკანერე მენიუ
+        </ScanLeft>
+        <ArrowRightIcon />
+      </MobileScanButton>
+
     </FiltersCard>
   );
 }
