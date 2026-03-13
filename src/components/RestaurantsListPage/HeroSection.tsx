@@ -11,9 +11,11 @@ import SearchFilters, { SearchFiltersValue } from './SearchFilters';
 
 const Hero = styled('section')({
   position: 'relative',
+  // zIndex: 2 ensures the section's stacking context is above the restaurant
+  // grid that follows it, so overflowing dropdowns render on top correctly.
+  zIndex: 2,
   background: 'linear-gradient(135deg, #0F172B 0%, #1a2744 60%, #0f2035 100%)',
   padding: '64px 20px 96px',
-  // NO overflow:hidden — dropdowns inside FiltersCard must be able to overflow
   '@media (min-width: 768px)': {
     padding: '80px 80px 112px',
   },
@@ -96,7 +98,7 @@ const Subtitle = styled('p')({
 const FiltersWrap = styled('div')({
   position: 'relative',
   width: '100%',
-  maxWidth: '900px',
+  maxWidth: '1120px',
 });
 
 // ── Props ─────────────────────────────────────────────────────────────────────

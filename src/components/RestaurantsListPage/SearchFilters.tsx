@@ -13,23 +13,15 @@ import {
 import GuestsDropdown from '@/components/ReservationWidget/GuestsDropdown';
 import TimeDropdown from '@/components/ReservationWidget/TimeDropdown';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import ArrowRightIcon from '@/icons/ArrowRight';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
 import ClockIcon from '@/icons/Clock';
 import LocationIcon from '@/icons/Location';
 import PeopleIcon from '@/icons/People';
-import SearchIcon from '@/icons/Search';
-import ArrowRightIcon from '@/icons/ArrowRight';
 import ScanIcon from '@/icons/Scan';
-import {
-  foreground,
-  green500,
-  muted,
-  primary,
-  slate200,
-  slate400,
-  white,
-} from '@/tokens';
+import SearchIcon from '@/icons/Search';
+import { foreground, green500, muted, primary, slate200, slate400, white } from '@/tokens';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -37,7 +29,6 @@ const TIME_SLOTS = [
   '11:00', '12:00', '13:00', '14:00', '15:00',
   '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00',
 ];
-
 const GUEST_OPTIONS = [1, 2, 3, 4, 5];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -52,15 +43,13 @@ function formatDateShort(date: Date, locale: string) {
 const FiltersCard = styled('div')({
   background: white,
   boxShadow: '0 4px 32px rgba(0,0,0,0.18)',
-
-  // ── Desktop ──────────────────────────────────────────────────────────────
+  // Desktop
   borderRadius: '9999px',
   padding: '6px 6px 6px 0',
   display: 'flex',
   alignItems: 'center',
   width: '100%',
-
-  // ── Mobile ───────────────────────────────────────────────────────────────
+  // Mobile
   '@media (max-width: 767px)': {
     borderRadius: '20px',
     padding: '0',
@@ -70,40 +59,44 @@ const FiltersCard = styled('div')({
 });
 
 // ─── Field wrappers ───────────────────────────────────────────────────────────
+// IMPORTANT: gridColumn must live in base styles (not only in @media blocks)
+// so Pigment CSS always emits the property in the CSS output.
 
-const fieldBase = {
-  position: 'relative' as const,
+const FieldWrapFull = styled('div')({
+  // grid placement — ignored by flex parent on desktop, used by grid on mobile
+  gridColumn: '1 / -1',
+  // shared
+  position: 'relative',
   cursor: 'pointer',
-  // desktop
   flex: 1,
   minWidth: 0,
   padding: '8px 20px',
-};
-
-/** City, Guests — full row on mobile */
-const FieldWrapFull = styled('div')({
-  ...fieldBase,
   '@media (max-width: 767px)': {
-    gridColumn: '1 / -1',
     padding: '14px 16px',
   },
 });
 
-/** Date — left half on mobile, has right border */
 const FieldWrapDate = styled('div')({
-  ...fieldBase,
+  gridColumn: '1 / 2',
+  position: 'relative',
+  cursor: 'pointer',
+  flex: 1,
+  minWidth: 0,
+  padding: '8px 20px',
   '@media (max-width: 767px)': {
-    gridColumn: '1 / 2',
     padding: '14px 16px',
     borderRight: `1px solid ${slate200}`,
   },
 });
 
-/** Time — right half on mobile */
 const FieldWrapTime = styled('div')({
-  ...fieldBase,
+  gridColumn: '2 / 3',
+  position: 'relative',
+  cursor: 'pointer',
+  flex: 1,
+  minWidth: 0,
+  padding: '8px 20px',
   '@media (max-width: 767px)': {
-    gridColumn: '2 / 3',
     padding: '14px 16px',
   },
 });
@@ -117,9 +110,6 @@ const FieldLabel = styled('div')({
   marginBottom: '3px',
   letterSpacing: '0.04em',
   userSelect: 'none',
-  '@media (max-width: 767px)': {
-    fontSize: '12px',
-  },
 });
 
 const FieldInput = styled('div')({
@@ -138,9 +128,7 @@ const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  '@media (max-width: 767px)': {
-    fontSize: '16px',
-  },
+  '@media (max-width: 767px)': { fontSize: '16px' },
   variants: [
     { props: { isPlaceholder: true }, style: { color: slate400, fontWeight: 400 } },
     { props: { isPlaceholder: false }, style: { color: foreground } },
@@ -156,31 +144,27 @@ const IconWrap = styled('span')({
 
 // ─── Separators ───────────────────────────────────────────────────────────────
 
-/** Vertical divider — desktop only, between fields in the pill */
 const VerticalDivider = styled('div')({
   width: '1px',
   height: '36px',
   background: slate200,
   flexShrink: 0,
-  '@media (max-width: 767px)': {
-    display: 'none',
-  },
+  '@media (max-width: 767px)': { display: 'none' },
 });
 
-/** Horizontal divider — mobile only, between rows */
+/** gridColumn in base so Pigment CSS always emits it */
 const HorizontalDivider = styled('div')({
+  gridColumn: '1 / -1',
   display: 'none',
   '@media (max-width: 767px)': {
     display: 'block',
-    gridColumn: '1 / -1',
     height: '1px',
     background: slate200,
   },
 });
 
-// ─── Buttons ──────────────────────────────────────────────────────────────────
+// ─── Desktop circle search button ─────────────────────────────────────────────
 
-/** Desktop: circle  |  Mobile: hidden (replaced by MobileSearchButton) */
 const CircleSearchButton = styled('button')({
   width: '52px',
   height: '52px',
@@ -194,56 +178,56 @@ const CircleSearchButton = styled('button')({
   flexShrink: 0,
   marginRight: '2px',
   transition: 'opacity 0.15s, transform 0.1s',
-  '&:hover': { opacity: 0.9, transform: 'scale(1.05)' },
-  '&:active': { transform: 'scale(0.97)' },
   '& svg': { color: white, stroke: white },
-  '@media (max-width: 767px)': {
-    display: 'none',
-  },
+  '@media (max-width: 767px)': { display: 'none' },
 });
 
-/** Mobile: full-width red pill with text */
-const MobileSearchButton = styled('button')({
+// ─── Mobile buttons wrapper ───────────────────────────────────────────────────
+// gridColumn in base so Pigment CSS always includes it in the stylesheet.
+// On desktop (flex parent) gridColumn is ignored.
+// On mobile (grid parent) it spans both columns.
+
+const MobileButtonsWrap = styled('div')({
+  gridColumn: '1 / -1',
   display: 'none',
   '@media (max-width: 767px)': {
     display: 'flex',
-    gridColumn: '1 / -1',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'column',
     gap: '8px',
-    margin: '12px 12px 6px',
-    padding: '15px 24px',
-    background: primary,
-    border: 'none',
-    borderRadius: '9999px',
-    color: white,
-    fontSize: '16px',
-    fontWeight: 700,
-    cursor: 'pointer',
-    '&:hover': { opacity: 0.9 },
-    '& svg': { color: white, stroke: white },
+    padding: '4px 12px 12px',
   },
 });
 
-/** Mobile-only green scan button placeholder */
-const MobileScanButton = styled('button')({
-  display: 'none',
-  '@media (max-width: 767px)': {
-    display: 'flex',
-    gridColumn: '1 / -1',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: '0 12px 12px',
-    padding: '15px 20px',
-    background: green500,
-    border: 'none',
-    borderRadius: '9999px',
-    color: white,
-    fontSize: '16px',
-    fontWeight: 700,
-    cursor: 'pointer',
-    '&:hover': { opacity: 0.9 },
-  },
+const MobileSearchBtn = styled('button')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '8px',
+  width: '100%',
+  padding: '15px 24px',
+  background: primary,
+  border: 'none',
+  borderRadius: '9999px',
+  color: white,
+  fontSize: '16px',
+  fontWeight: 700,
+  cursor: 'pointer',
+  '& svg': { color: white, stroke: white },
+});
+
+const MobileScanBtn = styled('button')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  width: '100%',
+  padding: '15px 20px',
+  background: green500,
+  border: 'none',
+  borderRadius: '9999px',
+  color: white,
+  fontSize: '16px',
+  fontWeight: 700,
+  cursor: 'pointer',
 });
 
 const ScanLeft = styled('span')({
@@ -251,8 +235,6 @@ const ScanLeft = styled('span')({
   alignItems: 'center',
   gap: '10px',
 });
-
-
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -286,7 +268,9 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const guestsRef = useRef<HTMLDivElement>(null);
 
   const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
-  const maxDate = useMemo(() => { const d = new Date(today); d.setDate(today.getDate()+60); return d; }, [today]);
+  const maxDate = useMemo(() => {
+    const d = new Date(today); d.setDate(today.getDate()+60); return d;
+  }, [today]);
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
 
@@ -297,48 +281,48 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   );
 
   function navigateMonth(dir: 1 | -1) {
-    let m = viewMonth + dir, y = viewYear;
-    if (m < 0) { m = 11; y -= 1; } if (m > 11) { m = 0; y += 1; }
+    let m = viewMonth+dir, y = viewYear;
+    if (m<0){m=11;y-=1;} if (m>11){m=0;y+=1;}
     setViewMonth(m); setViewYear(y);
   }
   function handleDaySelect(day: number) {
     const d = new Date(viewYear, viewMonth, day); d.setHours(0,0,0,0);
-    if (d < today || d > maxDate) return;
-    onChange({ ...value, date: d }); setShowCal(false);
+    if (d<today||d>maxDate) return;
+    onChange({...value,date:d}); setShowCal(false);
   }
 
   useEffect(() => {
     function onOut(e: MouseEvent) {
-      if (cityRef.current && !cityRef.current.contains(e.target as Node)) setShowCity(false);
-      if (calRef.current && !calRef.current.contains(e.target as Node)) setShowCal(false);
-      if (timeRef.current && !timeRef.current.contains(e.target as Node)) setShowTime(false);
-      if (guestsRef.current && !guestsRef.current.contains(e.target as Node)) setShowGuests(false);
+      if (cityRef.current&&!cityRef.current.contains(e.target as Node)) setShowCity(false);
+      if (calRef.current&&!calRef.current.contains(e.target as Node)) setShowCal(false);
+      if (timeRef.current&&!timeRef.current.contains(e.target as Node)) setShowTime(false);
+      if (guestsRef.current&&!guestsRef.current.contains(e.target as Node)) setShowGuests(false);
     }
     document.addEventListener('mousedown', onOut);
     return () => document.removeEventListener('mousedown', onOut);
   }, []);
 
   const cities = [
-    { value: undefined, label: t.restaurantsList.allCities },
-    { value: 'Tbilisi',  label: t.restaurantsList.cities.tbilisi },
-    { value: 'Batumi',   label: t.restaurantsList.cities.batumi },
-    { value: 'Rustavi',  label: t.restaurantsList.cities.rustavi },
-    { value: 'Gori',     label: t.restaurantsList.cities.gori },
-    { value: 'Kutaisi',  label: t.restaurantsList.cities.kutaisi },
+    { value: undefined,    label: t.restaurantsList.allCities },
+    { value: 'Tbilisi',   label: t.restaurantsList.cities.tbilisi },
+    { value: 'Batumi',    label: t.restaurantsList.cities.batumi },
+    { value: 'Rustavi',   label: t.restaurantsList.cities.rustavi },
+    { value: 'Gori',      label: t.restaurantsList.cities.gori },
+    { value: 'Kutaisi',   label: t.restaurantsList.cities.kutaisi },
   ];
-  const selectedCityLabel = cities.find(c => c.value === value.city)?.label ?? t.restaurantsList.allCities;
+  const selectedCityLabel = cities.find(c=>c.value===value.city)?.label ?? t.restaurantsList.allCities;
 
   const toggle = (w: 'city'|'cal'|'time'|'guests') => {
-    setShowCity(w==='city' ? s=>!s : false);
-    setShowCal(w==='cal' ? s=>!s : false);
-    setShowTime(w==='time' ? s=>!s : false);
-    setShowGuests(w==='guests' ? s=>!s : false);
+    setShowCity(w==='city'?s=>!s:false);
+    setShowCal(w==='cal'?s=>!s:false);
+    setShowTime(w==='time'?s=>!s:false);
+    setShowGuests(w==='guests'?s=>!s:false);
   };
 
   return (
     <FiltersCard>
 
-      {/* ── City ── */}
+      {/* City — full width on mobile */}
       <FieldWrapFull ref={cityRef} onClick={() => toggle('city')}>
         <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
         <FieldInput>
@@ -349,7 +333,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
         {showCity && (
           <DropdownList>
             {cities.map((c, idx) => {
-              const isSel = c.value === value.city;
+              const isSel = c.value===value.city;
               return (
                 <DropdownRow key={c.label} isSelected={isSel} isLast={idx===cities.length-1}
                   onClick={e => { e.stopPropagation(); onChange({...value,city:c.value}); setShowCity(false); }}>
@@ -365,7 +349,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
       <HorizontalDivider />
       <VerticalDivider />
 
-      {/* ── Date ── */}
+      {/* Date — left half on mobile */}
       <FieldWrapDate ref={calRef} onClick={() => toggle('cal')}>
         <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
         <FieldInput>
@@ -385,7 +369,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
 
       <VerticalDivider />
 
-      {/* ── Time ── */}
+      {/* Time — right half on mobile */}
       <FieldWrapTime ref={timeRef} onClick={() => toggle('time')}>
         <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
         <FieldInput>
@@ -404,7 +388,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
       <HorizontalDivider />
       <VerticalDivider />
 
-      {/* ── Guests ── */}
+      {/* Guests — full width on mobile */}
       <FieldWrapFull ref={guestsRef} onClick={() => toggle('guests')}>
         <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
         <FieldInput>
@@ -418,25 +402,25 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
         />
       </FieldWrapFull>
 
-      {/* Desktop circle button */}
+      {/* Desktop circle search button */}
       <CircleSearchButton onClick={e => { e.stopPropagation(); onSearch(); }} aria-label='Search'>
         <SearchIcon />
       </CircleSearchButton>
 
-      {/* Mobile full-width red pill "ძებნა" */}
-      <MobileSearchButton onClick={e => { e.stopPropagation(); onSearch(); }}>
-        <SearchIcon />
-        {t.common.search}
-      </MobileSearchButton>
-
-      {/* Mobile green scan button — scan.tsx will be integrated here */}
-      <MobileScanButton type='button'>
-        <ScanLeft>
-          <ScanIcon />
-          დაასკანერე მენიუ
-        </ScanLeft>
-        <ArrowRightIcon />
-      </MobileScanButton>
+      {/* Mobile buttons — MobileButtonsWrap spans both columns via gridColumn in base styles */}
+      <MobileButtonsWrap>
+        <MobileSearchBtn onClick={e => { e.stopPropagation(); onSearch(); }}>
+          <SearchIcon />
+          {t.common.search}
+        </MobileSearchBtn>
+        <MobileScanBtn type='button'>
+          <ScanLeft>
+            <ScanIcon />
+            დაასკანერე მენიუ
+          </ScanLeft>
+          <ArrowRightIcon />
+        </MobileScanBtn>
+      </MobileButtonsWrap>
 
     </FiltersCard>
   );
