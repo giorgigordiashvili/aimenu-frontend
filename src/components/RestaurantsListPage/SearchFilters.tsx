@@ -20,6 +20,7 @@ import LocationIcon from '@/icons/Location';
 import PeopleIcon from '@/icons/People';
 import SearchIcon from '@/icons/Search';
 import ArrowRightIcon from '@/icons/ArrowRight';
+import ScanIcon from '@/icons/Scan';
 import {
   foreground,
   green500,
@@ -251,16 +252,7 @@ const ScanLeft = styled('span')({
   gap: '10px',
 });
 
-// Simple scan/QR icon inline until scan.tsx is provided
-const ScanIcon = () => (
-  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
-    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
-    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
-    <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
-    <rect x={7} y={7} width={10} height={10} rx={1} />
-  </svg>
-);
+
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
