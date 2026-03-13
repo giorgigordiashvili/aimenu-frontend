@@ -103,6 +103,25 @@ const FieldWrapTime = styled('div')({
 
 // ─── Field internals ──────────────────────────────────────────────────────────
 
+/** Outer row: left group + chevron pushed to the right */
+const FieldInner = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  width: '100%',
+  gap: '8px',
+  userSelect: 'none',
+  cursor: 'pointer',
+});
+
+/** Left group: label stacked above icon + text */
+const FieldLeft = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  flex: 1,
+  minWidth: 0,
+});
+
 const FieldLabel = styled('div')({
   fontSize: '11px',
   fontWeight: 700,
@@ -112,19 +131,16 @@ const FieldLabel = styled('div')({
   userSelect: 'none',
 });
 
+/** Icon + value text row (no chevron here) */
 const FieldInput = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
-  width: '100%',
-  cursor: 'pointer',
-  userSelect: 'none',
 });
 
 const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
   fontSize: '15px',
   fontWeight: 600,
-  flex: 1,
   lineHeight: '22px',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -320,12 +336,16 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
 
       {/* City — full width on mobile */}
       <FieldWrapFull ref={cityRef} onClick={() => toggle('city')}>
-        <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
-        <FieldInput>
-          <IconWrap><LocationIcon color={slate400} size={16} /></IconWrap>
-          <FieldText isPlaceholder={!value.city}>{selectedCityLabel}</FieldText>
+        <FieldInner>
+          <FieldLeft>
+            <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
+            <FieldInput>
+              <IconWrap><LocationIcon color={slate400} size={16} /></IconWrap>
+              <FieldText isPlaceholder={!value.city}>{selectedCityLabel}</FieldText>
+            </FieldInput>
+          </FieldLeft>
           <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
-        </FieldInput>
+        </FieldInner>
         {showCity && (
           <DropdownList>
             {cities.map((c, idx) => {
@@ -347,14 +367,18 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
 
       {/* Date — left half on mobile */}
       <FieldWrapDate ref={calRef} onClick={() => toggle('cal')}>
-        <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
-        <FieldInput>
-          <IconWrap><CalendarIcon /></IconWrap>
-          <FieldText isPlaceholder={!value.date}>
-            {value.date ? formatDateShort(value.date, locale) : t.reservationWidget.datePlaceholder}
-          </FieldText>
+        <FieldInner>
+          <FieldLeft>
+            <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
+            <FieldInput>
+              <IconWrap><CalendarIcon /></IconWrap>
+              <FieldText isPlaceholder={!value.date}>
+                {value.date ? formatDateShort(value.date, locale) : t.reservationWidget.datePlaceholder}
+              </FieldText>
+            </FieldInput>
+          </FieldLeft>
           <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
-        </FieldInput>
+        </FieldInner>
         <CalendarPicker
           show={showCal} selectedDate={value.date} today={today} maxDate={maxDate}
           viewYear={viewYear} viewMonth={viewMonth} onNavigate={navigateMonth}
@@ -367,14 +391,18 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
 
       {/* Time — right half on mobile */}
       <FieldWrapTime ref={timeRef} onClick={() => toggle('time')}>
-        <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
-        <FieldInput>
-          <IconWrap><ClockIcon size={16} color={slate400} /></IconWrap>
-          <FieldText isPlaceholder={!value.time}>
-            {value.time || t.reservationWidget.timePlaceholder}
-          </FieldText>
+        <FieldInner>
+          <FieldLeft>
+            <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
+            <FieldInput>
+              <IconWrap><ClockIcon size={16} color={slate400} /></IconWrap>
+              <FieldText isPlaceholder={!value.time}>
+                {value.time || t.reservationWidget.timePlaceholder}
+              </FieldText>
+            </FieldInput>
+          </FieldLeft>
           <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
-        </FieldInput>
+        </FieldInner>
         <TimeDropdown show={showTime} slots={TIME_SLOTS} selected={value.time}
           onSelect={s => { onChange({...value,time:s}); setShowTime(false); }}
           containerRef={timeRef}
@@ -386,12 +414,16 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
 
       {/* Guests — full width on mobile */}
       <FieldWrapFull ref={guestsRef} onClick={() => toggle('guests')}>
-        <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
-        <FieldInput>
-          <IconWrap><PeopleIcon /></IconWrap>
-          <FieldText isPlaceholder={false}>{value.guests} {t.booking.persons}</FieldText>
+        <FieldInner>
+          <FieldLeft>
+            <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
+            <FieldInput>
+              <IconWrap><PeopleIcon /></IconWrap>
+              <FieldText isPlaceholder={false}>{value.guests} {t.booking.persons}</FieldText>
+            </FieldInput>
+          </FieldLeft>
           <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
-        </FieldInput>
+        </FieldInner>
         <GuestsDropdown show={showGuests} options={GUEST_OPTIONS} selected={value.guests}
           onSelect={n => { onChange({...value,guests:n}); setShowGuests(false); }}
           containerRef={guestsRef} personsLabel={t.booking.persons}
