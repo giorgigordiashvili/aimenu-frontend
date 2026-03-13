@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CloseIcon from '@/icons/Close';
@@ -515,7 +515,7 @@ export default function HeaderPrimary() {
         <RightGroup>
           {/* Desktop auth controls */}
           <DesktopControls>
-            <LanguageSwitcher currentLocale={locale} />
+            <LanguageSwitcherPrimary currentLocale={locale} />
 
             {isAuthenticated ? (
               <DropdownWrap ref={dropdownRef}>
@@ -630,7 +630,7 @@ export default function HeaderPrimary() {
         </DrawerBody>
 
         <DrawerFooter>
-          <LanguageSwitcher currentLocale={locale} />
+          <LanguageSwitcherPrimary currentLocale={locale} />
         </DrawerFooter>
       </Drawer>
     </>
