@@ -88,7 +88,7 @@ const NavLink = styled(Link)({
   transition: 'background 0.15s, color 0.15s',
   whiteSpace: 'nowrap',
   '&:hover': { background: slate100 },
-  '&[data-active="true"]': { color: primary, background: rose50 },
+  '&[data-active="true"]': { color: primary },
 });
 
 // ── Right group ───────────────────────────────────────────────────────────────
