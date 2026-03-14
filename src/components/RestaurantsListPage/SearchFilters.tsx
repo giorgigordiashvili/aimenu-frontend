@@ -26,8 +26,18 @@ import { foreground, green500, muted, primary, slate200, slate400, white } from 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const TIME_SLOTS = [
-  '11:00', '12:00', '13:00', '14:00', '15:00',
-  '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00',
+  '11:00',
+  '12:00',
+  '13:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+  '19:00',
+  '20:00',
+  '21:00',
+  '22:00',
 ];
 const GUEST_OPTIONS = [1, 2, 3, 4, 5];
 
@@ -129,6 +139,7 @@ const FieldLabel = styled('div')({
   marginBottom: '3px',
   letterSpacing: '0.04em',
   userSelect: 'none',
+  alignSelf: 'baseline',
 });
 
 /** Icon + value text row (no chevron here) */
@@ -279,80 +290,110 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const timeRef = useRef<HTMLDivElement>(null);
   const guestsRef = useRef<HTMLDivElement>(null);
 
-  const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
   const maxDate = useMemo(() => {
-    const d = new Date(today); d.setDate(today.getDate()+60); return d;
+    const d = new Date(today);
+    d.setDate(today.getDate() + 60);
+    return d;
   }, [today]);
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
 
-  const monthYearLabel = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
-    .format(new Date(viewYear, viewMonth, 1));
+  const monthYearLabel = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(
+    new Date(viewYear, viewMonth, 1)
+  );
   const dayNamesShort = Array.from({ length: 7 }, (_, i) =>
-    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, 7+i))
+    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, 7 + i))
   );
 
   function navigateMonth(dir: 1 | -1) {
-    let m = viewMonth+dir, y = viewYear;
-    if (m<0){m=11;y-=1;} if (m>11){m=0;y+=1;}
-    setViewMonth(m); setViewYear(y);
+    let m = viewMonth + dir,
+      y = viewYear;
+    if (m < 0) {
+      m = 11;
+      y -= 1;
+    }
+    if (m > 11) {
+      m = 0;
+      y += 1;
+    }
+    setViewMonth(m);
+    setViewYear(y);
   }
   function handleDaySelect(day: number) {
-    const d = new Date(viewYear, viewMonth, day); d.setHours(0,0,0,0);
-    if (d<today||d>maxDate) return;
-    onChange({...value,date:d}); setShowCal(false);
+    const d = new Date(viewYear, viewMonth, day);
+    d.setHours(0, 0, 0, 0);
+    if (d < today || d > maxDate) return;
+    onChange({ ...value, date: d });
+    setShowCal(false);
   }
 
   useEffect(() => {
     function onOut(e: MouseEvent) {
-      if (cityRef.current&&!cityRef.current.contains(e.target as Node)) setShowCity(false);
-      if (calRef.current&&!calRef.current.contains(e.target as Node)) setShowCal(false);
-      if (timeRef.current&&!timeRef.current.contains(e.target as Node)) setShowTime(false);
-      if (guestsRef.current&&!guestsRef.current.contains(e.target as Node)) setShowGuests(false);
+      if (cityRef.current && !cityRef.current.contains(e.target as Node)) setShowCity(false);
+      if (calRef.current && !calRef.current.contains(e.target as Node)) setShowCal(false);
+      if (timeRef.current && !timeRef.current.contains(e.target as Node)) setShowTime(false);
+      if (guestsRef.current && !guestsRef.current.contains(e.target as Node)) setShowGuests(false);
     }
     document.addEventListener('mousedown', onOut);
     return () => document.removeEventListener('mousedown', onOut);
   }, []);
 
   const cities = [
-    { value: undefined,    label: t.restaurantsList.allCities },
-    { value: 'Tbilisi',   label: t.restaurantsList.cities.tbilisi },
-    { value: 'Batumi',    label: t.restaurantsList.cities.batumi },
-    { value: 'Rustavi',   label: t.restaurantsList.cities.rustavi },
-    { value: 'Gori',      label: t.restaurantsList.cities.gori },
-    { value: 'Kutaisi',   label: t.restaurantsList.cities.kutaisi },
+    { value: undefined, label: t.restaurantsList.allCities },
+    { value: 'Tbilisi', label: t.restaurantsList.cities.tbilisi },
+    { value: 'Batumi', label: t.restaurantsList.cities.batumi },
+    { value: 'Rustavi', label: t.restaurantsList.cities.rustavi },
+    { value: 'Gori', label: t.restaurantsList.cities.gori },
+    { value: 'Kutaisi', label: t.restaurantsList.cities.kutaisi },
   ];
-  const selectedCityLabel = cities.find(c=>c.value===value.city)?.label ?? t.restaurantsList.allCities;
+  const selectedCityLabel =
+    cities.find(c => c.value === value.city)?.label ?? t.restaurantsList.allCities;
 
-  const toggle = (w: 'city'|'cal'|'time'|'guests') => {
-    setShowCity(w==='city'?s=>!s:false);
-    setShowCal(w==='cal'?s=>!s:false);
-    setShowTime(w==='time'?s=>!s:false);
-    setShowGuests(w==='guests'?s=>!s:false);
+  const toggle = (w: 'city' | 'cal' | 'time' | 'guests') => {
+    setShowCity(w === 'city' ? s => !s : false);
+    setShowCal(w === 'cal' ? s => !s : false);
+    setShowTime(w === 'time' ? s => !s : false);
+    setShowGuests(w === 'guests' ? s => !s : false);
   };
 
   return (
     <FiltersCard>
-
       {/* City — full width on mobile */}
       <FieldWrapFull ref={cityRef} onClick={() => toggle('city')}>
         <FieldInner>
           <FieldLeft>
             <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
             <FieldInput>
-              <IconWrap><LocationIcon color={slate400} size={16} /></IconWrap>
+              <IconWrap>
+                <LocationIcon color={slate400} size={16} />
+              </IconWrap>
               <FieldText isPlaceholder={!value.city}>{selectedCityLabel}</FieldText>
             </FieldInput>
           </FieldLeft>
-          <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
+          <IconWrap>
+            <ChevronDownIcon color={slate400} size={14} />
+          </IconWrap>
         </FieldInner>
         {showCity && (
           <DropdownList>
             {cities.map((c, idx) => {
-              const isSel = c.value===value.city;
+              const isSel = c.value === value.city;
               return (
-                <DropdownRow key={c.label} isSelected={isSel} isLast={idx===cities.length-1}
-                  onClick={e => { e.stopPropagation(); onChange({...value,city:c.value}); setShowCity(false); }}>
+                <DropdownRow
+                  key={c.label}
+                  isSelected={isSel}
+                  isLast={idx === cities.length - 1}
+                  onClick={e => {
+                    e.stopPropagation();
+                    onChange({ ...value, city: c.value });
+                    setShowCity(false);
+                  }}
+                >
                   <DropdownRowText isSelected={isSel}>{c.label}</DropdownRowText>
                   {isSel && <CheckMark>✓</CheckMark>}
                 </DropdownRow>
@@ -371,19 +412,32 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           <FieldLeft>
             <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
             <FieldInput>
-              <IconWrap><CalendarIcon /></IconWrap>
+              <IconWrap>
+                <CalendarIcon />
+              </IconWrap>
               <FieldText isPlaceholder={!value.date}>
-                {value.date ? formatDateShort(value.date, locale) : t.reservationWidget.datePlaceholder}
+                {value.date
+                  ? formatDateShort(value.date, locale)
+                  : t.reservationWidget.datePlaceholder}
               </FieldText>
             </FieldInput>
           </FieldLeft>
-          <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
+          <IconWrap>
+            <ChevronDownIcon color={slate400} size={14} />
+          </IconWrap>
         </FieldInner>
         <CalendarPicker
-          show={showCal} selectedDate={value.date} today={today} maxDate={maxDate}
-          viewYear={viewYear} viewMonth={viewMonth} onNavigate={navigateMonth}
-          onSelectDay={handleDaySelect} monthYearLabel={monthYearLabel}
-          dayNamesShort={dayNamesShort} containerRef={calRef}
+          show={showCal}
+          selectedDate={value.date}
+          today={today}
+          maxDate={maxDate}
+          viewYear={viewYear}
+          viewMonth={viewMonth}
+          onNavigate={navigateMonth}
+          onSelectDay={handleDaySelect}
+          monthYearLabel={monthYearLabel}
+          dayNamesShort={dayNamesShort}
+          containerRef={calRef}
         />
       </FieldWrapDate>
 
@@ -395,16 +449,26 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           <FieldLeft>
             <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
             <FieldInput>
-              <IconWrap><ClockIcon size={16} color={slate400} /></IconWrap>
+              <IconWrap>
+                <ClockIcon size={16} color={slate400} />
+              </IconWrap>
               <FieldText isPlaceholder={!value.time}>
                 {value.time || t.reservationWidget.timePlaceholder}
               </FieldText>
             </FieldInput>
           </FieldLeft>
-          <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
+          <IconWrap>
+            <ChevronDownIcon color={slate400} size={14} />
+          </IconWrap>
         </FieldInner>
-        <TimeDropdown show={showTime} slots={TIME_SLOTS} selected={value.time}
-          onSelect={s => { onChange({...value,time:s}); setShowTime(false); }}
+        <TimeDropdown
+          show={showTime}
+          slots={TIME_SLOTS}
+          selected={value.time}
+          onSelect={s => {
+            onChange({ ...value, time: s });
+            setShowTime(false);
+          }}
           containerRef={timeRef}
         />
       </FieldWrapTime>
@@ -418,26 +482,50 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           <FieldLeft>
             <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
             <FieldInput>
-              <IconWrap><PeopleIcon /></IconWrap>
-              <FieldText isPlaceholder={false}>{value.guests} {t.booking.persons}</FieldText>
+              <IconWrap>
+                <PeopleIcon />
+              </IconWrap>
+              <FieldText isPlaceholder={false}>
+                {value.guests} {t.booking.persons}
+              </FieldText>
             </FieldInput>
           </FieldLeft>
-          <IconWrap><ChevronDownIcon color={slate400} size={14} /></IconWrap>
+          <IconWrap>
+            <ChevronDownIcon color={slate400} size={14} />
+          </IconWrap>
         </FieldInner>
-        <GuestsDropdown show={showGuests} options={GUEST_OPTIONS} selected={value.guests}
-          onSelect={n => { onChange({...value,guests:n}); setShowGuests(false); }}
-          containerRef={guestsRef} personsLabel={t.booking.persons}
+        <GuestsDropdown
+          show={showGuests}
+          options={GUEST_OPTIONS}
+          selected={value.guests}
+          onSelect={n => {
+            onChange({ ...value, guests: n });
+            setShowGuests(false);
+          }}
+          containerRef={guestsRef}
+          personsLabel={t.booking.persons}
         />
       </FieldWrapFull>
 
       {/* Desktop circle search button */}
-      <CircleSearchButton onClick={e => { e.stopPropagation(); onSearch(); }} aria-label='Search'>
+      <CircleSearchButton
+        onClick={e => {
+          e.stopPropagation();
+          onSearch();
+        }}
+        aria-label='Search'
+      >
         <SearchIcon />
       </CircleSearchButton>
 
       {/* Mobile buttons — MobileButtonsWrap spans both columns via gridColumn in base styles */}
       <MobileButtonsWrap>
-        <MobileSearchBtn onClick={e => { e.stopPropagation(); onSearch(); }}>
+        <MobileSearchBtn
+          onClick={e => {
+            e.stopPropagation();
+            onSearch();
+          }}
+        >
           <SearchIcon />
           {t.common.search}
         </MobileSearchBtn>
@@ -447,7 +535,6 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           <ArrowRightIcon />
         </MobileScanBtn>
       </MobileButtonsWrap>
-
     </FiltersCard>
   );
 }
