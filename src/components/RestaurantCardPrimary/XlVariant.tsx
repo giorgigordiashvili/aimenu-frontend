@@ -171,8 +171,12 @@ export default function XlVariant({
     if (href) router.push(href);
   };
 
-  const stopAndBook = () => { if (href) router.push(`${href}/book`); };
-  const stopAndFavorite = () => { onToggleFavorite(); };
+  const stopAndBook = () => {
+    if (href) router.push(`${href}/book`);
+  };
+  const stopAndFavorite = () => {
+    onToggleFavorite();
+  };
 
   return (
     <XlContainer onClick={handleCardClick}>

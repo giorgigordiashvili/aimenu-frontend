@@ -145,7 +145,9 @@ export default function CompactVariant({
     if (href) router.push(href);
   };
 
-  const stopAndBook = () => { if (href) router.push(`${href}/book`); };
+  const stopAndBook = () => {
+    if (href) router.push(`${href}/book`);
+  };
 
   return (
     <CompactContainer onClick={handleCardClick}>

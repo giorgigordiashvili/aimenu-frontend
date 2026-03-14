@@ -51,9 +51,7 @@ const Chevron = styled('span')<{ open?: boolean }>({
   borderBottom: `2px solid currentColor`,
   transform: 'rotate(45deg) translateY(-2px)',
   transition: 'transform 0.2s',
-  variants: [
-    { props: { open: true }, style: { transform: 'rotate(225deg) translateY(-2px)' } },
-  ],
+  variants: [{ props: { open: true }, style: { transform: 'rotate(225deg) translateY(-2px)' } }],
 });
 
 /** Dropdown card */

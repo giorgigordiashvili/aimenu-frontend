@@ -162,9 +162,15 @@ export default function DefaultVariant({
     if (href) router.push(href);
   };
 
-  const stopAndDetails = () => { if (href) router.push(href); };
-  const stopAndBook = () => { if (href) router.push(`${href}/book`); };
-  const stopAndFavorite = () => { onToggleFavorite(); };
+  const stopAndDetails = () => {
+    if (href) router.push(href);
+  };
+  const stopAndBook = () => {
+    if (href) router.push(`${href}/book`);
+  };
+  const stopAndFavorite = () => {
+    onToggleFavorite();
+  };
 
   return (
     <ContentGroup onClick={handleCardClick}>
@@ -178,7 +184,12 @@ export default function DefaultVariant({
             </FavoriteYellow>
           )}
           {showFavoriteButton && (
-            <FavoriteButton onClick={e => { e.stopPropagation(); stopAndFavorite(); }}>
+            <FavoriteButton
+              onClick={e => {
+                e.stopPropagation();
+                stopAndFavorite();
+              }}
+            >
               <HeartOutlined variant={isFavorite ? 'filled' : 'outlined'} />
             </FavoriteButton>
           )}

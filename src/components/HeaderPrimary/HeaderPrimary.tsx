@@ -460,11 +460,15 @@ export default function HeaderPrimary() {
 
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [drawerOpen]);
 
   // Close drawer on route change
-  useEffect(() => { setDrawerOpen(false); }, [pathname]);
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
 
   const handleLogout = async () => {
     setUserMenuOpen(false);
@@ -528,21 +532,38 @@ export default function HeaderPrimary() {
 
                 {userMenuOpen && (
                   <DropdownMenu>
-                    <DropdownItem href={`/${locale}/profile`} onClick={() => setUserMenuOpen(false)}>
-                      <IconWrap><UserIcon width={16} height={16} /></IconWrap>
+                    <DropdownItem
+                      href={`/${locale}/profile`}
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <IconWrap>
+                        <UserIcon width={16} height={16} />
+                      </IconWrap>
                       {t.header.profile}
                     </DropdownItem>
-                    <DropdownItem href={`/${locale}/profile?tab=favorites`} onClick={() => setUserMenuOpen(false)}>
-                      <IconWrap><HeartOutlineIcon variant='outlined' /></IconWrap>
+                    <DropdownItem
+                      href={`/${locale}/profile?tab=favorites`}
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <IconWrap>
+                        <HeartOutlineIcon variant='outlined' />
+                      </IconWrap>
                       {t.header.favorites}
                     </DropdownItem>
-                    <DropdownItem href={`/${locale}/profile/reservations`} onClick={() => setUserMenuOpen(false)}>
-                      <IconWrap><HistoryIcon /></IconWrap>
+                    <DropdownItem
+                      href={`/${locale}/profile/reservations`}
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <IconWrap>
+                        <HistoryIcon />
+                      </IconWrap>
                       {t.header.myBookings}
                     </DropdownItem>
                     <DropdownDivider />
                     <LogoutItem onClick={handleLogout}>
-                      <IconWrap><LogoutIcon /></IconWrap>
+                      <IconWrap>
+                        <LogoutIcon />
+                      </IconWrap>
                       {t.header.logout}
                     </LogoutItem>
                   </DropdownMenu>
@@ -600,19 +621,33 @@ export default function HeaderPrimary() {
                 </DrawerUserInfo>
 
                 <DrawerMenuNavItem href={`/${locale}/profile`} onClick={() => setDrawerOpen(false)}>
-                  <IconWrap><UserIcon width={16} height={16} /></IconWrap>
+                  <IconWrap>
+                    <UserIcon width={16} height={16} />
+                  </IconWrap>
                   {t.header.profile}
                 </DrawerMenuNavItem>
-                <DrawerMenuNavItem href={`/${locale}/profile?tab=favorites`} onClick={() => setDrawerOpen(false)}>
-                  <IconWrap><HeartOutlineIcon variant='outlined' /></IconWrap>
+                <DrawerMenuNavItem
+                  href={`/${locale}/profile?tab=favorites`}
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <IconWrap>
+                    <HeartOutlineIcon variant='outlined' />
+                  </IconWrap>
                   {t.header.favorites}
                 </DrawerMenuNavItem>
-                <DrawerMenuNavItem href={`/${locale}/profile/reservations`} onClick={() => setDrawerOpen(false)}>
-                  <IconWrap><HistoryIcon /></IconWrap>
+                <DrawerMenuNavItem
+                  href={`/${locale}/profile/reservations`}
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <IconWrap>
+                    <HistoryIcon />
+                  </IconWrap>
                   {t.header.myBookings}
                 </DrawerMenuNavItem>
                 <DrawerLogoutButton onClick={handleLogout}>
-                  <IconWrap><LogoutIcon /></IconWrap>
+                  <IconWrap>
+                    <LogoutIcon />
+                  </IconWrap>
                   {t.header.logout}
                 </DrawerLogoutButton>
               </>
@@ -621,7 +656,10 @@ export default function HeaderPrimary() {
                 <DrawerLoginBtn href={`/${locale}/login`} onClick={() => setDrawerOpen(false)}>
                   {t.header.login}
                 </DrawerLoginBtn>
-                <DrawerRegisterBtn href={`/${locale}/register`} onClick={() => setDrawerOpen(false)}>
+                <DrawerRegisterBtn
+                  href={`/${locale}/register`}
+                  onClick={() => setDrawerOpen(false)}
+                >
                   {t.header.register}
                 </DrawerRegisterBtn>
               </DrawerAuthButtons>

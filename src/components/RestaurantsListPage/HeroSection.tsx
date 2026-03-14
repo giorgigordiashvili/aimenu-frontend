@@ -132,11 +132,7 @@ export default function HeroSection({ filters, onFiltersChange, onSearch }: Hero
         </Title>
         <Subtitle>{t.restaurantsList.heroSubtitle}</Subtitle>
         <FiltersWrap>
-          <SearchFilters
-            value={filters}
-            onChange={onFiltersChange}
-            onSearch={onSearch}
-          />
+          <SearchFilters value={filters} onChange={onFiltersChange} onSearch={onSearch} />
         </FiltersWrap>
       </HeroContent>
     </Hero>

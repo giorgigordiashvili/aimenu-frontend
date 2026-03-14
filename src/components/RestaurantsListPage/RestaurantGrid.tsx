@@ -127,7 +127,11 @@ const ErrorState = styled('div')({
 const parseTranslations = (translations: string | object | undefined): object => {
   if (!translations) return {};
   if (typeof translations === 'string') {
-    try { return JSON.parse(translations); } catch { return {}; }
+    try {
+      return JSON.parse(translations);
+    } catch {
+      return {};
+    }
   }
   return translations;
 };
