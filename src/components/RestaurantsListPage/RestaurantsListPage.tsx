@@ -8,6 +8,7 @@ import type { RestaurantList } from '@/api/generated/interfaces';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { slate50 } from '@/tokens';
 
 import HeroSection from './HeroSection';
 import RestaurantGrid from './RestaurantGrid';
@@ -17,7 +18,7 @@ import { SearchFiltersValue } from './SearchFilters';
 
 const PageWrapper = styled('div')({
   minHeight: '100vh',
-  background: '#f8fafc',
+  background: slate50,
   display: 'flex',
   flexDirection: 'column',
 });

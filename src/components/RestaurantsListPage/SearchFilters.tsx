@@ -13,15 +13,13 @@ import {
 import GuestsDropdown from '@/components/ReservationWidget/GuestsDropdown';
 import TimeDropdown from '@/components/ReservationWidget/TimeDropdown';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import ArrowRightIcon from '@/icons/ArrowRight';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
 import ClockIcon from '@/icons/Clock';
 import LocationIcon from '@/icons/Location';
 import PeopleIcon from '@/icons/People';
-import ScanIcon from '@/icons/Scan';
 import SearchIcon from '@/icons/Search';
-import { foreground, green500, muted, primary, slate200, slate400, white } from '@/tokens';
+import { foreground, muted, primary, slate200, slate400, white } from '@/tokens';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -241,22 +239,6 @@ const MobileSearchBtn = styled('button')({
   fontWeight: 700,
   cursor: 'pointer',
   '& svg': { color: white, stroke: white },
-});
-
-const MobileScanBtn = styled('button')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '8px',
-  width: '100%',
-  padding: '15px 20px',
-  background: green500,
-  border: 'none',
-  borderRadius: '9999px',
-  color: white,
-  fontSize: '16px',
-  fontWeight: 700,
-  cursor: 'pointer',
 });
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -529,11 +511,6 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           <SearchIcon />
           {t.common.search}
         </MobileSearchBtn>
-        <MobileScanBtn type='button'>
-          <ScanIcon />
-          დაასკანერე მენიუ
-          <ArrowRightIcon />
-        </MobileScanBtn>
       </MobileButtonsWrap>
     </FiltersCard>
   );

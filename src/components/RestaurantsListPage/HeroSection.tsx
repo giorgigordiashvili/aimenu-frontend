@@ -3,7 +3,7 @@
 import { styled } from '@pigment-css/react';
 
 import { useTranslations } from '@/context/LocaleContext';
-import { white } from '@/tokens';
+import { primary, white } from '@/tokens';
 
 import SearchFilters, { SearchFiltersValue } from './SearchFilters';
 
@@ -79,7 +79,7 @@ const Title = styled('h1')({
 });
 
 const Accent = styled('span')({
-  color: '#EC003F',
+  color: primary,
 });
 
 const Subtitle = styled('p')({
