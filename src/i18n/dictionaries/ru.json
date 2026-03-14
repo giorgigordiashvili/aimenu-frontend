@@ -321,6 +321,39 @@
     "guestsPlaceholder": "Гости",
     "items": "Блюда"
   },
+  "restaurantsList": {
+    "heroTitle": "Открывайте и бронируйте лучшие вкусы",
+    "heroSubtitle": "Простое бронирование в лучших ресторанах Грузии",
+    "popularTitle": "Популярные рестораны",
+    "popularSubtitle": "Избранные места со всей Грузии",
+    "viewAll": "Смотреть все",
+    "details": "Подробнее",
+    "cityFilter": "Город",
+    "dateFilter": "Дата",
+    "timeFilter": "Время",
+    "guestsFilter": "Гости",
+    "noResults": "Рестораны не найдены",
+    "allCities": "Все города",
+    "cities": {
+      "tbilisi": "Тбилиси",
+      "batumi": "Батуми",
+      "rustavi": "Рустави",
+      "gori": "Гори",
+      "kutaisi": "Кутаиси"
+    }
+  },
+  "header": {
+    "profile": "Профиль",
+    "favorites": "Избранное",
+    "myBookings": "Мои бронирования",
+    "logout": "Выйти",
+    "login": "Войти",
+    "register": "Регистрация",
+    "home": "Главная",
+    "restaurants": "Рестораны",
+    "about": "О нас",
+    "contact": "Контакт"
+  },
   "footer": {
     "navigation": "Навигация",
     "help": "Помощь",

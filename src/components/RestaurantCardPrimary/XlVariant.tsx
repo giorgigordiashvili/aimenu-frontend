@@ -1,6 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { useRouter } from 'next/navigation';
 
 import MainButton from '@/components/MainButton/MainButton';
 import CalendarIcon from '@/icons/Calendar';
@@ -159,16 +160,33 @@ export default function XlVariant({
   descriptionText,
   isFavorite,
   onToggleFavorite,
+  href,
+  priceLevel = '₾₾₾',
+  bookLabel = 'დაჯავშნა',
+  favoriteLabel = 'რჩეული',
 }: XlVariantProps) {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    if (href) router.push(href);
+  };
+
+  const stopAndBook = () => {
+    if (href) router.push(`${href}/book`);
+  };
+  const stopAndFavorite = () => {
+    onToggleFavorite();
+  };
+
   return (
-    <XlContainer>
+    <XlContainer onClick={handleCardClick}>
       <XlImageContainer>
         <XlImage src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
         {showFavoriteYellow && (
           <XlFavoriteYellowOverlay>
             <FavoriteYellow>
               <Star color={foreground} size={12} />
-              რჩეული
+              {favoriteLabel}
             </FavoriteYellow>
           </XlFavoriteYellowOverlay>
         )}
@@ -179,7 +197,7 @@ export default function XlVariant({
             <MainButton variant='rose_cta' title={filterText} size='extra_small' />
           )}
           <PriceWrapper>
-            <MainButton variant='outline' title='₾₾₾' size='extra_small' />
+            <MainButton variant='outline' title={priceLevel} size='extra_small' />
           </PriceWrapper>
         </XlTopRow>
         {restaurantTitle && <XlTitle>{restaurantTitle}</XlTitle>}
@@ -198,23 +216,24 @@ export default function XlVariant({
           )}
         </XlRatingLocationRow>
         {descriptionText && <XlDescription>{descriptionText}</XlDescription>}
-        <XlButtonGroup>
+        <XlButtonGroup onClick={e => e.stopPropagation()}>
           {showBookButton && (
             <MainButton
               variant='rose_cta'
-              title='დაჯავშნა'
+              title={bookLabel}
               size='large'
               fullWidth
               icon={CalendarIcon}
+              onClick={stopAndBook}
             />
           )}
           {showFavoriteButton && (
             <MainButton
               variant='outline'
-              title='შენახვა'
+              title={favoriteLabel}
               size='large'
               icon={() => <HeartOutlined variant={isFavorite ? 'filled' : 'outlined'} />}
-              onClick={onToggleFavorite}
+              onClick={stopAndFavorite}
             />
           )}
         </XlButtonGroup>

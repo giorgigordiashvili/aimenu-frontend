@@ -1,6 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { useRouter } from 'next/navigation';
 
 import MainButton from '@/components/MainButton/MainButton';
 import LocationIcon from '@/icons/Location';
@@ -133,16 +134,30 @@ export default function CompactVariant({
   restaurantTitle,
   locationText,
   showBookButton = true,
+  href,
+  priceLevel = '₾₾₾',
+  bookLabel = 'დაჯავშნა',
+  favoriteLabel = 'რჩეული',
 }: CompactVariantProps) {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    if (href) router.push(href);
+  };
+
+  const stopAndBook = () => {
+    if (href) router.push(`${href}/book`);
+  };
+
   return (
-    <CompactContainer>
+    <CompactContainer onClick={handleCardClick}>
       <CompactImageContainer>
         <CompactImage src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
         {showFavoriteYellow && (
           <CompactFavoriteYellowOverlay>
             <FavoriteYellow>
               <Star color={foreground} size={12} />
-              რჩეული
+              {favoriteLabel}
             </FavoriteYellow>
           </CompactFavoriteYellowOverlay>
         )}
@@ -152,7 +167,7 @@ export default function CompactVariant({
           <CompactTopRow>
             {restaurantTitle && <CompactTitle>{restaurantTitle}</CompactTitle>}
             <PriceWrapper>
-              <MainButton variant='outline' title='₾₾₾' size='extra_small' />
+              <MainButton variant='outline' title={priceLevel} size='extra_small' />
             </PriceWrapper>
           </CompactTopRow>
           <CompactRatingFilterRow>
@@ -172,9 +187,15 @@ export default function CompactVariant({
             </CompactLocation>
           )}
         </CompactInfoGroup>
-        <CompactButtonGroup>
+        <CompactButtonGroup onClick={e => e.stopPropagation()}>
           {showBookButton && (
-            <MainButton variant='rose_cta' title='დაჯავშნა' size='small' fullWidth />
+            <MainButton
+              variant='rose_cta'
+              title={bookLabel}
+              size='small'
+              fullWidth
+              onClick={stopAndBook}
+            />
           )}
         </CompactButtonGroup>
       </CompactContent>
