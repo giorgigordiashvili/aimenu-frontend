@@ -20,7 +20,6 @@ const SettingsLayout = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   gap: '28px',
-  maxWidth: '640px',
 });
 
 // ─── Component ─────────────────────────────────────────────────────────────────

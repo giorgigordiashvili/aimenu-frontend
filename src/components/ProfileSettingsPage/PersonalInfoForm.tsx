@@ -4,23 +4,11 @@ import { styled } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
 
 import { usersMePartialUpdate, usersMeRetrieve } from '@/api/generated/api';
+import MainButton from '@/components/MainButton/MainButton';
+import TextInput from '@/components/TextInput/TextInput';
 import { useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
-import {
-  background,
-  border,
-  foreground,
-  muted,
-  primary,
-  radiusMd,
-  radiusSm,
-  shadowCard,
-  slate300,
-  slate400,
-  slate600,
-  slate900,
-  white,
-} from '@/tokens';
+import { border, foreground, muted, radiusMd, shadowCard, slate900, white } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
@@ -44,92 +32,33 @@ const CardTitle = styled('h2')({
 const CardSubtitle = styled('p')({
   fontSize: '14px',
   color: muted,
-  margin: 0,
-  marginTop: '4px',
+  margin: '4px 0 0',
 });
 
-const TitleBlock = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '4px',
-  paddingBottom: '4px',
-  borderBottom: `1px solid ${border}`,
+const SectionTitle = styled('h3')({
+  fontSize: '16px',
+  fontWeight: 700,
+  color: foreground,
+  margin: '0 0 16px',
+});
+
+const Divider = styled('div')({
+  height: '1px',
+  background: border,
 });
 
 const FieldGrid = styled('div')({
   display: 'grid',
-  gridTemplateColumns: '1fr',
+  gridTemplateColumns: '1fr 1fr',
   gap: '16px',
-  '@media (min-width: 640px)': {
-    gridTemplateColumns: '1fr 1fr',
+  '@media (max-width: 640px)': {
+    gridTemplateColumns: '1fr',
   },
-});
-
-const FieldWrap = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6px',
-});
-
-const FieldWrapFull = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6px',
-  gridColumn: '1 / -1',
-});
-
-const Label = styled('label')({
-  fontSize: '13px',
-  fontWeight: 600,
-  color: slate600,
-});
-
-const Input = styled('input')({
-  padding: '10px 14px',
-  fontSize: '15px',
-  color: foreground,
-  background: background,
-  border: `1px solid ${border}`,
-  borderRadius: radiusSm,
-  outline: 'none',
-  width: '100%',
-  boxSizing: 'border-box',
-  transition: 'border-color 0.15s',
-  '&:focus': {
-    borderColor: primary,
-  },
-  '&::placeholder': {
-    color: slate400,
-  },
-  '&:disabled': {
-    background: slate300,
-    color: muted,
-    cursor: 'not-allowed',
-  },
-});
-
-const ReadonlyNote = styled('span')({
-  fontSize: '12px',
-  color: muted,
 });
 
 const Actions = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
-});
-
-const SaveButton = styled('button')<{ loading?: boolean }>({
-  padding: '11px 28px',
-  background: primary,
-  color: white,
-  border: 'none',
-  borderRadius: radiusSm,
-  fontSize: '15px',
-  fontWeight: 600,
-  cursor: 'pointer',
-  transition: 'opacity 0.15s',
-  '&:hover': { opacity: 0.9 },
-  '&:disabled': { opacity: 0.5, cursor: 'not-allowed' },
 });
 
 const Toast = styled('div')({
@@ -169,9 +98,7 @@ export default function PersonalInfoForm() {
         setEmail(user.email ?? '');
         setPhone(user.phone_number ?? '');
       })
-      .catch(() => {
-        // silently ignore — fields stay empty
-      })
+      .catch(() => {})
       .finally(() => setFetching(false));
   }, []);
 
@@ -196,61 +123,57 @@ export default function PersonalInfoForm() {
   return (
     <>
       <Card>
-        <TitleBlock>
+        <div>
           <CardTitle>{t.profile.settingsTitle}</CardTitle>
           <CardSubtitle>{t.profile.settingsSubtitle}</CardSubtitle>
-        </TitleBlock>
+        </div>
+
+        <Divider />
 
         <form onSubmit={handleSubmit}>
+          <SectionTitle>{t.profile.contactInfo}</SectionTitle>
+
           <FieldGrid>
-            <FieldWrap>
-              <Label htmlFor='firstName'>{t.profile.firstName}</Label>
-              <Input
-                id='firstName'
-                value={firstName}
-                onChange={e => setFirstName(e.target.value)}
-                required
-                disabled={fetching}
-                placeholder={t.profile.firstName}
-              />
-            </FieldWrap>
-
-            <FieldWrap>
-              <Label htmlFor='lastName'>{t.profile.lastName}</Label>
-              <Input
-                id='lastName'
-                value={lastName}
-                onChange={e => setLastName(e.target.value)}
-                required
-                disabled={fetching}
-                placeholder={t.profile.lastName}
-              />
-            </FieldWrap>
-
-            <FieldWrapFull>
-              <Label htmlFor='email'>
-                {t.profile.email} <ReadonlyNote>({t.profile.email})</ReadonlyNote>
-              </Label>
-              <Input id='email' type='email' value={email} disabled placeholder={t.profile.email} />
-            </FieldWrapFull>
-
-            <FieldWrapFull>
-              <Label htmlFor='phone'>{t.profile.phone}</Label>
-              <Input
-                id='phone'
-                type='tel'
-                value={phone}
-                onChange={e => setPhone(e.target.value)}
-                disabled={fetching}
-                placeholder='+995 5XX XXX XXX'
-              />
-            </FieldWrapFull>
+            <TextInput
+              label={t.profile.firstName}
+              value={firstName}
+              onChange={e => setFirstName(e.target.value)}
+              required
+              disabled={fetching}
+              placeholder={t.profile.firstName}
+            />
+            <TextInput
+              label={t.profile.lastName}
+              value={lastName}
+              onChange={e => setLastName(e.target.value)}
+              required
+              disabled={fetching}
+              placeholder={t.profile.lastName}
+            />
+            <TextInput
+              label={t.profile.email}
+              type='email'
+              value={email}
+              disabled
+              placeholder={t.profile.email}
+            />
+            <TextInput
+              label={t.profile.phone}
+              type='tel'
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              disabled={fetching}
+              placeholder='+995 5XX XXX XXX'
+            />
           </FieldGrid>
 
-          <Actions style={{ marginTop: '8px' }}>
-            <SaveButton type='submit' disabled={loading || fetching}>
-              {loading ? '...' : t.profile.saveChanges}
-            </SaveButton>
+          <Actions style={{ marginTop: '24px' }}>
+            <MainButton
+              title={loading ? '...' : t.profile.saveChanges}
+              variant='outline'
+              size='small'
+              onClick={() => {}}
+            />
           </Actions>
         </form>
       </Card>

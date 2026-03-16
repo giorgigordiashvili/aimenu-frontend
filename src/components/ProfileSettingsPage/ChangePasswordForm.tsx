@@ -4,21 +4,12 @@ import { styled } from '@pigment-css/react';
 import { useState } from 'react';
 
 import { authPasswordChangeCreate } from '@/api/generated/api';
+import MainButton from '@/components/MainButton/MainButton';
+import TextInput from '@/components/TextInput/TextInput';
 import { useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
-import {
-  background,
-  border,
-  foreground,
-  primary,
-  radiusMd,
-  radiusSm,
-  shadowCard,
-  slate400,
-  slate600,
-  slate900,
-  white,
-} from '@/tokens';
+import EyeIcon from '@/icons/Eye';
+import { border, foreground, primary, radiusMd, shadowCard, slate900, white } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
@@ -37,70 +28,26 @@ const CardTitle = styled('h2')({
   fontWeight: 700,
   color: foreground,
   margin: 0,
-  paddingBottom: '16px',
-  borderBottom: `1px solid ${border}`,
 });
 
-const FieldList = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
+const FieldGrid = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr 1fr',
   gap: '16px',
-});
-
-const FieldWrap = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6px',
-});
-
-const Label = styled('label')({
-  fontSize: '13px',
-  fontWeight: 600,
-  color: slate600,
-});
-
-const Input = styled('input')({
-  padding: '10px 14px',
-  fontSize: '15px',
-  color: foreground,
-  background: background,
-  border: `1px solid ${border}`,
-  borderRadius: radiusSm,
-  outline: 'none',
-  width: '100%',
-  boxSizing: 'border-box',
-  transition: 'border-color 0.15s',
-  '&:focus': {
-    borderColor: primary,
-  },
-  '&::placeholder': {
-    color: slate400,
+  '@media (max-width: 768px)': {
+    gridTemplateColumns: '1fr',
   },
 });
 
 const ErrorText = styled('p')({
   fontSize: '12px',
   color: primary,
-  margin: 0,
+  margin: '4px 0 0',
 });
 
 const Actions = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
-});
-
-const SaveButton = styled('button')({
-  padding: '11px 28px',
-  background: primary,
-  color: white,
-  border: 'none',
-  borderRadius: radiusSm,
-  fontSize: '15px',
-  fontWeight: 600,
-  cursor: 'pointer',
-  transition: 'opacity 0.15s',
-  '&:hover': { opacity: 0.9 },
-  '&:disabled': { opacity: 0.5, cursor: 'not-allowed' },
 });
 
 const Toast = styled('div')({
@@ -119,7 +66,7 @@ const Toast = styled('div')({
   boxShadow: shadowCard,
 });
 
-// ─── Validation ────────────────────────────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────────────────────────
 
 interface FormErrors {
   oldPassword?: string;
@@ -141,19 +88,16 @@ export default function ChangePasswordForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     const errs: FormErrors = {};
     if (!oldPassword) errs.oldPassword = 'Required';
     if (newPassword.length < 8) errs.newPassword = 'Minimum 8 characters';
     if (newPassword !== confirmPassword) errs.confirmPassword = 'Passwords do not match';
-
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
     setErrors({});
     setLoading(true);
-
     try {
       await authPasswordChangeCreate({
         old_password: oldPassword,
@@ -177,12 +121,12 @@ export default function ChangePasswordForm() {
         <CardTitle>{t.profile.changePassword}</CardTitle>
 
         <form onSubmit={handleSubmit}>
-          <FieldList>
-            <FieldWrap>
-              <Label htmlFor='oldPassword'>{t.profile.currentPassword}</Label>
-              <Input
-                id='oldPassword'
+          <FieldGrid>
+            <div>
+              <TextInput
+                label={t.profile.currentPassword}
                 type='password'
+                icon={EyeIcon}
                 value={oldPassword}
                 onChange={e => {
                   setOldPassword(e.target.value);
@@ -192,13 +136,13 @@ export default function ChangePasswordForm() {
                 autoComplete='current-password'
               />
               {errors.oldPassword && <ErrorText>{errors.oldPassword}</ErrorText>}
-            </FieldWrap>
+            </div>
 
-            <FieldWrap>
-              <Label htmlFor='newPassword'>{t.profile.newPassword}</Label>
-              <Input
-                id='newPassword'
+            <div>
+              <TextInput
+                label={t.profile.newPassword}
                 type='password'
+                icon={EyeIcon}
                 value={newPassword}
                 onChange={e => {
                   setNewPassword(e.target.value);
@@ -208,13 +152,13 @@ export default function ChangePasswordForm() {
                 autoComplete='new-password'
               />
               {errors.newPassword && <ErrorText>{errors.newPassword}</ErrorText>}
-            </FieldWrap>
+            </div>
 
-            <FieldWrap>
-              <Label htmlFor='confirmPassword'>{t.profile.confirmPassword}</Label>
-              <Input
-                id='confirmPassword'
+            <div>
+              <TextInput
+                label={t.profile.confirmPassword}
                 type='password'
+                icon={EyeIcon}
                 value={confirmPassword}
                 onChange={e => {
                   setConfirmPassword(e.target.value);
@@ -224,13 +168,16 @@ export default function ChangePasswordForm() {
                 autoComplete='new-password'
               />
               {errors.confirmPassword && <ErrorText>{errors.confirmPassword}</ErrorText>}
-            </FieldWrap>
-          </FieldList>
+            </div>
+          </FieldGrid>
 
-          <Actions style={{ marginTop: '8px' }}>
-            <SaveButton type='submit' disabled={loading}>
-              {loading ? '...' : t.profile.updatePassword}
-            </SaveButton>
+          <Actions style={{ marginTop: '24px' }}>
+            <MainButton
+              title={loading ? '...' : t.profile.updatePassword}
+              variant='outline'
+              size='small'
+              onClick={() => {}}
+            />
           </Actions>
         </form>
       </Card>
