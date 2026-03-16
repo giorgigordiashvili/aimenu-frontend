@@ -17,6 +17,7 @@ import {
   rose600,
   slate200,
   slate400,
+  slate50,
   slate500,
   white,
 } from '@/tokens';
@@ -58,6 +59,7 @@ const AvatarWrapper = styled('div')({
 });
 
 const AvatarCircle = styled('div')({
+  position: 'relative', // ← makes Image fill clip to this circle, not to AvatarWrapper
   width: '72px',
   height: '72px',
   borderRadius: '50%',
@@ -66,6 +68,9 @@ const AvatarCircle = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  border: `3px solid ${slate50}`,
+  boxShadow: '0px 4px 6px -4px rgba(0,0,0,0.1), 0px 10px 15px -3px rgba(0,0,0,0.1)',
+  flexShrink: 0,
   '@media (min-width: 768px)': {
     width: '80px',
     height: '80px',

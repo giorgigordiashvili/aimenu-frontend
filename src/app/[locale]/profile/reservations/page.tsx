@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import ReservationsPage from '@/components/ReservationsPage';
-import { Locale, isValidLocale } from '@/i18n/config';
+import { isValidLocale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 
 interface ReservationsPageProps {
@@ -30,5 +30,5 @@ export default async function Page({ params }: ReservationsPageProps) {
     notFound();
   }
 
-  return <ReservationsPage locale={locale as Locale} />;
+  return <ReservationsPage />;
 }

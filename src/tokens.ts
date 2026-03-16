@@ -34,6 +34,7 @@ export const yellow500 = '#F0B100';
 export const green50 = '#F0FDF4';
 export const green500 = '#8CC63E';
 export const green600 = '#16A34A';
+export const green700 = '#17B26A';
 // Original lime colors - do not change without checking all usages
 export const lime500 = '#9AE600';
 export const lime600 = '#7AB234';

@@ -1,17 +1,26 @@
 import { useCallback, useRef, useState } from 'react';
 
-export function useToast(durationMs = 3000) {
-  const [toast, setToast] = useState<string | null>(null);
+export type ToastVariant = 'success' | 'error';
+
+export interface ToastState {
+  message: string;
+  variant: ToastVariant;
+}
+
+export function useToast(durationMs = 4000) {
+  const [toast, setToast] = useState<ToastState | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = useCallback(
-    (msg: string) => {
-      setToast(msg);
+    (msg: string, variant: ToastVariant = 'success') => {
+      setToast({ message: msg, variant });
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => setToast(null), durationMs);
     },
     [durationMs]
   );
 
-  return { toast, showToast };
+  const hideToast = useCallback(() => setToast(null), []);
+
+  return { toast, showToast, hideToast };
 }

@@ -24,6 +24,7 @@ import {
   shadowMd,
   slate100,
   slate200,
+  slate50,
   white,
 } from '@/tokens';
 
@@ -182,6 +183,9 @@ const UserAvatar = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   flexShrink: 0,
+  overflow: 'hidden',
+  border: `2px solid ${slate50}`,
+  boxShadow: '0px 2px 6px rgba(0,0,0,0.12)',
 });
 
 const UserName = styled('span')({
@@ -525,7 +529,17 @@ export default function HeaderPrimary() {
               <DropdownWrap ref={dropdownRef}>
                 <UserButton onClick={() => setUserMenuOpen(p => !p)}>
                   <UserAvatar>
-                    <UserIcon width={16} height={16} />
+                    {user?.avatar ? (
+                      <Image
+                        src={user.avatar}
+                        alt={displayName || ''}
+                        width={28}
+                        height={28}
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <UserIcon width={16} height={16} />
+                    )}
                   </UserAvatar>
                   {displayName && <UserName>{displayName}</UserName>}
                 </UserButton>
@@ -536,9 +550,19 @@ export default function HeaderPrimary() {
                       href={`/${locale}/profile`}
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      <IconWrap>
-                        <UserIcon width={16} height={16} />
-                      </IconWrap>
+                      <UserAvatar>
+                        {user?.avatar ? (
+                          <Image
+                            src={user.avatar}
+                            alt={displayName || ''}
+                            width={28}
+                            height={28}
+                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                          />
+                        ) : (
+                          <UserIcon width={16} height={16} />
+                        )}
+                      </UserAvatar>
                       {t.header.profile}
                     </DropdownItem>
                     <DropdownItem
@@ -615,15 +639,35 @@ export default function HeaderPrimary() {
               <>
                 <DrawerUserInfo>
                   <UserAvatar>
-                    <UserIcon width={16} height={16} />
+                    {user?.avatar ? (
+                      <Image
+                        src={user.avatar}
+                        alt={displayName || ''}
+                        width={28}
+                        height={28}
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <UserIcon width={16} height={16} />
+                    )}
                   </UserAvatar>
                   <DrawerUserName>{displayName}</DrawerUserName>
                 </DrawerUserInfo>
 
                 <DrawerMenuNavItem href={`/${locale}/profile`} onClick={() => setDrawerOpen(false)}>
-                  <IconWrap>
-                    <UserIcon width={16} height={16} />
-                  </IconWrap>
+                  <UserAvatar>
+                    {user?.avatar ? (
+                      <Image
+                        src={user.avatar}
+                        alt={displayName || ''}
+                        width={28}
+                        height={28}
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <UserIcon width={16} height={16} />
+                    )}
+                  </UserAvatar>
                   {t.header.profile}
                 </DrawerMenuNavItem>
                 <DrawerMenuNavItem
