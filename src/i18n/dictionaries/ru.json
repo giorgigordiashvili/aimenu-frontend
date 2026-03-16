@@ -354,6 +354,29 @@
     "about": "О нас",
     "contact": "Контакт"
   },
+  "profile": {
+    "settingsTitle": "Личная информация",
+    "settingsSubtitle": "Обновите ваши контактные данные",
+    "contactInfo": "Контактная информация",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "email": "Эл. почта",
+    "phone": "Телефон",
+    "saveChanges": "Сохранить изменения",
+    "changePassword": "Изменить пароль",
+    "currentPassword": "Текущий пароль",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "updatePassword": "Обновить пароль",
+    "passwordChanged": "Пароль успешно изменён",
+    "saveSuccess": "Изменения успешно сохранены",
+    "updateError": "Не удалось обновить данные",
+    "tabs": {
+      "reservations": "Бронирования",
+      "profile": "Профиль",
+      "payment": "Оплата"
+    }
+  },
   "footer": {
     "navigation": "Навигация",
     "help": "Помощь",

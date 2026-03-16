@@ -354,6 +354,29 @@
     "about": "About Us",
     "contact": "Contact"
   },
+  "profile": {
+    "settingsTitle": "Personal Information",
+    "settingsSubtitle": "Update your contact details",
+    "contactInfo": "Contact Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "saveChanges": "Save Changes",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "updatePassword": "Update Password",
+    "passwordChanged": "Password changed successfully",
+    "saveSuccess": "Changes saved successfully",
+    "updateError": "Could not update data",
+    "tabs": {
+      "reservations": "Reservations",
+      "profile": "Profile",
+      "payment": "Payment"
+    }
+  },
   "footer": {
     "navigation": "Navigation",
     "help": "Help",

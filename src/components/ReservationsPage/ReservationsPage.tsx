@@ -1,26 +1,22 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { reservationsMyCancelCreate } from '@/api/generated';
-import ProfileHeader from '@/components/ProfileHeader';
 import ReservationCard, { ReservationCardSkeleton } from '@/components/ReservationCard';
 import ReservationDetailModal from '@/components/ReservationDetailModal';
 import ReservationsSidebar from '@/components/ReservationsSidebar';
 import { ReservationsSidebarProps } from '@/components/ReservationsSidebar/ReservationsSidebar';
-import ReservationsTabNav from '@/components/ReservationsTabNav';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from '@/context/LocaleContext';
-import { getMockRestaurantData, MOCK_MODE, MOCK_PROFILE } from '@/hooks/useReservations';
+import { getMockRestaurantData } from '@/hooks/useReservations';
 import { useReservationsPagination } from '@/hooks/useReservationsPagination';
 import { useToast } from '@/hooks/useToast';
-import { Locale } from '@/i18n/config';
+
 import ClockIcon from '@/icons/Clock';
 import HistoryIcon from '@/icons/History';
 import {
-  background,
   blackAlpha10,
   border,
   foreground,
@@ -31,13 +27,6 @@ import {
   slate900,
   white,
 } from '@/tokens';
-
-// ─── Layout ────────────────────────────────────────────────────────────────────
-
-const PageWrapper = styled('div')({
-  minHeight: '100vh',
-  backgroundColor: background,
-});
 
 const PageInner = styled('div')({
   maxWidth: '1100px',
@@ -178,15 +167,10 @@ const Toast = styled('div')({
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 
-interface ReservationsPageProps {
-  locale: Locale;
-}
-
-export default function ReservationsPage({ locale }: ReservationsPageProps) {
+export default function ReservationsPage() {
   const t = useTranslations();
-  const router = useRouter();
 
-  const { user, isLoading: authLoading, logout } = useAuth();
+  const { user } = useAuth();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { toast, showToast } = useToast();
 
@@ -217,29 +201,7 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
     [resetPagination, showToast, t.reservations.cancelSuccess]
   );
 
-  // Auth redirect
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push(`/${locale}/login`);
-    }
-  }, [authLoading, user, router, locale]);
-
-  if (authLoading || !user) return null;
-
-  const displayName = MOCK_MODE
-    ? MOCK_PROFILE.name
-    : user.full_name || `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-  const displayEmail = MOCK_MODE ? MOCK_PROFILE.email : user.email;
-  const displayPhone = MOCK_MODE ? MOCK_PROFILE.phone : user.phone_number;
-  const displayLocation = MOCK_MODE ? MOCK_PROFILE.location : null;
-
-  const initials = displayName
-    .split(' ')
-    .map(n => n[0])
-    .filter(Boolean)
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  if (!user) return null;
 
   const allLoaded = [...allActive, ...allHistory];
   const cancelledCount = allLoaded.filter(
@@ -263,20 +225,7 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
   const selectedRestaurant = selectedId ? getMockRestaurantData(selectedId) : null;
 
   return (
-    <PageWrapper>
-      <ProfileHeader
-        displayName={displayName}
-        displayEmail={displayEmail}
-        displayPhone={displayPhone}
-        displayLocation={displayLocation}
-        initials={initials}
-        avatar={user.avatar}
-        logout={logout}
-        onHome={() => router.push(`/${locale}`)}
-      />
-
-      <ReservationsTabNav />
-
+    <>
       <PageInner>
         <ContentLayout>
           <MainColumn>
@@ -394,6 +343,6 @@ export default function ReservationsPage({ locale }: ReservationsPageProps) {
       />
 
       {toast && <Toast>{toast}</Toast>}
-    </PageWrapper>
+    </>
   );
 }
