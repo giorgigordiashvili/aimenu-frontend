@@ -1,8 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
+import { usersMeRetrieve } from '@/api/generated/api';
+import type { User } from '@/api/generated/interfaces';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import ProfileHeader from '@/components/ProfileHeader';
@@ -17,26 +19,40 @@ interface ProfileShellProps {
 }
 
 export default function ProfileShell({ locale, children }: ProfileShellProps) {
-  const { user, isLoading: authLoading, logout } = useAuth();
+  const { user: authUser, isLoading: authLoading, logout } = useAuth();
   const router = useRouter();
 
+  // Fresh user data — starts from auth context, gets overwritten by API response
+  const [user, setUser] = useState<User | null>(null);
+
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!authLoading && !authUser) {
       router.push(`/${locale}/login`);
     }
-  }, [authLoading, user, router, locale]);
+    if (authUser) setUser(authUser);
+  }, [authLoading, authUser, router, locale]);
 
-  if (authLoading || !user) return null;
+  // Fetch fresh profile data so header shows up-to-date info
+  useEffect(() => {
+    if (!authUser) return;
+    usersMeRetrieve()
+      .then(fresh => setUser(fresh))
+      .catch(() => {});
+  }, [authUser]);
+
+  if (authLoading || !authUser) return null;
+
+  const displayUser = user ?? authUser;
 
   const displayName =
     (MOCK_MODE
       ? MOCK_PROFILE.name
-      : user.full_name ||
-        `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim() ||
-        user.email) ?? '';
+      : displayUser.full_name ||
+        `${displayUser.first_name ?? ''} ${displayUser.last_name ?? ''}`.trim() ||
+        displayUser.email) ?? '';
 
-  const displayEmail = MOCK_MODE ? MOCK_PROFILE.email : user.email;
-  const displayPhone = MOCK_MODE ? MOCK_PROFILE.phone : user.phone_number;
+  const displayEmail = MOCK_MODE ? MOCK_PROFILE.email : displayUser.email;
+  const displayPhone = MOCK_MODE ? MOCK_PROFILE.phone : displayUser.phone_number;
   const displayLocation = MOCK_MODE ? MOCK_PROFILE.location : null;
 
   const initials = displayName
@@ -58,7 +74,7 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
         displayPhone={displayPhone}
         displayLocation={displayLocation}
         initials={initials}
-        avatar={user.avatar}
+        avatar={displayUser.avatar}
         logout={logout}
         onHome={() => router.push(`/${locale}`)}
       />

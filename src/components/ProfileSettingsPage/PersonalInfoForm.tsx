@@ -3,7 +3,7 @@
 import { styled } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
 
-import { usersMePartialUpdate } from '@/api/generated/api';
+import { usersMePartialUpdate, usersMeRetrieve } from '@/api/generated/api';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { useAuth } from '@/context/AuthContext';
@@ -69,10 +69,7 @@ const Toast = styled('div')({
 export default function PersonalInfoForm() {
   const t = useTranslations();
   const { toast, showToast } = useToast();
-
-  // Seed directly from the already-loaded auth context user —
-  // no extra GET needed just for pre-fill.
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -80,13 +77,29 @@ export default function PersonalInfoForm() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Step 1 — seed immediately from auth context (already loaded, no network wait)
   useEffect(() => {
-    if (!user) return;
-    setFirstName(user.first_name ?? '');
-    setLastName(user.last_name ?? '');
-    setEmail(user.email ?? '');
-    setPhone(user.phone_number ?? '');
-  }, [user]);
+    if (!authUser) return;
+    setFirstName(authUser.first_name ?? '');
+    setLastName(authUser.last_name ?? '');
+    setEmail(authUser.email ?? '');
+    setPhone(authUser.phone_number ?? '');
+  }, [authUser]);
+
+  // Step 2 — fetch fresh from API in case auth context has stale/minimal data
+  useEffect(() => {
+    usersMeRetrieve()
+      .then(user => {
+        // Only overwrite a field if the API returned a non-empty value
+        if (user.first_name) setFirstName(user.first_name);
+        if (user.last_name) setLastName(user.last_name);
+        if (user.email) setEmail(user.email);
+        if (user.phone_number) setPhone(user.phone_number);
+      })
+      .catch(() => {
+        // silently ignore — auth-context seed is already shown
+      });
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -115,7 +128,7 @@ export default function PersonalInfoForm() {
         <ContactTitle>{t.profile.contactInfo}</ContactTitle>
 
         {/* Wrap each TextInput in a div — TextInput returns a fragment so
-            without a wrapper its <p> label and <input> become separate grid items */}
+            without a wrapper its <p> and <input> become separate grid items */}
         <FieldGrid>
           <div>
             <TextInput
