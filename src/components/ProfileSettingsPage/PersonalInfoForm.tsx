@@ -1,50 +1,35 @@
 'use client';
 
-import { styled } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
+import { styled } from '@pigment-css/react';
 
 import { usersMePartialUpdate, usersMeRetrieve } from '@/api/generated/api';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
-import { border, foreground, muted, radiusMd, shadowCard, slate900, white } from '@/tokens';
+import { foreground, muted, shadowCard, slate900, white } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
-const Card = styled('div')({
-  background: white,
-  border: `1px solid ${border}`,
-  borderRadius: radiusMd,
-  padding: '28px 24px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '24px',
-});
-
-const CardTitle = styled('h2')({
+const SectionTitle = styled('h2')({
   fontSize: '18px',
   fontWeight: 700,
   color: foreground,
-  margin: 0,
+  margin: '0 0 4px',
 });
 
-const CardSubtitle = styled('p')({
+const SectionSubtitle = styled('p')({
   fontSize: '14px',
   color: muted,
-  margin: '4px 0 0',
+  margin: '0 0 20px',
 });
 
-const SectionTitle = styled('h3')({
+const ContactTitle = styled('h3')({
   fontSize: '16px',
   fontWeight: 700,
   color: foreground,
   margin: '0 0 16px',
-});
-
-const Divider = styled('div')({
-  height: '1px',
-  background: border,
 });
 
 const FieldGrid = styled('div')({
@@ -59,6 +44,7 @@ const FieldGrid = styled('div')({
 const Actions = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
+  marginTop: '24px',
 });
 
 const Toast = styled('div')({
@@ -122,18 +108,15 @@ export default function PersonalInfoForm() {
 
   return (
     <>
-      <Card>
-        <div>
-          <CardTitle>{t.profile.settingsTitle}</CardTitle>
-          <CardSubtitle>{t.profile.settingsSubtitle}</CardSubtitle>
-        </div>
+      <form onSubmit={handleSubmit}>
+        <SectionTitle>{t.profile.settingsTitle}</SectionTitle>
+        <SectionSubtitle>{t.profile.settingsSubtitle}</SectionSubtitle>
 
-        <Divider />
+        <ContactTitle>{t.profile.contactInfo}</ContactTitle>
 
-        <form onSubmit={handleSubmit}>
-          <SectionTitle>{t.profile.contactInfo}</SectionTitle>
-
-          <FieldGrid>
+        {/* Each TextInput is a React fragment — wrap in div to keep as one grid item */}
+        <FieldGrid>
+          <div>
             <TextInput
               label={t.profile.firstName}
               value={firstName}
@@ -142,6 +125,8 @@ export default function PersonalInfoForm() {
               disabled={fetching}
               placeholder={t.profile.firstName}
             />
+          </div>
+          <div>
             <TextInput
               label={t.profile.lastName}
               value={lastName}
@@ -150,6 +135,8 @@ export default function PersonalInfoForm() {
               disabled={fetching}
               placeholder={t.profile.lastName}
             />
+          </div>
+          <div>
             <TextInput
               label={t.profile.email}
               type='email'
@@ -157,6 +144,8 @@ export default function PersonalInfoForm() {
               disabled
               placeholder={t.profile.email}
             />
+          </div>
+          <div>
             <TextInput
               label={t.profile.phone}
               type='tel'
@@ -165,18 +154,18 @@ export default function PersonalInfoForm() {
               disabled={fetching}
               placeholder='+995 5XX XXX XXX'
             />
-          </FieldGrid>
+          </div>
+        </FieldGrid>
 
-          <Actions style={{ marginTop: '24px' }}>
-            <MainButton
-              title={loading ? '...' : t.profile.saveChanges}
-              variant='outline'
-              size='small'
-              onClick={() => {}}
-            />
-          </Actions>
-        </form>
-      </Card>
+        <Actions>
+          <MainButton
+            title={loading ? '...' : t.profile.saveChanges}
+            variant='outline'
+            size='small'
+            type='submit'
+          />
+        </Actions>
+      </form>
 
       {toast && <Toast>{toast}</Toast>}
     </>

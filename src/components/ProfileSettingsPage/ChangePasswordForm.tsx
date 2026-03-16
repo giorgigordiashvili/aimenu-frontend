@@ -9,25 +9,15 @@ import TextInput from '@/components/TextInput/TextInput';
 import { useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
 import EyeIcon from '@/icons/Eye';
-import { border, foreground, primary, radiusMd, shadowCard, slate900, white } from '@/tokens';
+import { foreground, primary, shadowCard, slate900, white } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
-const Card = styled('div')({
-  background: white,
-  border: `1px solid ${border}`,
-  borderRadius: radiusMd,
-  padding: '28px 24px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '24px',
-});
-
-const CardTitle = styled('h2')({
+const SectionTitle = styled('h2')({
   fontSize: '18px',
   fontWeight: 700,
   color: foreground,
-  margin: 0,
+  margin: '0 0 20px',
 });
 
 const FieldGrid = styled('div')({
@@ -48,6 +38,7 @@ const ErrorText = styled('p')({
 const Actions = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
+  marginTop: '24px',
 });
 
 const Toast = styled('div')({
@@ -117,70 +108,68 @@ export default function ChangePasswordForm() {
 
   return (
     <>
-      <Card>
-        <CardTitle>{t.profile.changePassword}</CardTitle>
+      <form onSubmit={handleSubmit}>
+        <SectionTitle>{t.profile.changePassword}</SectionTitle>
 
-        <form onSubmit={handleSubmit}>
-          <FieldGrid>
-            <div>
-              <TextInput
-                label={t.profile.currentPassword}
-                type='password'
-                icon={EyeIcon}
-                value={oldPassword}
-                onChange={e => {
-                  setOldPassword(e.target.value);
-                  setErrors(p => ({ ...p, oldPassword: undefined }));
-                }}
-                placeholder='••••••••'
-                autoComplete='current-password'
-              />
-              {errors.oldPassword && <ErrorText>{errors.oldPassword}</ErrorText>}
-            </div>
-
-            <div>
-              <TextInput
-                label={t.profile.newPassword}
-                type='password'
-                icon={EyeIcon}
-                value={newPassword}
-                onChange={e => {
-                  setNewPassword(e.target.value);
-                  setErrors(p => ({ ...p, newPassword: undefined }));
-                }}
-                placeholder='••••••••'
-                autoComplete='new-password'
-              />
-              {errors.newPassword && <ErrorText>{errors.newPassword}</ErrorText>}
-            </div>
-
-            <div>
-              <TextInput
-                label={t.profile.confirmPassword}
-                type='password'
-                icon={EyeIcon}
-                value={confirmPassword}
-                onChange={e => {
-                  setConfirmPassword(e.target.value);
-                  setErrors(p => ({ ...p, confirmPassword: undefined }));
-                }}
-                placeholder='••••••••'
-                autoComplete='new-password'
-              />
-              {errors.confirmPassword && <ErrorText>{errors.confirmPassword}</ErrorText>}
-            </div>
-          </FieldGrid>
-
-          <Actions style={{ marginTop: '24px' }}>
-            <MainButton
-              title={loading ? '...' : t.profile.updatePassword}
-              variant='outline'
-              size='small'
-              onClick={() => {}}
+        {/* Wrap each TextInput in a div — TextInput returns a fragment, so without
+            a wrapper its label <p> and <input> become separate grid items */}
+        <FieldGrid>
+          <div>
+            <TextInput
+              label={t.profile.currentPassword}
+              type='password'
+              icon={EyeIcon}
+              value={oldPassword}
+              onChange={e => {
+                setOldPassword(e.target.value);
+                setErrors(p => ({ ...p, oldPassword: undefined }));
+              }}
+              placeholder='••••••••'
+              autoComplete='current-password'
             />
-          </Actions>
-        </form>
-      </Card>
+            {errors.oldPassword && <ErrorText>{errors.oldPassword}</ErrorText>}
+          </div>
+          <div>
+            <TextInput
+              label={t.profile.newPassword}
+              type='password'
+              icon={EyeIcon}
+              value={newPassword}
+              onChange={e => {
+                setNewPassword(e.target.value);
+                setErrors(p => ({ ...p, newPassword: undefined }));
+              }}
+              placeholder='••••••••'
+              autoComplete='new-password'
+            />
+            {errors.newPassword && <ErrorText>{errors.newPassword}</ErrorText>}
+          </div>
+          <div>
+            <TextInput
+              label={t.profile.confirmPassword}
+              type='password'
+              icon={EyeIcon}
+              value={confirmPassword}
+              onChange={e => {
+                setConfirmPassword(e.target.value);
+                setErrors(p => ({ ...p, confirmPassword: undefined }));
+              }}
+              placeholder='••••••••'
+              autoComplete='new-password'
+            />
+            {errors.confirmPassword && <ErrorText>{errors.confirmPassword}</ErrorText>}
+          </div>
+        </FieldGrid>
+
+        <Actions>
+          <MainButton
+            title={loading ? '...' : t.profile.updatePassword}
+            variant='outline'
+            size='small'
+            type='submit'
+          />
+        </Actions>
+      </form>
 
       {toast && <Toast>{toast}</Toast>}
     </>

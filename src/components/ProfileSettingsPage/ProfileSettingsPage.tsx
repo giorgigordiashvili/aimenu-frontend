@@ -4,6 +4,7 @@ import { styled } from '@pigment-css/react';
 
 import ChangePasswordForm from './ChangePasswordForm';
 import PersonalInfoForm from './PersonalInfoForm';
+import { border, radiusMd, white } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
@@ -16,10 +17,21 @@ const PageInner = styled('div')({
   },
 });
 
-const SettingsLayout = styled('div')({
+/** Single card wrapping both sections */
+const Card = styled('div')({
+  background: white,
+  border: `1px solid ${border}`,
+  borderRadius: radiusMd,
+  padding: '28px 24px',
   display: 'flex',
   flexDirection: 'column',
-  gap: '28px',
+  gap: '0',
+});
+
+const Divider = styled('div')({
+  height: '1px',
+  background: border,
+  margin: '28px 0',
 });
 
 // ─── Component ─────────────────────────────────────────────────────────────────
@@ -27,10 +39,11 @@ const SettingsLayout = styled('div')({
 export default function ProfileSettingsPage() {
   return (
     <PageInner>
-      <SettingsLayout>
+      <Card>
         <PersonalInfoForm />
+        <Divider />
         <ChangePasswordForm />
-      </SettingsLayout>
+      </Card>
     </PageInner>
   );
 }
