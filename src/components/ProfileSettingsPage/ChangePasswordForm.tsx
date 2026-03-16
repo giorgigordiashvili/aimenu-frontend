@@ -165,7 +165,7 @@ export default function ChangePasswordForm() {
           <MainButton
             title={loading ? '...' : t.profile.updatePassword}
             variant='outline'
-            size='small'
+            size='large'
             type='submit'
           />
         </Actions>

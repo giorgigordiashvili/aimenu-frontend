@@ -172,7 +172,7 @@ export default function PersonalInfoForm() {
           <MainButton
             title={loading ? '...' : t.profile.saveChanges}
             variant='outline'
-            size='small'
+            size='large'
             type='submit'
           />
         </Actions>
