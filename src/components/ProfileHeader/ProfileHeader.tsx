@@ -58,6 +58,7 @@ const AvatarWrapper = styled('div')({
 });
 
 const AvatarCircle = styled('div')({
+  position: 'relative', // ← makes Image fill clip to this circle, not to AvatarWrapper
   width: '72px',
   height: '72px',
   borderRadius: '50%',
