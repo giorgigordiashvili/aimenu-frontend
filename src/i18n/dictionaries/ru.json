@@ -369,6 +369,9 @@
     "confirmPassword": "Подтвердите пароль",
     "updatePassword": "Обновить пароль",
     "passwordChanged": "Пароль успешно изменён",
+    "fieldRequired": "Обязательное поле",
+    "passwordMinLength": "Минимум 8 символов",
+    "passwordsDoNotMatch": "Пароли не совпадают",
     "saveSuccess": "Изменения успешно сохранены",
     "updateError": "Не удалось обновить данные",
     "tabs": {

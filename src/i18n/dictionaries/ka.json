@@ -369,6 +369,9 @@
     "confirmPassword": "გაიმეორეთ პაროლი",
     "updatePassword": "პაროლის განახლება",
     "passwordChanged": "თქვენი პაროლი წარმატებით შეიცვალა",
+    "fieldRequired": "სავალდებულო",
+    "passwordMinLength": "მინიმუმ 8 სიმბოლო",
+    "passwordsDoNotMatch": "პაროლები არ ემთხვევა",
     "saveSuccess": "მონაცემები წარმატებით შეინახა",
     "updateError": "მონაცემების შეცვლა ვერ მოხერხდა",
     "tabs": {

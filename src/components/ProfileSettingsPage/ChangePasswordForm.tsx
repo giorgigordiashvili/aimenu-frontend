@@ -65,9 +65,9 @@ export default function ChangePasswordForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const errs: FormErrors = {};
-    if (!oldPassword) errs.oldPassword = 'Required';
-    if (newPassword.length < 8) errs.newPassword = 'Minimum 8 characters';
-    if (newPassword !== confirmPassword) errs.confirmPassword = 'Passwords do not match';
+    if (!oldPassword) errs.oldPassword = t.profile.fieldRequired;
+    if (newPassword.length < 8) errs.newPassword = t.profile.passwordMinLength;
+    if (newPassword !== confirmPassword) errs.confirmPassword = t.profile.passwordsDoNotMatch;
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;

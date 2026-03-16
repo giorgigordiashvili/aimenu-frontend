@@ -371,6 +371,9 @@
     "passwordChanged": "Password changed successfully",
     "saveSuccess": "Changes saved successfully",
     "updateError": "Could not update data",
+    "fieldRequired": "Required",
+    "passwordMinLength": "Minimum 8 characters",
+    "passwordsDoNotMatch": "Passwords do not match",
     "tabs": {
       "reservations": "Reservations",
       "profile": "Profile",
