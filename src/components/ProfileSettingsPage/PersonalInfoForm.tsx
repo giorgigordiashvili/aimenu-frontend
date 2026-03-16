@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { styled } from '@pigment-css/react';
+import { useEffect, useState } from 'react';
 
-import { usersMePartialUpdate, usersMeRetrieve } from '@/api/generated/api';
+import { usersMePartialUpdate } from '@/api/generated/api';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
+import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
 import { foreground, muted, shadowCard, slate900, white } from '@/tokens';
@@ -69,24 +70,23 @@ export default function PersonalInfoForm() {
   const t = useTranslations();
   const { toast, showToast } = useToast();
 
+  // Seed directly from the already-loaded auth context user —
+  // no extra GET needed just for pre-fill.
+  const { user } = useAuth();
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    usersMeRetrieve()
-      .then(user => {
-        setFirstName(user.first_name ?? '');
-        setLastName(user.last_name ?? '');
-        setEmail(user.email ?? '');
-        setPhone(user.phone_number ?? '');
-      })
-      .catch(() => {})
-      .finally(() => setFetching(false));
-  }, []);
+    if (!user) return;
+    setFirstName(user.first_name ?? '');
+    setLastName(user.last_name ?? '');
+    setEmail(user.email ?? '');
+    setPhone(user.phone_number ?? '');
+  }, [user]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -114,7 +114,8 @@ export default function PersonalInfoForm() {
 
         <ContactTitle>{t.profile.contactInfo}</ContactTitle>
 
-        {/* Each TextInput is a React fragment — wrap in div to keep as one grid item */}
+        {/* Wrap each TextInput in a div — TextInput returns a fragment so
+            without a wrapper its <p> label and <input> become separate grid items */}
         <FieldGrid>
           <div>
             <TextInput
@@ -122,7 +123,6 @@ export default function PersonalInfoForm() {
               value={firstName}
               onChange={e => setFirstName(e.target.value)}
               required
-              disabled={fetching}
               placeholder={t.profile.firstName}
             />
           </div>
@@ -132,7 +132,6 @@ export default function PersonalInfoForm() {
               value={lastName}
               onChange={e => setLastName(e.target.value)}
               required
-              disabled={fetching}
               placeholder={t.profile.lastName}
             />
           </div>
@@ -151,7 +150,6 @@ export default function PersonalInfoForm() {
               type='tel'
               value={phone}
               onChange={e => setPhone(e.target.value)}
-              disabled={fetching}
               placeholder='+995 5XX XXX XXX'
             />
           </div>

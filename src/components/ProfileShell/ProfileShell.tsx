@@ -30,7 +30,7 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
 
   const displayName = MOCK_MODE
     ? MOCK_PROFILE.name
-    : user.full_name || `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
+    : user.full_name || `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim() || user.email;
   const displayEmail = MOCK_MODE ? MOCK_PROFILE.email : user.email;
   const displayPhone = MOCK_MODE ? MOCK_PROFILE.phone : user.phone_number;
   const displayLocation = MOCK_MODE ? MOCK_PROFILE.location : null;
