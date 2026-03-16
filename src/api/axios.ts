@@ -7,4 +7,12 @@ const instance = axios.create({
   },
 });
 
+// Unwrap { success: true, data: {...} } envelope used by this backend
+instance.interceptors.response.use(response => {
+  if (response.data?.success === true && response.data?.data !== undefined) {
+    response.data = response.data.data;
+  }
+  return response;
+});
+
 export default instance;
