@@ -654,9 +654,19 @@ export default function HeaderPrimary() {
                 </DrawerUserInfo>
 
                 <DrawerMenuNavItem href={`/${locale}/profile`} onClick={() => setDrawerOpen(false)}>
-                  <IconWrap>
-                    <UserIcon width={16} height={16} />
-                  </IconWrap>
+                  <UserAvatar>
+                    {user?.avatar ? (
+                      <Image
+                        src={user.avatar}
+                        alt={displayName || ''}
+                        width={28}
+                        height={28}
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <UserIcon width={16} height={16} />
+                    )}
+                  </UserAvatar>
                   {t.header.profile}
                 </DrawerMenuNavItem>
                 <DrawerMenuNavItem
