@@ -342,7 +342,7 @@ export default function ReservationsPage() {
         }
       />
 
-      {toast && <Toast>{toast}</Toast>}
+      {toast && <Toast>{toast.message}</Toast>}
     </>
   );
 }

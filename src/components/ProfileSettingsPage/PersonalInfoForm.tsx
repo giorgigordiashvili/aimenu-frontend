@@ -6,10 +6,11 @@ import { useEffect, useState } from 'react';
 import { usersMePartialUpdate, usersMeRetrieve } from '@/api/generated/api';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
+import ToastNotification from '@/components/ToastNotification';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
-import { foreground, muted, shadowCard, slate900, white } from '@/tokens';
+import { foreground, muted } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
@@ -48,27 +49,11 @@ const Actions = styled('div')({
   marginTop: '24px',
 });
 
-const Toast = styled('div')({
-  position: 'fixed',
-  bottom: '24px',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  backgroundColor: slate900,
-  color: white,
-  padding: '12px 20px',
-  borderRadius: '8px',
-  fontSize: '14px',
-  fontWeight: 500,
-  zIndex: 400,
-  whiteSpace: 'nowrap',
-  boxShadow: shadowCard,
-});
-
 // ─── Component ─────────────────────────────────────────────────────────────────
 
 export default function PersonalInfoForm() {
   const t = useTranslations();
-  const { toast, showToast } = useToast();
+  const { toast, showToast, hideToast } = useToast();
   const { user: authUser } = useAuth();
 
   const [firstName, setFirstName] = useState('');
@@ -77,7 +62,7 @@ export default function PersonalInfoForm() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Step 1 — seed immediately from auth context (already loaded, no network wait)
+  // Seed from auth context immediately
   useEffect(() => {
     if (!authUser) return;
     setFirstName(authUser.first_name ?? '');
@@ -86,19 +71,16 @@ export default function PersonalInfoForm() {
     setPhone(authUser.phone_number ?? '');
   }, [authUser]);
 
-  // Step 2 — fetch fresh from API in case auth context has stale/minimal data
+  // Fetch fresh from API to overwrite with latest data
   useEffect(() => {
     usersMeRetrieve()
       .then(user => {
-        // Only overwrite a field if the API returned a non-empty value
         if (user.first_name) setFirstName(user.first_name);
         if (user.last_name) setLastName(user.last_name);
         if (user.email) setEmail(user.email);
         if (user.phone_number) setPhone(user.phone_number);
       })
-      .catch(() => {
-        // silently ignore — auth-context seed is already shown
-      });
+      .catch(() => {});
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -111,9 +93,9 @@ export default function PersonalInfoForm() {
         last_name: lastName.trim(),
         phone_number: phone.trim() || undefined,
       });
-      showToast(t.profile.saveSuccess);
+      showToast(t.profile.saveSuccess, 'success');
     } catch {
-      showToast(t.profile.updateError);
+      showToast(t.profile.updateError, 'error');
     } finally {
       setLoading(false);
     }
@@ -124,11 +106,8 @@ export default function PersonalInfoForm() {
       <form onSubmit={handleSubmit}>
         <SectionTitle>{t.profile.settingsTitle}</SectionTitle>
         <SectionSubtitle>{t.profile.settingsSubtitle}</SectionSubtitle>
-
         <ContactTitle>{t.profile.contactInfo}</ContactTitle>
 
-        {/* Wrap each TextInput in a div — TextInput returns a fragment so
-            without a wrapper its <p> and <input> become separate grid items */}
         <FieldGrid>
           <div>
             <TextInput
@@ -178,7 +157,9 @@ export default function PersonalInfoForm() {
         </Actions>
       </form>
 
-      {toast && <Toast>{toast}</Toast>}
+      {toast && (
+        <ToastNotification message={toast.message} variant={toast.variant} onClose={hideToast} />
+      )}
     </>
   );
 }

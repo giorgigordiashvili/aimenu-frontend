@@ -6,10 +6,11 @@ import { useState } from 'react';
 import { authPasswordChangeCreate } from '@/api/generated/api';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
+import ToastNotification from '@/components/ToastNotification';
 import { useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
 import EyeIcon from '@/icons/Eye';
-import { foreground, primary, shadowCard, slate900, white } from '@/tokens';
+import { foreground, primary } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
@@ -41,22 +42,6 @@ const Actions = styled('div')({
   marginTop: '24px',
 });
 
-const Toast = styled('div')({
-  position: 'fixed',
-  bottom: '24px',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  backgroundColor: slate900,
-  color: white,
-  padding: '12px 20px',
-  borderRadius: '8px',
-  fontSize: '14px',
-  fontWeight: 500,
-  zIndex: 400,
-  whiteSpace: 'nowrap',
-  boxShadow: shadowCard,
-});
-
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 interface FormErrors {
@@ -69,7 +54,7 @@ interface FormErrors {
 
 export default function ChangePasswordForm() {
   const t = useTranslations();
-  const { toast, showToast } = useToast();
+  const { toast, showToast, hideToast } = useToast();
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -95,12 +80,12 @@ export default function ChangePasswordForm() {
         new_password: newPassword,
         new_password_confirm: confirmPassword,
       });
-      showToast(t.profile.passwordChanged);
+      showToast(t.profile.passwordChanged, 'success');
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch {
-      showToast(t.profile.updateError);
+      showToast(t.profile.updateError, 'error');
     } finally {
       setLoading(false);
     }
@@ -111,8 +96,6 @@ export default function ChangePasswordForm() {
       <form onSubmit={handleSubmit}>
         <SectionTitle>{t.profile.changePassword}</SectionTitle>
 
-        {/* Wrap each TextInput in a div — TextInput returns a fragment, so without
-            a wrapper its label <p> and <input> become separate grid items */}
         <FieldGrid>
           <div>
             <TextInput
@@ -171,7 +154,9 @@ export default function ChangePasswordForm() {
         </Actions>
       </form>
 
-      {toast && <Toast>{toast}</Toast>}
+      {toast && (
+        <ToastNotification message={toast.message} variant={toast.variant} onClose={hideToast} />
+      )}
     </>
   );
 }

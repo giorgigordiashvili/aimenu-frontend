@@ -267,7 +267,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       </ContentContainer>
 
       {/* Toast notification */}
-      {toast && <ToastContainer>{toast}</ToastContainer>}
+      {toast && <ToastContainer>{toast.message}</ToastContainer>}
     </Wrapper>
   );
 }
