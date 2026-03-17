@@ -15,6 +15,7 @@ import {
   muted,
   radiusMd,
   slate100,
+  slate25,
   slate900,
   white,
 } from '@/tokens';
@@ -86,7 +87,7 @@ const AddCardBtn = styled('button')({
   fontWeight: 500,
   color: muted,
   background: 'transparent',
-  border: `1.5px solid ${border}`,
+  border: `1px solid ${border}`,
   borderRadius: radiusMd,
   cursor: 'pointer',
   transition: 'border-color 0.15s, color 0.15s, background 0.15s',
@@ -103,7 +104,7 @@ const SecuritySection = styled('div')({
   alignItems: 'center',
   gap: '12px',
   padding: '16px',
-  border: `1px solid ${border}`,
+  background: slate25,
   borderRadius: '12px',
 });
 
