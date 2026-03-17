@@ -15,7 +15,7 @@ import {
   muted,
   radiusMd,
   slate100,
-  slate25,
+  slate50,
   slate900,
   white,
 } from '@/tokens';
@@ -28,6 +28,7 @@ const PageInner = styled('div')({
   maxWidth: '1100px',
   margin: '0 auto',
   padding: '0 16px 60px',
+  background: slate50,
   '@media (min-width: 768px)': {
     padding: '0 0 60px',
   },
@@ -104,7 +105,7 @@ const SecuritySection = styled('div')({
   alignItems: 'center',
   gap: '12px',
   padding: '16px',
-  background: slate25,
+  background: slate50,
   borderRadius: '12px',
 });
 
