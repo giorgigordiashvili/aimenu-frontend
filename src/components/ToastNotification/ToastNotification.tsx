@@ -97,7 +97,9 @@ interface ToastNotificationProps {
 export default function ToastNotification({ message, variant, onClose }: ToastNotificationProps) {
   return (
     <Wrapper variant={variant}>
-      <IconCircle>{variant === 'success' ? <CheckIcon /> : variant === 'info' ? <CheckIcon /> : <XIcon />}</IconCircle>
+      <IconCircle>
+        {variant === 'success' ? <CheckIcon /> : variant === 'info' ? <CheckIcon /> : <XIcon />}
+      </IconCircle>
 
       <TextBlock>
         <Title>{message}</Title>
