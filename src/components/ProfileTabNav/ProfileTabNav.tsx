@@ -54,24 +54,6 @@ const TabItem = styled(Link)({
   },
 });
 
-const TabItemDisabled = styled('span')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '8px',
-  flex: 1,
-  padding: '10px 16px',
-  fontSize: '14px',
-  fontWeight: 500,
-  color: slate500,
-  background: 'transparent',
-  borderRadius: radiusSm,
-  whiteSpace: 'nowrap',
-  opacity: 0.4,
-  cursor: 'not-allowed',
-  userSelect: 'none',
-});
-
 // ─── Component ─────────────────────────────────────────────────────────────────
 
 export default function ProfileTabNav() {
@@ -81,11 +63,13 @@ export default function ProfileTabNav() {
 
   const reservationsHref = `/${locale}/profile/reservations`;
   const settingsHref = `/${locale}/profile/settings`;
+  const paymentHref = `/${locale}/profile/payment`;
 
   const isReservations =
     pathname === reservationsHref || pathname.startsWith(`/${locale}/profile/reservations`);
   const isSettings =
     pathname === settingsHref || pathname.startsWith(`/${locale}/profile/settings`);
+  const isPayment = pathname === paymentHref || pathname.startsWith(`/${locale}/profile/payment`);
 
   return (
     <TabNavRoot>
@@ -100,10 +84,10 @@ export default function ProfileTabNav() {
           {t.profile.tabs.profile}
         </TabItem>
 
-        <TabItemDisabled aria-disabled='true'>
+        <TabItem href={paymentHref} data-active={isPayment ? 'true' : undefined}>
           <CreditCardIcon />
           {t.profile.tabs.payment}
-        </TabItemDisabled>
+        </TabItem>
       </TabNavInner>
     </TabNavRoot>
   );

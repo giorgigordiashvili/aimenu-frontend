@@ -1,5 +1,6 @@
 'use client';
 
+import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -12,6 +13,12 @@ import ProfileTabNav from '@/components/ProfileTabNav';
 import { useAuth } from '@/context/AuthContext';
 import { MOCK_MODE, MOCK_PROFILE } from '@/hooks/useReservations';
 import { Locale } from '@/i18n/config';
+import { slate50 } from '@/tokens';
+
+const ShellWrapper = styled('div')({
+  background: slate50,
+  minHeight: '100vh',
+});
 
 interface ProfileShellProps {
   locale: Locale;
@@ -66,7 +73,7 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
     : '';
 
   return (
-    <>
+    <ShellWrapper>
       <HeaderPrimary />
       <ProfileHeader
         displayName={displayName}
@@ -81,6 +88,6 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
       <ProfileTabNav />
       <main>{children}</main>
       <Footer locale={locale} />
-    </>
+    </ShellWrapper>
   );
 }
