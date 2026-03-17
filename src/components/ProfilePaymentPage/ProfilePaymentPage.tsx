@@ -251,7 +251,7 @@ export default function ProfilePaymentPage() {
           )}
         </CardList>
 
-        <AddCardBtn type='button'>
+        <AddCardBtn type='button' onClick={() => showToast(t.payment.addCardComingSoon, 'info')}>
           <PlusIcon />
           {t.payment.addNewCard}
         </AddCardBtn>

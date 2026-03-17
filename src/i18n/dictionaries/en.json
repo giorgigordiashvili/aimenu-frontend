@@ -404,6 +404,7 @@
     "deleteConfirm": "Are you sure you want to delete this card?",
     "noCards": "No saved cards",
     "deleteSuccess": "Card deleted successfully",
-    "deleteError": "Failed to delete card"
+    "deleteError": "Failed to delete card",
+    "addCardComingSoon": "Coming soon"
   }
 }

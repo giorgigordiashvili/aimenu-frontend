@@ -3,7 +3,7 @@
 import { styled } from '@pigment-css/react';
 
 import type { ToastVariant } from '@/hooks/useToast';
-import { green700, primary, white } from '@/tokens';
+import { blue500, green700, primary, white } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
@@ -23,6 +23,7 @@ const Wrapper = styled('div')<{ variant: ToastVariant }>({
   variants: [
     { props: { variant: 'success' }, style: { background: green700 } },
     { props: { variant: 'error' }, style: { background: primary } },
+    { props: { variant: 'info' }, style: { background: blue500 } },
   ],
 });
 
@@ -96,7 +97,7 @@ interface ToastNotificationProps {
 export default function ToastNotification({ message, variant, onClose }: ToastNotificationProps) {
   return (
     <Wrapper variant={variant}>
-      <IconCircle>{variant === 'success' ? <CheckIcon /> : <XIcon />}</IconCircle>
+      <IconCircle>{variant === 'success' ? <CheckIcon /> : variant === 'info' ? <CheckIcon /> : <XIcon />}</IconCircle>
 
       <TextBlock>
         <Title>{message}</Title>
