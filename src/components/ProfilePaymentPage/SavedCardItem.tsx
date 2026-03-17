@@ -4,17 +4,15 @@ import { styled } from '@pigment-css/react';
 
 import type { PaymentMethod } from '@/api/generated/interfaces';
 import TrashIcon from '@/components/icons/Trash';
+import MainButton from '@/components/MainButton/MainButton';
 import { useTranslations } from '@/context/LocaleContext';
 import {
   border,
-  foreground,
   muted,
   radiusMd,
   radiusSm,
-  red600,
   rose50,
   rose600,
-  slate100,
   slate500,
   slate900,
   white,
@@ -95,36 +93,6 @@ const ConfirmText = styled('span')({
   fontSize: '13px',
   color: slate500,
   flexShrink: 0,
-});
-
-const ConfirmBtn = styled('button')({
-  padding: '5px 12px',
-  fontSize: '13px',
-  fontWeight: 500,
-  borderRadius: radiusSm,
-  cursor: 'pointer',
-  border: `1px solid ${red600}`,
-  background: red600,
-  color: white,
-  transition: 'opacity 0.15s',
-  '&:hover': {
-    opacity: 0.85,
-  },
-});
-
-const CancelBtn = styled('button')({
-  padding: '5px 12px',
-  fontSize: '13px',
-  fontWeight: 500,
-  borderRadius: radiusSm,
-  cursor: 'pointer',
-  border: `1px solid ${border}`,
-  background: white,
-  color: foreground,
-  transition: 'background 0.15s',
-  '&:hover': {
-    background: slate100,
-  },
 });
 
 // ─── Brand logo helpers ─────────────────────────────────────────────────────────
@@ -215,8 +183,18 @@ export default function SavedCardItem({
       {isConfirming ? (
         <ConfirmInline>
           <ConfirmText>{t.payment.deleteConfirm}</ConfirmText>
-          <ConfirmBtn onClick={() => onConfirmDelete(card.id)}>{t.payment.deleteCard}</ConfirmBtn>
-          <CancelBtn onClick={onCancelDelete}>{t.common.close}</CancelBtn>
+          <MainButton
+            variant='destructive'
+            size='small'
+            title={t.payment.deleteCard}
+            onClick={() => onConfirmDelete(card.id)}
+          />
+          <MainButton
+            variant='secondary'
+            size='small'
+            title={t.common.close}
+            onClick={onCancelDelete}
+          />
         </ConfirmInline>
       ) : (
         <DeleteBtn

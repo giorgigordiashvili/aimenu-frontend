@@ -16,6 +16,7 @@ import {
   radiusMd,
   slate100,
   slate50,
+  slate500,
   slate900,
   white,
 } from '@/tokens';
@@ -72,6 +73,14 @@ const CardList = styled('div')({
 const EmptyState = styled('p')({
   fontSize: '14px',
   color: muted,
+  textAlign: 'center',
+  padding: '24px 0',
+  margin: 0,
+});
+
+const LoadingState = styled('p')({
+  fontSize: '14px',
+  color: slate500,
   textAlign: 'center',
   padding: '24px 0',
   margin: 0,
@@ -179,6 +188,7 @@ export default function ProfilePaymentPage() {
 
   const [cards, setCards] = useState<PaymentMethod[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const loadCards = useCallback(async () => {
     try {
@@ -186,6 +196,8 @@ export default function ProfilePaymentPage() {
       setCards(data.results ?? []);
     } catch {
       // silently fail on initial load
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -221,7 +233,9 @@ export default function ProfilePaymentPage() {
         </CardHeader>
 
         <CardList>
-          {cards.length === 0 ? (
+          {loading ? (
+            <LoadingState>{t.common.loading}</LoadingState>
+          ) : cards.length === 0 ? (
             <EmptyState>{t.payment.noCards}</EmptyState>
           ) : (
             cards.map(card => (
