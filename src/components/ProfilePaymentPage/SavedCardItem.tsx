@@ -3,6 +3,7 @@
 import { styled } from '@pigment-css/react';
 
 import type { PaymentMethod } from '@/api/generated/interfaces';
+import TrashIcon from '@/components/icons/Trash';
 import { useTranslations } from '@/context/LocaleContext';
 import {
   border,
@@ -171,29 +172,6 @@ function CardBrandLogo({ brand }: { brand: string }) {
   if (lower === 'visa') return <VisaLogo />;
   if (lower === 'mastercard') return <MastercardLogo />;
   return <GenericCardLogo brand={brand} />;
-}
-
-// ─── Trash icon ───────────────────────────────────────────────────────────────
-
-function TrashIcon() {
-  return (
-    <svg
-      width='16'
-      height='16'
-      viewBox='0 0 16 16'
-      fill='none'
-      xmlns='http://www.w3.org/2000/svg'
-      aria-hidden='true'
-    >
-      <path
-        d='M6.5 2.5h3M2 4h12M10.667 4l-.46 6.903c-.069 1.036-.104 1.554-.328 1.947a2 2 0 0 1-.864.81C8.677 14 8.157 14 7.117 14H8.88c-1.04 0-1.56 0-1.898-.34a2 2 0 0 1-.864-.81C5.894 12.457 5.86 11.939 5.79 10.903L5.333 4m2 2.5v4m1.333-4v4'
-        stroke='currentColor'
-        strokeWidth='1.333'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-      />
-    </svg>
-  );
 }
 
 // ─── Component ─────────────────────────────────────────────────────────────────

@@ -8,7 +8,16 @@ import type { PaymentMethod } from '@/api/generated/interfaces';
 import ToastNotification from '@/components/ToastNotification';
 import { useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
-import { border, foreground, green500, muted, radiusMd, slate100, slate900, white } from '@/tokens';
+import {
+  border,
+  foreground,
+  greenActive,
+  muted,
+  radiusMd,
+  slate100,
+  slate900,
+  white,
+} from '@/tokens';
 
 import SavedCardItem from './SavedCardItem';
 
@@ -77,7 +86,7 @@ const AddCardBtn = styled('button')({
   fontWeight: 500,
   color: muted,
   background: 'transparent',
-  border: `1.5px dashed ${border}`,
+  border: `1.5px solid ${border}`,
   borderRadius: radiusMd,
   cursor: 'pointer',
   transition: 'border-color 0.15s, color 0.15s, background 0.15s',
@@ -88,32 +97,40 @@ const AddCardBtn = styled('button')({
   },
 });
 
-const Divider = styled('div')({
-  height: '1px',
-  background: border,
-  margin: '4px 0',
-});
-
 const SecuritySection = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-  paddingTop: '4px',
-});
-
-const SecurityHeadingRow = styled('div')({
+  marginTop: '24px',
   display: 'flex',
   alignItems: 'center',
-  gap: '8px',
+  gap: '12px',
+  padding: '16px',
+  border: `1px solid ${border}`,
+  borderRadius: '12px',
+});
+
+const GreenDotWrapper = styled('span')({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '8px',
+  border: `1px solid ${border}`,
+  borderRadius: '50%',
+  background: white,
+  flexShrink: 0,
 });
 
 const GreenDot = styled('span')({
   display: 'inline-block',
-  width: '10px',
-  height: '10px',
+  width: '8px',
+  height: '8px',
   borderRadius: '50%',
-  background: green500,
+  background: greenActive,
   flexShrink: 0,
+});
+
+const SecurityTextCol = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2px',
 });
 
 const SecurityTitle = styled('span')({
@@ -223,14 +240,14 @@ export default function ProfilePaymentPage() {
           {t.payment.addNewCard}
         </AddCardBtn>
 
-        <Divider />
-
         <SecuritySection>
-          <SecurityHeadingRow>
+          <GreenDotWrapper>
             <GreenDot />
+          </GreenDotWrapper>
+          <SecurityTextCol>
             <SecurityTitle>{t.payment.securePayments}</SecurityTitle>
-          </SecurityHeadingRow>
-          <SecurityNote>{t.payment.secureNote}</SecurityNote>
+            <SecurityNote>{t.payment.secureNote}</SecurityNote>
+          </SecurityTextCol>
         </SecuritySection>
       </Card>
 
