@@ -190,13 +190,6 @@ const UserAvatar = styled('div')({
   boxShadow: '0px 2px 6px rgba(0,0,0,0.12)',
 });
 
-const UserName = styled('span')({
-  maxWidth: '120px',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-});
-
 // ── Dropdown ──────────────────────────────────────────────────────────────────
 
 const DropdownWrap = styled('div')({
@@ -544,7 +537,6 @@ export default function HeaderPrimary() {
                       <UserIcon width={16} height={16} />
                     )}
                   </UserAvatar>
-                  {displayName && <UserName>{displayName}</UserName>}
                 </UserButton>
 
                 {userMenuOpen && (
@@ -553,19 +545,9 @@ export default function HeaderPrimary() {
                       href={`/${locale}/profile`}
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      <UserAvatar style={{ width: 24, height: 24 }}>
-                        {user?.avatar ? (
-                          <Image
-                            src={user.avatar}
-                            alt={displayName || ''}
-                            width={24}
-                            height={24}
-                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                          />
-                        ) : (
-                          <UserIcon width={24} height={24} />
-                        )}
-                      </UserAvatar>
+                      <IconWrap>
+                        <UserIcon width={24} height={24} />
+                      </IconWrap>
                       {t.header.profile}
                     </DropdownItem>
                     <DropdownItem
@@ -668,19 +650,9 @@ export default function HeaderPrimary() {
                 </DrawerUserInfo>
 
                 <DrawerMenuNavItem href={`/${locale}/profile`} onClick={() => setDrawerOpen(false)}>
-                  <UserAvatar>
-                    {user?.avatar ? (
-                      <Image
-                        src={user.avatar}
-                        alt={displayName || ''}
-                        width={28}
-                        height={28}
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
-                    ) : (
-                      <UserIcon width={16} height={16} />
-                    )}
-                  </UserAvatar>
+                  <IconWrap>
+                    <UserIcon width={24} height={24} />
+                  </IconWrap>
                   {t.header.profile}
                 </DrawerMenuNavItem>
                 <DrawerMenuNavItem
@@ -688,7 +660,7 @@ export default function HeaderPrimary() {
                   onClick={() => setDrawerOpen(false)}
                 >
                   <IconWrap>
-                    <HeartOutlineIcon variant='outlined' />
+                    <HeartOutlineIcon variant='outlined' width={24} height={24} />
                   </IconWrap>
                   {t.header.favorites}
                 </DrawerMenuNavItem>
@@ -697,13 +669,13 @@ export default function HeaderPrimary() {
                   onClick={() => setDrawerOpen(false)}
                 >
                   <IconWrap>
-                    <HistoryIcon />
+                    <HistoryIcon width={24} height={24} />
                   </IconWrap>
                   {t.header.myBookings}
                 </DrawerMenuNavItem>
                 <DrawerLogoutButton onClick={handleLogout}>
                   <IconWrap>
-                    <LogoutIcon />
+                    <LogoutIcon width={24} height={24} />
                   </IconWrap>
                   {t.header.logout}
                 </DrawerLogoutButton>

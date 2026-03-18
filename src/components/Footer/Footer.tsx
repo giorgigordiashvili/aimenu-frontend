@@ -1,4 +1,5 @@
 import { styled } from '@pigment-css/react';
+import Image from 'next/image';
 
 import { CONTACT_EMAIL, CONTACT_PHONE } from '@/config/contact';
 import { Locale } from '@/i18n/config';
@@ -34,6 +35,12 @@ const Column = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   gap: '16px',
+});
+
+const BrandRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
 });
 
 const BrandName = styled('span')({
@@ -120,7 +127,16 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
       <Grid>
         {/* Brand Column */}
         <Column>
-          <BrandName>AiMenu</BrandName>
+          <BrandRow>
+            <Image
+              src='/logo.png'
+              alt='AiMenu'
+              width={32}
+              height={32}
+              style={{ height: '32px', width: '32px', objectFit: 'contain' }}
+            />
+            <BrandName>AiMenu</BrandName>
+          </BrandRow>
           <BrandDescription>{t.footer.brandDescription}</BrandDescription>
         </Column>
 

@@ -22,7 +22,7 @@ const Section = styled('section')({
 
 const SectionHead = styled('div')({
   display: 'flex',
-  alignItems: 'flex-end',
+  alignItems: 'center',
   justifyContent: 'space-between',
   marginBottom: '32px',
   gap: '16px',
