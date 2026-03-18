@@ -35,19 +35,16 @@ const TitleGroup = styled('div')({
 });
 
 const SectionTitle = styled('h2')({
-  fontSize: '24px',
+  fontSize: '30px',
   fontWeight: 700,
   color: foreground,
   lineHeight: '32px',
   letterSpacing: '-0.3px',
   margin: 0,
-  '@media (min-width: 768px)': {
-    fontSize: '30px',
-  },
 });
 
 const SectionSubtitle = styled('p')({
-  fontSize: '14px',
+  fontSize: '16px',
   fontWeight: 400,
   color: muted,
   lineHeight: '22px',

@@ -18,9 +18,11 @@ import UserIcon from '@/icons/User';
 import {
   border,
   foreground,
-  muted,
+  iconDefault,
   primary,
   rose50,
+  rose600,
+  rose700,
   shadowMd,
   slate100,
   slate200,
@@ -132,15 +134,15 @@ const BurgerButton = styled('button')({
 
 const LoginButton = styled(Link)({
   padding: '7px 14px',
-  border: `1px solid ${border}`,
+  border: 'none',
   borderRadius: '8px',
   fontSize: '14px',
   fontWeight: 500,
-  color: foreground,
+  color: '#0A0A0A',
   textDecoration: 'none',
-  background: white,
+  background: 'transparent',
   transition: 'background 0.15s',
-  '&:hover': { background: slate100 },
+  '&:hover': { background: '#e9ebef' },
 });
 
 const RegisterButton = styled(Link)({
@@ -151,9 +153,9 @@ const RegisterButton = styled(Link)({
   fontWeight: 500,
   color: white,
   textDecoration: 'none',
-  background: primary,
-  transition: 'opacity 0.15s',
-  '&:hover': { opacity: 0.9 },
+  background: '#0F172B',
+  transition: 'background 0.15s',
+  '&:hover': { background: '#1E293B' },
 });
 
 // ── User menu button ──────────────────────────────────────────────────────────
@@ -253,7 +255,7 @@ const LogoutItem = styled('button')({
 const IconWrap = styled('span')({
   display: 'flex',
   alignItems: 'center',
-  color: muted,
+  color: iconDefault,
 });
 
 // ── Mobile Drawer (full width) ────────────────────────────────────────────────
@@ -408,15 +410,16 @@ const DrawerAuthButtons = styled('div')({
 const DrawerLoginBtn = styled(Link)({
   display: 'block',
   padding: '14px 16px',
-  border: `1px solid ${border}`,
+  border: 'none',
   borderRadius: '10px',
   fontSize: '16px',
   fontWeight: 500,
-  color: foreground,
+  color: white,
   textDecoration: 'none',
   textAlign: 'center',
+  background: rose600,
   transition: 'background 0.15s',
-  '&:hover': { background: slate100 },
+  '&:hover': { background: rose700 },
 });
 
 const DrawerRegisterBtn = styled(Link)({
@@ -429,9 +432,9 @@ const DrawerRegisterBtn = styled(Link)({
   color: white,
   textDecoration: 'none',
   textAlign: 'center',
-  background: primary,
-  transition: 'opacity 0.15s',
-  '&:hover': { opacity: 0.9 },
+  background: '#0F172B',
+  transition: 'background 0.15s',
+  '&:hover': { background: '#1E293B' },
 });
 
 const DrawerFooter = styled('div')({
@@ -550,17 +553,17 @@ export default function HeaderPrimary() {
                       href={`/${locale}/profile`}
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      <UserAvatar>
+                      <UserAvatar style={{ width: 24, height: 24 }}>
                         {user?.avatar ? (
                           <Image
                             src={user.avatar}
                             alt={displayName || ''}
-                            width={28}
-                            height={28}
+                            width={24}
+                            height={24}
                             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                           />
                         ) : (
-                          <UserIcon width={16} height={16} />
+                          <UserIcon width={24} height={24} />
                         )}
                       </UserAvatar>
                       {t.header.profile}
@@ -570,7 +573,7 @@ export default function HeaderPrimary() {
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <IconWrap>
-                        <HeartOutlineIcon variant='outlined' />
+                        <HeartOutlineIcon variant='outlined' width={24} height={24} />
                       </IconWrap>
                       {t.header.favorites}
                     </DropdownItem>
@@ -579,14 +582,14 @@ export default function HeaderPrimary() {
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <IconWrap>
-                        <HistoryIcon />
+                        <HistoryIcon width={24} height={24} />
                       </IconWrap>
                       {t.header.myBookings}
                     </DropdownItem>
                     <DropdownDivider />
                     <LogoutItem onClick={handleLogout}>
                       <IconWrap>
-                        <LogoutIcon />
+                        <LogoutIcon width={24} height={24} />
                       </IconWrap>
                       {t.header.logout}
                     </LogoutItem>
@@ -612,7 +615,17 @@ export default function HeaderPrimary() {
       <DrawerOverlay open={drawerOpen} onClick={() => setDrawerOpen(false)} />
       <Drawer open={drawerOpen}>
         <DrawerHeader>
-          <DrawerLogoText>AiMenu</DrawerLogoText>
+          <LogoLink href={`/${locale}`} onClick={() => setDrawerOpen(false)}>
+            <Image
+              src='/logo.png'
+              alt='AiMenu'
+              width={32}
+              height={32}
+              style={{ height: '32px', width: '32px', objectFit: 'contain' }}
+              priority
+            />
+            <DrawerLogoText>AiMenu</DrawerLogoText>
+          </LogoLink>
           <DrawerCloseButton onClick={() => setDrawerOpen(false)} aria-label='Close menu'>
             <CloseIcon />
           </DrawerCloseButton>

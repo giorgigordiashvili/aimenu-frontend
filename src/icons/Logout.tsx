@@ -1,6 +1,7 @@
 import * as React from 'react';
-const LogoutIcon = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
+
+const LogoutIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none' {...props}>
     <path
       stroke='#EC003F'
       strokeLinecap='round'

@@ -17,12 +17,14 @@ export const slate950 = '#090909';
 
 // ── Icon colors ──────────────────────────────────────────────────────────
 export const iconStroke = '#90A1B9';
+export const iconDefault = '#383838';
 
 // ── Rose ─────────────────────────────────────────────────────────────────
 export const rose25 = '#FFFBFB';
 export const rose50 = '#FFF0F3';
 export const rose100 = '#FFE0E8';
 export const rose200 = '#FFE4E6';
+export const rose500 = '#FF2056';
 export const rose600 = '#EC003F';
 export const rose700 = '#BE123C';
 export const rose800 = '#C70036';
