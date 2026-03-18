@@ -160,23 +160,22 @@ const RegisterButton = styled(Link)({
 
 // ── User menu button ──────────────────────────────────────────────────────────
 
-const UserButton = styled('button')({
+const UserTrigger = styled('button')({
+  width: '32px',
+  height: '32px',
+  border: `1px solid ${border}`,
+  borderRadius: '50%',
+  overflow: 'hidden',
   display: 'flex',
   alignItems: 'center',
-  gap: '8px',
-  padding: '5px 12px 5px 6px',
-  border: `1px solid ${border}`,
-  borderRadius: '24px',
-  background: white,
+  justifyContent: 'center',
+  background: 'transparent',
   cursor: 'pointer',
-  fontSize: '14px',
-  fontWeight: 500,
-  color: foreground,
-  transition: 'box-shadow 0.15s',
-  '&:hover': { boxShadow: '0 2px 8px rgba(0,0,0,0.1)' },
+  padding: 0,
+  flexShrink: 0,
 });
 
-const UserAvatar = styled('div')({
+const AvatarCircle = styled('div')({
   width: '28px',
   height: '28px',
   borderRadius: '50%',
@@ -220,12 +219,6 @@ const DropdownItem = styled(Link)({
   textDecoration: 'none',
   transition: 'background 0.1s',
   '&:hover': { background: slate100 },
-});
-
-const DropdownDivider = styled('div')({
-  height: '1px',
-  background: slate200,
-  margin: '4px 0',
 });
 
 const LogoutItem = styled('button')({
@@ -523,21 +516,19 @@ export default function HeaderPrimary() {
 
             {isAuthenticated ? (
               <DropdownWrap ref={dropdownRef}>
-                <UserButton onClick={() => setUserMenuOpen(p => !p)}>
-                  <UserAvatar>
-                    {user?.avatar ? (
-                      <Image
-                        src={user.avatar}
-                        alt={displayName || ''}
-                        width={28}
-                        height={28}
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
-                    ) : (
-                      <UserIcon width={16} height={16} />
-                    )}
-                  </UserAvatar>
-                </UserButton>
+                <UserTrigger onClick={() => setUserMenuOpen(p => !p)}>
+                  {user?.avatar ? (
+                    <Image
+                      src={user.avatar}
+                      alt={displayName || ''}
+                      width={32}
+                      height={32}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                    />
+                  ) : (
+                    <UserIcon width={16} height={16} />
+                  )}
+                </UserTrigger>
 
                 {userMenuOpen && (
                   <DropdownMenu>
@@ -568,7 +559,6 @@ export default function HeaderPrimary() {
                       </IconWrap>
                       {t.header.myBookings}
                     </DropdownItem>
-                    <DropdownDivider />
                     <LogoutItem onClick={handleLogout}>
                       <IconWrap>
                         <LogoutIcon width={24} height={24} />
@@ -633,7 +623,7 @@ export default function HeaderPrimary() {
             {isAuthenticated ? (
               <>
                 <DrawerUserInfo>
-                  <UserAvatar>
+                  <AvatarCircle>
                     {user?.avatar ? (
                       <Image
                         src={user.avatar}
@@ -645,7 +635,7 @@ export default function HeaderPrimary() {
                     ) : (
                       <UserIcon width={16} height={16} />
                     )}
-                  </UserAvatar>
+                  </AvatarCircle>
                   <DrawerUserName>{displayName}</DrawerUserName>
                 </DrawerUserInfo>
 
