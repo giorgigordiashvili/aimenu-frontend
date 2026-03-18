@@ -229,13 +229,13 @@ const LogoutItem = styled('button')({
   width: '100%',
   fontSize: '14px',
   fontWeight: 400,
-  color: primary,
+  color: foreground,
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',
   textAlign: 'left',
   transition: 'background 0.1s',
-  '&:hover': { background: rose50 },
+  '&:hover': { background: slate100 },
 });
 
 const IconWrap = styled('span')({
@@ -376,14 +376,14 @@ const DrawerLogoutButton = styled('button')({
   width: '100%',
   fontSize: '15px',
   fontWeight: 400,
-  color: primary,
+  color: foreground,
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',
   borderRadius: '10px',
   textAlign: 'left',
   transition: 'background 0.1s',
-  '&:hover': { background: rose50 },
+  '&:hover': { background: slate100 },
 });
 
 const DrawerAuthButtons = styled('div')({
