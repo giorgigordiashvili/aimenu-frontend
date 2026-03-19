@@ -1,5 +1,7 @@
 import { styled } from '@pigment-css/react';
+import React from 'react';
 
+import CheckIcon from '@/icons/Check';
 import { foreground, shadowCard, slate100, slate200, white } from '@/tokens';
 
 export const DropdownList = styled('div')({
@@ -56,8 +58,16 @@ export const DropdownRowText = styled('span')<{ isSelected?: boolean }>({
   ],
 });
 
-export const CheckMark = styled('span')({
+const CheckMarkWrap = styled('span')({
   color: foreground,
-  fontSize: '15px',
-  fontWeight: 700,
+  display: 'flex',
+  alignItems: 'center',
 });
+
+export function CheckMark() {
+  return (
+    <CheckMarkWrap>
+      <CheckIcon />
+    </CheckMarkWrap>
+  );
+}

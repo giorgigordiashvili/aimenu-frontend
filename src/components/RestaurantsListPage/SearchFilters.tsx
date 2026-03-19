@@ -430,7 +430,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                     }}
                   >
                     <DropdownRowText isSelected={isSel}>{c.label}</DropdownRowText>
-                    {isSel && <CheckMark>✓</CheckMark>}
+                    {isSel && <CheckMark />}
                   </DropdownRow>
                 );
               })}

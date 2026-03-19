@@ -35,7 +35,7 @@ GuestsDropdownProps) {
             <DropdownRowText isSelected={isSelected}>
               {n} {personsLabel}
             </DropdownRowText>
-            {isSelected && <CheckMark>✓</CheckMark>}
+            {isSelected && <CheckMark />}
           </DropdownRow>
         );
       })}
