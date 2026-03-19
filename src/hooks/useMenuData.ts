@@ -3,7 +3,12 @@
 import useSWR from 'swr';
 
 import { restaurantsMenuItemsList, restaurantsMenuCategoriesList } from '@/api/generated/api';
-import type { MenuItem, MenuCategory, ModifierGroup, Modifier } from '@/api/generated/interfaces';
+import type {
+  MenuItem,
+  MenuCategory,
+  ModifierGroup,
+  Modifier,
+} from '@/api/generated/interfaces';
 import { Locale, defaultLocale } from '@/i18n/config';
 import { getTranslation } from '@/utils/translations';
 
@@ -100,9 +105,24 @@ interface MenuDataResult {
   categories: FormattedCategory[];
 }
 
+const fetchAllMenuItems = async (slug: string): Promise<MenuItem[]> => {
+  const allItems: MenuItem[] = [];
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    const data = await restaurantsMenuItemsList(slug, undefined, page);
+    allItems.push(...data.results);
+    hasMore = !!data.next;
+    page++;
+  }
+
+  return allItems;
+};
+
 const fetchMenuData = async (slug: string, locale: Locale): Promise<MenuDataResult> => {
-  const [itemsData, categoriesData] = await Promise.all([
-    restaurantsMenuItemsList(slug),
+  const [allItems, categoriesData] = await Promise.all([
+    fetchAllMenuItems(slug),
     restaurantsMenuCategoriesList(slug),
   ]);
 
@@ -114,7 +134,7 @@ const fetchMenuData = async (slug: string, locale: Locale): Promise<MenuDataResu
   }));
 
   // Format products
-  const formattedProducts = itemsData.results.map(item => formatMenuItem(item, locale));
+  const formattedProducts = allItems.map((item) => formatMenuItem(item, locale));
 
   return {
     products: formattedProducts,
