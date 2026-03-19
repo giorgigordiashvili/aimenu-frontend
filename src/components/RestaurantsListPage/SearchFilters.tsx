@@ -3,7 +3,6 @@
 import { styled } from '@pigment-css/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import CalendarPicker from '@/components/ReservationWidget/CalendarPicker';
 import {
   CheckMark,
   DropdownList,
@@ -12,6 +11,7 @@ import {
 } from '@/components/ReservationWidget/DropdownShared';
 import GuestsDropdown from '@/components/ReservationWidget/GuestsDropdown';
 import TimeDropdown from '@/components/ReservationWidget/TimeDropdown';
+import SearchCalendarPicker from '@/components/RestaurantsListPage/SearchCalendarPicker';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
@@ -460,7 +460,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                 <ChevronDownIcon color={slate400} size={14} />
               </ChevronWrap>
             </FieldInner>
-            <CalendarPicker
+            <SearchCalendarPicker
               show={showCal}
               selectedDate={value.date}
               today={today}
