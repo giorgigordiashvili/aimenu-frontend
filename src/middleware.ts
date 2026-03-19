@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { locales, defaultLocale, isValidLocale } from './i18n/config';
 
+// Routes that require authentication
+const protectedPaths = ['/profile', '/reservations', '/orders'];
+
+// Routes that should redirect to home if already authenticated
+const authPaths = ['/login', '/register', '/password-reset'];
+
 function getLocaleFromRequest(request: NextRequest): string {
   // Check cookie first
   const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
@@ -40,12 +46,40 @@ export function middleware(request: NextRequest) {
     locale => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
+  // Get the actual path without locale prefix for auth checks
+  let pathWithoutLocale = pathname;
+  if (pathnameHasLocale) {
+    const locale = locales.find(l => pathname.startsWith(`/${l}/`) || pathname === `/${l}`);
+    if (locale) {
+      pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
+    }
+  }
+
+  // Check for access token in cookies
+  const token = request.cookies.get('access_token')?.value;
+
+  // Get locale for redirects
+  const locale = pathnameHasLocale
+    ? locales.find(l => pathname.startsWith(`/${l}/`) || pathname === `/${l}`) || defaultLocale
+    : getLocaleFromRequest(request);
+
+  // Redirect to login if accessing protected route without token
+  if (protectedPaths.some(p => pathWithoutLocale.startsWith(p)) && !token) {
+    const loginUrl = new URL(`/${locale}/login`, request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Redirect to home if accessing auth pages while logged in
+  if (authPaths.some(p => pathWithoutLocale.startsWith(p)) && token) {
+    return NextResponse.redirect(new URL(`/${locale}`, request.url));
+  }
+
   if (pathnameHasLocale) {
     return NextResponse.next();
   }
 
   // Redirect to locale-prefixed path
-  const locale = getLocaleFromRequest(request);
   const newUrl = new URL(`/${locale}${pathname}`, request.url);
 
   // Preserve query parameters

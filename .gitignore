@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# dev-only test page
+src/app/**/testpage/
+
+# demo pages
+src/app/**/demo/

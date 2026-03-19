@@ -126,7 +126,7 @@ const StyledInput = styled('input')({
   },
 });
 
-type IconComponent = React.ComponentType;
+type IconComponent = React.ComponentType<{ open?: boolean }>;
 
 type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
@@ -201,7 +201,7 @@ function TextInput({
             onClick={() => setShowPassword(prev => !prev)}
             aria-label='Toggle password visibility'
           >
-            <Icon />
+            <Icon open={!showPassword} />
           </RightIconButton>
         )}
       </InputWrapper>

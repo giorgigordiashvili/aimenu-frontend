@@ -1,15 +1,27 @@
 import * as React from 'react';
-const ClockIcon = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
+
+interface ClockIconProps {
+  size?: number;
+  color?: string;
+}
+
+const ClockIcon = ({ size = 16 }: ClockIconProps) => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width={size}
+    height={size}
+    viewBox='0 0 16 16'
+    fill='none'
+  >
     <path
-      stroke='#90A1B9'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}
       d='M8 4v4l2.667 1.333'
     />
     <path
-      stroke='#90A1B9'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}
