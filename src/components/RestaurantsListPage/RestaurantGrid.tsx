@@ -67,7 +67,7 @@ const ViewAllButton = styled('button')({
   flexShrink: 0,
   transition: 'background 0.15s',
   '&:hover': { background: slate100 },
-  '@media (max-width: 768px)': { width: '100%' },
+  '@media (max-width: 768px)': { width: '100%', textAlign: 'center', justifyContent: 'center' },
 });
 
 const Grid = styled('div')({
