@@ -80,6 +80,33 @@ const FieldsRow = styled('div')({
   },
 });
 
+/**
+ * Wraps the date and time fields so they appear side-by-side on mobile.
+ * On desktop `display: contents` makes this wrapper invisible to flex layout,
+ * so the fields flow normally in FieldsRow.
+ */
+const DateTimeRow = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  width: '100%',
+  '@media (min-width: 769px)': {
+    display: 'contents',
+  },
+  '& > div': {
+    '@media (max-width: 768px)': {
+      flex: 1,
+      width: 'auto',
+      borderRight: `1px solid ${slate100}`,
+      borderBottom: `1px solid ${slate100}`,
+    },
+  },
+  '& > div:last-child': {
+    '@media (max-width: 768px)': {
+      borderRight: 'none',
+    },
+  },
+});
+
 /** First field — extra left rounding */
 const FilterFieldFirst = styled('div')({
   flex: 1,
@@ -99,8 +126,7 @@ const FilterFieldFirst = styled('div')({
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
   '&:hover svg': { color: rose500 },
-  '&:hover span': { color: rose500 },
-  '&:hover button': { color: rose500 },
+  '&:hover .field-text': { color: rose500 },
   '@media (max-width: 768px)': {
     borderRight: 'none',
     borderBottom: `1px solid ${slate100}`,
@@ -125,8 +151,7 @@ const FilterField = styled('div')({
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
   '&:hover svg': { color: rose500 },
-  '&:hover span': { color: rose500 },
-  '&:hover button': { color: rose500 },
+  '&:hover .field-text': { color: rose500 },
   '@media (max-width: 768px)': {
     borderRight: 'none',
     borderBottom: `1px solid ${slate100}`,
@@ -149,8 +174,7 @@ const FilterFieldLast = styled('div')({
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
   '&:hover svg': { color: rose500 },
-  '&:hover span': { color: rose500 },
-  '&:hover button': { color: rose500 },
+  '&:hover .field-text': { color: rose500 },
   '@media (max-width: 768px)': {
     borderBottom: `1px solid ${slate100}`,
     width: '100%',
@@ -204,6 +228,7 @@ const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  transition: 'color 0.15s',
   '@media (max-width: 768px)': { fontSize: 16 },
   variants: [
     { props: { isPlaceholder: true }, style: { color: slate400, fontWeight: 400 } },
@@ -378,9 +403,11 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
               <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
               <FieldInput>
                 <IconWrap>
-                  <LocationIcon color={slate400} size={16} />
+                  <LocationIcon size={16} />
                 </IconWrap>
-                <FieldText isPlaceholder={!value.city}>{selectedCityLabel}</FieldText>
+                <FieldText className='field-text' isPlaceholder={!value.city}>
+                  {selectedCityLabel}
+                </FieldText>
               </FieldInput>
             </FieldLeft>
             <ChevronWrap>
@@ -411,70 +438,73 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           )}
         </FilterFieldFirst>
 
-        {/* Date */}
-        <FilterField ref={calRef} onClick={() => toggle('cal')}>
-          <FieldInner>
-            <FieldLeft>
-              <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
-              <FieldInput>
-                <IconWrap>
-                  <CalendarIcon />
-                </IconWrap>
-                <FieldText isPlaceholder={!value.date}>
-                  {value.date
-                    ? formatDateShort(value.date, locale)
-                    : t.reservationWidget.datePlaceholder}
-                </FieldText>
-              </FieldInput>
-            </FieldLeft>
-            <ChevronWrap>
-              <ChevronDownIcon color={slate400} size={14} />
-            </ChevronWrap>
-          </FieldInner>
-          <CalendarPicker
-            show={showCal}
-            selectedDate={value.date}
-            today={today}
-            maxDate={maxDate}
-            viewYear={viewYear}
-            viewMonth={viewMonth}
-            onNavigate={navigateMonth}
-            onSelectDay={handleDaySelect}
-            monthYearLabel={monthYearLabel}
-            dayNamesShort={dayNamesShort}
-            containerRef={calRef}
-          />
-        </FilterField>
+        {/* Date + Time side-by-side on mobile */}
+        <DateTimeRow>
+          {/* Date */}
+          <FilterField ref={calRef} onClick={() => toggle('cal')}>
+            <FieldInner>
+              <FieldLeft>
+                <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
+                <FieldInput>
+                  <IconWrap>
+                    <CalendarIcon />
+                  </IconWrap>
+                  <FieldText className='field-text' isPlaceholder={!value.date}>
+                    {value.date
+                      ? formatDateShort(value.date, locale)
+                      : t.reservationWidget.datePlaceholder}
+                  </FieldText>
+                </FieldInput>
+              </FieldLeft>
+              <ChevronWrap>
+                <ChevronDownIcon color={slate400} size={14} />
+              </ChevronWrap>
+            </FieldInner>
+            <CalendarPicker
+              show={showCal}
+              selectedDate={value.date}
+              today={today}
+              maxDate={maxDate}
+              viewYear={viewYear}
+              viewMonth={viewMonth}
+              onNavigate={navigateMonth}
+              onSelectDay={handleDaySelect}
+              monthYearLabel={monthYearLabel}
+              dayNamesShort={dayNamesShort}
+              containerRef={calRef}
+            />
+          </FilterField>
 
-        {/* Time */}
-        <FilterField ref={timeRef} onClick={() => toggle('time')}>
-          <FieldInner>
-            <FieldLeft>
-              <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
-              <FieldInput>
-                <IconWrap>
-                  <ClockIcon size={16} color={slate400} />
-                </IconWrap>
-                <FieldText isPlaceholder={!value.time}>
-                  {value.time || t.reservationWidget.timePlaceholder}
-                </FieldText>
-              </FieldInput>
-            </FieldLeft>
-            <ChevronWrap>
-              <ChevronDownIcon color={slate400} size={14} />
-            </ChevronWrap>
-          </FieldInner>
-          <TimeDropdown
-            show={showTime}
-            slots={TIME_SLOTS}
-            selected={value.time}
-            onSelect={s => {
-              onChange({ ...value, time: s });
-              setShowTime(false);
-            }}
-            containerRef={timeRef}
-          />
-        </FilterField>
+          {/* Time */}
+          <FilterField ref={timeRef} onClick={() => toggle('time')}>
+            <FieldInner>
+              <FieldLeft>
+                <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
+                <FieldInput>
+                  <IconWrap>
+                    <ClockIcon size={16} />
+                  </IconWrap>
+                  <FieldText className='field-text' isPlaceholder={!value.time}>
+                    {value.time || t.reservationWidget.timePlaceholder}
+                  </FieldText>
+                </FieldInput>
+              </FieldLeft>
+              <ChevronWrap>
+                <ChevronDownIcon color={slate400} size={14} />
+              </ChevronWrap>
+            </FieldInner>
+            <TimeDropdown
+              show={showTime}
+              slots={TIME_SLOTS}
+              selected={value.time}
+              onSelect={s => {
+                onChange({ ...value, time: s });
+                setShowTime(false);
+              }}
+              containerRef={timeRef}
+            />
+          </FilterField>
+        </DateTimeRow>
 
         {/* Guests — last field, no right border */}
         <FilterFieldLast ref={guestsRef} onClick={() => toggle('guests')}>
@@ -485,7 +515,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                 <IconWrap>
                   <PeopleIcon />
                 </IconWrap>
-                <FieldText isPlaceholder={false}>
+                <FieldText className='field-text' isPlaceholder={false}>
                   {value.guests} {t.booking.persons}
                 </FieldText>
               </FieldInput>
