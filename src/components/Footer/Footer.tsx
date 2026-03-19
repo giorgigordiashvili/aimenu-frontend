@@ -137,7 +137,7 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
             />
             <BrandName>AiMenu</BrandName>
           </BrandRow>
-          <BrandDescription>{t.footer.brandDescription}</BrandDescription>
+          <BrandDescription>{t.footer.tagline}</BrandDescription>
         </Column>
 
         {/* Navigation Column */}

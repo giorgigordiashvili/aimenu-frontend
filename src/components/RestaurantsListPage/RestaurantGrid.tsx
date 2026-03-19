@@ -177,6 +177,10 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
                 ) || restaurant.category.slug
               : undefined;
 
+            const amenityNames = (restaurant.amenities || [])
+              .map(a => getTranslation(parseTranslations(a.translations), 'name', locale) || a.slug)
+              .filter(Boolean);
+
             return (
               <CardWrapper key={restaurant.id}>
                 <RestaurantCardPrimary
@@ -195,6 +199,7 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
                   showFavoriteButton={true}
                   showRating={!!restaurant.average_rating}
                   showFilterText={!!categoryName}
+                  amenities={amenityNames}
                 />
               </CardWrapper>
             );

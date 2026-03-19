@@ -3,6 +3,7 @@
 import { styled } from '@pigment-css/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import axiosInstance from '@/api/axios';
 import {
   CheckMark,
   DropdownList,
@@ -30,6 +31,19 @@ import {
   slate50,
   white,
 } from '@/tokens';
+
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+interface CityOption {
+  id: string;
+  slug: string;
+  translations: {
+    ka?: { name: string };
+    en?: { name: string };
+    ru?: { name: string };
+    [locale: string]: { name: string } | undefined;
+  };
+}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -313,6 +327,17 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const t = useTranslations();
   const { locale } = useLocale();
 
+  // ── Cities from API ───────────────────────────────────────────────────────
+  const [apiCities, setApiCities] = useState<CityOption[]>([]);
+  useEffect(() => {
+    axiosInstance
+      .get<CityOption[]>('/api/v1/restaurants/cities/')
+      .then(res => setApiCities(res.data))
+      .catch(() => {
+        // fallback: keep empty → will use t.restaurantsList.allCities only
+      });
+  }, []);
+
   const [showCity, setShowCity] = useState(false);
   const [showCal, setShowCal] = useState(false);
   const [showTime, setShowTime] = useState(false);
@@ -391,11 +416,10 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
 
   const cities = [
     { value: undefined, label: t.restaurantsList.allCities },
-    { value: 'Tbilisi', label: t.restaurantsList.cities.tbilisi },
-    { value: 'Batumi', label: t.restaurantsList.cities.batumi },
-    { value: 'Rustavi', label: t.restaurantsList.cities.rustavi },
-    { value: 'Gori', label: t.restaurantsList.cities.gori },
-    { value: 'Kutaisi', label: t.restaurantsList.cities.kutaisi },
+    ...apiCities.map(city => ({
+      value: city.slug,
+      label: city.translations[locale]?.name ?? city.translations['ka']?.name ?? city.slug,
+    })),
   ];
   const selectedCityLabel =
     cities.find(c => c.value === value.city)?.label ?? t.restaurantsList.allCities;

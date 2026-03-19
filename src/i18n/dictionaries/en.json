@@ -393,7 +393,8 @@
     "faq": "FAQ",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "copyright": "© {year} AiMenu. All rights reserved."
+    "copyright": "© {year} AiMenu. All rights reserved.",
+    "tagline": "Restaurant discovery and reservation platform"
   },
   "payment": {
     "savedCards": "Saved Cards",
