@@ -7,9 +7,36 @@ import MainButton from '@/components/MainButton/MainButton';
 import HeartOutlined from '@/icons/HeartOutline';
 import LocationIcon from '@/icons/Location';
 import Star from '@/icons/Star';
-import { border, foreground, muted, radiusMd, shadowCard, white, yellow500 } from '@/tokens';
+import {
+  border,
+  foreground,
+  muted,
+  radiusMd,
+  shadowCard,
+  slate100,
+  white,
+  yellow500,
+} from '@/tokens';
 
 import { FavoriteButton, FavoriteYellow, PriceWrapper, RestaurantCardProps } from './shared';
+
+const AmenitiesList = styled('div')({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '6px',
+  marginTop: '8px',
+});
+
+const AmenityPill = styled('span')({
+  fontSize: '10px',
+  fontWeight: 500,
+  lineHeight: '15px',
+  color: muted,
+  background: slate100,
+  borderRadius: '20px',
+  padding: '2px 8px',
+  whiteSpace: 'nowrap',
+});
 
 const Image = styled('img')({
   position: 'absolute',
@@ -130,7 +157,11 @@ const ButtonGroup = styled('div')({
   marginTop: '24px',
 });
 
-interface DefaultVariantProps extends Omit<RestaurantCardProps, 'variant' | 'descriptionText'> {
+interface DefaultVariantProps extends Omit<
+  RestaurantCardProps,
+  'variant' | 'descriptionText' | 'amenities'
+> {
+  amenities?: string[];
   isFavorite: boolean;
   onToggleFavorite: () => void;
 }
@@ -155,6 +186,7 @@ export default function DefaultVariant({
   detailsLabel = 'დეტალები',
   bookLabel = 'დაჯავშნა',
   favoriteLabel = 'რჩეული',
+  amenities,
 }: DefaultVariantProps) {
   const router = useRouter();
 
@@ -222,6 +254,13 @@ export default function DefaultVariant({
             </LocationIconWrapper>
             {locationText}
           </LocationContainer>
+        )}
+        {amenities && amenities.length > 0 && (
+          <AmenitiesList>
+            {amenities.slice(0, 3).map((name, i) => (
+              <AmenityPill key={i}>{name}</AmenityPill>
+            ))}
+          </AmenitiesList>
         )}
         <ButtonGroup onClick={e => e.stopPropagation()}>
           {showDetailsButton && (

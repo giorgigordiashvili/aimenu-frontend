@@ -323,7 +323,7 @@
   },
   "restaurantsList": {
     "heroTitle": "Discover and Book the Best Flavors",
-    "heroSubtitle": "Easy reservations at the best restaurants in Georgia",
+    "heroSubtitle": "Easy reservations at the best restaurants in Georgia. Choose your city, time, and enjoy.",
     "popularTitle": "Popular Restaurants",
     "popularSubtitle": "Featured places from all over Georgia",
     "viewAll": "View All",
@@ -340,7 +340,9 @@
       "rustavi": "Rustavi",
       "gori": "Gori",
       "kutaisi": "Kutaisi"
-    }
+    },
+    "heroTitleLine1": "Discover and Book",
+    "heroTitleLine2": "The Best Flavors"
   },
   "header": {
     "profile": "Profile",
@@ -391,7 +393,8 @@
     "faq": "FAQ",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "copyright": "© {year} AiMenu. All rights reserved."
+    "copyright": "© {year} AiMenu. All rights reserved.",
+    "tagline": "Restaurant discovery and reservation platform"
   },
   "payment": {
     "savedCards": "Saved Cards",

@@ -36,7 +36,7 @@ TimeDropdownProps) {
             onClick={() => onSelect(slot)}
           >
             <DropdownRowText isSelected={isSelected}>{slot}</DropdownRowText>
-            {isSelected && <CheckMark>✓</CheckMark>}
+            {isSelected && <CheckMark />}
           </DropdownRow>
         );
       })}

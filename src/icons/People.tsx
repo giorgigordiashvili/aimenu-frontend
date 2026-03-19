@@ -1,8 +1,8 @@
 import * as React from 'react';
-const People = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
+const People = ({ open: _open, ...props }: React.SVGProps<SVGSVGElement> & { open?: boolean }) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none' {...props}>
     <path
-      stroke='#90A1B9'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}

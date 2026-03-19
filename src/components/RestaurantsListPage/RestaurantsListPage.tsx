@@ -3,6 +3,8 @@
 import { styled } from '@pigment-css/react';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { restaurantsList } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
 import Footer from '@/components/Footer';
@@ -32,6 +34,7 @@ const Main = styled('main')({
 export default function RestaurantsListPage() {
   const { locale } = useLocale();
   const t = useTranslations();
+  const router = useRouter();
 
   const [filters, setFilters] = useState<SearchFiltersValue>({
     city: undefined,
@@ -77,10 +80,14 @@ export default function RestaurantsListPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Trigger search on city change (immediate, debounce-free — city is a fixed dropdown)
+  // Trigger search and update URL with city param
   const handleSearch = useCallback(() => {
     fetchRestaurants(filters.city);
-  }, [fetchRestaurants, filters.city]);
+    const params = new URLSearchParams();
+    if (filters.city) params.set('city', filters.city);
+    const query = params.toString();
+    router.push(`/${locale}/restaurants${query ? `?${query}` : ''}`);
+  }, [fetchRestaurants, filters.city, locale, router]);
 
   return (
     <PageWrapper>

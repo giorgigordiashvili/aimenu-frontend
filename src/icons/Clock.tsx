@@ -1,13 +1,11 @@
 import * as React from 'react';
 
-import { iconStroke } from '@/tokens';
-
 interface ClockIconProps {
   size?: number;
   color?: string;
 }
 
-const ClockIcon = ({ size = 16, color = iconStroke }: ClockIconProps) => (
+const ClockIcon = ({ size = 16 }: ClockIconProps) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     width={size}
@@ -16,14 +14,14 @@ const ClockIcon = ({ size = 16, color = iconStroke }: ClockIconProps) => (
     fill='none'
   >
     <path
-      stroke={color}
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}
       d='M8 4v4l2.667 1.333'
     />
     <path
-      stroke={color}
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}

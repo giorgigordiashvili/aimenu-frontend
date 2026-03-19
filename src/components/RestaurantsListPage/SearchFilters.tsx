@@ -3,7 +3,7 @@
 import { styled } from '@pigment-css/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import CalendarPicker from '@/components/ReservationWidget/CalendarPicker';
+import axiosInstance from '@/api/axios';
 import {
   CheckMark,
   DropdownList,
@@ -12,6 +12,8 @@ import {
 } from '@/components/ReservationWidget/DropdownShared';
 import GuestsDropdown from '@/components/ReservationWidget/GuestsDropdown';
 import TimeDropdown from '@/components/ReservationWidget/TimeDropdown';
+import MobileSelectModal from '@/components/RestaurantsListPage/MobileSelectModal';
+import SearchCalendarPicker from '@/components/RestaurantsListPage/SearchCalendarPicker';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
@@ -19,7 +21,29 @@ import ClockIcon from '@/icons/Clock';
 import LocationIcon from '@/icons/Location';
 import PeopleIcon from '@/icons/People';
 import SearchIcon from '@/icons/Search';
-import { foreground, muted, primary, slate200, slate400, white } from '@/tokens';
+import {
+  foreground,
+  rose500,
+  rose600,
+  rose700,
+  slate100,
+  slate400,
+  slate50,
+  white,
+} from '@/tokens';
+
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+interface CityOption {
+  id: string;
+  slug: string;
+  translations: {
+    ka?: { name: string };
+    en?: { name: string };
+    ru?: { name: string };
+    [locale: string]: { name: string } | undefined;
+  };
+}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -47,82 +71,143 @@ function formatDateShort(date: Date, locale: string) {
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 
-/** Desktop: horizontal pill  |  Mobile: 2-column grid card */
-const FiltersCard = styled('div')({
+/** Outer pill container */
+const FilterBar = styled('div')({
   background: white,
-  boxShadow: '0 4px 32px rgba(0,0,0,0.18)',
-  // Desktop
-  borderRadius: '9999px',
-  padding: '6px 6px 6px 0',
+  padding: 8,
+  borderRadius: 32,
+  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+  width: '100%',
+  border: `1px solid ${slate100}`,
   display: 'flex',
   alignItems: 'center',
+});
+
+/** Row containing all fields + search button */
+const FieldsRow = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
   width: '100%',
-  // Mobile
-  '@media (max-width: 767px)': {
-    borderRadius: '20px',
-    padding: '0',
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+  alignItems: 'center',
+  '@media (max-width: 768px)': {
+    flexDirection: 'column',
+    gap: 8,
   },
 });
 
-// ─── Field wrappers ───────────────────────────────────────────────────────────
-// IMPORTANT: gridColumn must live in base styles (not only in @media blocks)
-// so Pigment CSS always emits the property in the CSS output.
+/**
+ * Wraps the date and time fields so they appear side-by-side on mobile.
+ * On desktop `display: contents` makes this wrapper invisible to flex layout,
+ * so the fields flow normally in FieldsRow.
+ */
+const DateTimeRow = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  width: '100%',
+  '@media (min-width: 769px)': {
+    display: 'contents',
+  },
+  '& > div': {
+    '@media (max-width: 768px)': {
+      flex: 1,
+      width: 'auto',
+      borderRight: `1px solid ${slate100}`,
+      borderBottom: `1px solid ${slate100}`,
+    },
+  },
+  '& > div:last-child': {
+    '@media (max-width: 768px)': {
+      borderRight: 'none',
+    },
+  },
+});
 
-const FieldWrapFull = styled('div')({
-  // grid placement — ignored by flex parent on desktop, used by grid on mobile
-  gridColumn: '1 / -1',
-  // shared
-  position: 'relative',
-  cursor: 'pointer',
+/** First field — extra left rounding */
+const FilterFieldFirst = styled('div')({
   flex: 1,
   minWidth: 0,
-  padding: '8px 20px',
-  '@media (max-width: 767px)': {
-    padding: '14px 16px',
+  paddingLeft: 24,
+  paddingRight: 24,
+  paddingTop: 8,
+  paddingBottom: 8,
+  borderTopLeftRadius: 24,
+  borderBottomLeftRadius: 24,
+  borderTopRightRadius: 12,
+  borderBottomRightRadius: 12,
+  cursor: 'pointer',
+  position: 'relative',
+  transition: 'background 0.15s',
+  borderRight: `1px solid ${slate100}`,
+  '&:hover': { background: slate50 },
+  '&:hover label': { color: rose500 },
+  '&:hover .field-icon svg': { color: rose500 },
+  '&:hover .field-text': { color: rose500 },
+  '@media (max-width: 768px)': {
+    borderRight: 'none',
+    borderBottom: `1px solid ${slate100}`,
+    borderRadius: 12,
+    width: '100%',
   },
 });
 
-const FieldWrapDate = styled('div')({
-  gridColumn: '1 / 2',
-  position: 'relative',
-  cursor: 'pointer',
+/** Middle fields */
+const FilterField = styled('div')({
   flex: 1,
   minWidth: 0,
-  padding: '8px 20px',
-  '@media (max-width: 767px)': {
-    padding: '14px 16px',
-    borderRight: `1px solid ${slate200}`,
+  paddingLeft: 24,
+  paddingRight: 24,
+  paddingTop: 8,
+  paddingBottom: 8,
+  borderRadius: 12,
+  cursor: 'pointer',
+  position: 'relative',
+  transition: 'background 0.15s',
+  borderRight: `1px solid ${slate100}`,
+  '&:hover': { background: slate50 },
+  '&:hover label': { color: rose500 },
+  '&:hover .field-icon svg': { color: rose500 },
+  '&:hover .field-text': { color: rose500 },
+  '@media (max-width: 768px)': {
+    borderRight: 'none',
+    borderBottom: `1px solid ${slate100}`,
+    width: '100%',
   },
 });
 
-const FieldWrapTime = styled('div')({
-  gridColumn: '2 / 3',
-  position: 'relative',
-  cursor: 'pointer',
+/** Last field — no right border on desktop */
+const FilterFieldLast = styled('div')({
   flex: 1,
   minWidth: 0,
-  padding: '8px 20px',
-  '@media (max-width: 767px)': {
-    padding: '14px 16px',
+  paddingLeft: 24,
+  paddingRight: 24,
+  paddingTop: 8,
+  paddingBottom: 8,
+  borderRadius: 12,
+  cursor: 'pointer',
+  position: 'relative',
+  transition: 'background 0.15s',
+  '&:hover': { background: slate50 },
+  '&:hover label': { color: rose500 },
+  '&:hover .field-icon svg': { color: rose500 },
+  '&:hover .field-text': { color: rose500 },
+  '@media (max-width: 768px)': {
+    borderBottom: `1px solid ${slate100}`,
+    width: '100%',
   },
 });
 
-// ─── Field internals ──────────────────────────────────────────────────────────
+// ── Field internals ───────────────────────────────────────────────────────────
 
-/** Outer row: left group + chevron pushed to the right */
 const FieldInner = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   width: '100%',
-  gap: '8px',
+  gap: 8,
   userSelect: 'none',
   cursor: 'pointer',
 });
 
-/** Left group: label stacked above icon + text */
 const FieldLeft = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -130,115 +215,95 @@ const FieldLeft = styled('div')({
   minWidth: 0,
 });
 
-const FieldLabel = styled('div')({
-  fontSize: '11px',
+/** Label above value — using <label> so '&:hover label' selector works */
+const FieldLabel = styled('label')({
+  fontSize: 10,
   fontWeight: 700,
-  color: muted,
-  marginBottom: '3px',
-  letterSpacing: '0.04em',
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  color: slate400,
+  marginBottom: 4,
+  display: 'block',
+  transition: 'color 0.15s',
   userSelect: 'none',
+  cursor: 'pointer',
   alignSelf: 'baseline',
 });
 
-/** Icon + value text row (no chevron here) */
+/** Icon + value text row */
 const FieldInput = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  gap: '8px',
 });
 
 const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
-  fontSize: '15px',
+  fontSize: 15,
   fontWeight: 600,
   lineHeight: '22px',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  '@media (max-width: 767px)': { fontSize: '16px' },
+  transition: 'color 0.15s',
+  '@media (max-width: 768px)': { fontSize: 16 },
   variants: [
     { props: { isPlaceholder: true }, style: { color: slate400, fontWeight: 400 } },
     { props: { isPlaceholder: false }, style: { color: foreground } },
   ],
 });
 
+/** Leading icon wrap (16×16) */
 const IconWrap = styled('span')({
   display: 'flex',
   alignItems: 'center',
   flexShrink: 0,
   color: slate400,
+  marginRight: 8,
+  transition: 'color 0.15s',
+  '& svg': { width: 16, height: 16 },
 });
 
-// ─── Separators ───────────────────────────────────────────────────────────────
-
-const VerticalDivider = styled('div')({
-  width: '1px',
-  height: '36px',
-  background: slate200,
+/** Trailing chevron wrap */
+const ChevronWrap = styled('span')({
+  display: 'flex',
+  alignItems: 'center',
   flexShrink: 0,
-  '@media (max-width: 767px)': { display: 'none' },
+  color: slate400,
+  transition: 'color 0.15s',
 });
 
-/** gridColumn in base so Pigment CSS always emits it */
-const HorizontalDivider = styled('div')({
-  gridColumn: '1 / -1',
-  display: 'none',
-  '@media (max-width: 767px)': {
-    display: 'block',
-    height: '1px',
-    background: slate200,
-  },
-});
+// ── Search button ─────────────────────────────────────────────────────────────
 
-// ─── Desktop circle search button ─────────────────────────────────────────────
-
-const CircleSearchButton = styled('button')({
-  width: '52px',
-  height: '52px',
-  borderRadius: '50%',
-  background: primary,
-  border: 'none',
+/** Circle on desktop, full-width pill on mobile */
+const SearchButton = styled('button')({
+  borderRadius: 24,
+  background: rose600,
+  padding: '16px 12px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  border: 'none',
   cursor: 'pointer',
   flexShrink: 0,
-  marginRight: '2px',
-  transition: 'opacity 0.15s, transform 0.1s',
-  '& svg': { color: white, stroke: white },
-  '@media (max-width: 767px)': { display: 'none' },
-});
-
-// ─── Mobile buttons wrapper ───────────────────────────────────────────────────
-// gridColumn in base so Pigment CSS always includes it in the stylesheet.
-// On desktop (flex parent) gridColumn is ignored.
-// On mobile (grid parent) it spans both columns.
-
-const MobileButtonsWrap = styled('div')({
-  gridColumn: '1 / -1',
-  display: 'none',
-  '@media (max-width: 767px)': {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    padding: '4px 12px 12px',
+  boxShadow: '0 4px 14px rgba(236, 0, 63, 0.4)',
+  transition: 'background 0.15s, transform 0.1s',
+  '& svg': { color: white, width: 20, height: 20 },
+  '&:hover': { background: rose700 },
+  '&:active': { transform: 'scale(0.95)' },
+  '@media (max-width: 768px)': {
+    borderRadius: '9999px',
+    width: '100%',
   },
 });
 
-const MobileSearchBtn = styled('button')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '8px',
-  width: '100%',
-  padding: '15px 24px',
-  background: primary,
-  border: 'none',
-  borderRadius: '9999px',
+const SearchButtonText = styled('span')({
+  display: 'none',
   color: white,
-  fontSize: '16px',
+  fontSize: 16,
   fontWeight: 700,
-  cursor: 'pointer',
-  '& svg': { color: white, stroke: white },
+  marginLeft: 8,
+  '@media (max-width: 768px)': {
+    display: 'inline',
+  },
 });
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -262,10 +327,37 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const t = useTranslations();
   const { locale } = useLocale();
 
+  // ── Cities from API ───────────────────────────────────────────────────────
+  const [apiCities, setApiCities] = useState<CityOption[]>([]);
+  useEffect(() => {
+    axiosInstance
+      .get('/api/v1/restaurants/cities/')
+      .then(res => {
+        const raw = res.data;
+        const cities = Array.isArray(raw) ? raw : (raw?.cities ?? raw?.results ?? raw?.data ?? []);
+        setApiCities(cities);
+      })
+      .catch(() => {
+        // fallback: keep empty → will use t.restaurantsList.allCities only
+      });
+  }, []);
+
   const [showCity, setShowCity] = useState(false);
   const [showCal, setShowCal] = useState(false);
   const [showTime, setShowTime] = useState(false);
   const [showGuests, setShowGuests] = useState(false);
+
+  // ── Mobile detection ──────────────────────────────────────────────────────
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // ── Mobile modal state ────────────────────────────────────────────────────
+  const [activeModal, setActiveModal] = useState<'city' | 'date' | 'time' | 'guests' | null>(null);
 
   const cityRef = useRef<HTMLDivElement>(null);
   const calRef = useRef<HTMLDivElement>(null);
@@ -312,6 +404,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
     if (d < today || d > maxDate) return;
     onChange({ ...value, date: d });
     setShowCal(false);
+    setActiveModal(null);
   }
 
   useEffect(() => {
@@ -327,14 +420,21 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
 
   const cities = [
     { value: undefined, label: t.restaurantsList.allCities },
-    { value: 'Tbilisi', label: t.restaurantsList.cities.tbilisi },
-    { value: 'Batumi', label: t.restaurantsList.cities.batumi },
-    { value: 'Rustavi', label: t.restaurantsList.cities.rustavi },
-    { value: 'Gori', label: t.restaurantsList.cities.gori },
-    { value: 'Kutaisi', label: t.restaurantsList.cities.kutaisi },
+    ...apiCities.map(city => ({
+      value: city.slug,
+      label: city.translations[locale]?.name ?? city.translations['ka']?.name ?? city.slug,
+    })),
   ];
   const selectedCityLabel =
     cities.find(c => c.value === value.city)?.label ?? t.restaurantsList.allCities;
+
+  // ── Modal option arrays ───────────────────────────────────────────────────
+  const cityModalOptions = cities.map(c => ({ label: c.label, value: c.value ?? '' }));
+  const timeModalOptions = TIME_SLOTS.map(s => ({ label: s, value: s }));
+  const guestModalOptions = GUEST_OPTIONS.map(n => ({
+    label: `${n} ${t.booking.persons}`,
+    value: String(n),
+  }));
 
   const toggle = (w: 'city' | 'cal' | 'time' | 'guests') => {
     setShowCity(w === 'city' ? s => !s : false);
@@ -344,174 +444,252 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   };
 
   return (
-    <FiltersCard>
-      {/* City — full width on mobile */}
-      <FieldWrapFull ref={cityRef} onClick={() => toggle('city')}>
-        <FieldInner>
-          <FieldLeft>
-            <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
-            <FieldInput>
-              <IconWrap>
-                <LocationIcon color={slate400} size={16} />
-              </IconWrap>
-              <FieldText isPlaceholder={!value.city}>{selectedCityLabel}</FieldText>
-            </FieldInput>
-          </FieldLeft>
-          <IconWrap>
-            <ChevronDownIcon color={slate400} size={14} />
-          </IconWrap>
-        </FieldInner>
-        {showCity && (
-          <DropdownList>
-            {cities.map((c, idx) => {
-              const isSel = c.value === value.city;
-              return (
-                <DropdownRow
-                  key={c.label}
-                  isSelected={isSel}
-                  isLast={idx === cities.length - 1}
-                  onClick={e => {
-                    e.stopPropagation();
-                    onChange({ ...value, city: c.value });
-                    setShowCity(false);
-                  }}
-                >
-                  <DropdownRowText isSelected={isSel}>{c.label}</DropdownRowText>
-                  {isSel && <CheckMark>✓</CheckMark>}
-                </DropdownRow>
-              );
-            })}
-          </DropdownList>
-        )}
-      </FieldWrapFull>
+    <>
+      <FilterBar>
+        <FieldsRow>
+          {/* City — first field, extra left rounding */}
+          <FilterFieldFirst
+            ref={cityRef}
+            onClick={() => {
+              if (isMobile) {
+                setActiveModal('city');
+              } else {
+                toggle('city');
+              }
+            }}
+          >
+            <FieldInner>
+              <FieldLeft>
+                <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
+                <FieldInput>
+                  <IconWrap className='field-icon'>
+                    <LocationIcon size={16} />
+                  </IconWrap>
+                  <FieldText className='field-text' isPlaceholder={!value.city}>
+                    {selectedCityLabel}
+                  </FieldText>
+                </FieldInput>
+              </FieldLeft>
+              <ChevronWrap>
+                <ChevronDownIcon color={slate400} size={14} />
+              </ChevronWrap>
+            </FieldInner>
+            {showCity && (
+              <DropdownList>
+                {cities.map((c, idx) => {
+                  const isSel = c.value === value.city;
+                  return (
+                    <DropdownRow
+                      key={c.label}
+                      isSelected={isSel}
+                      isLast={idx === cities.length - 1}
+                      onClick={e => {
+                        e.stopPropagation();
+                        onChange({ ...value, city: c.value });
+                        setShowCity(false);
+                      }}
+                    >
+                      <DropdownRowText isSelected={isSel}>{c.label}</DropdownRowText>
+                      {isSel && <CheckMark />}
+                    </DropdownRow>
+                  );
+                })}
+              </DropdownList>
+            )}
+          </FilterFieldFirst>
 
-      <HorizontalDivider />
-      <VerticalDivider />
+          {/* Date + Time side-by-side on mobile */}
+          <DateTimeRow>
+            {/* Date */}
+            <FilterField
+              ref={calRef}
+              onClick={() => {
+                if (isMobile) {
+                  setActiveModal('date');
+                } else {
+                  toggle('cal');
+                }
+              }}
+            >
+              <FieldInner>
+                <FieldLeft>
+                  <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
+                  <FieldInput>
+                    <IconWrap className='field-icon'>
+                      <CalendarIcon />
+                    </IconWrap>
+                    <FieldText className='field-text' isPlaceholder={!value.date}>
+                      {value.date
+                        ? formatDateShort(value.date, locale)
+                        : t.reservationWidget.datePlaceholder}
+                    </FieldText>
+                  </FieldInput>
+                </FieldLeft>
+                <ChevronWrap>
+                  <ChevronDownIcon color={slate400} size={14} />
+                </ChevronWrap>
+              </FieldInner>
+              <SearchCalendarPicker
+                show={showCal}
+                selectedDate={value.date}
+                today={today}
+                maxDate={maxDate}
+                viewYear={viewYear}
+                viewMonth={viewMonth}
+                onNavigate={navigateMonth}
+                onSelectDay={handleDaySelect}
+                monthYearLabel={monthYearLabel}
+                dayNamesShort={dayNamesShort}
+                containerRef={calRef}
+              />
+            </FilterField>
 
-      {/* Date — left half on mobile */}
-      <FieldWrapDate ref={calRef} onClick={() => toggle('cal')}>
-        <FieldInner>
-          <FieldLeft>
-            <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
-            <FieldInput>
-              <IconWrap>
-                <CalendarIcon />
-              </IconWrap>
-              <FieldText isPlaceholder={!value.date}>
-                {value.date
-                  ? formatDateShort(value.date, locale)
-                  : t.reservationWidget.datePlaceholder}
-              </FieldText>
-            </FieldInput>
-          </FieldLeft>
-          <IconWrap>
-            <ChevronDownIcon color={slate400} size={14} />
-          </IconWrap>
-        </FieldInner>
-        <CalendarPicker
-          show={showCal}
-          selectedDate={value.date}
-          today={today}
-          maxDate={maxDate}
-          viewYear={viewYear}
-          viewMonth={viewMonth}
-          onNavigate={navigateMonth}
-          onSelectDay={handleDaySelect}
-          monthYearLabel={monthYearLabel}
-          dayNamesShort={dayNamesShort}
-          containerRef={calRef}
+            {/* Time */}
+            <FilterField
+              ref={timeRef}
+              onClick={() => {
+                if (isMobile) {
+                  setActiveModal('time');
+                } else {
+                  toggle('time');
+                }
+              }}
+            >
+              <FieldInner>
+                <FieldLeft>
+                  <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
+                  <FieldInput>
+                    <IconWrap className='field-icon'>
+                      <ClockIcon size={16} />
+                    </IconWrap>
+                    <FieldText className='field-text' isPlaceholder={!value.time}>
+                      {value.time || t.reservationWidget.timePlaceholder}
+                    </FieldText>
+                  </FieldInput>
+                </FieldLeft>
+                <ChevronWrap>
+                  <ChevronDownIcon color={slate400} size={14} />
+                </ChevronWrap>
+              </FieldInner>
+              <TimeDropdown
+                show={showTime}
+                slots={TIME_SLOTS}
+                selected={value.time}
+                onSelect={s => {
+                  onChange({ ...value, time: s });
+                  setShowTime(false);
+                }}
+                containerRef={timeRef}
+              />
+            </FilterField>
+          </DateTimeRow>
+
+          {/* Guests — last field, no right border */}
+          <FilterFieldLast
+            ref={guestsRef}
+            onClick={() => {
+              if (isMobile) {
+                setActiveModal('guests');
+              } else {
+                toggle('guests');
+              }
+            }}
+          >
+            <FieldInner>
+              <FieldLeft>
+                <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
+                <FieldInput>
+                  <IconWrap className='field-icon'>
+                    <PeopleIcon />
+                  </IconWrap>
+                  <FieldText className='field-text' isPlaceholder={!value.guests}>
+                    {value.guests} {t.booking.persons}
+                  </FieldText>
+                </FieldInput>
+              </FieldLeft>
+              <ChevronWrap>
+                <ChevronDownIcon color={slate400} size={14} />
+              </ChevronWrap>
+            </FieldInner>
+            <GuestsDropdown
+              show={showGuests}
+              options={GUEST_OPTIONS}
+              selected={value.guests}
+              onSelect={n => {
+                onChange({ ...value, guests: n });
+                setShowGuests(false);
+              }}
+              containerRef={guestsRef}
+              personsLabel={t.booking.persons}
+            />
+          </FilterFieldLast>
+
+          {/* Search button — circle on desktop, full-width pill on mobile */}
+          <SearchButton
+            onClick={e => {
+              e.stopPropagation();
+              onSearch();
+            }}
+            aria-label={t.common.search}
+          >
+            <SearchIcon />
+            <SearchButtonText>{t.common.search}</SearchButtonText>
+          </SearchButton>
+        </FieldsRow>
+      </FilterBar>
+
+      {/* Mobile bottom-sheet modals */}
+      {isMobile && activeModal === 'city' && (
+        <MobileSelectModal
+          title={t.restaurantsList.cityFilter}
+          options={cityModalOptions}
+          selected={value.city ?? ''}
+          onSelect={v => onChange({ ...value, city: v === '' ? undefined : v })}
+          onClose={() => setActiveModal(null)}
         />
-      </FieldWrapDate>
+      )}
 
-      <VerticalDivider />
-
-      {/* Time — right half on mobile */}
-      <FieldWrapTime ref={timeRef} onClick={() => toggle('time')}>
-        <FieldInner>
-          <FieldLeft>
-            <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
-            <FieldInput>
-              <IconWrap>
-                <ClockIcon size={16} color={slate400} />
-              </IconWrap>
-              <FieldText isPlaceholder={!value.time}>
-                {value.time || t.reservationWidget.timePlaceholder}
-              </FieldText>
-            </FieldInput>
-          </FieldLeft>
-          <IconWrap>
-            <ChevronDownIcon color={slate400} size={14} />
-          </IconWrap>
-        </FieldInner>
-        <TimeDropdown
-          show={showTime}
-          slots={TIME_SLOTS}
-          selected={value.time}
-          onSelect={s => {
-            onChange({ ...value, time: s });
-            setShowTime(false);
-          }}
-          containerRef={timeRef}
-        />
-      </FieldWrapTime>
-
-      <HorizontalDivider />
-      <VerticalDivider />
-
-      {/* Guests — full width on mobile */}
-      <FieldWrapFull ref={guestsRef} onClick={() => toggle('guests')}>
-        <FieldInner>
-          <FieldLeft>
-            <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
-            <FieldInput>
-              <IconWrap>
-                <PeopleIcon />
-              </IconWrap>
-              <FieldText isPlaceholder={false}>
-                {value.guests} {t.booking.persons}
-              </FieldText>
-            </FieldInput>
-          </FieldLeft>
-          <IconWrap>
-            <ChevronDownIcon color={slate400} size={14} />
-          </IconWrap>
-        </FieldInner>
-        <GuestsDropdown
-          show={showGuests}
-          options={GUEST_OPTIONS}
-          selected={value.guests}
-          onSelect={n => {
-            onChange({ ...value, guests: n });
-            setShowGuests(false);
-          }}
-          containerRef={guestsRef}
-          personsLabel={t.booking.persons}
-        />
-      </FieldWrapFull>
-
-      {/* Desktop circle search button */}
-      <CircleSearchButton
-        onClick={e => {
-          e.stopPropagation();
-          onSearch();
-        }}
-        aria-label='Search'
-      >
-        <SearchIcon />
-      </CircleSearchButton>
-
-      {/* Mobile buttons — MobileButtonsWrap spans both columns via gridColumn in base styles */}
-      <MobileButtonsWrap>
-        <MobileSearchBtn
-          onClick={e => {
-            e.stopPropagation();
-            onSearch();
-          }}
+      {isMobile && activeModal === 'date' && (
+        <MobileSelectModal
+          title={t.restaurantsList.dateFilter}
+          onClose={() => setActiveModal(null)}
         >
-          <SearchIcon />
-          {t.common.search}
-        </MobileSearchBtn>
-      </MobileButtonsWrap>
-    </FiltersCard>
+          <SearchCalendarPicker
+            show={true}
+            inline={true}
+            selectedDate={value.date}
+            today={today}
+            maxDate={maxDate}
+            viewYear={viewYear}
+            viewMonth={viewMonth}
+            onNavigate={navigateMonth}
+            onSelectDay={handleDaySelect}
+            monthYearLabel={monthYearLabel}
+            dayNamesShort={dayNamesShort}
+            containerRef={calRef}
+          />
+        </MobileSelectModal>
+      )}
+
+      {isMobile && activeModal === 'time' && (
+        <MobileSelectModal
+          title={t.restaurantsList.timeFilter}
+          options={timeModalOptions}
+          selected={value.time}
+          onSelect={v => onChange({ ...value, time: v })}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
+
+      {isMobile && activeModal === 'guests' && (
+        <MobileSelectModal
+          title={t.restaurantsList.guestsFilter}
+          options={guestModalOptions}
+          selected={String(value.guests)}
+          onSelect={v => onChange({ ...value, guests: parseInt(v, 10) })}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
+    </>
   );
 }

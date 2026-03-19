@@ -48,6 +48,8 @@ export const PriceWrapper = styled('div')({
 export interface RestaurantCardProps {
   /** Card click / Details button destination */
   href?: string;
+  /** Amenity names to display as pills below description */
+  amenities?: string[];
   /** e.g. '₾', '₾₾', '₾₾₾' – defaults to '₾₾₾' if omitted */
   priceLevel?: string;
   /** i18n label for the Details button – defaults to 'დეტალები' */

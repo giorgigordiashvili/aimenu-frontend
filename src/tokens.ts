@@ -7,22 +7,26 @@
 export const slate25 = '#FBFDFD';
 export const slate50 = '#F8FAFC';
 export const slate100 = '#F1F5F9';
+export const slate150 = '#E9EBEF';
 export const slate200 = '#E2E8F0';
 export const slate300 = '#CBD5E1';
 export const slate400 = '#94A3B8';
 export const slate500 = '#62748E';
 export const slate600 = '#475569';
+export const slate800 = '#1E293B';
 export const slate900 = '#0F172B';
-export const slate950 = '#090909';
+export const slate950 = '#030213';
 
 // ── Icon colors ──────────────────────────────────────────────────────────
 export const iconStroke = '#90A1B9';
+export const iconDefault = '#383838';
 
 // ── Rose ─────────────────────────────────────────────────────────────────
 export const rose25 = '#FFFBFB';
 export const rose50 = '#FFF0F3';
 export const rose100 = '#FFE0E8';
 export const rose200 = '#FFE4E6';
+export const rose500 = '#FF2056';
 export const rose600 = '#EC003F';
 export const rose700 = '#BE123C';
 export const rose800 = '#C70036';

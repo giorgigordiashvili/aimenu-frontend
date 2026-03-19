@@ -18,13 +18,18 @@ import UserIcon from '@/icons/User';
 import {
   border,
   foreground,
-  muted,
+  iconDefault,
   primary,
   rose50,
+  rose600,
+  rose700,
   shadowMd,
   slate100,
+  slate150,
   slate200,
   slate50,
+  slate800,
+  slate900,
   white,
 } from '@/tokens';
 
@@ -132,15 +137,15 @@ const BurgerButton = styled('button')({
 
 const LoginButton = styled(Link)({
   padding: '7px 14px',
-  border: `1px solid ${border}`,
+  border: 'none',
   borderRadius: '8px',
   fontSize: '14px',
   fontWeight: 500,
   color: foreground,
   textDecoration: 'none',
-  background: white,
+  background: 'transparent',
   transition: 'background 0.15s',
-  '&:hover': { background: slate100 },
+  '&:hover': { background: slate150 },
 });
 
 const RegisterButton = styled(Link)({
@@ -151,30 +156,29 @@ const RegisterButton = styled(Link)({
   fontWeight: 500,
   color: white,
   textDecoration: 'none',
-  background: primary,
-  transition: 'opacity 0.15s',
-  '&:hover': { opacity: 0.9 },
+  background: slate900,
+  transition: 'background 0.15s',
+  '&:hover': { background: slate800 },
 });
 
 // ── User menu button ──────────────────────────────────────────────────────────
 
-const UserButton = styled('button')({
+const UserTrigger = styled('button')({
+  width: '32px',
+  height: '32px',
+  border: `1px solid ${border}`,
+  borderRadius: '50%',
+  overflow: 'hidden',
   display: 'flex',
   alignItems: 'center',
-  gap: '8px',
-  padding: '5px 12px 5px 6px',
-  border: `1px solid ${border}`,
-  borderRadius: '24px',
-  background: white,
+  justifyContent: 'center',
+  background: 'transparent',
   cursor: 'pointer',
-  fontSize: '14px',
-  fontWeight: 500,
-  color: foreground,
-  transition: 'box-shadow 0.15s',
-  '&:hover': { boxShadow: '0 2px 8px rgba(0,0,0,0.1)' },
+  padding: 0,
+  flexShrink: 0,
 });
 
-const UserAvatar = styled('div')({
+const AvatarCircle = styled('div')({
   width: '28px',
   height: '28px',
   borderRadius: '50%',
@@ -186,13 +190,6 @@ const UserAvatar = styled('div')({
   overflow: 'hidden',
   border: `2px solid ${slate50}`,
   boxShadow: '0px 2px 6px rgba(0,0,0,0.12)',
-});
-
-const UserName = styled('span')({
-  maxWidth: '120px',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
 });
 
 // ── Dropdown ──────────────────────────────────────────────────────────────────
@@ -227,12 +224,6 @@ const DropdownItem = styled(Link)({
   '&:hover': { background: slate100 },
 });
 
-const DropdownDivider = styled('div')({
-  height: '1px',
-  background: slate200,
-  margin: '4px 0',
-});
-
 const LogoutItem = styled('button')({
   display: 'flex',
   alignItems: 'center',
@@ -241,19 +232,19 @@ const LogoutItem = styled('button')({
   width: '100%',
   fontSize: '14px',
   fontWeight: 400,
-  color: primary,
+  color: foreground,
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',
   textAlign: 'left',
   transition: 'background 0.1s',
-  '&:hover': { background: rose50 },
+  '&:hover': { background: slate100 },
 });
 
 const IconWrap = styled('span')({
   display: 'flex',
   alignItems: 'center',
-  color: muted,
+  color: iconDefault,
 });
 
 // ── Mobile Drawer (full width) ────────────────────────────────────────────────
@@ -388,14 +379,14 @@ const DrawerLogoutButton = styled('button')({
   width: '100%',
   fontSize: '15px',
   fontWeight: 400,
-  color: primary,
+  color: foreground,
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',
   borderRadius: '10px',
   textAlign: 'left',
   transition: 'background 0.1s',
-  '&:hover': { background: rose50 },
+  '&:hover': { background: slate100 },
 });
 
 const DrawerAuthButtons = styled('div')({
@@ -408,15 +399,16 @@ const DrawerAuthButtons = styled('div')({
 const DrawerLoginBtn = styled(Link)({
   display: 'block',
   padding: '14px 16px',
-  border: `1px solid ${border}`,
+  border: 'none',
   borderRadius: '10px',
   fontSize: '16px',
   fontWeight: 500,
-  color: foreground,
+  color: white,
   textDecoration: 'none',
   textAlign: 'center',
+  background: rose600,
   transition: 'background 0.15s',
-  '&:hover': { background: slate100 },
+  '&:hover': { background: rose700 },
 });
 
 const DrawerRegisterBtn = styled(Link)({
@@ -429,9 +421,9 @@ const DrawerRegisterBtn = styled(Link)({
   color: white,
   textDecoration: 'none',
   textAlign: 'center',
-  background: primary,
-  transition: 'opacity 0.15s',
-  '&:hover': { opacity: 0.9 },
+  background: slate900,
+  transition: 'background 0.15s',
+  '&:hover': { background: slate800 },
 });
 
 const DrawerFooter = styled('div')({
@@ -527,22 +519,19 @@ export default function HeaderPrimary() {
 
             {isAuthenticated ? (
               <DropdownWrap ref={dropdownRef}>
-                <UserButton onClick={() => setUserMenuOpen(p => !p)}>
-                  <UserAvatar>
-                    {user?.avatar ? (
-                      <Image
-                        src={user.avatar}
-                        alt={displayName || ''}
-                        width={28}
-                        height={28}
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
-                    ) : (
-                      <UserIcon width={16} height={16} />
-                    )}
-                  </UserAvatar>
-                  {displayName && <UserName>{displayName}</UserName>}
-                </UserButton>
+                <UserTrigger onClick={() => setUserMenuOpen(p => !p)}>
+                  {user?.avatar ? (
+                    <Image
+                      src={user.avatar}
+                      alt={displayName || ''}
+                      width={32}
+                      height={32}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                    />
+                  ) : (
+                    <UserIcon width={16} height={16} />
+                  )}
+                </UserTrigger>
 
                 {userMenuOpen && (
                   <DropdownMenu>
@@ -550,19 +539,9 @@ export default function HeaderPrimary() {
                       href={`/${locale}/profile`}
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      <UserAvatar>
-                        {user?.avatar ? (
-                          <Image
-                            src={user.avatar}
-                            alt={displayName || ''}
-                            width={28}
-                            height={28}
-                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                          />
-                        ) : (
-                          <UserIcon width={16} height={16} />
-                        )}
-                      </UserAvatar>
+                      <IconWrap>
+                        <UserIcon width={24} height={24} />
+                      </IconWrap>
                       {t.header.profile}
                     </DropdownItem>
                     <DropdownItem
@@ -570,7 +549,7 @@ export default function HeaderPrimary() {
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <IconWrap>
-                        <HeartOutlineIcon variant='outlined' />
+                        <HeartOutlineIcon variant='outlined' width={24} height={24} />
                       </IconWrap>
                       {t.header.favorites}
                     </DropdownItem>
@@ -579,14 +558,13 @@ export default function HeaderPrimary() {
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <IconWrap>
-                        <HistoryIcon />
+                        <HistoryIcon width={24} height={24} />
                       </IconWrap>
                       {t.header.myBookings}
                     </DropdownItem>
-                    <DropdownDivider />
                     <LogoutItem onClick={handleLogout}>
                       <IconWrap>
-                        <LogoutIcon />
+                        <LogoutIcon width={24} height={24} />
                       </IconWrap>
                       {t.header.logout}
                     </LogoutItem>
@@ -612,7 +590,17 @@ export default function HeaderPrimary() {
       <DrawerOverlay open={drawerOpen} onClick={() => setDrawerOpen(false)} />
       <Drawer open={drawerOpen}>
         <DrawerHeader>
-          <DrawerLogoText>AiMenu</DrawerLogoText>
+          <LogoLink href={`/${locale}`} onClick={() => setDrawerOpen(false)}>
+            <Image
+              src='/logo.png'
+              alt='AiMenu'
+              width={32}
+              height={32}
+              style={{ height: '32px', width: '32px', objectFit: 'contain' }}
+              priority
+            />
+            <DrawerLogoText>AiMenu</DrawerLogoText>
+          </LogoLink>
           <DrawerCloseButton onClick={() => setDrawerOpen(false)} aria-label='Close menu'>
             <CloseIcon />
           </DrawerCloseButton>
@@ -638,7 +626,7 @@ export default function HeaderPrimary() {
             {isAuthenticated ? (
               <>
                 <DrawerUserInfo>
-                  <UserAvatar>
+                  <AvatarCircle>
                     {user?.avatar ? (
                       <Image
                         src={user.avatar}
@@ -650,24 +638,14 @@ export default function HeaderPrimary() {
                     ) : (
                       <UserIcon width={16} height={16} />
                     )}
-                  </UserAvatar>
+                  </AvatarCircle>
                   <DrawerUserName>{displayName}</DrawerUserName>
                 </DrawerUserInfo>
 
                 <DrawerMenuNavItem href={`/${locale}/profile`} onClick={() => setDrawerOpen(false)}>
-                  <UserAvatar>
-                    {user?.avatar ? (
-                      <Image
-                        src={user.avatar}
-                        alt={displayName || ''}
-                        width={28}
-                        height={28}
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
-                    ) : (
-                      <UserIcon width={16} height={16} />
-                    )}
-                  </UserAvatar>
+                  <IconWrap>
+                    <UserIcon width={24} height={24} />
+                  </IconWrap>
                   {t.header.profile}
                 </DrawerMenuNavItem>
                 <DrawerMenuNavItem
@@ -675,7 +653,7 @@ export default function HeaderPrimary() {
                   onClick={() => setDrawerOpen(false)}
                 >
                   <IconWrap>
-                    <HeartOutlineIcon variant='outlined' />
+                    <HeartOutlineIcon variant='outlined' width={24} height={24} />
                   </IconWrap>
                   {t.header.favorites}
                 </DrawerMenuNavItem>
@@ -684,13 +662,13 @@ export default function HeaderPrimary() {
                   onClick={() => setDrawerOpen(false)}
                 >
                   <IconWrap>
-                    <HistoryIcon />
+                    <HistoryIcon width={24} height={24} />
                   </IconWrap>
                   {t.header.myBookings}
                 </DrawerMenuNavItem>
                 <DrawerLogoutButton onClick={handleLogout}>
                   <IconWrap>
-                    <LogoutIcon />
+                    <LogoutIcon width={24} height={24} />
                   </IconWrap>
                   {t.header.logout}
                 </DrawerLogoutButton>

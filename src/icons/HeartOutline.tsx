@@ -14,8 +14,8 @@ const HeartOutline = ({ variant = 'outlined', ...props }: HeartOutlinedProps) =>
     {...props}
   >
     <path
-      fill={variant === 'filled' ? '#EC003F' : 'none'}
-      stroke={variant === 'filled' ? '#EC003F' : '#EC003F'}
+      fill={variant === 'filled' ? 'currentColor' : 'none'}
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}

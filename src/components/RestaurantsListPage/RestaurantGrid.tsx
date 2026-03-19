@@ -22,10 +22,11 @@ const Section = styled('section')({
 
 const SectionHead = styled('div')({
   display: 'flex',
-  alignItems: 'flex-end',
+  alignItems: 'center',
   justifyContent: 'space-between',
   marginBottom: '32px',
   gap: '16px',
+  '@media (max-width: 768px)': { flexDirection: 'column', alignItems: 'stretch' },
 });
 
 const TitleGroup = styled('div')({
@@ -35,19 +36,16 @@ const TitleGroup = styled('div')({
 });
 
 const SectionTitle = styled('h2')({
-  fontSize: '24px',
+  fontSize: '30px',
   fontWeight: 700,
   color: foreground,
   lineHeight: '32px',
   letterSpacing: '-0.3px',
   margin: 0,
-  '@media (min-width: 768px)': {
-    fontSize: '30px',
-  },
 });
 
 const SectionSubtitle = styled('p')({
-  fontSize: '14px',
+  fontSize: '16px',
   fontWeight: 400,
   color: muted,
   lineHeight: '22px',
@@ -69,6 +67,7 @@ const ViewAllButton = styled('button')({
   flexShrink: 0,
   transition: 'background 0.15s',
   '&:hover': { background: slate100 },
+  '@media (max-width: 768px)': { width: '100%', textAlign: 'center', justifyContent: 'center' },
 });
 
 const Grid = styled('div')({
@@ -180,6 +179,10 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
                 ) || restaurant.category.slug
               : undefined;
 
+            const amenityNames = (restaurant.amenities || [])
+              .map(a => getTranslation(parseTranslations(a.translations), 'name', locale) || a.slug)
+              .filter(Boolean);
+
             return (
               <CardWrapper key={restaurant.id}>
                 <RestaurantCardPrimary
@@ -198,6 +201,7 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
                   showFavoriteButton={true}
                   showRating={!!restaurant.average_rating}
                   showFilterText={!!categoryName}
+                  amenities={amenityNames}
                 />
               </CardWrapper>
             );
