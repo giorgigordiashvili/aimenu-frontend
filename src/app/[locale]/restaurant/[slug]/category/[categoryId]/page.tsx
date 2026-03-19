@@ -2,7 +2,7 @@
 
 import { styled, keyframes } from '@pigment-css/react';
 import dynamic from 'next/dynamic';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useState, useMemo } from 'react';
 
 import {
@@ -177,6 +177,7 @@ interface FormattedProduct {
 
 export default function CategoryPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params.slug as string;
   const categoryId = params.categoryId as string;
 
@@ -184,8 +185,13 @@ export default function CategoryPage() {
   const t = useTranslations();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<FormattedProduct | null>(null);
+
+  const handleCategoryChange = (newCategoryId: string | null) => {
+    if (newCategoryId && newCategoryId !== categoryId) {
+      router.push(`/${locale}/restaurant/${slug}/category/${newCategoryId}`);
+    }
+  };
 
   const {
     products,
@@ -264,8 +270,8 @@ export default function CategoryPage() {
         <TabsSection>
           <CategoryTabs
             categories={categories}
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
+            activeCategory={categoryId}
+            onCategoryChange={handleCategoryChange}
           />
         </TabsSection>
 
