@@ -331,8 +331,12 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const [apiCities, setApiCities] = useState<CityOption[]>([]);
   useEffect(() => {
     axiosInstance
-      .get<CityOption[]>('/api/v1/restaurants/cities/')
-      .then(res => setApiCities(res.data))
+      .get('/api/v1/restaurants/cities/')
+      .then(res => {
+        const raw = res.data;
+        const cities = Array.isArray(raw) ? raw : (raw?.results ?? raw?.data ?? []);
+        setApiCities(cities);
+      })
       .catch(() => {
         // fallback: keep empty → will use t.restaurantsList.allCities only
       });
