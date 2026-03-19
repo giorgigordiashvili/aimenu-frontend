@@ -602,7 +602,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                   <IconWrap className='field-icon'>
                     <PeopleIcon />
                   </IconWrap>
-                  <FieldText className='field-text' isPlaceholder={false}>
+                  <FieldText className='field-text' isPlaceholder={true}>
                     {value.guests} {t.booking.persons}
                   </FieldText>
                 </FieldInput>
