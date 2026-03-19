@@ -148,6 +148,8 @@ interface SearchCalendarPickerProps {
   monthYearLabel: string;
   dayNamesShort: string[];
   containerRef: React.RefObject<HTMLDivElement | null>;
+  /** When true, renders without the absolute-positioned CalContainer (for mobile modals). */
+  inline?: boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -163,6 +165,7 @@ export default function SearchCalendarPicker({
   onSelectDay,
   monthYearLabel,
   dayNamesShort,
+  inline = false,
 }: // containerRef is held by the parent DateFieldWrap for click-outside detection
 SearchCalendarPickerProps) {
   if (!show) return null;
@@ -173,8 +176,8 @@ SearchCalendarPickerProps) {
     return d < today || d > maxDate;
   }
 
-  return (
-    <CalContainer>
+  const inner = (
+    <>
       <CalMonthNav>
         <CalNavBtn
           type='button'
@@ -233,6 +236,9 @@ SearchCalendarPickerProps) {
           );
         })}
       </CalGrid>
-    </CalContainer>
+    </>
   );
+
+  if (inline) return <div>{inner}</div>;
+  return <CalContainer>{inner}</CalContainer>;
 }

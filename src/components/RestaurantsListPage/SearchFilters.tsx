@@ -11,6 +11,7 @@ import {
 } from '@/components/ReservationWidget/DropdownShared';
 import GuestsDropdown from '@/components/ReservationWidget/GuestsDropdown';
 import TimeDropdown from '@/components/ReservationWidget/TimeDropdown';
+import MobileSelectModal from '@/components/RestaurantsListPage/MobileSelectModal';
 import SearchCalendarPicker from '@/components/RestaurantsListPage/SearchCalendarPicker';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
@@ -125,7 +126,7 @@ const FilterFieldFirst = styled('div')({
   borderRight: `1px solid ${slate100}`,
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
-  '&:hover svg': { color: rose500 },
+  '&:hover .field-icon svg': { color: rose500 },
   '&:hover .field-text': { color: rose500 },
   '@media (max-width: 768px)': {
     borderRight: 'none',
@@ -150,7 +151,7 @@ const FilterField = styled('div')({
   borderRight: `1px solid ${slate100}`,
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
-  '&:hover svg': { color: rose500 },
+  '&:hover .field-icon svg': { color: rose500 },
   '&:hover .field-text': { color: rose500 },
   '@media (max-width: 768px)': {
     borderRight: 'none',
@@ -173,7 +174,7 @@ const FilterFieldLast = styled('div')({
   transition: 'background 0.15s',
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
-  '&:hover svg': { color: rose500 },
+  '&:hover .field-icon svg': { color: rose500 },
   '&:hover .field-text': { color: rose500 },
   '@media (max-width: 768px)': {
     borderBottom: `1px solid ${slate100}`,
@@ -317,6 +318,18 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const [showTime, setShowTime] = useState(false);
   const [showGuests, setShowGuests] = useState(false);
 
+  // ── Mobile detection ──────────────────────────────────────────────────────
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // ── Mobile modal state ────────────────────────────────────────────────────
+  const [activeModal, setActiveModal] = useState<'city' | 'date' | 'time' | 'guests' | null>(null);
+
   const cityRef = useRef<HTMLDivElement>(null);
   const calRef = useRef<HTMLDivElement>(null);
   const timeRef = useRef<HTMLDivElement>(null);
@@ -362,6 +375,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
     if (d < today || d > maxDate) return;
     onChange({ ...value, date: d });
     setShowCal(false);
+    setActiveModal(null);
   }
 
   useEffect(() => {
@@ -386,6 +400,14 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   const selectedCityLabel =
     cities.find(c => c.value === value.city)?.label ?? t.restaurantsList.allCities;
 
+  // ── Modal option arrays ───────────────────────────────────────────────────
+  const cityModalOptions = cities.map(c => ({ label: c.label, value: c.value ?? '' }));
+  const timeModalOptions = TIME_SLOTS.map(s => ({ label: s, value: s }));
+  const guestModalOptions = GUEST_OPTIONS.map(n => ({
+    label: `${n} ${t.booking.persons}`,
+    value: String(n),
+  }));
+
   const toggle = (w: 'city' | 'cal' | 'time' | 'guests') => {
     setShowCity(w === 'city' ? s => !s : false);
     setShowCal(w === 'cal' ? s => !s : false);
@@ -394,161 +416,252 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   };
 
   return (
-    <FilterBar>
-      <FieldsRow>
-        {/* City — first field, extra left rounding */}
-        <FilterFieldFirst ref={cityRef} onClick={() => toggle('city')}>
-          <FieldInner>
-            <FieldLeft>
-              <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
-              <FieldInput>
-                <IconWrap>
-                  <LocationIcon size={16} />
-                </IconWrap>
-                <FieldText className='field-text' isPlaceholder={!value.city}>
-                  {selectedCityLabel}
-                </FieldText>
-              </FieldInput>
-            </FieldLeft>
-            <ChevronWrap>
-              <ChevronDownIcon color={slate400} size={14} />
-            </ChevronWrap>
-          </FieldInner>
-          {showCity && (
-            <DropdownList>
-              {cities.map((c, idx) => {
-                const isSel = c.value === value.city;
-                return (
-                  <DropdownRow
-                    key={c.label}
-                    isSelected={isSel}
-                    isLast={idx === cities.length - 1}
-                    onClick={e => {
-                      e.stopPropagation();
-                      onChange({ ...value, city: c.value });
-                      setShowCity(false);
-                    }}
-                  >
-                    <DropdownRowText isSelected={isSel}>{c.label}</DropdownRowText>
-                    {isSel && <CheckMark />}
-                  </DropdownRow>
-                );
-              })}
-            </DropdownList>
-          )}
-        </FilterFieldFirst>
-
-        {/* Date + Time side-by-side on mobile */}
-        <DateTimeRow>
-          {/* Date */}
-          <FilterField ref={calRef} onClick={() => toggle('cal')}>
-            <FieldInner>
-              <FieldLeft>
-                <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
-                <FieldInput>
-                  <IconWrap>
-                    <CalendarIcon />
-                  </IconWrap>
-                  <FieldText className='field-text' isPlaceholder={!value.date}>
-                    {value.date
-                      ? formatDateShort(value.date, locale)
-                      : t.reservationWidget.datePlaceholder}
-                  </FieldText>
-                </FieldInput>
-              </FieldLeft>
-              <ChevronWrap>
-                <ChevronDownIcon color={slate400} size={14} />
-              </ChevronWrap>
-            </FieldInner>
-            <SearchCalendarPicker
-              show={showCal}
-              selectedDate={value.date}
-              today={today}
-              maxDate={maxDate}
-              viewYear={viewYear}
-              viewMonth={viewMonth}
-              onNavigate={navigateMonth}
-              onSelectDay={handleDaySelect}
-              monthYearLabel={monthYearLabel}
-              dayNamesShort={dayNamesShort}
-              containerRef={calRef}
-            />
-          </FilterField>
-
-          {/* Time */}
-          <FilterField ref={timeRef} onClick={() => toggle('time')}>
-            <FieldInner>
-              <FieldLeft>
-                <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
-                <FieldInput>
-                  <IconWrap>
-                    <ClockIcon size={16} />
-                  </IconWrap>
-                  <FieldText className='field-text' isPlaceholder={!value.time}>
-                    {value.time || t.reservationWidget.timePlaceholder}
-                  </FieldText>
-                </FieldInput>
-              </FieldLeft>
-              <ChevronWrap>
-                <ChevronDownIcon color={slate400} size={14} />
-              </ChevronWrap>
-            </FieldInner>
-            <TimeDropdown
-              show={showTime}
-              slots={TIME_SLOTS}
-              selected={value.time}
-              onSelect={s => {
-                onChange({ ...value, time: s });
-                setShowTime(false);
-              }}
-              containerRef={timeRef}
-            />
-          </FilterField>
-        </DateTimeRow>
-
-        {/* Guests — last field, no right border */}
-        <FilterFieldLast ref={guestsRef} onClick={() => toggle('guests')}>
-          <FieldInner>
-            <FieldLeft>
-              <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
-              <FieldInput>
-                <IconWrap>
-                  <PeopleIcon />
-                </IconWrap>
-                <FieldText className='field-text' isPlaceholder={false}>
-                  {value.guests} {t.booking.persons}
-                </FieldText>
-              </FieldInput>
-            </FieldLeft>
-            <ChevronWrap>
-              <ChevronDownIcon color={slate400} size={14} />
-            </ChevronWrap>
-          </FieldInner>
-          <GuestsDropdown
-            show={showGuests}
-            options={GUEST_OPTIONS}
-            selected={value.guests}
-            onSelect={n => {
-              onChange({ ...value, guests: n });
-              setShowGuests(false);
+    <>
+      <FilterBar>
+        <FieldsRow>
+          {/* City — first field, extra left rounding */}
+          <FilterFieldFirst
+            ref={cityRef}
+            onClick={() => {
+              if (isMobile) {
+                setActiveModal('city');
+              } else {
+                toggle('city');
+              }
             }}
-            containerRef={guestsRef}
-            personsLabel={t.booking.persons}
-          />
-        </FilterFieldLast>
+          >
+            <FieldInner>
+              <FieldLeft>
+                <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
+                <FieldInput>
+                  <IconWrap className='field-icon'>
+                    <LocationIcon size={16} />
+                  </IconWrap>
+                  <FieldText className='field-text' isPlaceholder={!value.city}>
+                    {selectedCityLabel}
+                  </FieldText>
+                </FieldInput>
+              </FieldLeft>
+              <ChevronWrap>
+                <ChevronDownIcon color={slate400} size={14} />
+              </ChevronWrap>
+            </FieldInner>
+            {showCity && (
+              <DropdownList>
+                {cities.map((c, idx) => {
+                  const isSel = c.value === value.city;
+                  return (
+                    <DropdownRow
+                      key={c.label}
+                      isSelected={isSel}
+                      isLast={idx === cities.length - 1}
+                      onClick={e => {
+                        e.stopPropagation();
+                        onChange({ ...value, city: c.value });
+                        setShowCity(false);
+                      }}
+                    >
+                      <DropdownRowText isSelected={isSel}>{c.label}</DropdownRowText>
+                      {isSel && <CheckMark />}
+                    </DropdownRow>
+                  );
+                })}
+              </DropdownList>
+            )}
+          </FilterFieldFirst>
 
-        {/* Search button — circle on desktop, full-width pill on mobile */}
-        <SearchButton
-          onClick={e => {
-            e.stopPropagation();
-            onSearch();
-          }}
-          aria-label={t.common.search}
+          {/* Date + Time side-by-side on mobile */}
+          <DateTimeRow>
+            {/* Date */}
+            <FilterField
+              ref={calRef}
+              onClick={() => {
+                if (isMobile) {
+                  setActiveModal('date');
+                } else {
+                  toggle('cal');
+                }
+              }}
+            >
+              <FieldInner>
+                <FieldLeft>
+                  <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
+                  <FieldInput>
+                    <IconWrap className='field-icon'>
+                      <CalendarIcon />
+                    </IconWrap>
+                    <FieldText className='field-text' isPlaceholder={!value.date}>
+                      {value.date
+                        ? formatDateShort(value.date, locale)
+                        : t.reservationWidget.datePlaceholder}
+                    </FieldText>
+                  </FieldInput>
+                </FieldLeft>
+                <ChevronWrap>
+                  <ChevronDownIcon color={slate400} size={14} />
+                </ChevronWrap>
+              </FieldInner>
+              <SearchCalendarPicker
+                show={showCal}
+                selectedDate={value.date}
+                today={today}
+                maxDate={maxDate}
+                viewYear={viewYear}
+                viewMonth={viewMonth}
+                onNavigate={navigateMonth}
+                onSelectDay={handleDaySelect}
+                monthYearLabel={monthYearLabel}
+                dayNamesShort={dayNamesShort}
+                containerRef={calRef}
+              />
+            </FilterField>
+
+            {/* Time */}
+            <FilterField
+              ref={timeRef}
+              onClick={() => {
+                if (isMobile) {
+                  setActiveModal('time');
+                } else {
+                  toggle('time');
+                }
+              }}
+            >
+              <FieldInner>
+                <FieldLeft>
+                  <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
+                  <FieldInput>
+                    <IconWrap className='field-icon'>
+                      <ClockIcon size={16} />
+                    </IconWrap>
+                    <FieldText className='field-text' isPlaceholder={!value.time}>
+                      {value.time || t.reservationWidget.timePlaceholder}
+                    </FieldText>
+                  </FieldInput>
+                </FieldLeft>
+                <ChevronWrap>
+                  <ChevronDownIcon color={slate400} size={14} />
+                </ChevronWrap>
+              </FieldInner>
+              <TimeDropdown
+                show={showTime}
+                slots={TIME_SLOTS}
+                selected={value.time}
+                onSelect={s => {
+                  onChange({ ...value, time: s });
+                  setShowTime(false);
+                }}
+                containerRef={timeRef}
+              />
+            </FilterField>
+          </DateTimeRow>
+
+          {/* Guests — last field, no right border */}
+          <FilterFieldLast
+            ref={guestsRef}
+            onClick={() => {
+              if (isMobile) {
+                setActiveModal('guests');
+              } else {
+                toggle('guests');
+              }
+            }}
+          >
+            <FieldInner>
+              <FieldLeft>
+                <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
+                <FieldInput>
+                  <IconWrap className='field-icon'>
+                    <PeopleIcon />
+                  </IconWrap>
+                  <FieldText className='field-text' isPlaceholder={false}>
+                    {value.guests} {t.booking.persons}
+                  </FieldText>
+                </FieldInput>
+              </FieldLeft>
+              <ChevronWrap>
+                <ChevronDownIcon color={slate400} size={14} />
+              </ChevronWrap>
+            </FieldInner>
+            <GuestsDropdown
+              show={showGuests}
+              options={GUEST_OPTIONS}
+              selected={value.guests}
+              onSelect={n => {
+                onChange({ ...value, guests: n });
+                setShowGuests(false);
+              }}
+              containerRef={guestsRef}
+              personsLabel={t.booking.persons}
+            />
+          </FilterFieldLast>
+
+          {/* Search button — circle on desktop, full-width pill on mobile */}
+          <SearchButton
+            onClick={e => {
+              e.stopPropagation();
+              onSearch();
+            }}
+            aria-label={t.common.search}
+          >
+            <SearchIcon />
+            <SearchButtonText>{t.common.search}</SearchButtonText>
+          </SearchButton>
+        </FieldsRow>
+      </FilterBar>
+
+      {/* Mobile bottom-sheet modals */}
+      {isMobile && activeModal === 'city' && (
+        <MobileSelectModal
+          title={t.restaurantsList.cityFilter}
+          options={cityModalOptions}
+          selected={value.city ?? ''}
+          onSelect={v => onChange({ ...value, city: v === '' ? undefined : v })}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
+
+      {isMobile && activeModal === 'date' && (
+        <MobileSelectModal
+          title={t.restaurantsList.dateFilter}
+          onClose={() => setActiveModal(null)}
         >
-          <SearchIcon />
-          <SearchButtonText>{t.common.search}</SearchButtonText>
-        </SearchButton>
-      </FieldsRow>
-    </FilterBar>
+          <SearchCalendarPicker
+            show={true}
+            inline={true}
+            selectedDate={value.date}
+            today={today}
+            maxDate={maxDate}
+            viewYear={viewYear}
+            viewMonth={viewMonth}
+            onNavigate={navigateMonth}
+            onSelectDay={handleDaySelect}
+            monthYearLabel={monthYearLabel}
+            dayNamesShort={dayNamesShort}
+            containerRef={calRef}
+          />
+        </MobileSelectModal>
+      )}
+
+      {isMobile && activeModal === 'time' && (
+        <MobileSelectModal
+          title={t.restaurantsList.timeFilter}
+          options={timeModalOptions}
+          selected={value.time}
+          onSelect={v => onChange({ ...value, time: v })}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
+
+      {isMobile && activeModal === 'guests' && (
+        <MobileSelectModal
+          title={t.restaurantsList.guestsFilter}
+          options={guestModalOptions}
+          selected={String(value.guests)}
+          onSelect={v => onChange({ ...value, guests: parseInt(v, 10) })}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
+    </>
   );
 }
