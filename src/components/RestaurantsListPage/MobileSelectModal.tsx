@@ -1,9 +1,10 @@
 'use client';
 
+import { styled } from '@pigment-css/react';
 import React from 'react';
 
 import CheckIcon from '@/icons/Check';
-import { foreground, slate100, white } from '@/tokens';
+import { foreground, slate100, slate400, white } from '@/tokens';
 
 interface Option {
   label: string;
@@ -19,6 +20,81 @@ interface MobileSelectModalProps {
   children?: React.ReactNode;
 }
 
+// ── Styled components ─────────────────────────────────────────────────────────
+
+const Overlay = styled('div')({
+  position: 'fixed',
+  inset: 0,
+  background: 'rgba(0,0,0,0.4)',
+  zIndex: 1000,
+});
+
+const Sheet = styled('div')({
+  position: 'fixed',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  background: white,
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+  padding: 24,
+  zIndex: 1001,
+  maxHeight: '80vh',
+  overflowY: 'auto',
+});
+
+const SheetHeader = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 16,
+});
+
+const SheetTitle = styled('h3')({
+  fontSize: 16,
+  fontWeight: 700,
+  margin: 0,
+  color: foreground,
+});
+
+const CloseBtn = styled('button')({
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: 20,
+  color: slate400,
+  padding: 4,
+  lineHeight: 1,
+});
+
+const OptionRow = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '12px 0',
+  borderBottom: `1px solid ${slate100}`,
+  cursor: 'pointer',
+  color: foreground,
+  fontSize: 15,
+  fontWeight: 400,
+  '&[data-selected="true"]': {
+    fontWeight: 700,
+  },
+});
+
+const OptionLabel = styled('span')({
+  fontSize: 14,
+  color: foreground,
+});
+
+const CheckWrap = styled('span')({
+  display: 'flex',
+  alignItems: 'center',
+  color: foreground,
+});
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function MobileSelectModal({
   title,
   options,
@@ -30,58 +106,17 @@ export default function MobileSelectModal({
   return (
     <>
       {/* Overlay */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.4)',
-          zIndex: 1000,
-        }}
-      />
+      <Overlay onClick={onClose} />
 
       {/* Bottom sheet */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: white,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          padding: 24,
-          zIndex: 1001,
-          maxHeight: '80vh',
-          overflowY: 'auto',
-        }}
-      >
+      <Sheet>
         {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 16,
-          }}
-        >
-          <span style={{ fontSize: 16, fontWeight: 700, color: foreground }}>{title}</span>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: 20,
-              color: foreground,
-              padding: '4px 8px',
-              lineHeight: 1,
-            }}
-            aria-label='Close'
-          >
+        <SheetHeader>
+          <SheetTitle>{title}</SheetTitle>
+          <CloseBtn onClick={onClose} aria-label='Close'>
             ✕
-          </button>
-        </div>
+          </CloseBtn>
+        </SheetHeader>
 
         {/* Content: custom children (e.g. calendar) or options list */}
         {children !== null && children !== undefined
@@ -89,34 +124,24 @@ export default function MobileSelectModal({
           : options?.map(opt => {
               const isSel = opt.value === selected;
               return (
-                <div
+                <OptionRow
                   key={opt.value}
+                  data-selected={isSel ? 'true' : undefined}
                   onClick={() => {
                     onSelect?.(opt.value);
                     onClose();
                   }}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '12px 0',
-                    borderBottom: `1px solid ${slate100}`,
-                    cursor: 'pointer',
-                    color: foreground,
-                    fontSize: 15,
-                    fontWeight: isSel ? 700 : 400,
-                  }}
                 >
-                  <span>{opt.label}</span>
+                  <OptionLabel>{opt.label}</OptionLabel>
                   {isSel && (
-                    <span style={{ display: 'flex', alignItems: 'center', color: foreground }}>
+                    <CheckWrap>
                       <CheckIcon />
-                    </span>
+                    </CheckWrap>
                   )}
-                </div>
+                </OptionRow>
               );
             })}
-      </div>
+      </Sheet>
     </>
   );
 }

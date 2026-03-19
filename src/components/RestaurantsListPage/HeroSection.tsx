@@ -3,7 +3,7 @@
 import { styled } from '@pigment-css/react';
 
 import { useTranslations } from '@/context/LocaleContext';
-import { rose500, white } from '@/tokens';
+import { rose500, slate200, white } from '@/tokens';
 
 import SearchFilters, { SearchFiltersValue } from './SearchFilters';
 
@@ -81,7 +81,7 @@ const TitleLineAccent = styled('h1')({
 const Subtitle = styled('p')({
   fontSize: '12px',
   fontWeight: 400,
-  color: '#E2E8F0',
+  color: slate200,
   lineHeight: '1.6',
   margin: '0 0 48px',
   maxWidth: '560px',

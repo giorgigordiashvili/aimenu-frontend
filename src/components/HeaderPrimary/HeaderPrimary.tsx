@@ -25,8 +25,11 @@ import {
   rose700,
   shadowMd,
   slate100,
+  slate150,
   slate200,
   slate50,
+  slate800,
+  slate900,
   white,
 } from '@/tokens';
 
@@ -138,11 +141,11 @@ const LoginButton = styled(Link)({
   borderRadius: '8px',
   fontSize: '14px',
   fontWeight: 500,
-  color: '#0A0A0A',
+  color: foreground,
   textDecoration: 'none',
   background: 'transparent',
   transition: 'background 0.15s',
-  '&:hover': { background: '#e9ebef' },
+  '&:hover': { background: slate150 },
 });
 
 const RegisterButton = styled(Link)({
@@ -153,9 +156,9 @@ const RegisterButton = styled(Link)({
   fontWeight: 500,
   color: white,
   textDecoration: 'none',
-  background: '#0F172B',
+  background: slate900,
   transition: 'background 0.15s',
-  '&:hover': { background: '#1E293B' },
+  '&:hover': { background: slate800 },
 });
 
 // ── User menu button ──────────────────────────────────────────────────────────
@@ -418,9 +421,9 @@ const DrawerRegisterBtn = styled(Link)({
   color: white,
   textDecoration: 'none',
   textAlign: 'center',
-  background: '#0F172B',
+  background: slate900,
   transition: 'background 0.15s',
-  '&:hover': { background: '#1E293B' },
+  '&:hover': { background: slate800 },
 });
 
 const DrawerFooter = styled('div')({

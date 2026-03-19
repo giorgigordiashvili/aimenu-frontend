@@ -7,7 +7,16 @@ import MainButton from '@/components/MainButton/MainButton';
 import HeartOutlined from '@/icons/HeartOutline';
 import LocationIcon from '@/icons/Location';
 import Star from '@/icons/Star';
-import { border, foreground, muted, radiusMd, shadowCard, white, yellow500 } from '@/tokens';
+import {
+  border,
+  foreground,
+  muted,
+  radiusMd,
+  shadowCard,
+  slate100,
+  white,
+  yellow500,
+} from '@/tokens';
 
 import { FavoriteButton, FavoriteYellow, PriceWrapper, RestaurantCardProps } from './shared';
 
@@ -23,7 +32,7 @@ const AmenityPill = styled('span')({
   fontWeight: 500,
   lineHeight: '15px',
   color: muted,
-  background: '#f1f5f9',
+  background: slate100,
   borderRadius: '20px',
   padding: '2px 8px',
   whiteSpace: 'nowrap',
