@@ -49,3 +49,5 @@ Check out our
 for more details.
 
 # aimenu-frontend
+
+AiMenu - Digital restaurant menu platform.
