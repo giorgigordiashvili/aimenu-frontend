@@ -65,6 +65,9 @@ export const CalNavBtn = styled('button')({
   lineHeight: 1,
   display: 'flex',
   alignItems: 'center',
+  width: 28,
+  height: 28,
+  justifyContent: 'center',
   '&:hover': { backgroundColor: slate100 },
 });
 
