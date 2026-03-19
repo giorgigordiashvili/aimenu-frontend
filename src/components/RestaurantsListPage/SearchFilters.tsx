@@ -99,6 +99,8 @@ const FilterFieldFirst = styled('div')({
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
   '&:hover svg': { color: rose500 },
+  '&:hover span': { color: rose500 },
+  '&:hover button': { color: rose500 },
   '@media (max-width: 768px)': {
     borderRight: 'none',
     borderBottom: `1px solid ${slate100}`,
@@ -123,6 +125,8 @@ const FilterField = styled('div')({
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
   '&:hover svg': { color: rose500 },
+  '&:hover span': { color: rose500 },
+  '&:hover button': { color: rose500 },
   '@media (max-width: 768px)': {
     borderRight: 'none',
     borderBottom: `1px solid ${slate100}`,
@@ -145,6 +149,8 @@ const FilterFieldLast = styled('div')({
   '&:hover': { background: slate50 },
   '&:hover label': { color: rose500 },
   '&:hover svg': { color: rose500 },
+  '&:hover span': { color: rose500 },
+  '&:hover button': { color: rose500 },
   '@media (max-width: 768px)': {
     borderBottom: `1px solid ${slate100}`,
     width: '100%',
@@ -182,6 +188,7 @@ const FieldLabel = styled('label')({
   transition: 'color 0.15s',
   userSelect: 'none',
   cursor: 'pointer',
+  alignSelf: 'baseline',
 });
 
 /** Icon + value text row */
@@ -228,11 +235,9 @@ const ChevronWrap = styled('span')({
 
 /** Circle on desktop, full-width pill on mobile */
 const SearchButton = styled('button')({
-  borderRadius: '50%',
+  borderRadius: 24,
   background: rose600,
-  width: 48,
-  height: 48,
-  minWidth: 48,
+  padding: '16px 12px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -247,7 +252,6 @@ const SearchButton = styled('button')({
   '@media (max-width: 768px)': {
     borderRadius: '9999px',
     width: '100%',
-    height: 48,
   },
 });
 
