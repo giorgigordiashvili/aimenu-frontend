@@ -334,7 +334,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
       .get('/api/v1/restaurants/cities/')
       .then(res => {
         const raw = res.data;
-        const cities = Array.isArray(raw) ? raw : (raw?.results ?? raw?.data ?? []);
+        const cities = Array.isArray(raw) ? raw : (raw?.cities ?? raw?.results ?? raw?.data ?? []);
         setApiCities(cities);
       })
       .catch(() => {
