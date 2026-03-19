@@ -26,6 +26,7 @@ const SectionHead = styled('div')({
   justifyContent: 'space-between',
   marginBottom: '32px',
   gap: '16px',
+  '@media (max-width: 768px)': { flexDirection: 'column', alignItems: 'stretch' },
 });
 
 const TitleGroup = styled('div')({
@@ -66,6 +67,7 @@ const ViewAllButton = styled('button')({
   flexShrink: 0,
   transition: 'background 0.15s',
   '&:hover': { background: slate100 },
+  '@media (max-width: 768px)': { width: '100%' },
 });
 
 const Grid = styled('div')({
