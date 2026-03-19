@@ -129,7 +129,7 @@ const fetchMenuData = async (slug: string, locale: Locale): Promise<MenuDataResu
   }));
 
   // Format products
-  const formattedProducts = allItems.map((item) => formatMenuItem(item, locale));
+  const formattedProducts = allItems.map(item => formatMenuItem(item, locale));
 
   return {
     products: formattedProducts,
