@@ -27,7 +27,7 @@ function getFirstDayOfMonth(year: number, month: number) {
 
 export const CalContainer = styled('div')({
   position: 'absolute',
-  top: 'calc(100% + 6px)',
+  top: 'calc(100% + 12px)',
   left: 0,
   right: 0,
   zIndex: 300,
