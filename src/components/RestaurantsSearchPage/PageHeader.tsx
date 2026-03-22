@@ -3,12 +3,12 @@
 import { styled } from '@pigment-css/react';
 
 import SearchIcon from '@/icons/Search';
-import { border, foreground, slate400, white } from '@/tokens';
+import { border, foreground, slate400, slate50, white } from '@/tokens';
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 
 const HeaderSection = styled('div')({
-  background: white,
+  background: slate50,
   padding: '24px 0',
   '@media (min-width: 768px)': {
     padding: '32px 0',
