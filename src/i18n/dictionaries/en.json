@@ -382,6 +382,10 @@
       "payment": "Payment"
     }
   },
+  "restaurantsSearch": {
+    "loading": "Loading...",
+    "noResults": "No restaurants found"
+  },
   "footer": {
     "navigation": "Navigation",
     "help": "Help",

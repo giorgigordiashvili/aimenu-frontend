@@ -382,6 +382,10 @@
       "payment": "გადახდა"
     }
   },
+  "restaurantsSearch": {
+    "loading": "იტვირთება...",
+    "noResults": "რესტორანი ვერ მოიძებნა"
+  },
   "footer": {
     "navigation": "ნავიგაცია",
     "help": "დახმარება",
