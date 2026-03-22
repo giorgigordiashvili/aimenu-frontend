@@ -40,7 +40,7 @@ const TabsSection = styled('div')({
 });
 
 const TabsInner = styled('div')({
-  maxWidth: '1280px',
+  maxWidth: '1120px',
   margin: '0 auto',
 });
 
@@ -58,7 +58,7 @@ const FiltersRow = styled('div')({
 });
 
 const FiltersInner = styled('div')({
-  maxWidth: '1280px',
+  maxWidth: '1120px',
   margin: '0 auto',
   width: '100%',
   display: 'flex',
@@ -90,7 +90,7 @@ const CitySelect = styled('select')({
 });
 
 const ContentWrapper = styled('div')({
-  maxWidth: '1280px',
+  maxWidth: '1120px',
   margin: '0 auto',
   padding: '32px 20px 80px',
   '@media (min-width: 768px)': {
@@ -100,14 +100,17 @@ const ContentWrapper = styled('div')({
 
 const Grid = styled('div')({
   display: 'grid',
-  gridTemplateColumns: '1fr',
-  gap: '20px',
-  '@media (min-width: 640px)': {
+  gridTemplateColumns: 'repeat(4, 1fr)',
+  gap: 24,
+  '@media (max-width: 1024px)': {
     gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: 16,
   },
-  '@media (min-width: 1024px)': {
-    gridTemplateColumns: 'repeat(3, 1fr)',
+  '@media (max-width: 640px)': {
+    gridTemplateColumns: '1fr',
+    gap: 16,
   },
+  marginTop: 24,
 });
 
 const CardWrapper = styled('div')({
