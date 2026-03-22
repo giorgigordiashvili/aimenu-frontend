@@ -12,7 +12,16 @@ import Footer from '@/components/Footer/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import { border, foreground, muted, slate100, slate200, slate400, white } from '@/tokens';
+import {
+  border,
+  foreground,
+  muted,
+  shadowCard,
+  slate100,
+  slate200,
+  slate400,
+  white,
+} from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 import PageHeader from './PageHeader';
 import Pagination from './Pagination';
@@ -43,20 +52,21 @@ const TabsInner = styled('div')({
 });
 
 const FiltersRow = styled('div')({
-  background: white,
-  borderBottom: `1px solid ${slate200}`,
-  padding: '12px 0',
+  background: 'transparent',
+  paddingTop: '16px',
+  paddingBottom: '8px',
 });
 
-const FiltersInner = styled('div')({
+const FiltersCard = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '0 24px',
-  width: '100%',
+  background: white,
+  borderRadius: '14px',
+  boxShadow: shadowCard,
+  padding: '12px 24px',
   display: 'flex',
   alignItems: 'center',
-  gap: '12px',
-  flexWrap: 'wrap',
+  gap: '16px',
 });
 
 const FiltersLabel = styled('span')({
@@ -192,27 +202,6 @@ export default function RestaurantsSearchPage() {
     setSearchInput(searchParam);
   }, [searchParam]);
 
-  // Fetch categories once
-  useEffect(() => {
-    axiosInstance
-      .get<{ id: string; name: string; icon?: string; slug: string }[]>(
-        '/api/v1/restaurants/categories/'
-      )
-      .then(res => {
-        const data = Array.isArray(res.data) ? res.data : [];
-        setCategories(
-          data.map(c => ({
-            id: c.id ?? c.slug,
-            name: c.name,
-            icon: c.icon,
-          }))
-        );
-      })
-      .catch(() => {
-        // categories are optional, ignore error
-      });
-  }, []);
-
   // Fetch cities once
   useEffect(() => {
     axiosInstance
@@ -245,8 +234,37 @@ export default function RestaurantsSearchPage() {
       categoryParam || undefined // search (used as category filter)
     )
       .then(data => {
-        setRestaurants(data.results ?? []);
+        const results = data.results ?? [];
+        setRestaurants(results);
         setTotalCount(data.count ?? 0);
+
+        // Derive unique categories from the restaurant list
+        const uniqueCategories = Array.from(
+          new Map(
+            results
+              .filter(r => r.category)
+              .map(r => {
+                const parsed = parseTranslations(r.category.translations) as Record<
+                  string,
+                  { name?: string }
+                >;
+                const name =
+                  parsed[locale]?.name ??
+                  parsed['ka']?.name ??
+                  parsed['en']?.name ??
+                  r.category.slug;
+                return [
+                  r.category.id,
+                  {
+                    id: String(r.category.id),
+                    name,
+                    icon: r.category.icon,
+                  },
+                ];
+              })
+          ).values()
+        );
+        setCategories(uniqueCategories);
       })
       .catch(() => {
         setRestaurants([]);
@@ -255,7 +273,7 @@ export default function RestaurantsSearchPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [cityParam, categoryParam, pageParam, searchParam]);
+  }, [cityParam, categoryParam, pageParam, searchParam, locale]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
@@ -337,7 +355,7 @@ export default function RestaurantsSearchPage() {
         </TabsSection>
 
         <FiltersRow>
-          <FiltersInner>
+          <FiltersCard>
             <FiltersLabel>{t.restaurantsSearch.filters}</FiltersLabel>
             <CitySelect value={cityParam} onChange={e => handleCityChange(e.target.value)}>
               <option value=''>{t.restaurantsSearch.allCities}</option>
@@ -349,7 +367,7 @@ export default function RestaurantsSearchPage() {
                 </option>
               ))}
             </CitySelect>
-          </FiltersInner>
+          </FiltersCard>
         </FiltersRow>
 
         <ContentWrapper>
