@@ -145,6 +145,13 @@ interface Category {
   icon?: string;
 }
 
+interface CityOption {
+  id: number | string;
+  slug: string;
+  country: string;
+  translations: Record<string, { name: string }>;
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const PAGE_SIZE = 12;
@@ -183,7 +190,7 @@ export default function RestaurantsSearchPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
+  const [cities, setCities] = useState<CityOption[]>([]);
 
   // Sync search input when URL param changes
   useEffect(() => {
@@ -214,7 +221,7 @@ export default function RestaurantsSearchPage() {
   // Fetch cities once
   useEffect(() => {
     axiosInstance
-      .get<{ cities: string[] }>('/api/v1/restaurants/cities/')
+      .get<{ cities: CityOption[] }>('/api/v1/restaurants/cities/')
       .then(res => {
         const data = res.data?.cities;
         if (Array.isArray(data)) {
@@ -340,8 +347,10 @@ export default function RestaurantsSearchPage() {
             <CitySelect value={cityParam} onChange={e => handleCityChange(e.target.value)}>
               <option value=''>{t.restaurantsSearch.allCities}</option>
               {cities.map(city => (
-                <option key={city} value={city}>
-                  {city}
+                <option key={city.slug} value={city.slug}>
+                  {city.translations?.[locale]?.name ??
+                    city.translations?.['ka']?.name ??
+                    city.slug}
                 </option>
               ))}
             </CitySelect>
