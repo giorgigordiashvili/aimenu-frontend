@@ -33,33 +33,25 @@ const MainContent = styled('main')({
 const TabsSection = styled('div')({
   background: white,
   borderBottom: `1px solid ${slate200}`,
-  padding: '16px 20px',
-  '@media (min-width: 768px)': {
-    padding: '16px 48px',
-  },
+  padding: '16px 0',
 });
 
 const TabsInner = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
+  padding: '0 24px',
 });
 
 const FiltersRow = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-  flexWrap: 'wrap',
-  padding: '12px 20px',
   background: white,
   borderBottom: `1px solid ${slate200}`,
-  '@media (min-width: 768px)': {
-    padding: '12px 48px',
-  },
+  padding: '12px 0',
 });
 
 const FiltersInner = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
+  padding: '0 24px',
   width: '100%',
   display: 'flex',
   alignItems: 'center',
@@ -92,9 +84,9 @@ const CitySelect = styled('select')({
 const ContentWrapper = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '32px 20px 80px',
+  padding: '32px 24px 80px',
   '@media (min-width: 768px)': {
-    padding: '48px 80px 100px',
+    padding: '48px 24px 100px',
   },
 });
 

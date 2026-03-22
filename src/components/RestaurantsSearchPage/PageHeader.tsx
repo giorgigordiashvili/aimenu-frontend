@@ -9,15 +9,16 @@ import { border, foreground, slate400, white } from '@/tokens';
 
 const HeaderSection = styled('div')({
   background: white,
-  padding: '24px 16px',
+  padding: '24px 0',
   '@media (min-width: 768px)': {
-    padding: '32px 48px',
+    padding: '32px 0',
   },
 });
 
 const HeaderInner = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
+  padding: '0 24px',
   display: 'flex',
   flexDirection: 'column',
   gap: '16px',
