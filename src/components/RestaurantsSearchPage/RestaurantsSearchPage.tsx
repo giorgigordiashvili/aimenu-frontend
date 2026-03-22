@@ -17,6 +17,7 @@ import {
   foreground,
   muted,
   shadowCard,
+  slate50,
   slate100,
   slate200,
   slate400,
@@ -30,7 +31,7 @@ import Pagination from './Pagination';
 
 const PageWrapper = styled('div')({
   minHeight: '100vh',
-  background: white,
+  background: slate50,
   display: 'flex',
   flexDirection: 'column',
 });
@@ -41,7 +42,6 @@ const MainContent = styled('main')({
 
 const TabsSection = styled('div')({
   background: white,
-  borderBottom: `1px solid ${slate200}`,
   padding: '16px 0',
 });
 
