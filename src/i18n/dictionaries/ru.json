@@ -384,7 +384,13 @@
   },
   "restaurantsSearch": {
     "loading": "Загрузка...",
-    "noResults": "Рестораны не найдены"
+    "noResults": "Рестораны не найдены",
+    "title": "Рестораны",
+    "subtitle": "Найдите подходящее место",
+    "filters": "Фильтры:",
+    "allCities": "Все города",
+    "search": "Поиск...",
+    "allCategories": "Все"
   },
   "footer": {
     "navigation": "Навигация",

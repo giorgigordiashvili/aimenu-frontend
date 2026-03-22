@@ -384,7 +384,13 @@
   },
   "restaurantsSearch": {
     "loading": "Loading...",
-    "noResults": "No restaurants found"
+    "noResults": "No restaurants found",
+    "title": "Restaurants",
+    "subtitle": "Find your perfect dining spot",
+    "filters": "Filters:",
+    "allCities": "All Cities",
+    "search": "Search...",
+    "allCategories": "All"
   },
   "footer": {
     "navigation": "Navigation",

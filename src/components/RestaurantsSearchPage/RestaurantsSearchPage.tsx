@@ -7,26 +7,86 @@ import { styled } from '@pigment-css/react';
 import { restaurantsList } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
 import axiosInstance from '@/api/axios';
-import CategoryTabs from '@/components/CategoryTabs/CategoryTabs';
+import CategoryFilterTabs from '@/components/CategoryFilterTabs/CategoryFilterTabs';
+import Footer from '@/components/Footer/Footer';
+import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
-import HeroSection from '@/components/RestaurantsListPage/HeroSection';
-import type { SearchFiltersValue } from '@/components/RestaurantsListPage/SearchFilters';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import { muted, slate100, slate200, white } from '@/tokens';
+import { border, foreground, muted, slate100, slate200, slate400, white } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
+import PageHeader from './PageHeader';
 import Pagination from './Pagination';
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 
-const StickyHeader = styled('div')({
-  position: 'sticky',
-  top: 0,
-  zIndex: 100,
-});
-
 const PageWrapper = styled('div')({
   minHeight: '100vh',
   background: white,
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const MainContent = styled('main')({
+  flex: 1,
+});
+
+const TabsSection = styled('div')({
+  background: white,
+  borderBottom: `1px solid ${slate200}`,
+  padding: '16px 20px',
+  '@media (min-width: 768px)': {
+    padding: '16px 48px',
+  },
+});
+
+const TabsInner = styled('div')({
+  maxWidth: '1280px',
+  margin: '0 auto',
+});
+
+const FiltersRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  flexWrap: 'wrap',
+  padding: '12px 20px',
+  background: white,
+  borderBottom: `1px solid ${slate200}`,
+  '@media (min-width: 768px)': {
+    padding: '12px 48px',
+  },
+});
+
+const FiltersInner = styled('div')({
+  maxWidth: '1280px',
+  margin: '0 auto',
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  flexWrap: 'wrap',
+});
+
+const FiltersLabel = styled('span')({
+  fontSize: '14px',
+  fontWeight: 500,
+  color: muted,
+  flexShrink: 0,
+});
+
+const CitySelect = styled('select')({
+  padding: '8px 12px',
+  border: `1px solid ${border}`,
+  borderRadius: '8px',
+  fontSize: '14px',
+  color: foreground,
+  background: white,
+  cursor: 'pointer',
+  outline: 'none',
+  fontFamily: 'inherit',
+  '&:focus': {
+    borderColor: slate400,
+  },
 });
 
 const ContentWrapper = styled('div')({
@@ -36,10 +96,6 @@ const ContentWrapper = styled('div')({
   '@media (min-width: 768px)': {
     padding: '48px 80px 100px',
   },
-});
-
-const CategoryTabsWrapper = styled('div')({
-  marginBottom: '32px',
 });
 
 const Grid = styled('div')({
@@ -117,25 +173,22 @@ export default function RestaurantsSearchPage() {
   const cityParam = searchParams.get('city') ?? '';
   const categoryParam = searchParams.get('category') ?? null;
   const pageParam = parseInt(searchParams.get('page') ?? '1', 10);
+  const searchParam = searchParams.get('search') ?? '';
 
-  // Local filter form state (mirrors URL)
-  const [filters, setFilters] = useState<SearchFiltersValue>({
-    city: cityParam,
-    date: null,
-    time: '',
-    guests: 2,
-  });
+  // Local search input state
+  const [searchInput, setSearchInput] = useState(searchParam);
 
   // Data state
   const [restaurants, setRestaurants] = useState<RestaurantList[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
 
-  // Sync city from URL to local filter state
+  // Sync search input when URL param changes
   useEffect(() => {
-    setFilters(prev => ({ ...prev, city: cityParam }));
-  }, [cityParam]);
+    setSearchInput(searchParam);
+  }, [searchParam]);
 
   // Fetch categories once
   useEffect(() => {
@@ -158,6 +211,21 @@ export default function RestaurantsSearchPage() {
       });
   }, []);
 
+  // Fetch cities once
+  useEffect(() => {
+    axiosInstance
+      .get<{ cities: string[] }>('/api/v1/restaurants/cities/')
+      .then(res => {
+        const data = res.data?.cities;
+        if (Array.isArray(data)) {
+          setCities(data);
+        }
+      })
+      .catch(() => {
+        // cities are optional, ignore error
+      });
+  }, []);
+
   // Fetch restaurants when URL params change
   useEffect(() => {
     setLoading(true);
@@ -168,7 +236,7 @@ export default function RestaurantsSearchPage() {
       cityParam || undefined, // city
       undefined, // country
       undefined, // minRating
-      undefined, // name
+      searchParam || undefined, // name
       undefined, // ordering
       pageParam, // page
       PAGE_SIZE, // pageSize
@@ -185,108 +253,154 @@ export default function RestaurantsSearchPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [cityParam, categoryParam, pageParam]);
+  }, [cityParam, categoryParam, pageParam, searchParam]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
+  // ── URL helpers ────────────────────────────────────────────────────────────
+
+  const buildParams = useCallback(
+    (overrides: { city?: string; category?: string | null; page?: number; search?: string }) => {
+      const params = new URLSearchParams();
+      const city = 'city' in overrides ? overrides.city : cityParam;
+      const category = 'category' in overrides ? overrides.category : categoryParam;
+      const page = overrides.page ?? 1;
+      const search = 'search' in overrides ? overrides.search : searchParam;
+
+      if (city) params.set('city', city);
+      if (category) params.set('category', category);
+      if (search) params.set('search', search);
+      params.set('page', String(page));
+      return params.toString();
+    },
+    [cityParam, categoryParam, searchParam]
+  );
+
   // ── Handlers ───────────────────────────────────────────────────────────────
 
-  const handleSearch = useCallback(() => {
-    const params = new URLSearchParams();
-    if (filters.city) params.set('city', filters.city);
-    if (categoryParam) params.set('category', categoryParam);
-    params.set('page', '1');
-    router.push(`/${locale}/restaurants-search?${params.toString()}`);
-  }, [filters.city, categoryParam, locale, router]);
+  const handleSearchSubmit = useCallback(() => {
+    const qs = buildParams({ search: searchInput, page: 1 });
+    router.push(`/${locale}/restaurants-search?${qs}`);
+  }, [buildParams, searchInput, locale, router]);
 
   const handleCategoryChange = useCallback(
     (id: string | null) => {
-      const params = new URLSearchParams();
-      if (cityParam) params.set('city', cityParam);
-      if (id) params.set('category', id);
-      params.set('page', '1');
-      router.push(`/${locale}/restaurants-search?${params.toString()}`);
+      const qs = buildParams({ category: id, page: 1 });
+      router.push(`/${locale}/restaurants-search?${qs}`);
     },
-    [cityParam, locale, router]
+    [buildParams, locale, router]
+  );
+
+  const handleCityChange = useCallback(
+    (city: string) => {
+      const qs = buildParams({ city, page: 1 });
+      router.push(`/${locale}/restaurants-search?${qs}`);
+    },
+    [buildParams, locale, router]
   );
 
   const handlePageChange = useCallback(
     (p: number) => {
-      const params = new URLSearchParams();
-      if (cityParam) params.set('city', cityParam);
-      if (categoryParam) params.set('category', categoryParam);
-      params.set('page', String(p));
-      router.push(`/${locale}/restaurants-search?${params.toString()}`);
+      const qs = buildParams({ page: p });
+      router.push(`/${locale}/restaurants-search?${qs}`);
     },
-    [cityParam, categoryParam, locale, router]
+    [buildParams, locale, router]
   );
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <PageWrapper>
-      <StickyHeader>
-        <HeroSection filters={filters} onFiltersChange={setFilters} onSearch={handleSearch} />
-      </StickyHeader>
+      <HeaderPrimary />
 
-      <ContentWrapper>
-        <CategoryTabsWrapper>
-          <CategoryTabs
-            categories={categories}
-            activeCategory={categoryParam}
-            onCategoryChange={handleCategoryChange}
-          />
-        </CategoryTabsWrapper>
+      <MainContent>
+        <PageHeader
+          title={t.restaurantsSearch.title}
+          subtitle={t.restaurantsSearch.subtitle}
+          searchValue={searchInput}
+          onSearchChange={setSearchInput}
+          onSearchSubmit={handleSearchSubmit}
+          searchPlaceholder={t.restaurantsSearch.search}
+        />
 
-        <Grid>
-          {loading ? (
-            Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
-          ) : restaurants.length === 0 ? (
-            <EmptyState>{t.restaurantsSearch.noResults}</EmptyState>
-          ) : (
-            restaurants.map(restaurant => {
-              const categoryName = restaurant.category
-                ? getTranslation(
-                    parseTranslations(restaurant.category.translations),
-                    'name',
-                    locale
-                  ) || restaurant.category.slug
-                : undefined;
+        <TabsSection>
+          <TabsInner>
+            <CategoryFilterTabs
+              categories={categories}
+              activeId={categoryParam}
+              allLabel={t.restaurantsSearch.allCategories}
+              onChange={handleCategoryChange}
+            />
+          </TabsInner>
+        </TabsSection>
 
-              const amenityNames = (restaurant.amenities || [])
-                .map(
-                  a => getTranslation(parseTranslations(a.translations), 'name', locale) || a.slug
-                )
-                .filter(Boolean);
+        <FiltersRow>
+          <FiltersInner>
+            <FiltersLabel>{t.restaurantsSearch.filters}</FiltersLabel>
+            <CitySelect value={cityParam} onChange={e => handleCityChange(e.target.value)}>
+              <option value=''>{t.restaurantsSearch.allCities}</option>
+              {cities.map(city => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </CitySelect>
+          </FiltersInner>
+        </FiltersRow>
 
-              return (
-                <CardWrapper key={restaurant.id}>
-                  <RestaurantCardPrimary
-                    variant='default'
-                    restaurantTitle={restaurant.name}
-                    imageSrc={restaurant.logo || '/RestaurantCardImage.jpg'}
-                    locationText={restaurant.city}
-                    rating={parseFloat(restaurant.average_rating || '0')}
-                    filterText={categoryName}
-                    priceLevel='₾₾'
-                    href={`/${locale}/restaurants/${restaurant.slug}`}
-                    detailsLabel={t.restaurantsList.details}
-                    showDetailsButton={true}
-                    showBookButton={false}
-                    showFavoriteYellow={false}
-                    showFavoriteButton={true}
-                    showRating={!!restaurant.average_rating}
-                    showFilterText={!!categoryName}
-                    amenities={amenityNames}
-                  />
-                </CardWrapper>
-              );
-            })
-          )}
-        </Grid>
+        <ContentWrapper>
+          <Grid>
+            {loading ? (
+              Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
+            ) : restaurants.length === 0 ? (
+              <EmptyState>{t.restaurantsSearch.noResults}</EmptyState>
+            ) : (
+              restaurants.map(restaurant => {
+                const categoryName = restaurant.category
+                  ? getTranslation(
+                      parseTranslations(restaurant.category.translations),
+                      'name',
+                      locale
+                    ) || restaurant.category.slug
+                  : undefined;
 
-        <Pagination page={pageParam} totalPages={totalPages} onPageChange={handlePageChange} />
-      </ContentWrapper>
+                const amenityNames = (restaurant.amenities || [])
+                  .map(
+                    a => getTranslation(parseTranslations(a.translations), 'name', locale) || a.slug
+                  )
+                  .filter(Boolean);
+
+                return (
+                  <CardWrapper key={restaurant.id}>
+                    <RestaurantCardPrimary
+                      variant='default'
+                      restaurantTitle={restaurant.name}
+                      imageSrc={restaurant.logo || '/RestaurantCardImage.jpg'}
+                      locationText={restaurant.city}
+                      rating={parseFloat(restaurant.average_rating || '0')}
+                      filterText={categoryName}
+                      priceLevel='₾₾'
+                      href={`/${locale}/restaurants/${restaurant.slug}`}
+                      detailsLabel={t.restaurantsList.details}
+                      showDetailsButton={true}
+                      showBookButton={false}
+                      showFavoriteYellow={false}
+                      showFavoriteButton={true}
+                      showRating={!!restaurant.average_rating}
+                      showFilterText={!!categoryName}
+                      amenities={amenityNames}
+                    />
+                  </CardWrapper>
+                );
+              })
+            )}
+          </Grid>
+
+          <Pagination page={pageParam} totalPages={totalPages} onPageChange={handlePageChange} />
+        </ContentWrapper>
+      </MainContent>
+
+      <Footer locale={locale} />
     </PageWrapper>
   );
 }

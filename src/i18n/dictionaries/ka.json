@@ -384,7 +384,13 @@
   },
   "restaurantsSearch": {
     "loading": "იტვირთება...",
-    "noResults": "რესტორანი ვერ მოიძებნა"
+    "noResults": "რესტორანი ვერ მოიძებნა",
+    "title": "რესტორნები",
+    "subtitle": "იპოვეთ თქვენთვის სასურველი ადგილი",
+    "filters": "ფილტრები:",
+    "allCities": "ყველა ქალაქი",
+    "search": "ძიება...",
+    "allCategories": "ყველა"
   },
   "footer": {
     "navigation": "ნავიგაცია",
