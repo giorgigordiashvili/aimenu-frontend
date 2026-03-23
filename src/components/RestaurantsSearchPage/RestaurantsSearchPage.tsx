@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { styled } from '@pigment-css/react';
 
-import { restaurantsList } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
 import axiosInstance from '@/api/axios';
 import CategoryFilterTabs from '@/components/CategoryFilterTabs/CategoryFilterTabs';
@@ -220,29 +219,30 @@ export default function RestaurantsSearchPage() {
   // Fetch restaurants when URL params change
   useEffect(() => {
     setLoading(true);
-    restaurantsList(
-      undefined, // acceptsRemoteOrders
-      undefined, // acceptsReservations
-      undefined, // acceptsTakeaway
-      cityParam || undefined, // city
-      undefined, // country
-      undefined, // minRating
-      searchParam || undefined, // name
-      undefined, // ordering
-      pageParam, // page
-      PAGE_SIZE // pageSize
-    )
-      .then(data => {
-        const results = data.results ?? [];
+    axiosInstance
+      .get('/api/v1/restaurants/', {
+        params: {
+          ...(cityParam ? { city: cityParam } : {}),
+          ...(categoryParam ? { category: categoryParam } : {}),
+          ...(searchParam ? { search: searchParam } : {}),
+          page: pageParam,
+          page_size: PAGE_SIZE,
+          ordering: '-average_rating',
+        },
+      })
+      .then(response => {
+        const data = response.data;
+        const results = Array.isArray(data) ? data : (data?.results ?? []);
+        const count = data?.count ?? results.length;
         setRestaurants(results);
-        setTotalCount(data.count ?? 0);
+        setTotalCount(count);
 
         // Derive unique categories from the restaurant list
-        const uniqueCategories = Array.from(
-          new Map(
+        const uniqueCategories: Category[] = Array.from(
+          new Map<string | number, Category>(
             results
-              .filter(r => r.category)
-              .map(r => {
+              .filter((r: RestaurantList) => r.category)
+              .map((r: RestaurantList) => {
                 const parsed = parseTranslations(r.category.translations) as Record<
                   string,
                   { name?: string }
@@ -272,13 +272,9 @@ export default function RestaurantsSearchPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [cityParam, pageParam, searchParam, locale]);
+  }, [cityParam, categoryParam, searchParam, pageParam, locale]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-
-  const filteredRestaurants = categoryParam
-    ? restaurants.filter(r => r.category && String(r.category.id) === categoryParam)
-    : restaurants;
 
   // ── URL helpers ────────────────────────────────────────────────────────────
 
@@ -377,10 +373,10 @@ export default function RestaurantsSearchPage() {
           <Grid>
             {loading ? (
               Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
-            ) : filteredRestaurants.length === 0 ? (
+            ) : restaurants.length === 0 ? (
               <EmptyState>{t.restaurantsSearch.noResults}</EmptyState>
             ) : (
-              filteredRestaurants.map(restaurant => {
+              restaurants.map(restaurant => {
                 const categoryName = restaurant.category
                   ? getTranslation(
                       parseTranslations(restaurant.category.translations),
