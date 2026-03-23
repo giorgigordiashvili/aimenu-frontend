@@ -7,8 +7,10 @@ import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import ArrowIcon from '@/icons/Arrow';
 import Error404Icon from '@/icons/Error404';
-import { foreground, slate400 } from '@/tokens';
+import House from '@/icons/House';
+import { foreground, slate400, slate50 } from '@/tokens';
 
 // ── Styled Components ────────────────────────────────────────────────────────
 
@@ -16,6 +18,7 @@ const PageWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   minHeight: '100vh',
+  backgroundColor: slate50,
 });
 
 const ContentSection = styled('section')({
@@ -33,8 +36,8 @@ const IconWrap = styled('div')({
 });
 
 const Title = styled('h1')({
-  fontSize: 28,
-  fontWeight: 700,
+  fontSize: 16,
+  fontWeight: 400,
   marginTop: 32,
   marginBottom: 0,
   color: foreground,
@@ -78,11 +81,19 @@ export default function NotFoundPage() {
         <Subtitle>{t.notFound.message}</Subtitle>
 
         <ButtonRow>
-          <MainButton variant='outline' title={t.notFound.backHome} onClick={() => router.back()} />
+          <MainButton
+            variant='outline'
+            title={t.notFound.backHome}
+            onClick={() => router.back()}
+            icon={ArrowIcon}
+            iconPosition='left'
+          />
           <MainButton
             variant='rose_cta'
             title={t.notFound.goHome}
             onClick={() => router.push(`/${locale}`)}
+            icon={House}
+            iconPosition='left'
           />
         </ButtonRow>
       </ContentSection>
