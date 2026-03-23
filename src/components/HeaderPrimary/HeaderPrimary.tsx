@@ -477,8 +477,8 @@ export default function HeaderPrimary() {
     : '';
 
   const navLinks = [
-    { label: t.header.home, href: `/${locale}` },
-    { label: t.header.restaurants, href: `/${locale}/restaurants` },
+    { label: t.header.home, href: `/${locale}/restaurants` },
+    { label: t.header.restaurants, href: `/${locale}/restaurants-search` },
     { label: t.header.about, href: `/${locale}/about` },
     { label: t.header.contact, href: `/${locale}/contact` },
   ];
