@@ -406,6 +406,36 @@
     "copyright": "© {year} AiMenu. All rights reserved.",
     "tagline": "Restaurant discovery and reservation platform"
   },
+  "about": {
+    "title": "About Us",
+    "subtitle": "We connect people with the best local restaurants",
+    "mission": "Our Mission",
+    "missionText": "AiMenu's goal is to simplify the dining experience for everyone. We build a platform where users can easily find, book, and enjoy the best food.",
+    "statsRestaurants": "Restaurants",
+    "statsCities": "Cities",
+    "statsUsers": "Users"
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "Contact us with any questions",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Send",
+      "success": "Your message has been sent!",
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email",
+      "messageRequired": "Message is required"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "message": "Sorry, the page you requested does not exist or has been moved.",
+    "backHome": "Go Back",
+    "goHome": "Go to Homepage"
+  },
   "payment": {
     "savedCards": "Saved Cards",
     "savedCardsSubtitle": "Manage your payment methods securely",
