@@ -41,7 +41,7 @@ const MainContent = styled('main')({
 });
 
 const TabsSection = styled('div')({
-  background: white,
+  background: slate50,
   padding: '16px 0',
 });
 
@@ -230,8 +230,7 @@ export default function RestaurantsSearchPage() {
       searchParam || undefined, // name
       undefined, // ordering
       pageParam, // page
-      PAGE_SIZE, // pageSize
-      categoryParam || undefined // search (used as category filter)
+      PAGE_SIZE // pageSize
     )
       .then(data => {
         const results = data.results ?? [];
@@ -273,9 +272,13 @@ export default function RestaurantsSearchPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [cityParam, categoryParam, pageParam, searchParam, locale]);
+  }, [cityParam, pageParam, searchParam, locale]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  const filteredRestaurants = categoryParam
+    ? restaurants.filter(r => r.category && String(r.category.id) === categoryParam)
+    : restaurants;
 
   // ── URL helpers ────────────────────────────────────────────────────────────
 
@@ -374,10 +377,10 @@ export default function RestaurantsSearchPage() {
           <Grid>
             {loading ? (
               Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
-            ) : restaurants.length === 0 ? (
+            ) : filteredRestaurants.length === 0 ? (
               <EmptyState>{t.restaurantsSearch.noResults}</EmptyState>
             ) : (
-              restaurants.map(restaurant => {
+              filteredRestaurants.map(restaurant => {
                 const categoryName = restaurant.category
                   ? getTranslation(
                       parseTranslations(restaurant.category.translations),
