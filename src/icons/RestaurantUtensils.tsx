@@ -1,11 +1,16 @@
 import * as React from 'react';
 
-import { iconStroke } from '@/tokens';
-
-const RestaurantUtensils = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
+const RestaurantUtensils = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width={24}
+    height={24}
+    viewBox='0 0 16 16'
+    fill='none'
+    {...props}
+  >
     <g
-      stroke={iconStroke}
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}

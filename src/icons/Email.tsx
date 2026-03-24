@@ -1,15 +1,18 @@
 import * as React from 'react';
-const EmailIcon = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
+
+type EmailIconProps = React.SVGProps<SVGSVGElement> & { open?: boolean };
+
+const EmailIcon = ({ width = 16, height = 16, open: _open, ...props }: EmailIconProps) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} fill='none' {...props}>
     <path
-      stroke='#62748E'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}
       d='M14.659 4.664 8.668 8.48a1.333 1.333 0 0 1-1.339 0L1.332 4.664'
     />
     <path
-      stroke='#62748E'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}

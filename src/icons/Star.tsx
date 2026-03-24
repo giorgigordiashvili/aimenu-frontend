@@ -1,17 +1,18 @@
 import * as React from 'react';
 
-type StarProps = {
+type StarProps = React.SVGProps<SVGSVGElement> & {
   color?: string;
   size?: number;
 };
 
-const Star = ({ color = '#0F172B', size = 10 }: StarProps) => (
+const Star = ({ color = 'currentColor', size, width = 10, height = 10, ...props }: StarProps) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width={size}
-    height={size}
+    width={size ?? width}
+    height={size ?? height}
     viewBox='-0.5 -0.5 12 12'
     fill='none'
+    {...props}
   >
     <path
       fill={color}

@@ -1,17 +1,18 @@
 import * as React from 'react';
 
-interface ClockIconProps {
+type ClockProps = React.SVGProps<SVGSVGElement> & {
   size?: number;
   color?: string;
-}
+};
 
-const ClockIcon = ({ size = 16 }: ClockIconProps) => (
+const ClockIcon = ({ size, width = 16, height = 16, ...props }: ClockProps) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width={size}
-    height={size}
+    width={size ?? width}
+    height={size ?? height}
     viewBox='0 0 16 16'
     fill='none'
+    {...props}
   >
     <path
       stroke='currentColor'

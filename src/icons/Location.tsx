@@ -1,17 +1,15 @@
 import * as React from 'react';
 
-type LocationIconProps = {
-  color?: string;
-  size?: number;
-};
+type LocationIconProps = React.SVGProps<SVGSVGElement> & { size?: number };
 
-const LocationIcon = ({ size = 16 }: LocationIconProps) => (
+const LocationIcon = ({ size, width, height, ...props }: LocationIconProps) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width={size}
-    height={size}
+    width={size ?? width ?? 16}
+    height={size ?? height ?? 16}
     viewBox='0 0 16 16'
     fill='none'
+    {...props}
   >
     <path
       stroke='currentColor'

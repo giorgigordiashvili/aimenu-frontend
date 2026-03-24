@@ -9,9 +9,11 @@ export const slate50 = '#F8FAFC';
 export const slate100 = '#F1F5F9';
 export const slate150 = '#E9EBEF';
 export const slate200 = '#E2E8F0';
+export const slate250 = '#CAD5E2';
 export const slate300 = '#CBD5E1';
 export const slate400 = '#94A3B8';
 export const slate500 = '#62748E';
+export const slate400c = '#45556C';
 export const slate600 = '#475569';
 export const slate800 = '#1E293B';
 export const slate900 = '#0F172B';
@@ -54,6 +56,11 @@ export const red600 = '#DC2626';
 // ── Blue ─────────────────────────────────────────────────────────────────
 export const blue50 = '#EFF6FF';
 export const blue500 = '#3B82F6';
+export const blue600 = '#155DFC';
+
+// ── Emerald ──────────────────────────────────────────────────────────────
+export const emerald50 = '#ECFDF5';
+export const emerald600 = '#009966';
 
 // ── Sky ──────────────────────────────────────────────────────────────────
 export const sky600 = '#0284C7';
@@ -62,6 +69,10 @@ export const sky600 = '#0284C7';
 export const white = '#FFFFFF';
 export const whiteTranslucent = '#ffffffE6';
 export const blackAlpha10 = '#0000001A';
+
+// ── Brand ─────────────────────────────────────────────────────────────────
+export const redBrand = '#EC003F'; // Same value as rose600
+export const slate700 = '#314158'; // Address text color
 
 // ── Semantic aliases ─────────────────────────────────────────────────────
 export const foreground = slate900;
