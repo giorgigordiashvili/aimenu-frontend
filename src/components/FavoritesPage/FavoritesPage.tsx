@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { styled } from '@pigment-css/react';
 
 import { favoritesRestaurantsList, favoritesRestaurantsRemoveDestroy } from '@/api/generated/api';
+import Heart from '@/icons/Heart';
 import type { FavoriteRestaurant } from '@/api/generated/interfaces';
 import CategoryFilterTabs from '@/components/CategoryFilterTabs/CategoryFilterTabs';
 import Footer from '@/components/Footer/Footer';
@@ -145,12 +146,6 @@ const HeartButton = styled('button')({
   color: redBrand,
   boxShadow: shadowCard,
 });
-
-const HeartIcon = () => (
-  <svg width={16} height={16} viewBox='0 0 24 24' fill='currentColor'>
-    <path d='M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z' />
-  </svg>
-);
 
 const SkeletonCard = styled('div')({
   width: '100%',
@@ -418,7 +413,7 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
                       aria-label={t.favorites.removed}
                       title={t.favorites.removed}
                     >
-                      <HeartIcon />
+                      <Heart width={16} height={16} fill='currentColor' stroke='currentColor' />
                     </HeartButton>
                   </CardWrapper>
                 ))
