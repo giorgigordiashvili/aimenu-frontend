@@ -9,6 +9,7 @@ export const slate50 = '#F8FAFC';
 export const slate100 = '#F1F5F9';
 export const slate150 = '#E9EBEF';
 export const slate200 = '#E2E8F0';
+export const slate250 = '#CAD5E2';
 export const slate300 = '#CBD5E1';
 export const slate400 = '#94A3B8';
 export const slate500 = '#62748E';

@@ -6,7 +6,16 @@ import Image from 'next/image';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import { foreground, rose500, shadowCard, slate400, slate50, white } from '@/tokens';
+import {
+  foreground,
+  rose500,
+  rose600,
+  shadowCard,
+  slate250,
+  slate400,
+  slate50,
+  white,
+} from '@/tokens';
 
 // ── Styled Components ────────────────────────────────────────────────────────
 
@@ -18,32 +27,70 @@ const PageWrapper = styled('div')({
 });
 
 const HeroSection = styled('section')({
-  background: white,
-  padding: '80px 24px',
-  textAlign: 'center',
-});
-
-const HeroInner = styled('div')({
-  maxWidth: 1120,
-  margin: '0 auto',
-  textAlign: 'center',
-});
-
-const PageTitle = styled('h1')({
-  fontSize: 48,
-  fontWeight: 700,
-  color: foreground,
-  margin: 0,
+  position: 'relative',
+  backgroundImage: 'url(/demo/RestaurantCardImage.jpg)',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  padding: '44px 24px 80px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
   '@media (max-width: 768px)': {
-    fontSize: 32,
+    padding: '32px 16px 60px',
   },
 });
 
-const PageSubtitle = styled('p')({
+const Overlay = styled('div')({
+  position: 'absolute',
+  inset: 0,
+  background: 'rgba(0,0,0,0.55)',
+  zIndex: 0,
+});
+
+const HeroContent = styled('div')({
+  position: 'relative',
+  zIndex: 1,
+  maxWidth: 1120,
+  margin: '0 auto',
+  width: '100%',
+});
+
+const StoryBadge = styled('span')({
+  background: rose600,
+  borderRadius: '50px',
+  color: white,
+  fontSize: 14,
+  fontWeight: 500,
+  padding: '6px 16px',
+  display: 'inline-block',
+});
+
+const HeroTitle = styled('h1')({
+  marginTop: 16,
+  fontSize: 60,
+  fontWeight: 800,
+  lineHeight: 1.1,
+  marginBottom: 0,
+  marginLeft: 0,
+  marginRight: 0,
+  color: white,
+  '@media (max-width: 768px)': {
+    marginTop: 24,
+    fontSize: 26,
+  },
+});
+
+const HeroTitleRose = styled('span')({
+  color: rose500,
+});
+
+const HeroSubtitle = styled('p')({
+  marginTop: 28,
+  marginBottom: 0,
   fontSize: 18,
-  color: slate400,
-  margin: '16px auto 0',
+  color: slate250,
   maxWidth: 640,
+  lineHeight: 1.6,
 });
 
 const StatsSection = styled('section')({
@@ -136,10 +183,15 @@ export default function AboutPage() {
       <HeaderPrimary />
 
       <HeroSection>
-        <HeroInner>
-          <PageTitle>{t.about.title}</PageTitle>
-          <PageSubtitle>{t.about.subtitle}</PageSubtitle>
-        </HeroInner>
+        <Overlay />
+        <HeroContent>
+          <StoryBadge>{t.about.heroStoryBadge}</StoryBadge>
+          <HeroTitle>
+            <span>{t.about.heroTitleWhite}</span>{' '}
+            <HeroTitleRose>{t.about.heroTitleRose}</HeroTitleRose>
+          </HeroTitle>
+          <HeroSubtitle>{t.about.heroSubtitle}</HeroSubtitle>
+        </HeroContent>
       </HeroSection>
 
       <StatsSection>

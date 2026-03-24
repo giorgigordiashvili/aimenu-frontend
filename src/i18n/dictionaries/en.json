@@ -413,7 +413,11 @@
     "missionText": "AiMenu's goal is to simplify the dining experience for everyone. We build a platform where users can easily find, book, and enjoy the best food.",
     "statsRestaurants": "Restaurants",
     "statsCities": "Cities",
-    "statsUsers": "Users"
+    "statsUsers": "Users",
+    "heroTitleWhite": "Restaurant Reservations",
+    "heroTitleRose": "New Standard",
+    "heroStoryBadge": "Our Story",
+    "heroSubtitle": "AiMenu.ge is a platform that connects food lovers with the best restaurants. Our goal is to simplify the reservation process and make it enjoyable."
   },
   "contact": {
     "title": "Contact",
