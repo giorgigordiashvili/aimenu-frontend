@@ -429,7 +429,11 @@
     "feature3Title": "Secure Payment",
     "feature3Desc": "Protected transactions",
     "feature4Title": "Pro Chefs",
-    "feature4Desc": "Experienced culinary masters"
+    "feature4Desc": "Experienced culinary masters",
+    "ctaTitle": "Ready for a new experience?",
+    "ctaSubtitle": "Join thousands of users and discover the best restaurants in your city.",
+    "ctaBookButton": "Book a Table",
+    "ctaPartnerButton": "Become a Partner"
   },
   "contact": {
     "title": "Contact",

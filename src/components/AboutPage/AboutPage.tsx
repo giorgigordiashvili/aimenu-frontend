@@ -24,9 +24,11 @@ import {
   slate400,
   slate400c,
   slate50,
+  slate500,
   slate900,
   white,
 } from '@/tokens';
+import MainButton from '@/components/MainButton/MainButton';
 
 // ── Styled Components ────────────────────────────────────────────────────────
 
@@ -294,6 +296,45 @@ const BlurCircle = styled('div')({
   pointerEvents: 'none',
 });
 
+// ── CTA Section ─────────────────────────────────────────────────────────────
+
+const CtaSection = styled('section')({
+  background: slate50,
+  padding: '80px 24px',
+  textAlign: 'center',
+});
+
+const CtaInner = styled('div')({
+  maxWidth: 1120,
+  margin: '0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 32,
+});
+
+const CtaTitle = styled('h2')({
+  fontSize: 30,
+  fontWeight: 700,
+  color: slate900,
+  margin: 0,
+});
+
+const CtaSubtitle = styled('p')({
+  fontSize: 16,
+  color: slate500,
+  margin: 0,
+  maxWidth: 520,
+  lineHeight: 1.6,
+});
+
+const CtaButtons = styled('div')({
+  display: 'flex',
+  gap: 16,
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+});
+
 // ── Stat Data ────────────────────────────────────────────────────────────────
 
 const stats = [
@@ -391,6 +432,17 @@ export default function AboutPage() {
           </MissionImageWrapper>
         </MissionInner>
       </MissionSection>
+
+      <CtaSection>
+        <CtaInner>
+          <CtaTitle>{t.about.ctaTitle}</CtaTitle>
+          <CtaSubtitle>{t.about.ctaSubtitle}</CtaSubtitle>
+          <CtaButtons>
+            <MainButton variant='rose_cta' rounded title={t.about.ctaBookButton} />
+            <MainButton variant='outline' rounded title={t.about.ctaPartnerButton} />
+          </CtaButtons>
+        </CtaInner>
+      </CtaSection>
 
       <Footer locale={locale} />
     </PageWrapper>
