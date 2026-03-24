@@ -467,6 +467,12 @@
     "backHome": "Go Back",
     "goHome": "Go to Homepage"
   },
+  "favorites": {
+    "title": "Favorites",
+    "subtitle": "Saved restaurants",
+    "noFavorites": "You have no favorites yet. Discover restaurants!",
+    "removed": "Restaurant removed from favorites"
+  },
   "payment": {
     "savedCards": "Saved Cards",
     "savedCardsSubtitle": "Manage your payment methods securely",
