@@ -36,6 +36,8 @@ const PageWrapper = styled('div')({
   background: slate50,
   display: 'flex',
   flexDirection: 'column',
+  paddingLeft: 16,
+  paddingRight: 16,
 });
 
 const MainContent = styled('main')({
@@ -50,7 +52,7 @@ const TabsSection = styled('div')({
 const TabsInner = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '0 24px',
+  padding: 0,
 });
 
 const FiltersRow = styled('div')({
@@ -65,7 +67,7 @@ const FiltersCard = styled('div')({
   background: white,
   borderRadius: '14px',
   boxShadow: shadowCard,
-  padding: '12px 24px',
+  padding: '12px 0',
   display: 'flex',
   alignItems: 'center',
   gap: '16px',
@@ -96,9 +98,9 @@ const CitySelect = styled('select')({
 const ContentWrapper = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '32px 24px 80px',
+  padding: '32px 0 80px',
   '@media (min-width: 768px)': {
-    padding: '48px 24px 100px',
+    padding: '48px 0 100px',
   },
 });
 
@@ -130,7 +132,7 @@ const HeartButton = styled('button')({
   right: 12,
   zIndex: 2,
   background: white,
-  border: `2px solid ${redBrand}`,
+  border: 'none',
   borderRadius: '50%',
   width: 36,
   height: 36,
