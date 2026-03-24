@@ -5,7 +5,7 @@ type ArrowProps = {
   size?: number;
 };
 
-const ArrowIcon = ({ color = '#62748E', size = 16 }: ArrowProps) => (
+const ArrowIcon = ({ color = 'currentColor', size = 16 }: ArrowProps) => (
   <svg xmlns='http://www.w3.org/2000/svg' width={size} height={size} fill='none'>
     <path
       stroke={color}

@@ -37,7 +37,7 @@ const IconWrap = styled('div')({
 
 const Title = styled('h1')({
   fontSize: 16,
-  fontWeight: 400,
+  fontWeight: 700,
   marginTop: 32,
   marginBottom: 0,
   color: foreground,
