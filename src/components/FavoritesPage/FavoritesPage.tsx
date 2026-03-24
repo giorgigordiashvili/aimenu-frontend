@@ -17,7 +17,7 @@ import {
   border,
   foreground,
   muted,
-  rose500,
+  redBrand,
   shadowCard,
   slate50,
   slate100,
@@ -130,7 +130,7 @@ const HeartButton = styled('button')({
   right: 12,
   zIndex: 2,
   background: white,
-  border: 'none',
+  border: `2px solid ${redBrand}`,
   borderRadius: '50%',
   width: 36,
   height: 36,
@@ -138,9 +138,15 @@ const HeartButton = styled('button')({
   alignItems: 'center',
   justifyContent: 'center',
   cursor: 'pointer',
+  color: redBrand,
   boxShadow: shadowCard,
-  fontSize: 16,
 });
+
+const HeartIcon = () => (
+  <svg width={16} height={16} viewBox='0 0 24 24' fill='currentColor'>
+    <path d='M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z' />
+  </svg>
+);
 
 const SkeletonCard = styled('div')({
   width: '100%',
@@ -165,11 +171,6 @@ const EmptyState = styled('div')({
   flexDirection: 'column',
   alignItems: 'center',
   gap: 16,
-});
-
-const EmptyHeartIcon = styled('span')({
-  fontSize: 48,
-  color: rose500,
 });
 
 const LoadingWrapper = styled('div')({
@@ -299,13 +300,13 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
 
   const handleSearchSubmit = useCallback(() => {
     const qs = buildParams({ search: searchInput, page: 1 });
-    router.push(`/${locale}/profile/favorites?${qs}`);
+    router.push(`/${locale}/favorites?${qs}`);
   }, [buildParams, searchInput, locale, router]);
 
   const handleCategoryChange = useCallback(
     (id: string | null) => {
       const qs = buildParams({ category: id, page: 1 });
-      router.push(`/${locale}/profile/favorites?${qs}`);
+      router.push(`/${locale}/favorites?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -313,7 +314,7 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
   const handlePageChange = useCallback(
     (p: number) => {
       const qs = buildParams({ page: p });
-      router.push(`/${locale}/profile/favorites?${qs}`);
+      router.push(`/${locale}/favorites?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -385,7 +386,6 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
               Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
             ) : displayedFavorites.length === 0 ? (
               <EmptyState>
-                <EmptyHeartIcon>❤️</EmptyHeartIcon>
                 <span>{t.favorites.noFavorites}</span>
               </EmptyState>
             ) : (
@@ -413,7 +413,7 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
                     aria-label={t.favorites.removed}
                     title={t.favorites.removed}
                   >
-                    ❤️
+                    <HeartIcon />
                   </HeartButton>
                 </CardWrapper>
               ))

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { styled } from '@pigment-css/react';
 
+import { favoritesRestaurantsToggleCreate } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
 import axiosInstance from '@/api/axios';
 import CategoryFilterTabs from '@/components/CategoryFilterTabs/CategoryFilterTabs';
@@ -326,6 +327,14 @@ export default function RestaurantsSearchPage() {
     [buildParams, locale, router]
   );
 
+  const handleToggleFavorite = useCallback(async (restaurantId: number | string) => {
+    try {
+      await favoritesRestaurantsToggleCreate(String(restaurantId));
+    } catch (e) {
+      console.error('Failed to toggle favorite', e);
+    }
+  }, []);
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -410,6 +419,7 @@ export default function RestaurantsSearchPage() {
                       showRating={!!restaurant.average_rating}
                       showFilterText={!!categoryName}
                       amenities={amenityNames}
+                      onFavoriteToggle={() => handleToggleFavorite(restaurant.id)}
                     />
                   </CardWrapper>
                 );
