@@ -438,8 +438,8 @@ export default function AboutPage() {
           <CtaTitle>{t.about.ctaTitle}</CtaTitle>
           <CtaSubtitle>{t.about.ctaSubtitle}</CtaSubtitle>
           <CtaButtons>
-            <MainButton variant='rose_cta' rounded title={t.about.ctaBookButton} />
-            <MainButton variant='outline' rounded title={t.about.ctaPartnerButton} />
+            <MainButton size='large' variant='rose_cta' rounded title={t.about.ctaBookButton} />
+            <MainButton size='large' variant='outline' rounded title={t.about.ctaPartnerButton} />
           </CtaButtons>
         </CtaInner>
       </CtaSection>
