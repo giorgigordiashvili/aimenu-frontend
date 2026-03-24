@@ -3,8 +3,8 @@
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 
-import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import type { RestaurantList } from '@/api/generated/interfaces';
+import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { foreground, muted, primary, slate100, slate200 } from '@/tokens';
 import { getTranslation } from '@/utils/translations';

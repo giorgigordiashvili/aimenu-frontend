@@ -1,5 +1,6 @@
 'use client';
 
+import { styled } from '@pigment-css/react';
 import { useState } from 'react';
 
 import CompactVariant from './CompactVariant';
@@ -7,19 +8,29 @@ import DefaultVariant from './DefaultVariant';
 import { RestaurantCardProps } from './shared';
 import XlVariant from './XlVariant';
 
+// ── Styled ────────────────────────────────────────────────────────────────────
+
+const CardContainer = styled('div')({
+  position: 'relative',
+  '& > div': {
+    width: '100%',
+  },
+});
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 function RestaurantCard({
   variant = 'default',
-  isFavorite: controlledFavorite,
+  isFavorited: controlledFavorited,
   onFavoriteToggle,
   ...props
 }: RestaurantCardProps) {
-  const [internalFavorite, setInternalFavorite] = useState(false);
-  const isFavorite = controlledFavorite ?? internalFavorite;
+  const [internalFavorited, setInternalFavorited] = useState(false);
+  const isFavorited = controlledFavorited ?? internalFavorited;
 
   const onToggleFavorite = () => {
-    const next = !isFavorite;
-    setInternalFavorite(next);
-    onFavoriteToggle?.(next);
+    setInternalFavorited(!isFavorited);
+    onFavoriteToggle?.();
   };
 
   if (variant === 'compact') {
@@ -27,10 +38,18 @@ function RestaurantCard({
   }
 
   if (variant === 'xl') {
-    return <XlVariant {...props} isFavorite={isFavorite} onToggleFavorite={onToggleFavorite} />;
+    return (
+      <CardContainer>
+        <XlVariant {...props} isFavorited={isFavorited} onToggleFavorite={onToggleFavorite} />
+      </CardContainer>
+    );
   }
 
-  return <DefaultVariant {...props} isFavorite={isFavorite} onToggleFavorite={onToggleFavorite} />;
+  return (
+    <CardContainer>
+      <DefaultVariant {...props} isFavorited={isFavorited} onToggleFavorite={onToggleFavorite} />
+    </CardContainer>
+  );
 }
 
 export default RestaurantCard;

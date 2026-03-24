@@ -2,9 +2,10 @@
 
 import { styled } from '@pigment-css/react';
 
+import { border, radiusMd, white } from '@/tokens';
+
 import ChangePasswordForm from './ChangePasswordForm';
 import PersonalInfoForm from './PersonalInfoForm';
-import { border, radiusMd, white } from '@/tokens';
 
 // ─── Styled ────────────────────────────────────────────────────────────────────
 

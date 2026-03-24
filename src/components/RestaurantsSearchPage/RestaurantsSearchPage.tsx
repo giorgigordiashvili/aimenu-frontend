@@ -1,15 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { styled } from '@pigment-css/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
-import type { RestaurantList } from '@/api/generated/interfaces';
 import axiosInstance from '@/api/axios';
+import { favoritesRestaurantsList, favoritesRestaurantsToggleCreate } from '@/api/generated/api';
+import type { RestaurantList } from '@/api/generated/interfaces';
 import CategoryFilterTabs from '@/components/CategoryFilterTabs/CategoryFilterTabs';
 import Footer from '@/components/Footer/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
+import { useAuth } from '@/context/AuthContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import {
   border,
@@ -23,6 +25,7 @@ import {
   white,
 } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
+
 import PageHeader from './PageHeader';
 import Pagination from './Pagination';
 
@@ -31,6 +34,13 @@ import Pagination from './Pagination';
 const PageWrapper = styled('div')({
   minHeight: '100vh',
   background: slate50,
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const ContentWrapper = styled('div')({
+  padding: '0 16px',
+  flex: 1,
   display: 'flex',
   flexDirection: 'column',
 });
@@ -47,7 +57,7 @@ const TabsSection = styled('div')({
 const TabsInner = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '0 24px',
+  padding: '0',
 });
 
 const FiltersRow = styled('div')({
@@ -90,12 +100,12 @@ const CitySelect = styled('select')({
   },
 });
 
-const ContentWrapper = styled('div')({
+const GridSection = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '32px 24px 80px',
+  padding: '32px 0 80px',
   '@media (min-width: 768px)': {
-    padding: '48px 24px 100px',
+    padding: '48px 0 100px',
   },
 });
 
@@ -179,6 +189,7 @@ export default function RestaurantsSearchPage() {
   const searchParams = useSearchParams();
   const { locale } = useLocale();
   const t = useTranslations();
+  const { user } = useAuth();
 
   // URL-driven state
   const cityParam = searchParams.get('city') ?? '';
@@ -195,11 +206,27 @@ export default function RestaurantsSearchPage() {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [cities, setCities] = useState<CityOption[]>([]);
+  const [favoritedIds, setFavoritedIds] = useState<Set<string | number>>(new Set());
 
   // Sync search input when URL param changes
   useEffect(() => {
     setSearchInput(searchParam);
   }, [searchParam]);
+
+  // Fetch favorited IDs when user is available
+  useEffect(() => {
+    if (!user) return;
+    const fetchFavIds = async () => {
+      try {
+        const res = await favoritesRestaurantsList(undefined, undefined, 1000);
+        const ids = new Set<string | number>(res.results.map(f => f.restaurant));
+        setFavoritedIds(ids);
+      } catch {
+        // not logged in or error — ignore
+      }
+    };
+    fetchFavIds();
+  }, [user]);
 
   // Fetch cities once
   useEffect(() => {
@@ -326,100 +353,134 @@ export default function RestaurantsSearchPage() {
     [buildParams, locale, router]
   );
 
+  const handleToggleFavorite = useCallback(async (restaurantId: string | number) => {
+    const id = String(restaurantId);
+    // Optimistic update
+    setFavoritedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id) || next.has(restaurantId)) {
+        next.delete(id);
+        next.delete(restaurantId as number);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+    try {
+      await favoritesRestaurantsToggleCreate(id);
+    } catch {
+      // revert on error — re-fetch
+      try {
+        const res = await favoritesRestaurantsList(undefined, undefined, 1000);
+        const ids = new Set<string | number>(res.results.map(f => f.restaurant));
+        setFavoritedIds(ids);
+      } catch {
+        // ignore
+      }
+    }
+  }, []);
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <PageWrapper>
       <HeaderPrimary />
 
-      <MainContent>
-        <PageHeader
-          title={t.restaurantsSearch.title}
-          subtitle={t.restaurantsSearch.subtitle}
-          searchValue={searchInput}
-          onSearchChange={setSearchInput}
-          onSearchSubmit={handleSearchSubmit}
-          searchPlaceholder={t.restaurantsSearch.search}
-        />
+      <ContentWrapper>
+        <MainContent>
+          <PageHeader
+            title={t.restaurantsSearch.title}
+            subtitle={t.restaurantsSearch.subtitle}
+            searchValue={searchInput}
+            onSearchChange={setSearchInput}
+            onSearchSubmit={handleSearchSubmit}
+            searchPlaceholder={t.restaurantsSearch.search}
+          />
 
-        <TabsSection>
-          <TabsInner>
-            <CategoryFilterTabs
-              categories={categories}
-              activeId={categoryParam}
-              allLabel={t.restaurantsSearch.allCategories}
-              onChange={handleCategoryChange}
-            />
-          </TabsInner>
-        </TabsSection>
+          <TabsSection>
+            <TabsInner>
+              <CategoryFilterTabs
+                categories={categories}
+                activeId={categoryParam}
+                allLabel={t.restaurantsSearch.allCategories}
+                onChange={handleCategoryChange}
+              />
+            </TabsInner>
+          </TabsSection>
 
-        <FiltersRow>
-          <FiltersCard>
-            <FiltersLabel>{t.restaurantsSearch.filters}</FiltersLabel>
-            <CitySelect value={cityParam} onChange={e => handleCityChange(e.target.value)}>
-              <option value=''>{t.restaurantsSearch.allCities}</option>
-              {cities.map(city => (
-                <option key={city.slug} value={city.slug}>
-                  {city.translations?.[locale]?.name ??
-                    city.translations?.['ka']?.name ??
-                    city.slug}
-                </option>
-              ))}
-            </CitySelect>
-          </FiltersCard>
-        </FiltersRow>
+          <FiltersRow>
+            <FiltersCard>
+              <FiltersLabel>{t.restaurantsSearch.filters}</FiltersLabel>
+              <CitySelect value={cityParam} onChange={e => handleCityChange(e.target.value)}>
+                <option value=''>{t.restaurantsSearch.allCities}</option>
+                {cities.map(city => (
+                  <option key={city.slug} value={city.slug}>
+                    {city.translations?.[locale]?.name ??
+                      city.translations?.['ka']?.name ??
+                      city.slug}
+                  </option>
+                ))}
+              </CitySelect>
+            </FiltersCard>
+          </FiltersRow>
 
-        <ContentWrapper>
-          <Grid>
-            {loading ? (
-              Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
-            ) : restaurants.length === 0 ? (
-              <EmptyState>{t.restaurantsSearch.noResults}</EmptyState>
-            ) : (
-              restaurants.map(restaurant => {
-                const categoryName = restaurant.category
-                  ? getTranslation(
-                      parseTranslations(restaurant.category.translations),
-                      'name',
-                      locale
-                    ) || restaurant.category.slug
-                  : undefined;
+          <GridSection>
+            <Grid>
+              {loading ? (
+                Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
+              ) : restaurants.length === 0 ? (
+                <EmptyState>{t.restaurantsSearch.noResults}</EmptyState>
+              ) : (
+                restaurants.map(restaurant => {
+                  const categoryName = restaurant.category
+                    ? getTranslation(
+                        parseTranslations(restaurant.category.translations),
+                        'name',
+                        locale
+                      ) || restaurant.category.slug
+                    : undefined;
 
-                const amenityNames = (restaurant.amenities || [])
-                  .map(
-                    a => getTranslation(parseTranslations(a.translations), 'name', locale) || a.slug
-                  )
-                  .filter(Boolean);
+                  const amenityNames = (restaurant.amenities || [])
+                    .map(
+                      a =>
+                        getTranslation(parseTranslations(a.translations), 'name', locale) || a.slug
+                    )
+                    .filter(Boolean);
 
-                return (
-                  <CardWrapper key={restaurant.id}>
-                    <RestaurantCardPrimary
-                      variant='default'
-                      restaurantTitle={restaurant.name}
-                      imageSrc={restaurant.logo || '/RestaurantCardImage.jpg'}
-                      locationText={restaurant.city}
-                      rating={parseFloat(restaurant.average_rating || '0')}
-                      filterText={categoryName}
-                      priceLevel='₾₾'
-                      href={`/${locale}/restaurants/${restaurant.slug}`}
-                      detailsLabel={t.restaurantsList.details}
-                      showDetailsButton={true}
-                      showBookButton={false}
-                      showFavoriteYellow={false}
-                      showFavoriteButton={true}
-                      showRating={!!restaurant.average_rating}
-                      showFilterText={!!categoryName}
-                      amenities={amenityNames}
-                    />
-                  </CardWrapper>
-                );
-              })
-            )}
-          </Grid>
+                  return (
+                    <CardWrapper key={restaurant.id}>
+                      <RestaurantCardPrimary
+                        variant='default'
+                        restaurantTitle={restaurant.name}
+                        imageSrc={restaurant.logo || '/RestaurantCardImage.jpg'}
+                        locationText={restaurant.city}
+                        rating={parseFloat(restaurant.average_rating || '0')}
+                        filterText={categoryName}
+                        priceLevel='₾₾'
+                        href={`/${locale}/restaurants/${restaurant.slug}`}
+                        detailsLabel={t.restaurantsList.details}
+                        showDetailsButton={true}
+                        showBookButton={false}
+                        showFavoriteYellow={false}
+                        showFavoriteButton={true}
+                        showRating={!!restaurant.average_rating}
+                        showFilterText={!!categoryName}
+                        amenities={amenityNames}
+                        isFavorited={
+                          favoritedIds.has(String(restaurant.id)) || favoritedIds.has(restaurant.id)
+                        }
+                        onFavoriteToggle={() => handleToggleFavorite(restaurant.id)}
+                      />
+                    </CardWrapper>
+                  );
+                })
+              )}
+            </Grid>
 
-          <Pagination page={pageParam} totalPages={totalPages} onPageChange={handlePageChange} />
-        </ContentWrapper>
-      </MainContent>
+            <Pagination page={pageParam} totalPages={totalPages} onPageChange={handlePageChange} />
+          </GridSection>
+        </MainContent>
+      </ContentWrapper>
 
       <Footer locale={locale} />
     </PageWrapper>

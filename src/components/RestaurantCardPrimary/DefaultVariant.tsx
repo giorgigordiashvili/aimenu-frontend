@@ -4,7 +4,7 @@ import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 
 import MainButton from '@/components/MainButton/MainButton';
-import HeartOutlined from '@/icons/HeartOutline';
+import Heart from '@/icons/Heart';
 import LocationIcon from '@/icons/Location';
 import Star from '@/icons/Star';
 import {
@@ -12,8 +12,10 @@ import {
   foreground,
   muted,
   radiusMd,
+  redBrand,
   shadowCard,
   slate100,
+  slate400,
   white,
   yellow500,
 } from '@/tokens';
@@ -162,7 +164,7 @@ interface DefaultVariantProps extends Omit<
   'variant' | 'descriptionText' | 'amenities'
 > {
   amenities?: string[];
-  isFavorite: boolean;
+  isFavorited: boolean;
   onToggleFavorite: () => void;
 }
 
@@ -170,7 +172,7 @@ export default function DefaultVariant({
   filterText,
   rating = 4.5,
   showFavoriteYellow = true,
-  showFavoriteButton = true,
+  showFavoriteButton: _showFavoriteButton = true,
   showRating = true,
   showFilterText = true,
   imageSrc = '/RestaurantCardImage.jpg',
@@ -179,7 +181,7 @@ export default function DefaultVariant({
   detailsVariant = 'filled',
   showDetailsButton = true,
   showBookButton = true,
-  isFavorite,
+  isFavorited,
   onToggleFavorite,
   href,
   priceLevel = '₾₾₾',
@@ -215,16 +217,19 @@ export default function DefaultVariant({
               {favoriteLabel}
             </FavoriteYellow>
           )}
-          {showFavoriteButton && (
-            <FavoriteButton
-              onClick={e => {
-                e.stopPropagation();
-                stopAndFavorite();
-              }}
-            >
-              <HeartOutlined variant={isFavorite ? 'filled' : 'outlined'} />
-            </FavoriteButton>
-          )}
+          <FavoriteButton
+            onClick={e => {
+              e.stopPropagation();
+              stopAndFavorite();
+            }}
+            style={{ color: isFavorited ? redBrand : slate400 }}
+          >
+            {isFavorited ? (
+              <Heart width={14} height={14} fill='currentColor' stroke='currentColor' />
+            ) : (
+              <Heart width={14} height={14} />
+            )}
+          </FavoriteButton>
         </FavoriteGroup>
         <FilterRatingGroup>
           {showFilterText && filterText && (

@@ -18,7 +18,7 @@ const HeaderSection = styled('div')({
 const HeaderInner = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '0 24px',
+  padding: '0',
   display: 'flex',
   flexDirection: 'column',
   gap: '16px',

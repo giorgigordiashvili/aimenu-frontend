@@ -13,7 +13,6 @@ import { useTranslations } from '@/context/LocaleContext';
 import { getMockRestaurantData } from '@/hooks/useReservations';
 import { useReservationsPagination } from '@/hooks/useReservationsPagination';
 import { useToast } from '@/hooks/useToast';
-
 import ClockIcon from '@/icons/Clock';
 import HistoryIcon from '@/icons/History';
 import {

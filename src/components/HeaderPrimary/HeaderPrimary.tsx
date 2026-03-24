@@ -545,7 +545,7 @@ export default function HeaderPrimary() {
                       {t.header.profile}
                     </DropdownItem>
                     <DropdownItem
-                      href={`/${locale}/profile?tab=favorites`}
+                      href={`/${locale}/favorites`}
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <IconWrap>
@@ -649,7 +649,7 @@ export default function HeaderPrimary() {
                   {t.header.profile}
                 </DrawerMenuNavItem>
                 <DrawerMenuNavItem
-                  href={`/${locale}/profile?tab=favorites`}
+                  href={`/${locale}/favorites`}
                   onClick={() => setDrawerOpen(false)}
                 >
                   <IconWrap>
