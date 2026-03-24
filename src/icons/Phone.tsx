@@ -1,11 +1,18 @@
 import * as React from 'react';
 
-import { iconStroke } from '@/tokens';
+type PhoneIconProps = React.SVGProps<SVGSVGElement> & { open?: boolean };
 
-const Phone = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={20} height={20} viewBox='0 0 20 20' fill='none'>
+const Phone = ({ width = 20, height = 20, open: _open, ...props }: PhoneIconProps) => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width={width}
+    height={height}
+    viewBox='0 0 20 20'
+    fill='none'
+    {...props}
+  >
     <path
-      stroke={iconStroke}
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.666}

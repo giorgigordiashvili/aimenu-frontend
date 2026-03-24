@@ -64,7 +64,7 @@ const BodySection = styled('section')({
   margin: '0 auto',
   padding: '0 24px 80px',
   display: 'grid',
-  gridTemplateColumns: '1fr 1.2fr',
+  gridTemplateColumns: '360px 1fr',
   gap: 32,
   '@media (max-width: 768px)': {
     gridTemplateColumns: '1fr',
@@ -191,7 +191,7 @@ const FormRow = styled('div')({
   gridTemplateColumns: '1fr 1fr',
   gap: 16,
   marginBottom: 16,
-  '@media (max-width: 480px)': {
+  '@media (max-width: 768px)': {
     gridTemplateColumns: '1fr',
   },
 });
@@ -236,7 +236,7 @@ export default function ContactPage() {
           {/* Phone card */}
           <InfoCard>
             <IconBoxPhone>
-              <Phone />
+              <Phone width={20} height={20} style={{ color: '#EC003F' }} />
             </IconBoxPhone>
             <CardTextCol>
               <CardTitle>{t.contact.phoneTitle}</CardTitle>
@@ -248,7 +248,7 @@ export default function ContactPage() {
           {/* Email card */}
           <InfoCard>
             <IconBoxEmail>
-              <Email />
+              <Email width={20} height={20} style={{ color: '#155DFC' }} />
             </IconBoxEmail>
             <CardTextCol>
               <CardTitle>{t.contact.emailTitle}</CardTitle>
@@ -260,7 +260,7 @@ export default function ContactPage() {
           {/* Location card */}
           <InfoCard>
             <IconBoxLocation>
-              <Location width={20} height={20} />
+              <Location width={20} height={20} style={{ color: '#009966' }} />
             </IconBoxLocation>
             <CardTextCol>
               <CardTitle>{t.contact.locationTitle}</CardTitle>
@@ -333,10 +333,10 @@ export default function ContactPage() {
 
               <MainButton
                 type='submit'
-                variant='rose_cta'
+                variant='slate_cta'
                 title={t.contact.send}
                 icon={Send}
-                iconPosition='right'
+                iconPosition='left'
                 size='large'
                 fullWidth
               />
