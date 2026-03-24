@@ -69,7 +69,7 @@ type TextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   errorMessage?: string;
 };
 
-function TextArea({ label = 'Text Area Component', errorMessage, ...props }: TextAreaProps) {
+function TextArea({ label, errorMessage, ...props }: TextAreaProps) {
   const [isError, setIsError] = useState(false);
 
   return (

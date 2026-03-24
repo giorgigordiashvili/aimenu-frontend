@@ -136,7 +136,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 };
 
 function TextInput({
-  label = 'Text Input Component',
+  label,
   errorMessage,
   type = 'text',
   icon: Icon,
