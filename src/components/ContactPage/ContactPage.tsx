@@ -200,6 +200,18 @@ const FormField = styled('div')({
   marginBottom: 16,
 });
 
+const FieldWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 6,
+});
+
+const FieldLabel = styled('label')({
+  fontSize: 14,
+  fontWeight: 500,
+  color: slate900,
+});
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
@@ -293,42 +305,57 @@ export default function ContactPage() {
           ) : (
             <form onSubmit={handleSubmit}>
               <FormRow>
-                <TextInput
-                  label={t.contact.firstName}
-                  value={form.firstName}
-                  onChange={e => setForm({ ...form, firstName: e.target.value })}
-                />
-                <TextInput
-                  label={t.contact.lastName}
-                  value={form.lastName}
-                  onChange={e => setForm({ ...form, lastName: e.target.value })}
-                />
+                <FieldWrapper>
+                  <FieldLabel>{t.contact.firstName}</FieldLabel>
+                  <TextInput
+                    placeholder={t.contact.firstNamePlaceholder}
+                    value={form.firstName}
+                    onChange={e => setForm({ ...form, firstName: e.target.value })}
+                  />
+                </FieldWrapper>
+                <FieldWrapper>
+                  <FieldLabel>{t.contact.lastName}</FieldLabel>
+                  <TextInput
+                    placeholder={t.contact.lastNamePlaceholder}
+                    value={form.lastName}
+                    onChange={e => setForm({ ...form, lastName: e.target.value })}
+                  />
+                </FieldWrapper>
               </FormRow>
 
               <FormField>
-                <TextInput
-                  label={t.contact.email}
-                  type='email'
-                  value={form.email}
-                  onChange={e => setForm({ ...form, email: e.target.value })}
-                />
+                <FieldWrapper>
+                  <FieldLabel>{t.contact.email}</FieldLabel>
+                  <TextInput
+                    placeholder={t.contact.emailPlaceholder}
+                    type='email'
+                    value={form.email}
+                    onChange={e => setForm({ ...form, email: e.target.value })}
+                  />
+                </FieldWrapper>
               </FormField>
 
               <FormField>
-                <TextInput
-                  label={t.contact.topic}
-                  value={form.topic}
-                  onChange={e => setForm({ ...form, topic: e.target.value })}
-                />
+                <FieldWrapper>
+                  <FieldLabel>{t.contact.topic}</FieldLabel>
+                  <TextInput
+                    placeholder={t.contact.topicPlaceholder}
+                    value={form.topic}
+                    onChange={e => setForm({ ...form, topic: e.target.value })}
+                  />
+                </FieldWrapper>
               </FormField>
 
               <FormField>
-                <TextArea
-                  label={t.contact.message}
-                  value={form.message}
-                  onChange={e => setForm({ ...form, message: e.target.value })}
-                  rows={6}
-                />
+                <FieldWrapper>
+                  <FieldLabel>{t.contact.message}</FieldLabel>
+                  <TextArea
+                    placeholder={t.contact.messagePlaceholder}
+                    value={form.message}
+                    onChange={e => setForm({ ...form, message: e.target.value })}
+                    rows={6}
+                  />
+                </FieldWrapper>
               </FormField>
 
               <MainButton

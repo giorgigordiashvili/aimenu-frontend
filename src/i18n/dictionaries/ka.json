@@ -465,7 +465,12 @@
       "emailRequired": "ელფოსტა სავალდებულოა",
       "emailInvalid": "არასწორი ელფოსტა",
       "messageRequired": "შეტყობინება სავალდებულოა"
-    }
+    },
+    "firstNamePlaceholder": "თქვენი სახელი",
+    "lastNamePlaceholder": "თქვენი გვარი",
+    "emailPlaceholder": "თქვენი ელ-ფოსტა",
+    "topicPlaceholder": "შეტყობინების თემა",
+    "messagePlaceholder": "დაწერეთ შეტყობინება..."
   },
   "notFound": {
     "title": "გვერდი ვერ მოიძებნა",

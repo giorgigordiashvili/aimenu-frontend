@@ -465,7 +465,12 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Invalid email",
       "messageRequired": "Message is required"
-    }
+    },
+    "firstNamePlaceholder": "Your first name",
+    "lastNamePlaceholder": "Your last name",
+    "emailPlaceholder": "Your email address",
+    "topicPlaceholder": "Subject of your message",
+    "messagePlaceholder": "Write your message..."
   },
   "notFound": {
     "title": "Page Not Found",

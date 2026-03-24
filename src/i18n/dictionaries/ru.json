@@ -465,7 +465,12 @@
       "emailRequired": "Email обязателен",
       "emailInvalid": "Неверный email",
       "messageRequired": "Сообщение обязательно"
-    }
+    },
+    "firstNamePlaceholder": "Ваше имя",
+    "lastNamePlaceholder": "Ваша фамилия",
+    "emailPlaceholder": "Ваш email",
+    "topicPlaceholder": "Тема сообщения",
+    "messagePlaceholder": "Напишите сообщение..."
   },
   "notFound": {
     "title": "Страница не найдена",
