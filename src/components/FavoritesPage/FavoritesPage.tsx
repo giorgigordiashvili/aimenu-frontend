@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { styled } from '@pigment-css/react';
 
 import { favoritesRestaurantsList, favoritesRestaurantsRemoveDestroy } from '@/api/generated/api';
-import Heart from '@/icons/Heart';
 import type { FavoriteRestaurant } from '@/api/generated/interfaces';
 import CategoryFilterTabs from '@/components/CategoryFilterTabs/CategoryFilterTabs';
 import Footer from '@/components/Footer/Footer';
@@ -127,24 +126,6 @@ const CardWrapper = styled('div')({
   '& > div': {
     width: '100%',
   },
-});
-
-const HeartButton = styled('button')({
-  position: 'absolute',
-  top: 12,
-  right: 12,
-  zIndex: 2,
-  background: white,
-  border: 'none',
-  borderRadius: '50%',
-  width: 36,
-  height: 36,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  color: redBrand,
-  boxShadow: shadowCard,
 });
 
 const SkeletonCard = styled('div')({
@@ -403,18 +384,12 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
                       showDetailsButton={true}
                       showBookButton={false}
                       showFavoriteYellow={false}
-                      showFavoriteButton={false}
+                      showFavoriteButton={true}
                       showRating={false}
                       showFilterText={!!fav.restaurant_cuisine_type}
                       isFavorited={true}
+                      onFavoriteToggle={() => handleRemove(fav.id, fav.restaurant)}
                     />
-                    <HeartButton
-                      onClick={() => handleRemove(fav.id, fav.restaurant)}
-                      aria-label={t.favorites.removed}
-                      title={t.favorites.removed}
-                    >
-                      <Heart width={16} height={16} fill='currentColor' stroke='currentColor' />
-                    </HeartButton>
                   </CardWrapper>
                 ))
               )}
