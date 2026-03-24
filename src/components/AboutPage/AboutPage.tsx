@@ -11,8 +11,8 @@ import ClockIcon from '@/icons/Clock';
 import LocationIcon from '@/icons/Location';
 import People from '@/icons/People';
 import RestaurantUtensils from '@/icons/RestaurantUtensils';
-import Shield from '@/icons/Shield';
-import Star from '@/icons/Star';
+import Security from '@/icons/Security';
+import StarOutline from '@/icons/StarOutline';
 import {
   foreground,
   rose50,
@@ -187,7 +187,7 @@ const MissionInner = styled('div')({
   margin: '0 auto',
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gap: 80,
+  gap: 64,
   '@media (max-width: 768px)': {
     gridTemplateColumns: '1fr',
     gap: 40,
@@ -214,6 +214,10 @@ const MissionTitleLine1 = styled('span')({
 const MissionTitleLine2 = styled('span')({
   display: 'block',
   color: rose500,
+  whiteSpace: 'nowrap',
+  '@media (max-width: 768px)': {
+    whiteSpace: 'normal',
+  },
 });
 
 const MissionPara = styled('p')({
@@ -229,6 +233,9 @@ const FeaturesGrid = styled('div')({
   gridTemplateColumns: 'repeat(2, 1fr)',
   gap: 24,
   marginTop: 40,
+  '@media (max-width: 768px)': {
+    gridTemplateColumns: '1fr',
+  },
 });
 
 const FeatureItem = styled('div')({
@@ -267,9 +274,24 @@ const FeatureDesc = styled('span')({
 
 const MissionImageWrapper = styled('div')({
   position: 'relative',
+  display: 'inline-block',
   '@media (max-width: 768px)': {
     width: '100%',
   },
+});
+
+const BlurCircle = styled('div')({
+  position: 'absolute',
+  width: 100,
+  height: 100,
+  borderRadius: '50%',
+  background: rose500,
+  opacity: 0.5,
+  filter: 'blur(80px)',
+  bottom: 0,
+  left: 0,
+  zIndex: 0,
+  pointerEvents: 'none',
 });
 
 // ── Stat Data ────────────────────────────────────────────────────────────────
@@ -287,9 +309,9 @@ export default function AboutPage() {
   const t = useTranslations();
 
   const features = [
-    { icon: Star, title: t.about.feature1Title, desc: t.about.feature1Desc },
+    { icon: StarOutline, title: t.about.feature1Title, desc: t.about.feature1Desc },
     { icon: ClockIcon, title: t.about.feature2Title, desc: t.about.feature2Desc },
-    { icon: Shield, title: t.about.feature3Title, desc: t.about.feature3Desc },
+    { icon: Security, title: t.about.feature3Title, desc: t.about.feature3Desc },
     { icon: ChefHat, title: t.about.feature4Title, desc: t.about.feature4Desc },
   ];
 
@@ -351,6 +373,7 @@ export default function AboutPage() {
           </MissionTextCol>
 
           <MissionImageWrapper>
+            <BlurCircle />
             <Image
               src='/demo/AboutPagePhoto.png'
               alt='About'
@@ -360,7 +383,9 @@ export default function AboutPage() {
                 borderRadius: 16,
                 width: '100%',
                 height: 'auto',
-                boxShadow: `0 2px 16px 0 rgba(0,0,0,0.08), -20px 20px 0px 0px ${rose500}`,
+                boxShadow: shadowCard,
+                position: 'relative',
+                zIndex: 1,
               }}
             />
           </MissionImageWrapper>
