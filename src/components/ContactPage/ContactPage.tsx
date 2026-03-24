@@ -206,12 +206,6 @@ const FieldWrapper = styled('div')({
   gap: 6,
 });
 
-const FieldLabel = styled('label')({
-  fontSize: 14,
-  fontWeight: 500,
-  color: slate900,
-});
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
@@ -306,16 +300,16 @@ export default function ContactPage() {
             <form onSubmit={handleSubmit}>
               <FormRow>
                 <FieldWrapper>
-                  <FieldLabel>{t.contact.firstName}</FieldLabel>
                   <TextInput
+                    label={t.contact.firstName}
                     placeholder={t.contact.firstNamePlaceholder}
                     value={form.firstName}
                     onChange={e => setForm({ ...form, firstName: e.target.value })}
                   />
                 </FieldWrapper>
                 <FieldWrapper>
-                  <FieldLabel>{t.contact.lastName}</FieldLabel>
                   <TextInput
+                    label={t.contact.lastName}
                     placeholder={t.contact.lastNamePlaceholder}
                     value={form.lastName}
                     onChange={e => setForm({ ...form, lastName: e.target.value })}
@@ -325,8 +319,8 @@ export default function ContactPage() {
 
               <FormField>
                 <FieldWrapper>
-                  <FieldLabel>{t.contact.email}</FieldLabel>
                   <TextInput
+                    label={t.contact.email}
                     placeholder={t.contact.emailPlaceholder}
                     type='email'
                     value={form.email}
@@ -337,8 +331,8 @@ export default function ContactPage() {
 
               <FormField>
                 <FieldWrapper>
-                  <FieldLabel>{t.contact.topic}</FieldLabel>
                   <TextInput
+                    label={t.contact.topic}
                     placeholder={t.contact.topicPlaceholder}
                     value={form.topic}
                     onChange={e => setForm({ ...form, topic: e.target.value })}
@@ -348,8 +342,8 @@ export default function ContactPage() {
 
               <FormField>
                 <FieldWrapper>
-                  <FieldLabel>{t.contact.message}</FieldLabel>
                   <TextArea
+                    label={t.contact.message}
                     placeholder={t.contact.messagePlaceholder}
                     value={form.message}
                     onChange={e => setForm({ ...form, message: e.target.value })}
