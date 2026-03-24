@@ -417,7 +417,19 @@
     "heroTitleWhite": "Restaurant Reservations",
     "heroTitleRose": "New Standard",
     "heroStoryBadge": "Our Story",
-    "heroSubtitle": "AiMenu.ge is a platform that connects food lovers with the best restaurants. Our goal is to simplify the reservation process and make it enjoyable."
+    "heroSubtitle": "AiMenu.ge is a platform that connects food lovers with the best restaurants. Our goal is to simplify the reservation process and make it enjoyable.",
+    "missionTitleLine1": "Our mission is to create",
+    "missionTitleLine2": "Unforgettable experience",
+    "missionPara1": "With AiMenu.ge you can easily find and book the best restaurants in Georgia.",
+    "missionPara2": "We partner with the best restaurants to make your experience unforgettable.",
+    "feature1Title": "Top Rated",
+    "feature1Desc": "Only the best restaurants",
+    "feature2Title": "Fast Booking",
+    "feature2Desc": "Book a table in minutes",
+    "feature3Title": "Secure Payment",
+    "feature3Desc": "Protected transactions",
+    "feature4Title": "Pro Chefs",
+    "feature4Desc": "Experienced culinary masters"
   },
   "contact": {
     "title": "Contact",

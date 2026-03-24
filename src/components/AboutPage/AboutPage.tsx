@@ -6,18 +6,25 @@ import Image from 'next/image';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import ChefHat from '@/icons/ChefHat';
+import ClockIcon from '@/icons/Clock';
 import LocationIcon from '@/icons/Location';
 import People from '@/icons/People';
 import RestaurantUtensils from '@/icons/RestaurantUtensils';
+import Shield from '@/icons/Shield';
+import Star from '@/icons/Star';
 import {
   foreground,
   rose50,
   rose500,
   rose600,
   shadowCard,
+  slate100,
   slate250,
   slate400,
+  slate400c,
   slate50,
+  slate900,
   white,
 } from '@/tokens';
 
@@ -124,7 +131,6 @@ const StatsInner = styled('div')({
 
 const StatCard = styled('div')({
   flex: 1,
-  width: 358,
   height: 184,
   paddingTop: 32,
   paddingBottom: 24,
@@ -138,6 +144,9 @@ const StatCard = styled('div')({
   alignItems: 'center',
   textAlign: 'center',
   boxSizing: 'border-box',
+  '@media (max-width: 768px)': {
+    width: '100%',
+  },
 });
 
 const IconCircle = styled('div')({
@@ -166,6 +175,8 @@ const StatLabel = styled('p')({
   marginBottom: 0,
 });
 
+// ── Mission Section ──────────────────────────────────────────────────────────
+
 const MissionSection = styled('section')({
   background: white,
   padding: '80px 24px',
@@ -176,35 +187,89 @@ const MissionInner = styled('div')({
   margin: '0 auto',
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gap: 64,
+  gap: 80,
   '@media (max-width: 768px)': {
     gridTemplateColumns: '1fr',
-    gap: 32,
+    gap: 40,
   },
 });
 
-const MissionText = styled('div')({});
+const MissionTextCol = styled('div')({});
 
-const MissionTitle = styled('h2')({
-  fontSize: 32,
+const MissionTitleBlock = styled('h2')({
+  fontSize: 36,
   fontWeight: 700,
-  color: foreground,
-  marginBottom: 16,
-  marginTop: 0,
-});
-
-const MissionBody = styled('p')({
-  fontSize: 16,
-  lineHeight: 1.7,
-  color: slate400,
+  lineHeight: 1.2,
   margin: 0,
+  '@media (max-width: 768px)': {
+    fontSize: 30,
+  },
 });
 
-const MissionImage = styled('div')({
-  borderRadius: 16,
-  overflow: 'hidden',
+const MissionTitleLine1 = styled('span')({
+  display: 'block',
+  color: foreground,
+});
+
+const MissionTitleLine2 = styled('span')({
+  display: 'block',
+  color: rose500,
+});
+
+const MissionPara = styled('p')({
+  color: slate400c,
+  fontSize: 18,
+  lineHeight: 1.7,
+  marginTop: 24,
+  marginBottom: 0,
+});
+
+const FeaturesGrid = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  gap: 24,
+  marginTop: 40,
+});
+
+const FeatureItem = styled('div')({
+  display: 'flex',
+  gap: 12,
+  alignItems: 'flex-start',
+});
+
+const FeatureIconBox = styled('div')({
+  width: 40,
+  height: 40,
+  borderRadius: 10,
+  background: slate100,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+});
+
+const FeatureTextCol = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 2,
+});
+
+const FeatureTitle = styled('span')({
+  fontSize: 16,
+  fontWeight: 700,
+  color: slate900,
+});
+
+const FeatureDesc = styled('span')({
+  fontSize: 14,
+  color: slate400,
+});
+
+const MissionImageWrapper = styled('div')({
   position: 'relative',
-  minHeight: 300,
+  '@media (max-width: 768px)': {
+    width: '100%',
+  },
 });
 
 // ── Stat Data ────────────────────────────────────────────────────────────────
@@ -220,6 +285,13 @@ const stats = [
 export default function AboutPage() {
   const { locale } = useLocale();
   const t = useTranslations();
+
+  const features = [
+    { icon: Star, title: t.about.feature1Title, desc: t.about.feature1Desc },
+    { icon: ClockIcon, title: t.about.feature2Title, desc: t.about.feature2Desc },
+    { icon: Shield, title: t.about.feature3Title, desc: t.about.feature3Desc },
+    { icon: ChefHat, title: t.about.feature4Title, desc: t.about.feature4Desc },
+  ];
 
   return (
     <PageWrapper>
@@ -253,18 +325,45 @@ export default function AboutPage() {
 
       <MissionSection>
         <MissionInner>
-          <MissionText>
-            <MissionTitle>{t.about.mission}</MissionTitle>
-            <MissionBody>{t.about.missionText}</MissionBody>
-          </MissionText>
-          <MissionImage>
+          <MissionTextCol>
+            <MissionTitleBlock>
+              <MissionTitleLine1>{t.about.missionTitleLine1}</MissionTitleLine1>
+              <MissionTitleLine2>{t.about.missionTitleLine2}</MissionTitleLine2>
+            </MissionTitleBlock>
+            <MissionPara>{t.about.missionPara1}</MissionPara>
+            <MissionPara>{t.about.missionPara2}</MissionPara>
+            <FeaturesGrid>
+              {features.map((feature, i) => {
+                const Icon = feature.icon;
+                return (
+                  <FeatureItem key={i}>
+                    <FeatureIconBox>
+                      <Icon width={20} height={20} style={{ color: slate900 }} />
+                    </FeatureIconBox>
+                    <FeatureTextCol>
+                      <FeatureTitle>{feature.title}</FeatureTitle>
+                      <FeatureDesc>{feature.desc}</FeatureDesc>
+                    </FeatureTextCol>
+                  </FeatureItem>
+                );
+              })}
+            </FeaturesGrid>
+          </MissionTextCol>
+
+          <MissionImageWrapper>
             <Image
-              src='/demo/RestaurantCardImage.jpg'
-              alt='Mission'
-              fill
-              style={{ objectFit: 'cover' }}
+              src='/demo/AboutPagePhoto.png'
+              alt='About'
+              width={528}
+              height={792}
+              style={{
+                borderRadius: 16,
+                width: '100%',
+                height: 'auto',
+                boxShadow: `0 2px 16px 0 rgba(0,0,0,0.08), -20px 20px 0px 0px ${rose500}`,
+              }}
             />
-          </MissionImage>
+          </MissionImageWrapper>
         </MissionInner>
       </MissionSection>
 
