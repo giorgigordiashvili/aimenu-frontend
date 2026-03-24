@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { styled } from '@pigment-css/react';
+import { useState } from 'react';
 
 import CompactVariant from './CompactVariant';
 import DefaultVariant from './DefaultVariant';

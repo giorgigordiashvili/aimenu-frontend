@@ -1,12 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { styled } from '@pigment-css/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
+import axiosInstance from '@/api/axios';
 import { favoritesRestaurantsList, favoritesRestaurantsToggleCreate } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
-import axiosInstance from '@/api/axios';
 import CategoryFilterTabs from '@/components/CategoryFilterTabs/CategoryFilterTabs';
 import Footer from '@/components/Footer/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
@@ -25,6 +25,7 @@ import {
   white,
 } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
+
 import PageHeader from './PageHeader';
 import Pagination from './Pagination';
 

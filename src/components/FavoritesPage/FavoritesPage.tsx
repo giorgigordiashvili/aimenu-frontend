@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { styled } from '@pigment-css/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
 import { favoritesRestaurantsList, favoritesRestaurantsRemoveDestroy } from '@/api/generated/api';
 import type { FavoriteRestaurant } from '@/api/generated/interfaces';
@@ -10,6 +10,8 @@ import CategoryFilterTabs from '@/components/CategoryFilterTabs/CategoryFilterTa
 import Footer from '@/components/Footer/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
+import PageHeader from '@/components/RestaurantsSearchPage/PageHeader';
+import Pagination from '@/components/RestaurantsSearchPage/Pagination';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from '@/context/LocaleContext';
 import type { Locale } from '@/i18n/config';
@@ -17,7 +19,6 @@ import {
   border,
   foreground,
   muted,
-  redBrand,
   shadowCard,
   slate50,
   slate100,
@@ -26,8 +27,6 @@ import {
   slate500,
   white,
 } from '@/tokens';
-import PageHeader from '@/components/RestaurantsSearchPage/PageHeader';
-import Pagination from '@/components/RestaurantsSearchPage/Pagination';
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 

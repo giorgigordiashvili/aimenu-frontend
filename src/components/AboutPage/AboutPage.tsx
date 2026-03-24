@@ -5,6 +5,7 @@ import Image from 'next/image';
 
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
+import MainButton from '@/components/MainButton/MainButton';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import ChefHat from '@/icons/ChefHat';
 import ClockIcon from '@/icons/Clock';
@@ -28,7 +29,6 @@ import {
   slate900,
   white,
 } from '@/tokens';
-import MainButton from '@/components/MainButton/MainButton';
 
 // ── Styled Components ────────────────────────────────────────────────────────
 
