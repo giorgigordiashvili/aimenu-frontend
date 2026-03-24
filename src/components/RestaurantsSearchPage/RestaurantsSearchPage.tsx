@@ -102,7 +102,7 @@ const CitySelect = styled('select')({
 const GridSection = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '32px 24px 80px',
+  padding: '32px 0 80px',
   '@media (min-width: 768px)': {
     padding: '48px 0 100px',
   },
