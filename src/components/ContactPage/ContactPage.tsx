@@ -1,6 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import Image from 'next/image';
 import { useState } from 'react';
 
 import Footer from '@/components/Footer';
@@ -9,231 +10,340 @@ import MainButton from '@/components/MainButton/MainButton';
 import TextArea from '@/components/TextArea/TextArea';
 import TextInput from '@/components/TextInput/TextInput';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import CheckIcon from '@/icons/Check';
-import EmailIcon from '@/icons/Email';
-import LocationIcon from '@/icons/Location';
-import PhoneIcon from '@/icons/Phone';
-import { foreground, greenActive, rose500, shadowMd, slate400, slate50, white } from '@/tokens';
+import Email from '@/icons/Email';
+import Location from '@/icons/Location';
+import Phone from '@/icons/Phone';
+import Send from '@/icons/Send';
+import {
+  blue50,
+  blue600,
+  emerald50,
+  emerald600,
+  redBrand,
+  rose50,
+  shadowCard,
+  slate50,
+  slate500,
+  slate700,
+  slate900,
+} from '@/tokens';
 
-// ── Styled Components ────────────────────────────────────────────────────────
+// ── Styled Components ─────────────────────────────────────────────────────────
 
 const PageWrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  minHeight: '100vh',
   background: slate50,
+  minHeight: '100vh',
 });
 
-const Main = styled('main')({
-  flex: 1,
-  padding: '80px 24px',
-});
-
-const Inner = styled('div')({
+const TopSection = styled('section')({
+  padding: '80px 24px 64px',
+  textAlign: 'center',
   maxWidth: 1120,
   margin: '0 auto',
+});
+
+const PageTitle = styled('h1')({
+  fontSize: 40,
+  fontWeight: 700,
+  color: slate900,
+  margin: '0 0 16px',
+});
+
+const PageSubtitle = styled('p')({
+  fontSize: 16,
+  color: slate500,
+  margin: 0,
+  lineHeight: 1.6,
+  maxWidth: 560,
+  marginLeft: 'auto',
+  marginRight: 'auto',
+});
+
+const BodySection = styled('section')({
+  maxWidth: 1120,
+  margin: '0 auto',
+  padding: '0 24px 80px',
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: 80,
+  gridTemplateColumns: '1fr 1.2fr',
+  gap: 32,
   '@media (max-width: 768px)': {
     gridTemplateColumns: '1fr',
-    gap: 40,
   },
 });
 
-const InfoBlock = styled('div')({});
-
-const ContactTitle = styled('h1')({
-  fontSize: 40,
-  fontWeight: 700,
-  color: foreground,
-  marginBottom: 16,
-  marginTop: 0,
-});
-
-const ContactDesc = styled('p')({
-  fontSize: 16,
-  color: slate400,
-  marginBottom: 40,
-  marginTop: 0,
-});
-
-const ContactItem = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 12,
-  marginBottom: 20,
-});
-
-const ContactItemText = styled('span')({
-  fontSize: 16,
-  color: foreground,
-});
-
-const FormBlock = styled('div')({
-  background: white,
-  borderRadius: 16,
-  padding: '40px',
-  boxShadow: shadowMd,
-});
-
-const FormField = styled('div')({
-  marginBottom: 20,
-});
-
-const ErrorText = styled('p')({
-  fontSize: 12,
-  color: rose500,
-  marginTop: 4,
-  marginBottom: 0,
-});
-
-const SuccessBlock = styled('div')({
+const LeftCol = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  textAlign: 'center',
-  padding: '40px 0',
   gap: 16,
 });
 
-const SuccessMessage = styled('p')({
-  fontSize: 18,
-  fontWeight: 600,
-  color: greenActive,
+const InfoCard = styled('div')({
+  background: 'white',
+  borderRadius: 16,
+  boxShadow: shadowCard,
+  padding: 24,
+  display: 'flex',
+  gap: 16,
+  alignItems: 'flex-start',
+});
+
+const IconBoxPhone = styled('div')({
+  width: 48,
+  height: 48,
+  borderRadius: 10,
+  background: rose50,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+});
+
+const IconBoxEmail = styled('div')({
+  width: 48,
+  height: 48,
+  borderRadius: 10,
+  background: blue50,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+});
+
+const IconBoxLocation = styled('div')({
+  width: 48,
+  height: 48,
+  borderRadius: 10,
+  background: emerald50,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+});
+
+const CardTextCol = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 4,
+});
+
+const CardTitle = styled('p')({
+  fontSize: 16,
+  fontWeight: 700,
+  color: slate900,
   margin: 0,
 });
 
-const IconWrap = styled('span')({
-  display: 'flex',
-  alignItems: 'center',
-  color: slate400,
+const CardSubtitle = styled('p')({
+  fontSize: 14,
+  color: slate500,
+  margin: 0,
 });
 
-// ── Component ────────────────────────────────────────────────────────────────
+const CardValueRed = styled('p')({
+  fontSize: 14,
+  fontWeight: 600,
+  color: redBrand,
+  margin: 0,
+});
+
+const CardValueBlue = styled('p')({
+  fontSize: 14,
+  fontWeight: 600,
+  color: blue600,
+  margin: 0,
+});
+
+const CardValueAddress = styled('p')({
+  fontSize: 14,
+  fontWeight: 600,
+  color: slate700,
+  margin: 0,
+});
+
+const ContactPhoto = styled('div')({
+  borderRadius: 16,
+  overflow: 'hidden',
+  boxShadow: shadowCard,
+});
+
+const FormCard = styled('div')({
+  background: 'white',
+  borderRadius: 16,
+  boxShadow: shadowCard,
+  padding: 32,
+});
+
+const FormTitle = styled('h2')({
+  fontSize: 24,
+  fontWeight: 700,
+  color: slate900,
+  margin: '0 0 8px',
+});
+
+const FormSubtitle = styled('p')({
+  fontSize: 14,
+  color: slate500,
+  margin: '0 0 24px',
+});
+
+const FormRow = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 16,
+  marginBottom: 16,
+  '@media (max-width: 480px)': {
+    gridTemplateColumns: '1fr',
+  },
+});
+
+const FormField = styled('div')({
+  marginBottom: 16,
+});
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
   const { locale } = useLocale();
   const t = useTranslations();
 
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [errors, setErrors] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    topic: '',
+    message: '',
+  });
 
-  const validate = () => {
-    const newErrors = { name: '', email: '', message: '' };
-    let valid = true;
-
-    if (!form.name.trim()) {
-      newErrors.name = t.contact.form.nameRequired;
-      valid = false;
-    }
-    if (!form.email.trim()) {
-      newErrors.email = t.contact.form.emailRequired;
-      valid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = t.contact.form.emailInvalid;
-      valid = false;
-    }
-    if (!form.message.trim()) {
-      newErrors.message = t.contact.form.messageRequired;
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  const handleSubmit = () => {
-    if (validate()) {
-      console.log('Contact form:', form);
-      setSubmitted(true);
-    }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Contact form:', form);
+    setSubmitted(true);
   };
 
   return (
     <PageWrapper>
       <HeaderPrimary />
 
-      <Main>
-        <Inner>
-          <InfoBlock>
-            <ContactTitle>{t.contact.title}</ContactTitle>
-            <ContactDesc>{t.contact.description}</ContactDesc>
+      <TopSection>
+        <PageTitle>{t.contact.title}</PageTitle>
+        <PageSubtitle>{t.contact.subtitle}</PageSubtitle>
+      </TopSection>
 
-            <ContactItem>
-              <IconWrap>
-                <PhoneIcon />
-              </IconWrap>
-              <ContactItemText>+995 32 2 00 00 00</ContactItemText>
-            </ContactItem>
+      <BodySection>
+        {/* Left col */}
+        <LeftCol>
+          {/* Phone card */}
+          <InfoCard>
+            <IconBoxPhone>
+              <Phone />
+            </IconBoxPhone>
+            <CardTextCol>
+              <CardTitle>{t.contact.phoneTitle}</CardTitle>
+              <CardSubtitle>{t.contact.phoneSubtitle}</CardSubtitle>
+              <CardValueRed>+995 32 2 12 34 56</CardValueRed>
+            </CardTextCol>
+          </InfoCard>
 
-            <ContactItem>
-              <IconWrap>
-                <EmailIcon />
-              </IconWrap>
-              <ContactItemText>info@aimenu.ge</ContactItemText>
-            </ContactItem>
+          {/* Email card */}
+          <InfoCard>
+            <IconBoxEmail>
+              <Email />
+            </IconBoxEmail>
+            <CardTextCol>
+              <CardTitle>{t.contact.emailTitle}</CardTitle>
+              <CardSubtitle>{t.contact.emailSubtitle}</CardSubtitle>
+              <CardValueBlue>support@aimenu.ge</CardValueBlue>
+            </CardTextCol>
+          </InfoCard>
 
-            <ContactItem>
-              <IconWrap>
-                <LocationIcon size={20} />
-              </IconWrap>
-              <ContactItemText>თბილისი, ჭავჭავაძის 1</ContactItemText>
-            </ContactItem>
-          </InfoBlock>
+          {/* Location card */}
+          <InfoCard>
+            <IconBoxLocation>
+              <Location width={20} height={20} />
+            </IconBoxLocation>
+            <CardTextCol>
+              <CardTitle>{t.contact.locationTitle}</CardTitle>
+              <CardSubtitle>{t.contact.locationSubtitle}</CardSubtitle>
+              <CardValueAddress>{t.contact.address}</CardValueAddress>
+            </CardTextCol>
+          </InfoCard>
 
-          <FormBlock>
-            {submitted ? (
-              <SuccessBlock>
-                <CheckIcon width={48} height={48} style={{ color: greenActive }} />
-                <SuccessMessage>{t.contact.form.success}</SuccessMessage>
-              </SuccessBlock>
-            ) : (
-              <>
-                <FormField>
-                  <TextInput
-                    label={t.contact.form.name}
-                    value={form.name}
-                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    required
-                  />
-                  {errors.name && <ErrorText>{errors.name}</ErrorText>}
-                </FormField>
+          {/* Photo */}
+          <ContactPhoto>
+            <Image
+              src='/demo/ContactPagePhoto.png'
+              alt='Contact'
+              width={528}
+              height={300}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+          </ContactPhoto>
+        </LeftCol>
 
-                <FormField>
-                  <TextInput
-                    label={t.contact.form.email}
-                    type='email'
-                    value={form.email}
-                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                    required
-                  />
-                  {errors.email && <ErrorText>{errors.email}</ErrorText>}
-                </FormField>
+        {/* Right col — form */}
+        <FormCard>
+          <FormTitle>{t.contact.formTitle}</FormTitle>
+          <FormSubtitle>{t.contact.formSubtitle}</FormSubtitle>
 
-                <FormField>
-                  <TextArea
-                    label={t.contact.form.message}
-                    value={form.message}
-                    onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                    required
-                  />
-                  {errors.message && <ErrorText>{errors.message}</ErrorText>}
-                </FormField>
-
-                <MainButton
-                  variant='rose_cta'
-                  title={t.contact.form.submit}
-                  fullWidth
-                  onClick={handleSubmit}
+          {submitted ? (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: emerald600 }}>
+              <p style={{ fontSize: 18, fontWeight: 600 }}>{t.contact.successMessage}</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <FormRow>
+                <TextInput
+                  label={t.contact.firstName}
+                  value={form.firstName}
+                  onChange={e => setForm({ ...form, firstName: e.target.value })}
                 />
-              </>
-            )}
-          </FormBlock>
-        </Inner>
-      </Main>
+                <TextInput
+                  label={t.contact.lastName}
+                  value={form.lastName}
+                  onChange={e => setForm({ ...form, lastName: e.target.value })}
+                />
+              </FormRow>
+
+              <FormField>
+                <TextInput
+                  label={t.contact.email}
+                  type='email'
+                  value={form.email}
+                  onChange={e => setForm({ ...form, email: e.target.value })}
+                />
+              </FormField>
+
+              <FormField>
+                <TextInput
+                  label={t.contact.topic}
+                  value={form.topic}
+                  onChange={e => setForm({ ...form, topic: e.target.value })}
+                />
+              </FormField>
+
+              <FormField>
+                <TextArea
+                  label={t.contact.message}
+                  value={form.message}
+                  onChange={e => setForm({ ...form, message: e.target.value })}
+                  rows={6}
+                />
+              </FormField>
+
+              <MainButton
+                type='submit'
+                variant='rose_cta'
+                title={t.contact.send}
+                icon={Send}
+                iconPosition='right'
+                size='large'
+                fullWidth
+              />
+            </form>
+          )}
+        </FormCard>
+      </BodySection>
 
       <Footer locale={locale} />
     </PageWrapper>

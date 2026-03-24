@@ -56,6 +56,11 @@ export const red600 = '#DC2626';
 // ── Blue ─────────────────────────────────────────────────────────────────
 export const blue50 = '#EFF6FF';
 export const blue500 = '#3B82F6';
+export const blue600 = '#155DFC';
+
+// ── Emerald ──────────────────────────────────────────────────────────────
+export const emerald50 = '#ECFDF5';
+export const emerald600 = '#009966';
 
 // ── Sky ──────────────────────────────────────────────────────────────────
 export const sky600 = '#0284C7';
@@ -64,6 +69,10 @@ export const sky600 = '#0284C7';
 export const white = '#FFFFFF';
 export const whiteTranslucent = '#ffffffE6';
 export const blackAlpha10 = '#0000001A';
+
+// ── Brand ─────────────────────────────────────────────────────────────────
+export const redBrand = '#EC003F'; // Same value as rose600
+export const slate700 = '#314158'; // Address text color
 
 // ── Semantic aliases ─────────────────────────────────────────────────────
 export const foreground = slate900;
