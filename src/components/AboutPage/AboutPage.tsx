@@ -103,8 +103,10 @@ const HeroSubtitle = styled('p')({
 });
 
 const StatsSection = styled('section')({
-  background: slate50,
+  background: white,
   padding: '0 24px 64px',
+  position: 'relative',
+  zIndex: 1,
 });
 
 const StatsInner = styled('div')({
@@ -113,6 +115,8 @@ const StatsInner = styled('div')({
   marginTop: -48,
   display: 'flex',
   gap: 24,
+  position: 'relative',
+  zIndex: 1,
   '@media (max-width: 768px)': {
     flexDirection: 'column',
   },
