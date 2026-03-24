@@ -411,7 +411,7 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
                       showFavoriteButton={false}
                       showRating={false}
                       showFilterText={!!fav.restaurant_cuisine_type}
-                      isFavorite={true}
+                      isFavorited={true}
                     />
                     <HeartButton
                       onClick={() => handleRemove(fav.id, fav.restaurant)}

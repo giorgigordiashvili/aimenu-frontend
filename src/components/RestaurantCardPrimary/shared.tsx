@@ -74,7 +74,7 @@ export interface RestaurantCardProps {
   variant?: 'default' | 'xl' | 'compact';
   descriptionText?: string;
   /** Controlled favorite state. When omitted the component manages its own state. */
-  isFavorite?: boolean;
-  /** Called when the user toggles the favorite. Receives the *next* value. */
-  onFavoriteToggle?: (next: boolean) => void;
+  isFavorited?: boolean;
+  /** Called when the user toggles the favorite. */
+  onFavoriteToggle?: () => void;
 }

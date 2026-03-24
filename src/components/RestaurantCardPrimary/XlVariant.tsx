@@ -142,7 +142,7 @@ interface XlVariantProps extends Omit<
   RestaurantCardProps,
   'variant' | 'detailsVariant' | 'showDetailsButton'
 > {
-  isFavorite: boolean;
+  isFavorited: boolean;
   onToggleFavorite: () => void;
 }
 
@@ -158,7 +158,7 @@ export default function XlVariant({
   locationText,
   showBookButton = true,
   descriptionText,
-  isFavorite,
+  isFavorited,
   onToggleFavorite,
   href,
   priceLevel = '₾₾₾',
@@ -232,7 +232,7 @@ export default function XlVariant({
               variant='outline'
               title={favoriteLabel}
               size='large'
-              icon={() => <HeartOutlined variant={isFavorite ? 'filled' : 'outlined'} />}
+              icon={() => <HeartOutlined variant={isFavorited ? 'filled' : 'outlined'} />}
               onClick={stopAndFavorite}
             />
           )}
