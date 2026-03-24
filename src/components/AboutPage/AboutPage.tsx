@@ -6,8 +6,12 @@ import Image from 'next/image';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import LocationIcon from '@/icons/Location';
+import People from '@/icons/People';
+import RestaurantUtensils from '@/icons/RestaurantUtensils';
 import {
   foreground,
+  rose50,
   rose500,
   rose600,
   shadowCard,
@@ -34,7 +38,7 @@ const HeroSection = styled('section')({
   padding: '44px 24px 80px',
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'flex-start',
+  alignItems: 'center',
   '@media (max-width: 768px)': {
     padding: '32px 16px 60px',
   },
@@ -53,6 +57,10 @@ const HeroContent = styled('div')({
   maxWidth: 1120,
   margin: '0 auto',
   width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  textAlign: 'center',
 });
 
 const StoryBadge = styled('span')({
@@ -91,43 +99,66 @@ const HeroSubtitle = styled('p')({
   color: slate250,
   maxWidth: 640,
   lineHeight: 1.6,
+  textAlign: 'center',
 });
 
 const StatsSection = styled('section')({
   background: slate50,
-  padding: '64px 24px',
+  padding: '0 24px 64px',
 });
 
 const StatsInner = styled('div')({
   maxWidth: 1120,
   margin: '0 auto',
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, 1fr)',
+  marginTop: -48,
+  display: 'flex',
   gap: 24,
   '@media (max-width: 768px)': {
-    gridTemplateColumns: '1fr',
+    flexDirection: 'column',
   },
 });
 
 const StatCard = styled('div')({
+  flex: 1,
+  width: 358,
+  height: 184,
+  paddingTop: 32,
+  paddingBottom: 24,
+  paddingLeft: 8,
+  paddingRight: 8,
   background: white,
   borderRadius: 16,
-  padding: '32px 24px',
-  textAlign: 'center',
   boxShadow: shadowCard,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  textAlign: 'center',
+  boxSizing: 'border-box',
+});
+
+const IconCircle = styled('div')({
+  width: 48,
+  height: 48,
+  borderRadius: '50%',
+  background: rose50,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
 });
 
 const StatNumber = styled('p')({
   fontSize: 40,
   fontWeight: 700,
-  color: rose500,
+  color: foreground,
   margin: 0,
+  marginTop: 16,
 });
 
 const StatLabel = styled('p')({
   fontSize: 16,
   color: slate400,
-  marginTop: 8,
+  marginTop: 4,
   marginBottom: 0,
 });
 
@@ -172,6 +203,14 @@ const MissionImage = styled('div')({
   minHeight: 300,
 });
 
+// ── Stat Data ────────────────────────────────────────────────────────────────
+
+const stats = [
+  { Icon: RestaurantUtensils, number: '500+', key: 'statsRestaurants' as const },
+  { Icon: People, number: '50k+', key: 'statsUsers' as const },
+  { Icon: LocationIcon, number: '12', key: 'statsCities' as const },
+];
+
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function AboutPage() {
@@ -196,18 +235,15 @@ export default function AboutPage() {
 
       <StatsSection>
         <StatsInner>
-          <StatCard>
-            <StatNumber>500+</StatNumber>
-            <StatLabel>{t.about.statsRestaurants}</StatLabel>
-          </StatCard>
-          <StatCard>
-            <StatNumber>25</StatNumber>
-            <StatLabel>{t.about.statsCities}</StatLabel>
-          </StatCard>
-          <StatCard>
-            <StatNumber>50,000+</StatNumber>
-            <StatLabel>{t.about.statsUsers}</StatLabel>
-          </StatCard>
+          {stats.map((stat, i) => (
+            <StatCard key={i}>
+              <IconCircle>
+                <stat.Icon width={24} height={24} style={{ color: rose600 }} />
+              </IconCircle>
+              <StatNumber>{stat.number}</StatNumber>
+              <StatLabel>{t.about[stat.key]}</StatLabel>
+            </StatCard>
+          ))}
         </StatsInner>
       </StatsSection>
 
