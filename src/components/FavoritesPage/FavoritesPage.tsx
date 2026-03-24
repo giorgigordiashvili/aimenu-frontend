@@ -36,8 +36,6 @@ const PageWrapper = styled('div')({
   background: slate50,
   display: 'flex',
   flexDirection: 'column',
-  paddingLeft: 16,
-  paddingRight: 16,
 });
 
 const MainContent = styled('main')({
@@ -96,6 +94,10 @@ const CitySelect = styled('select')({
 });
 
 const ContentWrapper = styled('div')({
+  padding: '0 16px',
+});
+
+const GridWrapper = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
   padding: '32px 0 80px',
@@ -352,79 +354,81 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
     <PageWrapper>
       <HeaderPrimary />
 
-      <MainContent>
-        <PageHeader
-          title={t.favorites.title}
-          subtitle={subtitle}
-          searchValue={searchInput}
-          onSearchChange={setSearchInput}
-          onSearchSubmit={handleSearchSubmit}
-          searchPlaceholder={t.restaurantsSearch.search}
-        />
+      <ContentWrapper>
+        <MainContent>
+          <PageHeader
+            title={t.favorites.title}
+            subtitle={subtitle}
+            searchValue={searchInput}
+            onSearchChange={setSearchInput}
+            onSearchSubmit={handleSearchSubmit}
+            searchPlaceholder={t.restaurantsSearch.search}
+          />
 
-        <TabsSection>
-          <TabsInner>
-            <CategoryFilterTabs
-              categories={categories}
-              activeId={categoryParam}
-              allLabel={t.restaurantsSearch.allCategories}
-              onChange={handleCategoryChange}
-            />
-          </TabsInner>
-        </TabsSection>
+          <TabsSection>
+            <TabsInner>
+              <CategoryFilterTabs
+                categories={categories}
+                activeId={categoryParam}
+                allLabel={t.restaurantsSearch.allCategories}
+                onChange={handleCategoryChange}
+              />
+            </TabsInner>
+          </TabsSection>
 
-        <FiltersRow>
-          <FiltersCard>
-            <FiltersLabel>{t.restaurantsSearch.filters}</FiltersLabel>
-            <CitySelect disabled value=''>
-              <option value=''>{t.restaurantsList.allCities}</option>
-            </CitySelect>
-          </FiltersCard>
-        </FiltersRow>
+          <FiltersRow>
+            <FiltersCard>
+              <FiltersLabel>{t.restaurantsSearch.filters}</FiltersLabel>
+              <CitySelect disabled value=''>
+                <option value=''>{t.restaurantsList.allCities}</option>
+              </CitySelect>
+            </FiltersCard>
+          </FiltersRow>
 
-        <ContentWrapper>
-          <Grid>
-            {loading ? (
-              Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
-            ) : displayedFavorites.length === 0 ? (
-              <EmptyState>
-                <span>{t.favorites.noFavorites}</span>
-              </EmptyState>
-            ) : (
-              displayedFavorites.map(fav => (
-                <CardWrapper key={fav.id}>
-                  <RestaurantCardPrimary
-                    variant='default'
-                    restaurantTitle={fav.restaurant_name}
-                    imageSrc={fav.restaurant_logo || '/RestaurantCardImage.jpg'}
-                    locationText={fav.restaurant_city}
-                    filterText={fav.restaurant_cuisine_type || undefined}
-                    priceLevel='₾₾'
-                    href={`/${locale}/restaurants/${fav.restaurant_slug}`}
-                    detailsLabel={t.restaurantsList.details}
-                    showDetailsButton={true}
-                    showBookButton={false}
-                    showFavoriteYellow={false}
-                    showFavoriteButton={false}
-                    showRating={false}
-                    showFilterText={!!fav.restaurant_cuisine_type}
-                    isFavorite={true}
-                  />
-                  <HeartButton
-                    onClick={() => handleRemove(fav.id, fav.restaurant)}
-                    aria-label={t.favorites.removed}
-                    title={t.favorites.removed}
-                  >
-                    <HeartIcon />
-                  </HeartButton>
-                </CardWrapper>
-              ))
-            )}
-          </Grid>
+          <GridWrapper>
+            <Grid>
+              {loading ? (
+                Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
+              ) : displayedFavorites.length === 0 ? (
+                <EmptyState>
+                  <span>{t.favorites.noFavorites}</span>
+                </EmptyState>
+              ) : (
+                displayedFavorites.map(fav => (
+                  <CardWrapper key={fav.id}>
+                    <RestaurantCardPrimary
+                      variant='default'
+                      restaurantTitle={fav.restaurant_name}
+                      imageSrc={fav.restaurant_logo || '/RestaurantCardImage.jpg'}
+                      locationText={fav.restaurant_city}
+                      filterText={fav.restaurant_cuisine_type || undefined}
+                      priceLevel='₾₾'
+                      href={`/${locale}/restaurants/${fav.restaurant_slug}`}
+                      detailsLabel={t.restaurantsList.details}
+                      showDetailsButton={true}
+                      showBookButton={false}
+                      showFavoriteYellow={false}
+                      showFavoriteButton={false}
+                      showRating={false}
+                      showFilterText={!!fav.restaurant_cuisine_type}
+                      isFavorite={true}
+                    />
+                    <HeartButton
+                      onClick={() => handleRemove(fav.id, fav.restaurant)}
+                      aria-label={t.favorites.removed}
+                      title={t.favorites.removed}
+                    >
+                      <HeartIcon />
+                    </HeartButton>
+                  </CardWrapper>
+                ))
+              )}
+            </Grid>
 
-          <Pagination page={pageParam} totalPages={totalPages} onPageChange={handlePageChange} />
-        </ContentWrapper>
-      </MainContent>
+            <Pagination page={pageParam} totalPages={totalPages} onPageChange={handlePageChange} />
+          </GridWrapper>
+        </MainContent>
+      </ContentWrapper>
 
       <Footer locale={locale} />
     </PageWrapper>
