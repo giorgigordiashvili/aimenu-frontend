@@ -48,7 +48,7 @@ const TabsSection = styled('div')({
 const TabsInner = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '0 24px',
+  padding: '0',
 });
 
 const FiltersRow = styled('div')({
@@ -96,7 +96,7 @@ const ContentWrapper = styled('div')({
   margin: '0 auto',
   padding: '32px 24px 80px',
   '@media (min-width: 768px)': {
-    padding: '48px 24px 100px',
+    padding: '48px 0 100px',
   },
 });
 
