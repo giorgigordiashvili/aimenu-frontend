@@ -455,17 +455,6 @@
     "send": "გაგზავნა",
     "successMessage": "თქვენი შეტყობინება გაიგზავნა! მალე დაგიკავშირდებით.",
     "description": "გვიკავშირდით ნებისმიერი შეკითხვით",
-    "form": {
-      "name": "სახელი",
-      "email": "ელფოსტა",
-      "message": "შეტყობინება",
-      "submit": "გაგზავნა",
-      "success": "თქვენი შეტყობინება გაიგზავნა!",
-      "nameRequired": "სახელი სავალდებულოა",
-      "emailRequired": "ელფოსტა სავალდებულოა",
-      "emailInvalid": "არასწორი ელფოსტა",
-      "messageRequired": "შეტყობინება სავალდებულოა"
-    },
     "firstNamePlaceholder": "თქვენი სახელი",
     "lastNamePlaceholder": "თქვენი გვარი",
     "emailPlaceholder": "თქვენი ელ-ფოსტა",

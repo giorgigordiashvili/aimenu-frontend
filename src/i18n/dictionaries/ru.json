@@ -455,17 +455,6 @@
     "send": "Отправить",
     "successMessage": "Ваше сообщение отправлено! Мы скоро свяжемся с вами.",
     "description": "Свяжитесь с нами по любым вопросам",
-    "form": {
-      "name": "Имя",
-      "email": "Электронная почта",
-      "message": "Сообщение",
-      "submit": "Отправить",
-      "success": "Ваше сообщение отправлено!",
-      "nameRequired": "Имя обязательно",
-      "emailRequired": "Email обязателен",
-      "emailInvalid": "Неверный email",
-      "messageRequired": "Сообщение обязательно"
-    },
     "firstNamePlaceholder": "Ваше имя",
     "lastNamePlaceholder": "Ваша фамилия",
     "emailPlaceholder": "Ваш email",

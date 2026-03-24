@@ -206,6 +206,18 @@ const FieldWrapper = styled('div')({
   gap: 6,
 });
 
+const SuccessWrapper = styled('div')({
+  textAlign: 'center',
+  padding: '40px 0',
+  color: emerald600,
+});
+
+const SuccessText = styled('p')({
+  fontSize: 18,
+  fontWeight: 600,
+  margin: 0,
+});
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
@@ -242,7 +254,7 @@ export default function ContactPage() {
           {/* Phone card */}
           <InfoCard>
             <IconBoxPhone>
-              <Phone width={20} height={20} style={{ color: '#EC003F' }} />
+              <Phone width={20} height={20} style={{ color: redBrand }} />
             </IconBoxPhone>
             <CardTextCol>
               <CardTitle>{t.contact.phoneTitle}</CardTitle>
@@ -254,7 +266,7 @@ export default function ContactPage() {
           {/* Email card */}
           <InfoCard>
             <IconBoxEmail>
-              <Email width={20} height={20} style={{ color: '#155DFC' }} />
+              <Email width={20} height={20} style={{ color: blue600 }} />
             </IconBoxEmail>
             <CardTextCol>
               <CardTitle>{t.contact.emailTitle}</CardTitle>
@@ -266,7 +278,7 @@ export default function ContactPage() {
           {/* Location card */}
           <InfoCard>
             <IconBoxLocation>
-              <Location width={20} height={20} style={{ color: '#009966' }} />
+              <Location width={20} height={20} style={{ color: emerald600 }} />
             </IconBoxLocation>
             <CardTextCol>
               <CardTitle>{t.contact.locationTitle}</CardTitle>
@@ -293,9 +305,9 @@ export default function ContactPage() {
           <FormSubtitle>{t.contact.formSubtitle}</FormSubtitle>
 
           {submitted ? (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: emerald600 }}>
-              <p style={{ fontSize: 18, fontWeight: 600 }}>{t.contact.successMessage}</p>
-            </div>
+            <SuccessWrapper>
+              <SuccessText>{t.contact.successMessage}</SuccessText>
+            </SuccessWrapper>
           ) : (
             <form onSubmit={handleSubmit}>
               <FormRow>

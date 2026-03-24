@@ -455,17 +455,6 @@
     "send": "Send",
     "successMessage": "Your message was sent! We'll get back to you soon.",
     "description": "Contact us with any questions",
-    "form": {
-      "name": "Name",
-      "email": "Email",
-      "message": "Message",
-      "submit": "Send",
-      "success": "Your message has been sent!",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Invalid email",
-      "messageRequired": "Message is required"
-    },
     "firstNamePlaceholder": "Your first name",
     "lastNamePlaceholder": "Your last name",
     "emailPlaceholder": "Your email address",
