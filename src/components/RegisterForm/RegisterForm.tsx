@@ -1,6 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -10,6 +11,7 @@ import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import ArrowIcon from '@/icons/Arrow';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
 import GoogleIcon from '@/icons/Google';
@@ -20,6 +22,7 @@ import * as tokens from '@/tokens';
 const Page = styled('div')({
   minHeight: '100vh',
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   padding: '24px',
@@ -29,6 +32,19 @@ const Page = styled('div')({
     alignItems: 'flex-start',
     paddingTop: '48px',
   },
+});
+
+const LogoWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  marginBottom: '24px',
+});
+
+const LogoText = styled('span')({
+  fontSize: '20px',
+  fontWeight: 700,
+  color: tokens.primary,
 });
 
 const Card = styled('div')({
@@ -45,37 +61,41 @@ const Card = styled('div')({
   },
 });
 
-// ── Tabs ─────────────────────────────────────────────────────────────────
-
-const TabRow = styled('div')({
-  display: 'flex',
-  borderBottom: `1px solid ${tokens.border}`,
-  marginBottom: '28px',
-});
-
-const Tab = styled(Link)<{ isActive?: boolean }>({
-  flex: 1,
-  textAlign: 'center',
-  padding: '12px 0',
+const BackLink = styled(Link)({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
   fontSize: '14px',
   fontWeight: 500,
-  textDecoration: 'none',
   color: tokens.muted,
-  borderBottom: '2px solid transparent',
-  marginBottom: '-1px',
-  transition: 'color 0.2s, border-color 0.2s',
+  textDecoration: 'none',
+  marginBottom: '16px',
   '&:hover': {
     color: tokens.foreground,
   },
-  variants: [
-    {
-      props: { isActive: true },
-      style: {
-        color: tokens.primary,
-        borderBottom: `2px solid ${tokens.primary}`,
-      },
-    },
-  ],
+});
+
+const Header = styled('div')({
+  textAlign: 'center',
+  marginBottom: '32px',
+});
+
+const CardTitle = styled('h1')({
+  fontSize: '28px',
+  fontWeight: 700,
+  color: tokens.foreground,
+  margin: '0 0 8px',
+  '@media (max-width: 768px)': {
+    fontSize: '22px',
+  },
+});
+
+const CardSubtitle = styled('p')({
+  fontSize: '14px',
+  color: tokens.muted,
+  margin: 0,
+  lineHeight: '20px',
+  marginBottom: '24px',
 });
 
 // ── Form elements ─────────────────────────────────────────────────────────
@@ -90,6 +110,12 @@ const Field = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   gap: '6px',
+});
+
+const PasswordHint = styled('span')({
+  fontSize: '12px',
+  color: tokens.muted,
+  marginTop: '4px',
 });
 
 const ResponsiveButton = styled('div')({
@@ -180,11 +206,9 @@ const AlertBox = styled('div')({
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface FormErrors {
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
   email?: string;
   password?: string;
-  passwordConfirm?: string;
 }
 
 interface RegisterFormProps {
@@ -197,11 +221,10 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   const router = useRouter();
   const t = getDictionary(locale);
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
@@ -210,8 +233,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   function validate(): boolean {
     const next: FormErrors = {};
 
-    if (!firstName.trim()) next.firstName = t.register.requiredField;
-    if (!lastName.trim()) next.lastName = t.register.requiredField;
+    if (!fullName.trim()) next.fullName = t.register.requiredField;
 
     if (!email.trim() || !EMAIL_RE.test(email)) {
       next.email = t.register.invalidEmail;
@@ -221,12 +243,6 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
       next.password = t.register.requiredField;
     } else if (password.length < 8) {
       next.password = t.register.passwordTooShort;
-    }
-
-    if (!passwordConfirm) {
-      next.passwordConfirm = t.register.requiredField;
-    } else if (password !== passwordConfirm) {
-      next.passwordConfirm = t.register.passwordMismatch;
     }
 
     setErrors(next);
@@ -242,12 +258,16 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
+      const parts = fullName.trim().split(/\s+/);
+      const first_name = parts[0] || '';
+      const last_name = parts.slice(1).join(' ') || parts[0] || '';
+
       await authRegisterCreate({
         email: email.trim(),
         password,
-        password_confirm: passwordConfirm,
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
+        password_confirm: password,
+        first_name,
+        last_name,
       });
 
       router.push(`/${locale}/login`);
@@ -267,46 +287,49 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
   return (
     <Page>
+      <LogoWrapper>
+        <Image src='/logo.png' alt='AiMenu' width={32} height={32} />
+        <LogoText>AiMenu</LogoText>
+      </LogoWrapper>
+
       <Card>
-        <TabRow>
-          <Tab href={`/${locale}/login`}>{t.register.loginTab}</Tab>
-          <Tab href={`/${locale}/register`} isActive>
-            {t.register.registerTab}
-          </Tab>
-        </TabRow>
+        <BackLink href={`/${locale}`}>
+          <ArrowIcon />
+          {t.register.backLink}
+        </BackLink>
+
+        <Header>
+          <CardTitle>{t.register.title}</CardTitle>
+          <CardSubtitle>{t.register.subtitle}</CardSubtitle>
+        </Header>
 
         {apiError && <AlertBox>{apiError}</AlertBox>}
 
         <Form onSubmit={handleSubmit} noValidate>
           <Field>
             <TextInput
-              label={t.register.firstName}
-              id='register-first-name'
+              label={t.register.fullName}
+              id='register-full-name'
               type='text'
-              autoComplete='given-name'
+              autoComplete='name'
               required
-              value={firstName}
-              errorMessage={errors.firstName}
+              value={fullName}
+              errorMessage={errors.fullName}
               onChange={e => {
-                setFirstName(e.target.value);
-                if (errors.firstName) setErrors(prev => ({ ...prev, firstName: undefined }));
+                setFullName(e.target.value);
+                if (errors.fullName) setErrors(prev => ({ ...prev, fullName: undefined }));
               }}
             />
           </Field>
 
           <Field>
             <TextInput
-              label={t.register.lastName}
-              id='register-last-name'
-              type='text'
-              autoComplete='family-name'
-              required
-              value={lastName}
-              errorMessage={errors.lastName}
-              onChange={e => {
-                setLastName(e.target.value);
-                if (errors.lastName) setErrors(prev => ({ ...prev, lastName: undefined }));
-              }}
+              label={t.register.phone}
+              id='register-phone'
+              type='tel'
+              autoComplete='tel'
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
             />
           </Field>
 
@@ -341,24 +364,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
               }}
             />
-          </Field>
-
-          <Field>
-            <TextInput
-              label={t.register.confirmPassword}
-              id='register-password-confirm'
-              type='password'
-              autoComplete='new-password'
-              required
-              value={passwordConfirm}
-              icon={EyeIcon}
-              errorMessage={errors.passwordConfirm}
-              onChange={e => {
-                setPasswordConfirm(e.target.value);
-                if (errors.passwordConfirm)
-                  setErrors(prev => ({ ...prev, passwordConfirm: undefined }));
-              }}
-            />
+            <PasswordHint>{t.register.passwordHint}</PasswordHint>
           </Field>
 
           <ResponsiveButton
@@ -381,11 +387,11 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
         <SocialRow>
           <SocialButtonWrapper>
-            <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
+            <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
           </SocialButtonWrapper>
 
           <SocialButtonWrapper>
-            <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
+            <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
           </SocialButtonWrapper>
         </SocialRow>
 
