@@ -61,6 +61,7 @@ const Card = styled('div')({
   padding: '40px 32px',
   '@media (max-width: 768px)': {
     padding: '32px 24px',
+    maxWidth: '100%',
     boxShadow: 'none',
     borderRadius: 0,
     border: 'none',
