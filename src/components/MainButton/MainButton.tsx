@@ -72,7 +72,7 @@ const DefaultButton = styled('button')<{
     {
       props: { variant: 'outline' },
       style: {
-        backgroundColor: 'transparent',
+        backgroundColor: '#FFFFFF',
         color: '#0A0A0A',
         border: '1px solid #0000001A',
         '&:hover': {
