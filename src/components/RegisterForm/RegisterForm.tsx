@@ -29,14 +29,14 @@ const Page = styled('div')({
   background: tokens.white,
   '@media (max-width: 768px)': {
     padding: '16px',
-    alignItems: 'flex-start',
-    paddingTop: '48px',
+    alignItems: 'center',
   },
 });
 
 const LogoWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'center',
   gap: '8px',
   marginBottom: '24px',
 });
@@ -123,11 +123,11 @@ const PasswordHint = styled('span')({
 const ResponsiveButton = styled('div')({
   '& button': {
     justifyContent: 'center',
+    padding: '8px 16px',
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '14px 24px',
-      fontSize: '16px',
+      padding: '10px 24px',
     },
   },
 });
