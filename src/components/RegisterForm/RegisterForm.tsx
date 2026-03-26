@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { authRegisterCreate } from '@/api/generated';
+import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { Locale } from '@/i18n/config';
@@ -38,11 +39,14 @@ const LogoWrapper = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   gap: '8px',
-  marginBottom: '24px',
+  marginBottom: '32px',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
 });
 
 const LogoText = styled('span')({
-  fontSize: '20px',
+  fontSize: '24px',
   fontWeight: 700,
   color: tokens.primary,
 });
@@ -83,21 +87,24 @@ const Header = styled('div')({
 });
 
 const CardTitle = styled('h1')({
-  fontSize: '28px',
+  fontSize: '24px',
   fontWeight: 700,
-  color: tokens.foreground,
+  color: tokens.ink,
   margin: '0 0 8px',
   '@media (max-width: 768px)': {
-    fontSize: '22px',
+    fontSize: '26px',
   },
 });
 
 const CardSubtitle = styled('p')({
-  fontSize: '14px',
-  color: tokens.muted,
+  fontSize: '16px',
+  color: tokens.slate500,
   margin: 0,
   lineHeight: '20px',
   marginBottom: '24px',
+  '@media (max-width: 768px)': {
+    fontSize: '14px',
+  },
 });
 
 // ── Form elements ─────────────────────────────────────────────────────────
@@ -111,11 +118,10 @@ const Form = styled('form')({
 const Field = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  gap: '6px',
 });
 
 const PasswordHint = styled('span')({
-  fontSize: '12px',
+  fontSize: '10px',
   color: tokens.muted,
   marginTop: '4px',
 });
@@ -129,6 +135,16 @@ const ResponsiveButton = styled('div')({
     '& button': {
       padding: '10px 24px',
     },
+  },
+});
+
+// ── Mobile header ─────────────────────────────────────────────────────────
+
+const MobileHeaderWrapper = styled('div')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'block',
+    width: '100%',
   },
 });
 
@@ -289,119 +305,124 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   }
 
   return (
-    <Page>
-      <LogoWrapper>
-        <Image src='/logo.png' alt='AiMenu' width={32} height={32} />
-        <LogoText>AiMenu</LogoText>
-      </LogoWrapper>
+    <>
+      <MobileHeaderWrapper>
+        <HeaderPrimary />
+      </MobileHeaderWrapper>
+      <Page>
+        <LogoWrapper>
+          <Image src='/logo.png' alt='AiMenu' width={40} height={40} />
+          <LogoText>AiMenu</LogoText>
+        </LogoWrapper>
 
-      <Card>
-        <BackLink href={`/${locale}`}>
-          <ArrowIcon />
-          {t.register.backLink}
-        </BackLink>
+        <Card>
+          <BackLink href={`/${locale}`}>
+            <ArrowIcon />
+            {t.register.backLink}
+          </BackLink>
 
-        <Header>
-          <CardTitle>{t.register.title}</CardTitle>
-          <CardSubtitle>{t.register.subtitle}</CardSubtitle>
-        </Header>
+          <Header>
+            <CardTitle>{t.register.title}</CardTitle>
+            <CardSubtitle>{t.register.subtitle}</CardSubtitle>
+          </Header>
 
-        {apiError && <AlertBox>{apiError}</AlertBox>}
+          {apiError && <AlertBox>{apiError}</AlertBox>}
 
-        <Form onSubmit={handleSubmit} noValidate>
-          <Field>
-            <TextInput
-              label={t.register.fullName}
-              id='register-full-name'
-              type='text'
-              autoComplete='name'
-              required
-              value={fullName}
-              errorMessage={errors.fullName}
-              onChange={e => {
-                setFullName(e.target.value);
-                if (errors.fullName) setErrors(prev => ({ ...prev, fullName: undefined }));
-              }}
-            />
-          </Field>
+          <Form onSubmit={handleSubmit} noValidate>
+            <Field>
+              <TextInput
+                label={t.register.fullName}
+                id='register-full-name'
+                type='text'
+                autoComplete='name'
+                required
+                value={fullName}
+                errorMessage={errors.fullName}
+                onChange={e => {
+                  setFullName(e.target.value);
+                  if (errors.fullName) setErrors(prev => ({ ...prev, fullName: undefined }));
+                }}
+              />
+            </Field>
 
-          <Field>
-            <TextInput
-              label={t.register.phone}
-              id='register-phone'
-              type='tel'
-              autoComplete='tel'
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-            />
-          </Field>
+            <Field>
+              <TextInput
+                label={t.register.phone}
+                id='register-phone'
+                type='tel'
+                autoComplete='tel'
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+              />
+            </Field>
 
-          <Field>
-            <TextInput
-              label={t.register.email}
-              id='register-email'
-              type='email'
-              autoComplete='email'
-              required
-              value={email}
-              errorMessage={errors.email}
-              onChange={e => {
-                setEmail(e.target.value);
-                if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
-              }}
-            />
-          </Field>
+            <Field>
+              <TextInput
+                label={t.register.email}
+                id='register-email'
+                type='email'
+                autoComplete='email'
+                required
+                value={email}
+                errorMessage={errors.email}
+                onChange={e => {
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                }}
+              />
+            </Field>
 
-          <Field>
-            <TextInput
-              label={t.register.password}
-              id='register-password'
-              type='password'
-              autoComplete='new-password'
-              required
-              value={password}
-              icon={EyeIcon}
-              errorMessage={errors.password}
-              onChange={e => {
-                setPassword(e.target.value);
-                if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
-              }}
-            />
-            <PasswordHint>{t.register.passwordHint}</PasswordHint>
-          </Field>
+            <Field>
+              <TextInput
+                label={t.register.password}
+                id='register-password'
+                type='password'
+                autoComplete='new-password'
+                required
+                value={password}
+                icon={EyeIcon}
+                errorMessage={errors.password}
+                onChange={e => {
+                  setPassword(e.target.value);
+                  if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                }}
+              />
+              <PasswordHint>{t.register.passwordHint}</PasswordHint>
+            </Field>
 
-          <ResponsiveButton
-            style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
-          >
-            <MainButton
-              variant='rose_cta'
-              fullWidth
-              type='submit'
-              title={isLoading ? '...' : t.register.submit}
-            />
-          </ResponsiveButton>
-        </Form>
+            <ResponsiveButton
+              style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
+            >
+              <MainButton
+                variant='rose_cta'
+                fullWidth
+                type='submit'
+                title={isLoading ? '...' : t.register.submit}
+              />
+            </ResponsiveButton>
+          </Form>
 
-        <Divider>
-          <DividerLine />
-          <DividerText>{t.register.orDivider}</DividerText>
-          <DividerLine />
-        </Divider>
+          <Divider>
+            <DividerLine />
+            <DividerText>{t.register.orDivider}</DividerText>
+            <DividerLine />
+          </Divider>
 
-        <SocialRow>
-          <SocialButtonWrapper>
-            <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
-          </SocialButtonWrapper>
+          <SocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
+            </SocialButtonWrapper>
 
-          <SocialButtonWrapper>
-            <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
-          </SocialButtonWrapper>
-        </SocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
+            </SocialButtonWrapper>
+          </SocialRow>
 
-        <Footer>
-          {t.register.haveAccount} <Link href={`/${locale}/login`}>{t.register.loginLink}</Link>
-        </Footer>
-      </Card>
-    </Page>
+          <Footer>
+            {t.register.haveAccount} <Link href={`/${locale}/login`}>{t.register.loginLink}</Link>
+          </Footer>
+        </Card>
+      </Page>
+    </>
   );
 }
