@@ -53,11 +53,13 @@ const Card = styled('div')({
   background: tokens.white,
   borderRadius: tokens.radiusMd,
   boxShadow: tokens.shadowMd,
+  border: `1px solid ${tokens.slate200}`,
   padding: '40px 32px',
   '@media (max-width: 768px)': {
     padding: '32px 24px',
     boxShadow: 'none',
     borderRadius: 0,
+    border: 'none',
   },
 });
 
@@ -124,7 +126,8 @@ const ResponsiveButton = styled('div')({
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '14px 24px',
+      fontSize: '16px',
     },
   },
 });

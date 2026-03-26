@@ -94,7 +94,7 @@
     "restaurantCreationFailed": "რესტორნის შექმნა ვერ მოხერხდა. სცადეთ თავიდან.",
     "title": "რეგისტრაცია",
     "subtitle": "შექმენით ახალი ანგარიში",
-    "backLink": "← უკან",
+    "backLink": "უკან",
     "fullName": "სახელი გვარი",
     "phone": "ტელეფონი",
     "passwordHint": "მინიმუმ 8 სიმბოლო",

@@ -94,7 +94,7 @@
     "restaurantCreationFailed": "Failed to create restaurant. Please try again.",
     "title": "Register",
     "subtitle": "Create a new account",
-    "backLink": "← Back",
+    "backLink": "Back",
     "fullName": "Full Name",
     "phone": "Phone",
     "passwordHint": "Minimum 8 characters",
