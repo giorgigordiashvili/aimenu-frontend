@@ -91,7 +91,21 @@
     "country": "Страна",
     "createRestaurant": "Создать ресторан",
     "registrationFailed": "Регистрация не удалась. Попробуйте снова.",
-    "restaurantCreationFailed": "Не удалось создать ресторан. Попробуйте снова."
+    "restaurantCreationFailed": "Не удалось создать ресторан. Попробуйте снова.",
+    "title": "Регистрация",
+    "submit": "Зарегистрироваться",
+    "loginTab": "Войти",
+    "registerTab": "Регистрация",
+    "haveAccount": "Уже есть аккаунт?",
+    "loginLink": "Войти",
+    "orDivider": "или",
+    "googleBtn": "Войти через Google",
+    "facebookBtn": "Войти через Facebook",
+    "genericError": "Ошибка регистрации. Попробуйте снова.",
+    "passwordMismatch": "Пароли не совпадают",
+    "passwordTooShort": "Пароль должен содержать минимум 8 символов",
+    "requiredField": "Обязательное поле",
+    "invalidEmail": "Неверный email"
   },
   "login": {
     "back": "Назад",

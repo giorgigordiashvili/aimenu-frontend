@@ -91,7 +91,21 @@
     "country": "ქვეყანა",
     "createRestaurant": "რესტორნის შექმნა",
     "registrationFailed": "რეგისტრაცია ვერ მოხერხდა. სცადეთ თავიდან.",
-    "restaurantCreationFailed": "რესტორნის შექმნა ვერ მოხერხდა. სცადეთ თავიდან."
+    "restaurantCreationFailed": "რესტორნის შექმნა ვერ მოხერხდა. სცადეთ თავიდან.",
+    "title": "რეგისტრაცია",
+    "submit": "რეგისტრაცია",
+    "loginTab": "შესვლა",
+    "registerTab": "რეგისტრაცია",
+    "haveAccount": "უკვე გაქვთ ანგარიში?",
+    "loginLink": "შესვლა",
+    "orDivider": "ან",
+    "googleBtn": "Google-ით შესვლა",
+    "facebookBtn": "Facebook-ით შესვლა",
+    "genericError": "რეგისტრაციის შეცდომა. სცადეთ თავიდან.",
+    "passwordMismatch": "პაროლები არ ემთხვევა",
+    "passwordTooShort": "პაროლი მინ. 8 სიმბოლო",
+    "requiredField": "სავალდებულო ველი",
+    "invalidEmail": "არასწორი ელ-ფოსტა"
   },
   "login": {
     "back": "უკან",
