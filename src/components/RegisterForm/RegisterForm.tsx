@@ -395,14 +395,13 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
               <PasswordHint>{t.register.passwordHint}</PasswordHint>
             </Field>
 
-            <ResponsiveButton
-              style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
-            >
+            <ResponsiveButton>
               <MainButton
                 variant='rose_cta'
                 fullWidth
                 type='submit'
-                title={isLoading ? '...' : t.register.submit}
+                disabled={isLoading}
+                title={t.register.submit}
               />
             </ResponsiveButton>
           </Form>

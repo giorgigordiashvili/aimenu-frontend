@@ -3,6 +3,8 @@
 import { styled } from '@pigment-css/react';
 import { useState, useRef } from 'react';
 
+import { slate50, slate200, slate400 } from '@/tokens';
+
 const Text = styled('p')({
   fontSize: '14px',
   fontFamily: 'Inter',
@@ -126,10 +128,10 @@ const StyledInput = styled('input')({
   },
 
   '&[data-variant="outlined"]': {
-    backgroundColor: '#F8FAFC',
-    border: '1px solid #E2E8F0',
+    backgroundColor: slate50,
+    border: `1px solid ${slate200}`,
     '&:focus': {
-      border: '1px solid #94A3B8',
+      border: `1px solid ${slate400}`,
       boxShadow: '0 0 0 3px #94a3b840',
     },
     '&[data-error="true"]': {
