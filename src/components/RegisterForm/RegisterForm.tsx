@@ -332,6 +332,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
           <Form onSubmit={handleSubmit} noValidate>
             <Field>
               <TextInput
+                variant='outlined'
                 label={t.register.fullName}
                 id='register-full-name'
                 type='text'
@@ -348,6 +349,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
             <Field>
               <TextInput
+                variant='outlined'
                 label={t.register.phone}
                 id='register-phone'
                 type='tel'
@@ -359,6 +361,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
             <Field>
               <TextInput
+                variant='outlined'
                 label={t.register.email}
                 id='register-email'
                 type='email'
@@ -375,6 +378,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
             <Field>
               <TextInput
+                variant='outlined'
                 label={t.register.password}
                 id='register-password'
                 type='password'

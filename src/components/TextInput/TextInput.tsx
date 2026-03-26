@@ -124,6 +124,18 @@ const StyledInput = styled('input')({
     height: '16px',
     cursor: 'pointer',
   },
+
+  '&[data-variant="outlined"]': {
+    backgroundColor: '#F8FAFC',
+    border: '1px solid #E2E8F0',
+    '&:focus': {
+      border: '1px solid #94A3B8',
+      boxShadow: '0 0 0 3px #94a3b840',
+    },
+    '&[data-error="true"]': {
+      border: '1px solid #E7000B',
+    },
+  },
 });
 
 type IconComponent = React.ComponentType<{ open?: boolean }>;
@@ -133,6 +145,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   errorMessage?: string;
   icon?: IconComponent;
   onIconClick?: () => void;
+  variant?: 'default' | 'outlined';
 };
 
 function TextInput({
@@ -141,6 +154,7 @@ function TextInput({
   type = 'text',
   icon: Icon,
   onIconClick,
+  variant = 'default',
   ...props
 }: TextInputProps) {
   const [isError, setIsError] = useState(false);
@@ -168,6 +182,7 @@ function TextInput({
           ref={inputRef}
           type={isPassword && showPassword ? 'text' : type}
           data-error={isError ? 'true' : undefined}
+          data-variant={variant}
           aria-invalid={isError}
           style={{
             paddingLeft:
