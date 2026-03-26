@@ -3,6 +3,8 @@
 import { styled } from '@pigment-css/react';
 import { useState, useRef } from 'react';
 
+import { slate50, slate200, slate400 } from '@/tokens';
+
 const Text = styled('p')({
   fontSize: '14px',
   fontFamily: 'Inter',
@@ -124,6 +126,18 @@ const StyledInput = styled('input')({
     height: '16px',
     cursor: 'pointer',
   },
+
+  '&[data-variant="outlined"]': {
+    backgroundColor: slate50,
+    border: `1px solid ${slate200}`,
+    '&:focus': {
+      border: `1px solid ${slate400}`,
+      boxShadow: '0 0 0 3px #94a3b840',
+    },
+    '&[data-error="true"]': {
+      border: '1px solid #E7000B',
+    },
+  },
 });
 
 type IconComponent = React.ComponentType<{ open?: boolean }>;
@@ -133,6 +147,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   errorMessage?: string;
   icon?: IconComponent;
   onIconClick?: () => void;
+  variant?: 'default' | 'outlined';
 };
 
 function TextInput({
@@ -141,6 +156,7 @@ function TextInput({
   type = 'text',
   icon: Icon,
   onIconClick,
+  variant = 'default',
   ...props
 }: TextInputProps) {
   const [isError, setIsError] = useState(false);
@@ -168,6 +184,7 @@ function TextInput({
           ref={inputRef}
           type={isPassword && showPassword ? 'text' : type}
           data-error={isError ? 'true' : undefined}
+          data-variant={variant}
           aria-invalid={isError}
           style={{
             paddingLeft:

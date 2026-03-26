@@ -1,157 +1,114 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import axios from '@/api/axios';
+import { authRegisterCreate } from '@/api/generated';
+import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
+import MainButton from '@/components/MainButton/MainButton';
+import TextInput from '@/components/TextInput/TextInput';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import ArrowIcon from '@/icons/Arrow';
+import EyeIcon from '@/icons/Eye';
+import FacebookIcon from '@/icons/Facebook';
+import GoogleIcon from '@/icons/Google';
+import * as tokens from '@/tokens';
 
-const Container = styled('div')({
+// ── Layout ────────────────────────────────────────────────────────────────
+
+const Page = styled('div')({
   minHeight: '100vh',
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   padding: '24px',
-  background: '#f8fafc',
-  '@media (max-width: 600px)': {
+  background: tokens.white,
+  '@media (max-width: 768px)': {
     padding: '16px',
-    alignItems: 'flex-start',
-    paddingTop: '40px',
+    alignItems: 'center',
   },
 });
 
-const FormCard = styled('div')({
+const LogoWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '8px',
+  marginBottom: '32px',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
+const LogoText = styled('span')({
+  fontSize: '24px',
+  fontWeight: 700,
+  color: tokens.primary,
+});
+
+const Card = styled('div')({
   width: '100%',
-  maxWidth: '560px',
-  background: '#ffffff',
-  borderRadius: '26px',
-  boxShadow: '0px 16px 16px -8px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05)',
-  padding: '32px',
-  '@media (max-width: 600px)': {
-    padding: '24px',
+  maxWidth: '440px',
+  background: tokens.white,
+  borderRadius: tokens.radiusMd,
+  boxShadow: tokens.shadowMd,
+  border: `1px solid ${tokens.slate200}`,
+  padding: '40px 32px',
+  '@media (max-width: 768px)': {
+    padding: '32px 24px',
+    maxWidth: '100%',
+    boxShadow: 'none',
+    borderRadius: 0,
+    border: 'none',
+  },
+});
+
+const BackLink = styled(Link)({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  fontSize: '14px',
+  fontWeight: 500,
+  color: tokens.muted,
+  textDecoration: 'none',
+  marginBottom: '16px',
+  '&:hover': {
+    color: tokens.foreground,
   },
 });
 
 const Header = styled('div')({
   textAlign: 'center',
-  marginBottom: '24px',
+  marginBottom: '32px',
 });
 
-const Title = styled('h1')({
+const CardTitle = styled('h1')({
   fontSize: '24px',
   fontWeight: 700,
-  color: '#0f172a',
-  marginBottom: '8px',
+  color: tokens.ink,
+  margin: '0 0 8px',
+  '@media (max-width: 768px)': {
+    fontSize: '26px',
+  },
+});
+
+const CardSubtitle = styled('p')({
+  fontSize: '16px',
+  color: tokens.slate500,
   margin: 0,
-  '@media (max-width: 600px)': {
-    fontSize: '20px',
-  },
-});
-
-const Subtitle = styled('p')({
-  fontSize: '14px',
-  color: '#62748e',
-  margin: 0,
-});
-
-const Steps = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: '32px',
-  gap: '12px',
-  '@media (max-width: 600px)': {
-    flexWrap: 'wrap',
-  },
-});
-
-const Step = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-});
-
-interface StepNumberProps {
-  isActive?: boolean;
-  isCompleted?: boolean;
-}
-
-const StepNumber = styled('span')<StepNumberProps>({
-  width: '28px',
-  height: '28px',
-  borderRadius: '50%',
-  background: '#e2e8f0',
-  color: '#62748e',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '14px',
-  fontWeight: 600,
-  variants: [
-    {
-      props: { isActive: true },
-      style: {
-        background: '#ec003f',
-        color: '#ffffff',
-      },
-    },
-    {
-      props: { isCompleted: true },
-      style: {
-        background: '#7ccf00',
-        color: '#ffffff',
-      },
-    },
-  ],
-});
-
-interface StepLabelProps {
-  isActive?: boolean;
-  isCompleted?: boolean;
-}
-
-const StepLabel = styled('span')<StepLabelProps>({
-  fontSize: '14px',
-  color: '#62748e',
-  fontWeight: 500,
-  '@media (max-width: 600px)': {
-    display: 'none',
-  },
-  variants: [
-    {
-      props: { isActive: true },
-      style: {
-        color: '#0f172a',
-      },
-    },
-    {
-      props: { isCompleted: true },
-      style: {
-        color: '#0f172a',
-      },
-    },
-  ],
-});
-
-const StepDivider = styled('div')({
-  width: '40px',
-  height: '2px',
-  background: '#e2e8f0',
-  '@media (max-width: 600px)': {
-    width: '24px',
-  },
-});
-
-const ErrorMessage = styled('div')({
-  background: '#fff1f2',
-  color: '#ec003f',
-  padding: '12px 16px',
-  borderRadius: '8px',
-  fontSize: '14px',
+  lineHeight: '20px',
   marginBottom: '24px',
+  '@media (max-width: 768px)': {
+    fontSize: '14px',
+  },
 });
+
+// ── Form elements ─────────────────────────────────────────────────────────
 
 const Form = styled('form')({
   display: 'flex',
@@ -159,521 +116,317 @@ const Form = styled('form')({
   gap: '20px',
 });
 
-const Row = styled('div')({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: '16px',
-  '@media (max-width: 600px)': {
-    gridTemplateColumns: '1fr',
-  },
-});
-
 const Field = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  gap: '6px',
 });
 
-const Label = styled('label')({
-  fontSize: '14px',
-  fontWeight: 500,
-  color: '#0f172a',
+const PasswordHint = styled('span')({
+  fontSize: '10px',
+  color: tokens.muted,
+  marginTop: '4px',
 });
 
-const inputStyles = {
-  padding: '12px 16px',
-  border: '1px solid #e2e8f0',
-  borderRadius: '8px',
-  fontSize: '14px',
-  color: '#0f172a',
-  background: '#ffffff',
-  transition: 'border-color 0.2s, box-shadow 0.2s',
-  outline: 'none',
-  '&:focus': {
-    borderColor: '#ec003f',
-    boxShadow: '0 0 0 3px #fff1f2',
+const ResponsiveButton = styled('div')({
+  '& button': {
+    justifyContent: 'center',
+    padding: '8px 16px',
   },
-  '&::placeholder': {
-    color: '#9c9c9c',
-  },
-};
-
-const Input = styled('input')(inputStyles);
-
-const Textarea = styled('textarea')({
-  ...inputStyles,
-  resize: 'vertical',
-  minHeight: '80px',
-});
-
-const Hint = styled('span')({
-  fontSize: '12px',
-  color: '#62748e',
-});
-
-const ButtonRow = styled('div')({
-  display: 'flex',
-  gap: '12px',
-  marginTop: '8px',
-  '@media (max-width: 600px)': {
-    flexDirection: 'column-reverse',
+  '@media (max-width: 768px)': {
+    '& button': {
+      padding: '10px 24px',
+    },
   },
 });
 
-const SubmitButton = styled('button')({
-  flex: 1,
-  padding: '14px 24px',
-  background: '#ec003f',
-  color: '#ffffff',
-  borderRadius: '8px',
-  fontSize: '16px',
-  fontWeight: 600,
-  border: 'none',
-  cursor: 'pointer',
-  transition: 'background 0.2s, transform 0.1s',
-  '&:hover:not(:disabled)': {
-    background: '#d10038',
-  },
-  '&:active:not(:disabled)': {
-    transform: 'scale(0.98)',
-  },
-  '&:disabled': {
-    opacity: 0.6,
-    cursor: 'not-allowed',
-  },
-});
+// ── Mobile header ─────────────────────────────────────────────────────────
 
-const BackButton = styled('button')({
-  padding: '14px 24px',
-  background: '#f1f5f9',
-  color: '#0f172a',
-  borderRadius: '8px',
-  fontSize: '16px',
-  fontWeight: 600,
-  border: 'none',
-  cursor: 'pointer',
-  transition: 'background 0.2s',
-  '&:hover:not(:disabled)': {
-    background: '#e2e8f0',
-  },
-  '&:disabled': {
-    opacity: 0.6,
-    cursor: 'not-allowed',
-  },
-  '@media (max-width: 600px)': {
+const MobileHeaderWrapper = styled('div')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'block',
     width: '100%',
   },
 });
+
+// ── Divider ───────────────────────────────────────────────────────────────
+
+const Divider = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  margin: '24px 0',
+});
+
+const DividerLine = styled('div')({
+  flex: 1,
+  height: '1px',
+  background: tokens.border,
+});
+
+const DividerText = styled('span')({
+  fontSize: '14px',
+  color: tokens.muted,
+  whiteSpace: 'nowrap',
+});
+
+// ── Social ────────────────────────────────────────────────────────────────
+
+const SocialRow = styled('div')({
+  display: 'flex',
+  gap: '12px',
+  '@media (max-width: 400px)': {
+    flexDirection: 'column',
+  },
+});
+
+const SocialButtonWrapper = styled('div')({
+  flex: 1,
+  '& button': {
+    justifyContent: 'center',
+  },
+  '@media (max-width: 768px)': {
+    '& button': {
+      padding: '10px 24px',
+    },
+  },
+});
+
+// ── Footer ────────────────────────────────────────────────────────────────
+
+const Footer = styled('p')({
+  textAlign: 'center',
+  fontSize: '14px',
+  color: tokens.muted,
+  margin: '24px 0 0',
+  '& a': {
+    color: tokens.primary,
+    fontWeight: 600,
+    textDecoration: 'none',
+  },
+  '& a:hover': {
+    textDecoration: 'underline',
+  },
+});
+
+// ── Alert ─────────────────────────────────────────────────────────────────
+
+const AlertBox = styled('div')({
+  background: `${tokens.red600}0D`,
+  color: tokens.red600,
+  padding: '12px 16px',
+  borderRadius: tokens.radiusSm,
+  fontSize: '14px',
+  lineHeight: '20px',
+  marginBottom: '20px',
+});
+
+// ── Validation helpers ────────────────────────────────────────────────────
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+interface FormErrors {
+  fullName?: string;
+  email?: string;
+  password?: string;
+}
 
 interface RegisterFormProps {
   locale: Locale;
 }
 
-interface FormData {
-  // User fields
-  email: string;
-  password: string;
-  passwordConfirm: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  // Restaurant fields
-  restaurantName: string;
-  restaurantSlug: string;
-  restaurantDescription: string;
-  restaurantEmail: string;
-  restaurantPhone: string;
-  restaurantWebsite: string;
-  restaurantAddress: string;
-  restaurantCity: string;
-  restaurantPostalCode: string;
-  restaurantCountry: string;
-}
-
-type StepType = 'user' | 'restaurant';
+// ── Component ─────────────────────────────────────────────────────────────
 
 export default function RegisterForm({ locale }: RegisterFormProps) {
   const router = useRouter();
   const t = getDictionary(locale);
-  const [step, setStep] = useState<StepType>('user');
+
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [tokens, setTokens] = useState<{ access: string; refresh: string } | null>(null);
 
-  const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
-    passwordConfirm: '',
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
-    restaurantName: '',
-    restaurantSlug: '',
-    restaurantDescription: '',
-    restaurantEmail: '',
-    restaurantPhone: '',
-    restaurantWebsite: '',
-    restaurantAddress: '',
-    restaurantCity: '',
-    restaurantPostalCode: '',
-    restaurantCountry: 'Georgia',
-  });
+  function validate(): boolean {
+    const next: FormErrors = {};
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    if (!fullName.trim()) next.fullName = t.register.requiredField;
 
-    // Auto-generate slug from restaurant name
-    if (name === 'restaurantName') {
-      const slug = value
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
-      setFormData(prev => ({ ...prev, restaurantSlug: slug }));
+    if (!email.trim() || !EMAIL_RE.test(email)) {
+      next.email = t.register.invalidEmail;
     }
-  };
 
-  const handleUserSubmit = async (e: React.FormEvent) => {
+    if (!password) {
+      next.password = t.register.requiredField;
+    } else if (password.length < 8) {
+      next.password = t.register.passwordTooShort;
+    }
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
+    setApiError(null);
+
+    if (!validate()) return;
+
     setIsLoading(true);
 
     try {
-      const response = await axios.post('/api/v1/auth/register/', {
-        email: formData.email,
-        password: formData.password,
-        password_confirm: formData.passwordConfirm,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        phone_number: formData.phoneNumber,
-        preferred_language: locale,
+      const parts = fullName.trim().split(/\s+/);
+      const first_name = parts[0] || '';
+      const last_name = parts.slice(1).join(' ') || parts[0] || '';
+
+      await authRegisterCreate({
+        email: email.trim(),
+        password,
+        password_confirm: password,
+        first_name,
+        last_name,
       });
 
-      if (response.data.success) {
-        setTokens(response.data.data.tokens);
-        setStep('restaurant');
-      }
+      router.push(`/${locale}/login`);
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as {
-          response?: { data?: { detail?: string; email?: string[]; password?: string[] } };
-        };
-        const errorData = axiosErr.response?.data;
-        if (errorData?.detail) {
-          setError(errorData.detail);
-        } else if (errorData?.email) {
-          setError(errorData.email[0]);
-        } else if (errorData?.password) {
-          setError(errorData.password[0]);
-        } else {
-          setError(t.register.registrationFailed);
-        }
+      const axiosErr = err as { response?: { data?: Record<string, string[]> } };
+      const data = axiosErr?.response?.data;
+      if (data) {
+        const firstError = Object.values(data).flat()[0];
+        setApiError(String(firstError));
       } else {
-        setError(t.register.registrationFailed);
+        setApiError(t.register.genericError);
       }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleRestaurantSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      await axios.post(
-        '/api/v1/restaurants/create/',
-        {
-          name: formData.restaurantName,
-          slug: formData.restaurantSlug,
-          description: formData.restaurantDescription,
-          email: formData.restaurantEmail || formData.email,
-          phone: formData.restaurantPhone || formData.phoneNumber,
-          website: formData.restaurantWebsite,
-          address: formData.restaurantAddress,
-          city: formData.restaurantCity,
-          postal_code: formData.restaurantPostalCode,
-          country: formData.restaurantCountry,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${tokens?.access}`,
-          },
-        }
-      );
-
-      // Redirect to success or dashboard
-      router.push(`/${locale}`);
-    } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as {
-          response?: { data?: { detail?: string; slug?: string[]; name?: string[] } };
-        };
-        const errorData = axiosErr.response?.data;
-        if (errorData?.detail) {
-          setError(errorData.detail);
-        } else if (errorData?.slug) {
-          setError(errorData.slug[0]);
-        } else if (errorData?.name) {
-          setError(errorData.name[0]);
-        } else {
-          setError(t.register.restaurantCreationFailed);
-        }
-      } else {
-        setError(t.register.restaurantCreationFailed);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }
 
   return (
-    <Container>
-      <FormCard>
-        <Header>
-          <Title>{step === 'user' ? t.register.createAccount : t.register.restaurantDetails}</Title>
-          <Subtitle>
-            {step === 'user' ? t.register.userSubtitle : t.register.restaurantSubtitle}
-          </Subtitle>
-        </Header>
+    <>
+      <MobileHeaderWrapper>
+        <HeaderPrimary />
+      </MobileHeaderWrapper>
+      <Page>
+        <LogoWrapper>
+          <Image src='/logo.png' alt='AiMenu' width={40} height={40} />
+          <LogoText>AiMenu</LogoText>
+        </LogoWrapper>
 
-        <Steps>
-          <Step>
-            <StepNumber isActive={step === 'user'} isCompleted={step === 'restaurant'}>
-              1
-            </StepNumber>
-            <StepLabel isActive={step === 'user'} isCompleted={step === 'restaurant'}>
-              {t.register.accountStep}
-            </StepLabel>
-          </Step>
-          <StepDivider />
-          <Step>
-            <StepNumber isActive={step === 'restaurant'}>2</StepNumber>
-            <StepLabel isActive={step === 'restaurant'}>{t.register.restaurantStep}</StepLabel>
-          </Step>
-        </Steps>
+        <Card>
+          <BackLink href={`/${locale}`}>
+            <ArrowIcon />
+            {t.register.backLink}
+          </BackLink>
 
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+          <Header>
+            <CardTitle>{t.register.title}</CardTitle>
+            <CardSubtitle>{t.register.subtitle}</CardSubtitle>
+          </Header>
 
-        {step === 'user' ? (
-          <Form onSubmit={handleUserSubmit}>
-            <Row>
-              <Field>
-                <Label htmlFor='firstName'>{t.register.firstName}</Label>
-                <Input
-                  type='text'
-                  id='firstName'
-                  name='firstName'
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  required
-                />
-              </Field>
-              <Field>
-                <Label htmlFor='lastName'>{t.register.lastName}</Label>
-                <Input
-                  type='text'
-                  id='lastName'
-                  name='lastName'
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  required
-                />
-              </Field>
-            </Row>
+          {apiError && <AlertBox>{apiError}</AlertBox>}
 
+          <Form onSubmit={handleSubmit} noValidate>
             <Field>
-              <Label htmlFor='email'>{t.register.email}</Label>
-              <Input
-                type='email'
-                id='email'
-                name='email'
-                value={formData.email}
-                onChange={handleChange}
+              <TextInput
+                variant='outlined'
+                label={t.register.fullName}
+                id='register-full-name'
+                type='text'
+                autoComplete='name'
                 required
+                value={fullName}
+                errorMessage={errors.fullName}
+                onChange={e => {
+                  setFullName(e.target.value);
+                  if (errors.fullName) setErrors(prev => ({ ...prev, fullName: undefined }));
+                }}
               />
             </Field>
 
             <Field>
-              <Label htmlFor='phoneNumber'>{t.register.phoneNumber}</Label>
-              <Input
+              <TextInput
+                variant='outlined'
+                label={t.register.phone}
+                id='register-phone'
                 type='tel'
-                id='phoneNumber'
-                name='phoneNumber'
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                placeholder='+995 XXX XXX XXX'
+                autoComplete='tel'
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
               />
             </Field>
 
             <Field>
-              <Label htmlFor='password'>{t.register.password}</Label>
-              <Input
+              <TextInput
+                variant='outlined'
+                label={t.register.email}
+                id='register-email'
+                type='email'
+                autoComplete='email'
+                required
+                value={email}
+                errorMessage={errors.email}
+                onChange={e => {
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                }}
+              />
+            </Field>
+
+            <Field>
+              <TextInput
+                variant='outlined'
+                label={t.register.password}
+                id='register-password'
                 type='password'
-                id='password'
-                name='password'
-                value={formData.password}
-                onChange={handleChange}
+                autoComplete='new-password'
                 required
-                minLength={8}
+                value={password}
+                icon={EyeIcon}
+                errorMessage={errors.password}
+                onChange={e => {
+                  setPassword(e.target.value);
+                  if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                }}
               />
+              <PasswordHint>{t.register.passwordHint}</PasswordHint>
             </Field>
 
-            <Field>
-              <Label htmlFor='passwordConfirm'>{t.register.confirmPassword}</Label>
-              <Input
-                type='password'
-                id='passwordConfirm'
-                name='passwordConfirm'
-                value={formData.passwordConfirm}
-                onChange={handleChange}
-                required
-                minLength={8}
+            <ResponsiveButton>
+              <MainButton
+                variant='rose_cta'
+                fullWidth
+                type='submit'
+                disabled={isLoading}
+                title={t.register.submit}
               />
-            </Field>
-
-            <SubmitButton type='submit' disabled={isLoading}>
-              {isLoading ? t.common.loading : t.register.continue}
-            </SubmitButton>
+            </ResponsiveButton>
           </Form>
-        ) : (
-          <Form onSubmit={handleRestaurantSubmit}>
-            <Field>
-              <Label htmlFor='restaurantName'>{t.register.restaurantName}</Label>
-              <Input
-                type='text'
-                id='restaurantName'
-                name='restaurantName'
-                value={formData.restaurantName}
-                onChange={handleChange}
-                required
-              />
-            </Field>
 
-            <Field>
-              <Label htmlFor='restaurantSlug'>{t.register.restaurantSlug}</Label>
-              <Input
-                type='text'
-                id='restaurantSlug'
-                name='restaurantSlug'
-                value={formData.restaurantSlug}
-                onChange={handleChange}
-                pattern='[a-z0-9-]+'
-                required
-              />
-              <Hint>{t.register.slugHint}</Hint>
-            </Field>
+          <Divider>
+            <DividerLine />
+            <DividerText>{t.register.orDivider}</DividerText>
+            <DividerLine />
+          </Divider>
 
-            <Field>
-              <Label htmlFor='restaurantDescription'>{t.register.restaurantDescription}</Label>
-              <Textarea
-                id='restaurantDescription'
-                name='restaurantDescription'
-                value={formData.restaurantDescription}
-                onChange={handleChange}
-                rows={3}
-              />
-            </Field>
+          <SocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
+            </SocialButtonWrapper>
 
-            <Row>
-              <Field>
-                <Label htmlFor='restaurantEmail'>{t.register.restaurantEmail}</Label>
-                <Input
-                  type='email'
-                  id='restaurantEmail'
-                  name='restaurantEmail'
-                  value={formData.restaurantEmail}
-                  onChange={handleChange}
-                  placeholder={formData.email}
-                />
-              </Field>
-              <Field>
-                <Label htmlFor='restaurantPhone'>{t.register.restaurantPhone}</Label>
-                <Input
-                  type='tel'
-                  id='restaurantPhone'
-                  name='restaurantPhone'
-                  value={formData.restaurantPhone}
-                  onChange={handleChange}
-                  placeholder={formData.phoneNumber}
-                />
-              </Field>
-            </Row>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
+            </SocialButtonWrapper>
+          </SocialRow>
 
-            <Field>
-              <Label htmlFor='restaurantWebsite'>{t.register.restaurantWebsite}</Label>
-              <Input
-                type='url'
-                id='restaurantWebsite'
-                name='restaurantWebsite'
-                value={formData.restaurantWebsite}
-                onChange={handleChange}
-                placeholder='https://'
-              />
-            </Field>
-
-            <Field>
-              <Label htmlFor='restaurantAddress'>{t.register.address}</Label>
-              <Input
-                type='text'
-                id='restaurantAddress'
-                name='restaurantAddress'
-                value={formData.restaurantAddress}
-                onChange={handleChange}
-                required
-              />
-            </Field>
-
-            <Row>
-              <Field>
-                <Label htmlFor='restaurantCity'>{t.register.city}</Label>
-                <Input
-                  type='text'
-                  id='restaurantCity'
-                  name='restaurantCity'
-                  value={formData.restaurantCity}
-                  onChange={handleChange}
-                  required
-                />
-              </Field>
-              <Field>
-                <Label htmlFor='restaurantPostalCode'>{t.register.postalCode}</Label>
-                <Input
-                  type='text'
-                  id='restaurantPostalCode'
-                  name='restaurantPostalCode'
-                  value={formData.restaurantPostalCode}
-                  onChange={handleChange}
-                />
-              </Field>
-            </Row>
-
-            <Field>
-              <Label htmlFor='restaurantCountry'>{t.register.country}</Label>
-              <Input
-                type='text'
-                id='restaurantCountry'
-                name='restaurantCountry'
-                value={formData.restaurantCountry}
-                onChange={handleChange}
-                required
-              />
-            </Field>
-
-            <ButtonRow>
-              <BackButton type='button' onClick={() => setStep('user')} disabled={isLoading}>
-                {t.common.back}
-              </BackButton>
-              <SubmitButton type='submit' disabled={isLoading}>
-                {isLoading ? t.common.loading : t.register.createRestaurant}
-              </SubmitButton>
-            </ButtonRow>
-          </Form>
-        )}
-      </FormCard>
-    </Container>
+          <Footer>
+            {t.register.haveAccount} <Link href={`/${locale}/login`}>{t.register.loginLink}</Link>
+          </Footer>
+        </Card>
+      </Page>
+    </>
   );
 }

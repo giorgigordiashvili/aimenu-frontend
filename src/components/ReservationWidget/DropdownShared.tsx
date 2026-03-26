@@ -6,7 +6,7 @@ import { foreground, shadowCard, slate100, slate200, white } from '@/tokens';
 
 export const DropdownList = styled('div')({
   position: 'absolute',
-  top: 'calc(100% + 6px)',
+  top: 'calc(100% + 16px)',
   left: 0,
   right: 0,
   zIndex: 300,

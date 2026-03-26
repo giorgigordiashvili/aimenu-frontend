@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import type { RestaurantList } from '@/api/generated/interfaces';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import { foreground, muted, primary, slate100, slate200 } from '@/tokens';
+import MainButton from '@/components/MainButton/MainButton';
+import { foreground, muted, primary } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
 // ── Styled ────────────────────────────────────────────────────────────────────
@@ -50,24 +51,6 @@ const SectionSubtitle = styled('p')({
   color: muted,
   lineHeight: '22px',
   margin: 0,
-});
-
-const ViewAllButton = styled('button')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '6px',
-  padding: '8px 14px',
-  background: 'transparent',
-  border: `1px solid ${slate200}`,
-  borderRadius: '8px',
-  fontSize: '13px',
-  fontWeight: 500,
-  color: foreground,
-  cursor: 'pointer',
-  flexShrink: 0,
-  transition: 'background 0.15s',
-  '&:hover': { background: slate100 },
-  '@media (max-width: 768px)': { width: '100%', textAlign: 'center', justifyContent: 'center' },
 });
 
 const Grid = styled('div')({
@@ -157,9 +140,11 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
           <SectionTitle>{t.restaurantsList.popularTitle}</SectionTitle>
           <SectionSubtitle>{t.restaurantsList.popularSubtitle}</SectionSubtitle>
         </TitleGroup>
-        <ViewAllButton onClick={() => router.push(`/${locale}/restaurants`)}>
-          {t.restaurantsList.viewAll}
-        </ViewAllButton>
+        <MainButton
+          variant='outline'
+          title={t.restaurantsList.viewAll}
+          onClick={() => router.push(`/${locale}/restaurants`)}
+        />
       </SectionHead>
 
       <Grid>

@@ -313,6 +313,7 @@ export default function ContactPage() {
               <FormRow>
                 <FieldWrapper>
                   <TextInput
+                    variant='outlined'
                     label={t.contact.firstName}
                     placeholder={t.contact.firstNamePlaceholder}
                     value={form.firstName}
@@ -321,6 +322,7 @@ export default function ContactPage() {
                 </FieldWrapper>
                 <FieldWrapper>
                   <TextInput
+                    variant='outlined'
                     label={t.contact.lastName}
                     placeholder={t.contact.lastNamePlaceholder}
                     value={form.lastName}
@@ -332,6 +334,7 @@ export default function ContactPage() {
               <FormField>
                 <FieldWrapper>
                   <TextInput
+                    variant='outlined'
                     label={t.contact.email}
                     placeholder={t.contact.emailPlaceholder}
                     type='email'
@@ -344,6 +347,7 @@ export default function ContactPage() {
               <FormField>
                 <FieldWrapper>
                   <TextInput
+                    variant='outlined'
                     label={t.contact.topic}
                     placeholder={t.contact.topicPlaceholder}
                     value={form.topic}
@@ -355,6 +359,7 @@ export default function ContactPage() {
               <FormField>
                 <FieldWrapper>
                   <TextArea
+                    variant='outlined'
                     label={t.contact.message}
                     placeholder={t.contact.messagePlaceholder}
                     value={form.message}

@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 
-import { green500, lime600 } from '@/tokens';
+import { green500, lime600, white } from '@/tokens';
 
 type Variant =
   | 'default'
@@ -72,7 +72,7 @@ const DefaultButton = styled('button')<{
     {
       props: { variant: 'outline' },
       style: {
-        backgroundColor: 'transparent',
+        backgroundColor: white,
         color: '#0A0A0A',
         border: '1px solid #0000001A',
         '&:hover': {

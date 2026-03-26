@@ -69,6 +69,7 @@ export const sky600 = '#0284C7';
 export const white = '#FFFFFF';
 export const whiteTranslucent = '#ffffffE6';
 export const blackAlpha10 = '#0000001A';
+export const ink = '#0A0A0A';
 
 // ── Brand ─────────────────────────────────────────────────────────────────
 export const redBrand = '#EC003F'; // Same value as rose600

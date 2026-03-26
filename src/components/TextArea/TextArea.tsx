@@ -3,6 +3,8 @@
 import { styled } from '@pigment-css/react';
 import { useState } from 'react';
 
+import { slate50, slate200, slate400 } from '@/tokens';
+
 const Text = styled('p')({
   fontSize: '14px',
   fontFamily: 'Inter',
@@ -62,14 +64,27 @@ const StyledTextArea = styled('textarea')({
   '&[data-error="true"]': {
     border: '1px solid #E7000B',
   },
+
+  '&[data-variant="outlined"]': {
+    backgroundColor: slate50,
+    border: `1px solid ${slate200}`,
+    '&:focus': {
+      border: `1px solid ${slate400}`,
+      boxShadow: '0 0 0 3px #94a3b840',
+    },
+    '&[data-error="true"]': {
+      border: '1px solid #E7000B',
+    },
+  },
 });
 
 type TextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string;
   errorMessage?: string;
+  variant?: 'default' | 'outlined';
 };
 
-function TextArea({ label, errorMessage, ...props }: TextAreaProps) {
+function TextArea({ label, errorMessage, variant = 'default', ...props }: TextAreaProps) {
   const [isError, setIsError] = useState(false);
 
   return (
@@ -79,6 +94,7 @@ function TextArea({ label, errorMessage, ...props }: TextAreaProps) {
       <StyledTextArea
         {...props}
         data-error={isError ? 'true' : undefined}
+        data-variant={variant}
         aria-invalid={isError}
         onBlur={e => {
           setIsError(!e.currentTarget.checkValidity());
