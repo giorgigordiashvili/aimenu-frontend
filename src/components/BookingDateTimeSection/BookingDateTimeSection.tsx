@@ -124,7 +124,7 @@ const DatePlaceholder = styled('span')({
 
 const CalendarDropdown = styled('div')({
   position: 'absolute',
-  top: 'calc(100% + 6px)',
+  top: 'calc(100% + 16px)',
   left: 0,
   zIndex: 200,
   backgroundColor: white,
@@ -231,7 +231,7 @@ const CalDayCell = styled('button')<{
 
 const TimeSlotPanel = styled('div')({
   position: 'absolute',
-  top: 'calc(100% + 6px)',
+  top: 'calc(100% + 16px)',
   left: 0,
   zIndex: 200,
   backgroundColor: white,
