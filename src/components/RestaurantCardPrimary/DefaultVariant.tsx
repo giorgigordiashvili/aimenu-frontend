@@ -135,8 +135,7 @@ const PriceIndicator = styled('p')({
   lineHeight: '15px',
   fontWeight: 500,
   color: iconStroke,
-
-})
+});
 
 const LocationContainer = styled('div')({
   display: 'flex',
@@ -158,15 +157,15 @@ const LocationContainer = styled('div')({
 const DescriptionContainer = styled('div')({
   paddingTop: '6px',
   marginTop: '10px',
-})
+});
 
 const RestaurantDescription = styled('p')({
   fontSize: 12,
   fontWeight: 400,
   lineHeight: '16px',
   color: slate400c,
-  margin: 0
-})
+  margin: 0,
+});
 
 const LocationIconWrapper = styled('span')({
   display: 'inline-flex',
@@ -281,9 +280,7 @@ export default function DefaultVariant({
       <ContentBottom>
         <BottomGroup>
           {restaurantTitle && <RestaurantTitle>{restaurantTitle}</RestaurantTitle>}
-            <PriceIndicator>
-              {priceLevel}
-            </PriceIndicator>
+          <PriceIndicator>{priceLevel}</PriceIndicator>
         </BottomGroup>
         {locationText && (
           <LocationContainer>
@@ -294,18 +291,16 @@ export default function DefaultVariant({
           </LocationContainer>
         )}
         <DescriptionContainer>
-        {restaurantDescription &&
-          <RestaurantDescription>
-            {restaurantDescription}
-          </RestaurantDescription>
-        }
-        {amenities && amenities.length > 0 && (
-          <AmenitiesList>
-            {amenities.slice(0, 3).map((name, i) => (
-              <AmenityPill key={i}>{name}</AmenityPill>
-            ))}
-          </AmenitiesList>
-        )}
+          {restaurantDescription && (
+            <RestaurantDescription>{restaurantDescription}</RestaurantDescription>
+          )}
+          {amenities && amenities.length > 0 && (
+            <AmenitiesList>
+              {amenities.slice(0, 3).map((name, i) => (
+                <AmenityPill key={i}>{name}</AmenityPill>
+              ))}
+            </AmenitiesList>
+          )}
         </DescriptionContainer>
         <ButtonGroup onClick={e => e.stopPropagation()}>
           {showDetailsButton && (

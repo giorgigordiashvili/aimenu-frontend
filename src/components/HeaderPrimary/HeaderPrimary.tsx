@@ -514,7 +514,6 @@ export default function HeaderPrimary() {
         <RightGroup>
           {/* Desktop auth controls */}
           <DesktopControls>
-
             {isAuthenticated ? (
               <DropdownWrap ref={dropdownRef}>
                 <UserTrigger onClick={() => setUserMenuOpen(p => !p)}>

@@ -231,7 +231,7 @@ const FieldLabel = styled('label')({
 const FieldInput = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  paddingBlock: '8px'
+  paddingBlock: '8px',
 });
 
 const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
@@ -500,9 +500,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                     <ChevronDownIcon color={slate400} size={14} />
                   </ChevronWrap>
                 </FieldInput>
-
               </FieldLeft>
-
             </FieldInner>
             {showCity && (
               <DropdownList>
@@ -636,8 +634,8 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                     {value.guests} {t.booking.persons}
                   </FieldText>
                   <ChevronWrap>
-                      <ChevronDownIcon color={slate400} size={14} />
-                    </ChevronWrap>
+                    <ChevronDownIcon color={slate400} size={14} />
+                  </ChevronWrap>
                 </FieldInput>
               </FieldLeft>
             </FieldInner>
@@ -667,7 +665,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
             <SearchButtonText>{t.common.search}</SearchButtonText>
           </SearchButton>
           <ScanMenuButton onClick={undefined}>
-              <ScanIcon />
+            <ScanIcon />
             <ButtonLabel>{t.home.scanMenu}</ButtonLabel>
             <ArrowRightIcon />
           </ScanMenuButton>

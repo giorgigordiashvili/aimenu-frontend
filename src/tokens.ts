@@ -42,7 +42,7 @@ export const green500 = '#8CC63E';
 export const green600 = '#16A34A';
 export const green700 = '#17B26A';
 export const greenActive = '#00C950';
-export const scrollIndicator = '#7CCF00'
+export const scrollIndicator = '#7CCF00';
 // Original lime colors - do not change without checking all usages
 export const lime500 = '#9AE600';
 export const lime600 = '#7AB234';
@@ -70,7 +70,7 @@ export const sky600 = '#0284C7';
 export const white = '#FFFFFF';
 export const whiteTranslucent = '#ffffffE6';
 export const black = '#000000';
-export const neutral600 = "#91A3BA";
+export const neutral600 = '#91A3BA';
 export const blackAlpha10 = '#0000001A';
 export const ink = '#0A0A0A';
 
