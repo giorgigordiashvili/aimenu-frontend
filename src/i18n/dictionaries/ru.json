@@ -20,7 +20,8 @@
     "featuredPlaces": "Избранные места со всей Грузии",
     "allCategories": "Все",
     "noRestaurantsFound": "Рестораны не найдены",
-    "failedToLoad": "Не удалось загрузить рестораны"
+    "failedToLoad": "Не удалось загрузить рестораны",
+    "scanMenu": "меню сканирования"
   },
   "restaurant": {
     "menu": "Меню",

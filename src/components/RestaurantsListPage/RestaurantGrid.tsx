@@ -40,7 +40,7 @@ const SectionTitle = styled('h2')({
   fontSize: '30px',
   fontWeight: 700,
   color: foreground,
-  lineHeight: '32px',
+  lineHeight: '36px',
   letterSpacing: '-0.3px',
   margin: 0,
 });

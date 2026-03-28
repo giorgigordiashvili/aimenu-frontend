@@ -2,7 +2,7 @@ import { styled } from '@pigment-css/react';
 import React from 'react';
 
 import CheckIcon from '@/icons/Check';
-import { foreground, shadowCard, slate100, slate200, white } from '@/tokens';
+import { foreground, scrollIndicator, shadowCard, slate150, slate200, white } from '@/tokens';
 
 export const DropdownList = styled('div')({
   position: 'absolute',
@@ -16,19 +16,30 @@ export const DropdownList = styled('div')({
   boxShadow: shadowCard,
   maxHeight: '220px',
   overflowY: 'auto',
+  clipPath: 'inset(0 round 12px)',
   userSelect: 'none',
+  scrollbarColor: `${scrollIndicator} transparent`,
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    backgroundColor: 'transparent',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: scrollIndicator,
+  },
 });
 
 export const DropdownRow = styled('div')<{ isSelected?: boolean; isLast?: boolean }>({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  height: '48px',
-  padding: '0 16px',
+  height: '40px',
+  padding: '0 20px',
   borderBottom: `1px solid ${slate200}`,
   cursor: 'pointer',
   transition: 'background-color 0.1s ease',
-  '&:hover': { backgroundColor: slate100 },
+  '&:hover': { backgroundColor: slate150 },
 
   variants: [
     {
@@ -38,7 +49,7 @@ export const DropdownRow = styled('div')<{ isSelected?: boolean; isLast?: boolea
     {
       props: { isSelected: true },
       style: {
-        backgroundColor: slate100,
+        backgroundColor: slate150,
       },
     },
   ],

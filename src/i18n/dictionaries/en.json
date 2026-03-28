@@ -20,7 +20,8 @@
     "featuredPlaces": "Featured places from all over Georgia",
     "allCategories": "All",
     "noRestaurantsFound": "No restaurants found",
-    "failedToLoad": "Failed to load restaurants"
+    "failedToLoad": "Failed to load restaurants",
+    "scanMenu": "Scan Menu"
   },
   "restaurant": {
     "menu": "Menu",

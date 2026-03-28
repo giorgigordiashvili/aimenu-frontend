@@ -20,7 +20,8 @@
     "featuredPlaces": "რჩეული ადგილები მთელი საქართველოს მასშტაბით",
     "allCategories": "ყველა",
     "noRestaurantsFound": "რესტორნები ვერ მოიძებნა",
-    "failedToLoad": "ვერ მოხერხდა რესტორნების ჩატვირთვა"
+    "failedToLoad": "ვერ მოხერხდა რესტორნების ჩატვირთვა",
+    "scanMenu": "დაასკანერე მენიუ"
   },
   "restaurant": {
     "menu": "მენიუ",

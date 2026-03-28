@@ -15,11 +15,13 @@ import TimeDropdown from '@/components/ReservationWidget/TimeDropdown';
 import MobileSelectModal from '@/components/RestaurantsListPage/MobileSelectModal';
 import SearchCalendarPicker from '@/components/RestaurantsListPage/SearchCalendarPicker';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import ArrowRightIcon from '@/icons/ArrowRight';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
 import ClockIcon from '@/icons/Clock';
 import LocationIcon from '@/icons/Location';
 import PeopleIcon from '@/icons/People';
+import ScanIcon from '@/icons/Scan';
 import SearchIcon from '@/icons/Search';
 import {
   foreground,
@@ -27,8 +29,8 @@ import {
   rose600,
   rose700,
   slate100,
+  slate150,
   slate400,
-  slate50,
   white,
 } from '@/tokens';
 
@@ -130,15 +132,11 @@ const FilterFieldFirst = styled('div')({
   paddingRight: 24,
   paddingTop: 8,
   paddingBottom: 8,
-  borderTopLeftRadius: 24,
-  borderBottomLeftRadius: 24,
-  borderTopRightRadius: 12,
-  borderBottomRightRadius: 12,
   cursor: 'pointer',
   position: 'relative',
-  transition: 'background 0.15s',
+  transition: 'all 0.15s',
   borderRight: `1px solid ${slate100}`,
-  '&:hover': { background: slate50 },
+  '&:hover': { background: slate150, borderColor: 'transparent', borderRadius: 24 },
   '&:hover label': { color: rose500 },
   '&:hover .field-icon svg': { color: rose500 },
   '&:hover .field-text': { color: rose500 },
@@ -158,12 +156,11 @@ const FilterField = styled('div')({
   paddingRight: 24,
   paddingTop: 8,
   paddingBottom: 8,
-  borderRadius: 12,
   cursor: 'pointer',
   position: 'relative',
-  transition: 'background 0.15s',
+  transition: 'all 0.15s',
   borderRight: `1px solid ${slate100}`,
-  '&:hover': { background: slate50 },
+  '&:hover': { background: slate150, borderColor: 'transparent', borderRadius: 24 },
   '&:hover label': { color: rose500 },
   '&:hover .field-icon svg': { color: rose500 },
   '&:hover .field-text': { color: rose500 },
@@ -182,11 +179,11 @@ const FilterFieldLast = styled('div')({
   paddingRight: 24,
   paddingTop: 8,
   paddingBottom: 8,
-  borderRadius: 12,
   cursor: 'pointer',
   position: 'relative',
-  transition: 'background 0.15s',
-  '&:hover': { background: slate50 },
+  transition: 'all 0.15s',
+  borderRight: `1px solid ${slate100}`,
+  '&:hover': { background: slate150, borderColor: 'transparent', borderRadius: 24 },
   '&:hover label': { color: rose500 },
   '&:hover .field-icon svg': { color: rose500 },
   '&:hover .field-text': { color: rose500 },
@@ -234,15 +231,18 @@ const FieldLabel = styled('label')({
 const FieldInput = styled('div')({
   display: 'flex',
   alignItems: 'center',
+  paddingBlock: '8px'
 });
 
 const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
+  flexGrow: 1,
   fontSize: 15,
   fontWeight: 600,
   lineHeight: '22px',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  textAlign: 'start',
   transition: 'color 0.15s',
   '@media (max-width: 768px)': { fontSize: 16 },
   variants: [
@@ -286,7 +286,8 @@ const SearchButton = styled('button')({
   flexShrink: 0,
   boxShadow: '0 4px 14px rgba(236, 0, 63, 0.4)',
   transition: 'background 0.15s, transform 0.1s',
-  '& svg': { color: white, width: 20, height: 20 },
+  marginInline: 8,
+  '& svg': { color: white, width: 16, height: 16 },
   '&:hover': { background: rose700 },
   '&:active': { transform: 'scale(0.95)' },
   '@media (max-width: 768px)': {
@@ -304,6 +305,32 @@ const SearchButtonText = styled('span')({
   '@media (max-width: 768px)': {
     display: 'inline',
   },
+});
+
+const ScanMenuButton = styled('button')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '12px',
+    background: '#6ECC00',
+    border: 'none',
+    borderRadius: '9999px',
+    padding: '18px 28px',
+    width: '100%',
+    cursor: 'pointer',
+    color: 'white',
+  },
+});
+
+const ButtonLabel = styled('span')({
+  fontSize: '20px',
+  fontWeight: 800,
+  letterSpacing: '0.01em',
+  flex: 1,
+  textAlign: 'center',
+  color: 'white',
 });
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -465,14 +492,17 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                   <IconWrap className='field-icon'>
                     <LocationIcon size={16} />
                   </IconWrap>
+
                   <FieldText className='field-text' isPlaceholder={!value.city}>
                     {selectedCityLabel}
                   </FieldText>
+                  <ChevronWrap>
+                    <ChevronDownIcon color={slate400} size={14} />
+                  </ChevronWrap>
                 </FieldInput>
+
               </FieldLeft>
-              <ChevronWrap>
-                <ChevronDownIcon color={slate400} size={14} />
-              </ChevronWrap>
+
             </FieldInner>
             {showCity && (
               <DropdownList>
@@ -523,11 +553,11 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                         ? formatDateShort(value.date, locale)
                         : t.reservationWidget.datePlaceholder}
                     </FieldText>
+                    <ChevronWrap>
+                      <ChevronDownIcon color={slate400} size={14} />
+                    </ChevronWrap>
                   </FieldInput>
                 </FieldLeft>
-                <ChevronWrap>
-                  <ChevronDownIcon color={slate400} size={14} />
-                </ChevronWrap>
               </FieldInner>
               <SearchCalendarPicker
                 show={showCal}
@@ -565,11 +595,11 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                     <FieldText className='field-text' isPlaceholder={!value.time}>
                       {value.time || t.reservationWidget.timePlaceholder}
                     </FieldText>
+                    <ChevronWrap>
+                      <ChevronDownIcon color={slate400} size={14} />
+                    </ChevronWrap>
                   </FieldInput>
                 </FieldLeft>
-                <ChevronWrap>
-                  <ChevronDownIcon color={slate400} size={14} />
-                </ChevronWrap>
               </FieldInner>
               <TimeDropdown
                 show={showTime}
@@ -605,11 +635,11 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                   <FieldText className='field-text' isPlaceholder={!value.guests}>
                     {value.guests} {t.booking.persons}
                   </FieldText>
+                  <ChevronWrap>
+                      <ChevronDownIcon color={slate400} size={14} />
+                    </ChevronWrap>
                 </FieldInput>
               </FieldLeft>
-              <ChevronWrap>
-                <ChevronDownIcon color={slate400} size={14} />
-              </ChevronWrap>
             </FieldInner>
             <GuestsDropdown
               show={showGuests}
@@ -625,6 +655,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           </FilterFieldLast>
 
           {/* Search button — circle on desktop, full-width pill on mobile */}
+
           <SearchButton
             onClick={e => {
               e.stopPropagation();
@@ -635,6 +666,11 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
             <SearchIcon />
             <SearchButtonText>{t.common.search}</SearchButtonText>
           </SearchButton>
+          <ScanMenuButton onClick={undefined}>
+              <ScanIcon />
+            <ButtonLabel>{t.home.scanMenu}</ButtonLabel>
+            <ArrowRightIcon />
+          </ScanMenuButton>
         </FieldsRow>
       </FilterBar>
 

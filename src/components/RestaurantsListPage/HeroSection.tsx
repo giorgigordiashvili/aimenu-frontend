@@ -14,24 +14,48 @@ const Hero = styled('section')({
   // zIndex: 2 ensures the section's stacking context is above the restaurant
   // grid that follows it, so overflowing dropdowns render on top correctly.
   zIndex: 2,
-  backgroundImage: 'url(/demo/RestaurantCardImage.jpg)',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  padding: '64px 20px 96px',
+  padding: '64px 20px 112px',
+  '@media (max-width: 620px)': {
+    paddingBottom: 0,
+  },
   '@media (min-width: 768px)': {
-    padding: '80px 80px 112px',
+    padding: '80px 80px 94px',
+    backgroundImage: 'url(/demo/RestaurantCardImage.jpg)',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
   },
 });
 
-/** Dark overlay so text stays readable over the background image */
-const Overlay = styled('div')({
+const HeroBackground = styled('div')({
   position: 'absolute',
-  inset: 0,
-  background: 'rgba(0, 0, 0, 0.55)',
+  top: 0,
+  left: 0,
+  right: 0,
+  overflow: 'hidden',
   zIndex: 0,
+  '@media (min-width: 620px)': {
+    bottom: 0,
+  },
+});
+
+const HeroImage = styled('img')({
+  display: 'block',
+  width: '100%',
+  height: '100%', // ← fills the constrained box
+  objectFit: 'cover', // ← crops nicely at all sizes, no overflow
+  objectPosition: 'center',
+
+  // breakpoint override removed — cover handles everything
+});
+
+const HeroImageOverlay = styled('div')({
+  position: 'absolute',
+  inset: 0, // stretches to exactly the <img> dimensions
+  background: 'rgba(0, 0, 0, 0.45)',
   pointerEvents: 'none',
 });
 
+/** Dark overlay so text stays readable over the background image */
 const HeroContent = styled('div')({
   position: 'relative',
   zIndex: 1,
@@ -84,10 +108,8 @@ const Subtitle = styled('p')({
   color: slate200,
   lineHeight: '1.6',
   margin: '0 0 48px',
-  maxWidth: '560px',
   '@media (min-width: 768px)': {
     fontSize: '18px',
-    marginBottom: '56px',
   },
 });
 
@@ -112,7 +134,11 @@ export default function HeroSection({ filters, onFiltersChange, onSearch }: Hero
 
   return (
     <Hero>
-      <Overlay />
+      <HeroBackground>
+        <HeroImage src='/demo/RestaurantCardImage.jpg' alt='' aria-hidden='true' />
+        <HeroImageOverlay />
+      </HeroBackground>
+
       <HeroContent>
         <TitleWrap>
           <TitleLine>{t.restaurantsList.heroTitleLine1}</TitleLine>

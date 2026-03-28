@@ -51,7 +51,7 @@ const HeaderWrapper = styled('header')({
   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
   gap: '16px',
   '@media (min-width: 768px)': {
-    padding: '0 40px',
+    padding: '0 80px',
   },
 });
 
@@ -78,14 +78,13 @@ const DesktopNav = styled('nav')({
   '@media (min-width: 768px)': {
     display: 'flex',
     alignItems: 'center',
-    gap: '4px',
+    gap: '24px',
     flex: 1,
     justifyContent: 'center',
   },
 });
 
 const NavLink = styled(Link)({
-  padding: '6px 14px',
   borderRadius: '8px',
   fontSize: '14px',
   fontWeight: 500,
@@ -491,9 +490,9 @@ export default function HeaderPrimary() {
           <Image
             src='/logo.png'
             alt='AiMenu'
-            width={32}
-            height={32}
-            style={{ height: '32px', width: '32px', objectFit: 'contain' }}
+            width={40}
+            height={40}
+            style={{ height: '40px', width: '40px', objectFit: 'contain' }}
             priority
           />
           <LogoText>AiMenu</LogoText>
@@ -515,7 +514,6 @@ export default function HeaderPrimary() {
         <RightGroup>
           {/* Desktop auth controls */}
           <DesktopControls>
-            <LanguageSwitcherPrimary currentLocale={locale} />
 
             {isAuthenticated ? (
               <DropdownWrap ref={dropdownRef}>
@@ -575,6 +573,7 @@ export default function HeaderPrimary() {
               <>
                 <LoginButton href={`/${locale}/login`}>{t.header.login}</LoginButton>
                 <RegisterButton href={`/${locale}/register`}>{t.header.register}</RegisterButton>
+                <LanguageSwitcherPrimary currentLocale={locale} />
               </>
             )}
           </DesktopControls>

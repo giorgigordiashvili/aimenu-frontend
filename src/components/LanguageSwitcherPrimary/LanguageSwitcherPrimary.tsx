@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { Locale, locales } from '@/i18n/config';
-import { foreground, muted, slate100, slate200, slate400, white } from '@/tokens';
+import { black, foreground, neutral600, slate200, slate400, white } from '@/tokens';
 
 // ── Locale labels ─────────────────────────────────────────────────────────────
 
@@ -34,7 +34,7 @@ const Trigger = styled('button')({
   cursor: 'pointer',
   fontSize: '14px',
   fontWeight: 600,
-  color: muted,
+  color: neutral600,
   lineHeight: 1,
   transition: 'border-color 0.15s, color 0.15s',
   '&:hover': {
@@ -78,20 +78,20 @@ const Option = styled('button')<{ isActive?: boolean }>({
   background: 'transparent',
   fontSize: '15px',
   fontWeight: 500,
-  color: muted,
+  color: '#91A3BA',
   cursor: 'pointer',
   textAlign: 'center',
   transition: 'background 0.1s, color 0.1s',
   '&:hover': {
-    background: slate100,
-    color: foreground,
+    background: slate200,
+    color: black,
   },
   variants: [
     {
       props: { isActive: true },
       style: {
-        background: slate100,
-        color: foreground,
+        background: slate200,
+        color: black,
         fontWeight: 700,
       },
     },

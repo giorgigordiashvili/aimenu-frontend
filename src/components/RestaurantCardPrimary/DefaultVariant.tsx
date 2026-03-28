@@ -8,19 +8,23 @@ import Heart from '@/icons/Heart';
 import LocationIcon from '@/icons/Location';
 import Star from '@/icons/Star';
 import {
+  blackAlpha10,
   border,
   foreground,
+  iconStroke,
   muted,
   radiusMd,
   redBrand,
   shadowCard,
   slate100,
   slate400,
+  slate400c,
+  slate50,
   white,
   yellow500,
 } from '@/tokens';
 
-import { FavoriteButton, FavoriteYellow, PriceWrapper, RestaurantCardProps } from './shared';
+import { FavoriteButton, FavoriteYellow, RestaurantCardProps } from './shared';
 
 const AmenitiesList = styled('div')({
   display: 'flex',
@@ -107,9 +111,10 @@ const BottomGroup = styled('div')({
 
 const RestaurantTitle = styled('span')({
   fontFamily: 'Inter',
-  fontSize: '14px',
-  fontWeight: '400',
-  lineHeight: '20px',
+  fontSize: '16px',
+  fontWeight: '700',
+  lineHeight: '24px',
+  letterSpacing: -0.31,
   color: foreground,
   '@media (max-width: 768px)': {
     width: '100%',
@@ -118,6 +123,20 @@ const RestaurantTitle = styled('span')({
     lineHeight: '28px',
   },
 });
+
+const PriceIndicator = styled('p')({
+  padding: '2px 6px',
+  backgroundColor: slate50,
+  border: `1px solid ${blackAlpha10}`,
+  borderRadius: '4px',
+  minWidth: 'fit-content',
+
+  fontSize: 10,
+  lineHeight: '15px',
+  fontWeight: 500,
+  color: iconStroke,
+
+})
 
 const LocationContainer = styled('div')({
   display: 'flex',
@@ -128,13 +147,26 @@ const LocationContainer = styled('div')({
   fontSize: '10px',
   fontWeight: '400',
   lineHeight: '15px',
-  paddingTop: '12px',
+  paddingTop: '4px',
   '@media (max-width: 768px)': {
     fontSize: '14px',
     fontWeight: '400',
     lineHeight: '20px',
   },
 });
+
+const DescriptionContainer = styled('div')({
+  paddingTop: '6px',
+  marginTop: '10px',
+})
+
+const RestaurantDescription = styled('p')({
+  fontSize: 12,
+  fontWeight: 400,
+  lineHeight: '16px',
+  color: slate400c,
+  margin: 0
+})
 
 const LocationIconWrapper = styled('span')({
   display: 'inline-flex',
@@ -156,7 +188,7 @@ const ButtonGroup = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
-  marginTop: '24px',
+  marginTop: '20px',
 });
 
 interface DefaultVariantProps extends Omit<
@@ -177,6 +209,7 @@ export default function DefaultVariant({
   showFilterText = true,
   imageSrc = '/RestaurantCardImage.jpg',
   restaurantTitle,
+  restaurantDescription = 'უნიკალური გარემო ძველ თბილისში, სადაც ტრადიციული გემოები ახლებურადაა წარმოჩენილი.',
   locationText,
   detailsVariant = 'filled',
   showDetailsButton = true,
@@ -248,9 +281,9 @@ export default function DefaultVariant({
       <ContentBottom>
         <BottomGroup>
           {restaurantTitle && <RestaurantTitle>{restaurantTitle}</RestaurantTitle>}
-          <PriceWrapper>
-            <MainButton variant='outline' title={priceLevel} size='extra_small' />
-          </PriceWrapper>
+            <PriceIndicator>
+              {priceLevel}
+            </PriceIndicator>
         </BottomGroup>
         {locationText && (
           <LocationContainer>
@@ -260,6 +293,12 @@ export default function DefaultVariant({
             {locationText}
           </LocationContainer>
         )}
+        <DescriptionContainer>
+        {restaurantDescription &&
+          <RestaurantDescription>
+            {restaurantDescription}
+          </RestaurantDescription>
+        }
         {amenities && amenities.length > 0 && (
           <AmenitiesList>
             {amenities.slice(0, 3).map((name, i) => (
@@ -267,6 +306,7 @@ export default function DefaultVariant({
             ))}
           </AmenitiesList>
         )}
+        </DescriptionContainer>
         <ButtonGroup onClick={e => e.stopPropagation()}>
           {showDetailsButton && (
             <MainButton
