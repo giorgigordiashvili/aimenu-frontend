@@ -40,7 +40,8 @@
     "website": "Website",
     "similar": "Similar Restaurants",
     "addToCart": "Add to Cart",
-    "selectedItems": "{count} dishes selected"
+    "selectedItems": "{count} dishes selected",
+    "description": "Unique atmosphere in old Tbilisi, where traditional flavors are presented in a modern way."
   },
   "product": {
     "total": "Total"

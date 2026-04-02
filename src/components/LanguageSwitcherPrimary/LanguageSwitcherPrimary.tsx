@@ -78,7 +78,7 @@ const Option = styled('button')<{ isActive?: boolean }>({
   background: 'transparent',
   fontSize: '15px',
   fontWeight: 500,
-  color: '#91A3BA',
+  color: neutral600,
   cursor: 'pointer',
   textAlign: 'center',
   transition: 'background 0.1s, color 0.1s',

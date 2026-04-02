@@ -575,6 +575,7 @@ export default function HeaderPrimary() {
                 <LanguageSwitcherPrimary currentLocale={locale} />
               </>
             )}
+            <LanguageSwitcherPrimary currentLocale={locale} />
           </DesktopControls>
 
           {/* Mobile burger */}

@@ -134,7 +134,7 @@ const FilterFieldFirst = styled('div')({
   paddingBottom: 8,
   cursor: 'pointer',
   position: 'relative',
-  transition: 'all 0.15s',
+  transition: 'background 0.15s, border-color 0.15s, border-radius 0.15s',
   borderRight: `1px solid ${slate100}`,
   '&:hover': { background: slate150, borderColor: 'transparent', borderRadius: 24 },
   '&:hover label': { color: rose500 },
@@ -158,7 +158,7 @@ const FilterField = styled('div')({
   paddingBottom: 8,
   cursor: 'pointer',
   position: 'relative',
-  transition: 'all 0.15s',
+  transition: 'background 0.15s, border-color 0.15s, border-radius 0.15s',
   borderRight: `1px solid ${slate100}`,
   '&:hover': { background: slate150, borderColor: 'transparent', borderRadius: 24 },
   '&:hover label': { color: rose500 },
@@ -181,7 +181,7 @@ const FilterFieldLast = styled('div')({
   paddingBottom: 8,
   cursor: 'pointer',
   position: 'relative',
-  transition: 'all 0.15s',
+  transition: 'background 0.15s, border-color 0.15s, border-radius 0.15s',
   borderRight: `1px solid ${slate100}`,
   '&:hover': { background: slate150, borderColor: 'transparent', borderRadius: 24 },
   '&:hover label': { color: rose500 },
@@ -664,7 +664,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
             <SearchIcon />
             <SearchButtonText>{t.common.search}</SearchButtonText>
           </SearchButton>
-          <ScanMenuButton onClick={undefined}>
+          <ScanMenuButton onClick={() => console.log('Scan menu feature coming soon!')}>
             <ScanIcon />
             <ButtonLabel>{t.home.scanMenu}</ButtonLabel>
             <ArrowRightIcon />

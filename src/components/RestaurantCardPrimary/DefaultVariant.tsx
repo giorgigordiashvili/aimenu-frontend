@@ -25,6 +25,7 @@ import {
 } from '@/tokens';
 
 import { FavoriteButton, FavoriteYellow, RestaurantCardProps } from './shared';
+import { useTranslations } from '@/context/LocaleContext';
 
 const AmenitiesList = styled('div')({
   display: 'flex',
@@ -208,7 +209,7 @@ export default function DefaultVariant({
   showFilterText = true,
   imageSrc = '/RestaurantCardImage.jpg',
   restaurantTitle,
-  restaurantDescription = 'უნიკალური გარემო ძველ თბილისში, სადაც ტრადიციული გემოები ახლებურადაა წარმოჩენილი.',
+  restaurantDescription,
   locationText,
   detailsVariant = 'filled',
   showDetailsButton = true,
@@ -222,6 +223,7 @@ export default function DefaultVariant({
   favoriteLabel = 'რჩეული',
   amenities,
 }: DefaultVariantProps) {
+  const t = useTranslations();
   const router = useRouter();
 
   const handleCardClick = () => {
@@ -291,9 +293,9 @@ export default function DefaultVariant({
           </LocationContainer>
         )}
         <DescriptionContainer>
-          {restaurantDescription && (
-            <RestaurantDescription>{restaurantDescription}</RestaurantDescription>
-          )}
+          <RestaurantDescription>
+            {restaurantDescription || t.restaurant.description}
+          </RestaurantDescription>
           {amenities && amenities.length > 0 && (
             <AmenitiesList>
               {amenities.slice(0, 3).map((name, i) => (
