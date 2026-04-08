@@ -1,23 +1,22 @@
 'use client';
 
+import { styled } from '@pigment-css/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { authLoginCreate } from '@/api/generated';
-import CheckboxWithText from '@/components/Checkbox/Checkbox';
+import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { useAuth } from '@/context/AuthContext';
 import { getDictionary } from '@/i18n/getDictionary';
-import ArrowIcon from '@/icons/Arrow';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
 import GoogleIcon from '@/icons/Google';
 
 import {
   AlertBox,
-  BackLink,
   Card,
   Divider,
   DividerLine,
@@ -31,13 +30,20 @@ import {
   Header,
   LoginFormProps,
   Page,
-  RememberRow,
   ResponsiveButton,
   SocialButtonWrapper,
   SocialRow,
   Subtitle,
   Title,
 } from './shared';
+
+const MobileHeaderWrapper = styled('div')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'block',
+    width: '100%',
+  },
+});
 
 export default function LoginForm({ locale }: LoginFormProps) {
   const router = useRouter();
@@ -47,7 +53,6 @@ export default function LoginForm({ locale }: LoginFormProps) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -83,11 +88,6 @@ export default function LoginForm({ locale }: LoginFormProps) {
       // Use AuthContext login to set tokens and fetch user
       await login({ access, refresh });
 
-      // Also set sessionStorage if rememberMe is false (for session-only persistence)
-      if (!rememberMe) {
-        sessionStorage.setItem('session_only', 'true');
-      }
-
       const redirect = searchParams.get('redirect');
       router.push(redirect || `/${locale}`);
     } catch (err: unknown) {
@@ -111,95 +111,89 @@ export default function LoginForm({ locale }: LoginFormProps) {
   }
 
   return (
-    <Page>
-      <Card>
-        <BackLink href={`/${locale}`}>
-          <ArrowIcon />
-          {t.login.back}
-        </BackLink>
+    <>
+      <MobileHeaderWrapper>
+        <HeaderPrimary />
+      </MobileHeaderWrapper>
+      <Page>
+        <Card>
+          <Header>
+            <Title>{t.login.title}</Title>
+            <Subtitle>{t.login.subtitle}</Subtitle>
+          </Header>
 
-        <Header>
-          <Title>{t.login.title}</Title>
-          <Subtitle>{t.login.subtitle}</Subtitle>
-        </Header>
+          {apiError && <AlertBox style={{ marginBottom: '20px' }}>{apiError}</AlertBox>}
 
-        {apiError && <AlertBox style={{ marginBottom: '20px' }}>{apiError}</AlertBox>}
+          <Form onSubmit={handleSubmit} noValidate>
+            <Field>
+              <TextInput
+                label={t.login.email}
+                id='login-email'
+                type='email'
+                placeholder={t.login.emailPlaceholder}
+                autoComplete='email'
+                required
+                value={email}
+                errorMessage={errors.email}
+                onChange={e => {
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                }}
+              />
+            </Field>
 
-        <Form onSubmit={handleSubmit} noValidate>
-          <Field>
-            <TextInput
-              label={t.login.email}
-              id='login-email'
-              type='email'
-              placeholder={t.login.emailPlaceholder}
-              autoComplete='email'
-              required
-              value={email}
-              errorMessage={errors.email}
-              onChange={e => {
-                setEmail(e.target.value);
-                if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
-              }}
-            />
-          </Field>
+            <Field>
+              <TextInput
+                label={t.login.password}
+                id='login-password'
+                type='password'
+                placeholder={t.login.passwordPlaceholder}
+                autoComplete='current-password'
+                required
+                value={password}
+                icon={EyeIcon}
+                errorMessage={errors.password}
+                onChange={e => {
+                  setPassword(e.target.value);
+                  if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                }}
+              />
+              <ForgotLink href={`/${locale}/password-reset`}>{t.login.forgotPassword}</ForgotLink>
+            </Field>
 
-          <Field>
-            <TextInput
-              label={t.login.password}
-              id='login-password'
-              type='password'
-              placeholder={t.login.passwordPlaceholder}
-              autoComplete='current-password'
-              required
-              value={password}
-              icon={EyeIcon}
-              errorMessage={errors.password}
-              onChange={e => {
-                setPassword(e.target.value);
-                if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
-              }}
-            />
-            <ForgotLink href={`/${locale}/password-reset`}>{t.login.forgotPassword}</ForgotLink>
-          </Field>
+            <ResponsiveButton
+              style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
+            >
+              <MainButton
+                variant='rose_cta'
+                fullWidth
+                type='submit'
+                title={isLoading ? '...' : t.login.signIn}
+              />
+            </ResponsiveButton>
+          </Form>
 
-          <RememberRow
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}
-          >
-            <CheckboxWithText label={t.login.rememberMe} />
-          </RememberRow>
+          <Divider>
+            <DividerLine />
+            <DividerText>{t.login.orDivider}</DividerText>
+            <DividerLine />
+          </Divider>
 
-          <ResponsiveButton
-            style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
-          >
-            <MainButton
-              variant='rose_cta'
-              fullWidth
-              type='submit'
-              title={isLoading ? '...' : t.login.signIn}
-            />
-          </ResponsiveButton>
-        </Form>
+          <SocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
+            </SocialButtonWrapper>
 
-        <Divider>
-          <DividerLine />
-          <DividerText>{t.login.orContinueWith}</DividerText>
-          <DividerLine />
-        </Divider>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
+            </SocialButtonWrapper>
+          </SocialRow>
 
-        <SocialRow>
-          <SocialButtonWrapper>
-            <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
-          </SocialButtonWrapper>
-
-          <SocialButtonWrapper>
-            <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
-          </SocialButtonWrapper>
-        </SocialRow>
-
-        <Footer>
-          {t.login.noAccount} <Link href={`/${locale}/register`}>{t.login.signUp}</Link>
-        </Footer>
-      </Card>
-    </Page>
+          <Footer>
+            {t.login.noAccount} <Link href={`/${locale}/register`}>{t.login.signUp}</Link>
+          </Footer>
+        </Card>
+      </Page>
+    </>
   );
 }

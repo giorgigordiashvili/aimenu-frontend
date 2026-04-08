@@ -102,8 +102,16 @@ const NavLink = styled(Link)({
 const RightGroup = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  gap: '10px',
+  gap: '16px',
   flexShrink: 0,
+});
+
+const MobileLangWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  '@media (min-width: 768px)': {
+    display: 'none',
+  },
 });
 
 const DesktopControls = styled('div')({
@@ -578,6 +586,11 @@ export default function HeaderPrimary() {
               </>
             )}
           </DesktopControls>
+
+          {/* Mobile language switcher */}
+          <MobileLangWrapper>
+            <LanguageSwitcherPrimary currentLocale={locale} />
+          </MobileLangWrapper>
 
           {/* Mobile burger */}
           <BurgerButton onClick={() => setDrawerOpen(true)} aria-label='Open menu'>

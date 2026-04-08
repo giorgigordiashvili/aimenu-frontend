@@ -25,9 +25,9 @@ export const Page = styled('div')({
   padding: '24px',
   background: tokens.white,
   '@media (max-width: 768px)': {
-    padding: '16px',
+    padding: '20px',
     alignItems: 'flex-start',
-    paddingTop: '48px',
+    justifyContent: 'flex-start',
   },
 });
 
@@ -37,11 +37,14 @@ export const Card = styled('div')({
   background: tokens.white,
   borderRadius: tokens.radiusMd,
   boxShadow: tokens.shadowMd,
+  border: `1px solid ${tokens.slate200}`,
   padding: '40px 32px',
   '@media (max-width: 768px)': {
-    padding: '32px 24px',
+    padding: '0',
+    maxWidth: '100%',
     boxShadow: 'none',
     borderRadius: 0,
+    border: 'none',
   },
 });
 
@@ -112,7 +115,8 @@ export const ResponsiveButton = styled('div')({
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '16px',
+      borderRadius: '120px',
     },
   },
 });
@@ -126,7 +130,7 @@ export const Divider = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  margin: '24px 0',
+  margin: '28px 0',
 });
 
 export const DividerLine = styled('div')({
@@ -144,8 +148,8 @@ export const DividerText = styled('span')({
 export const SocialRow = styled('div')({
   display: 'flex',
   gap: '12px',
-  '@media (max-width: 400px)': {
-    flexDirection: 'column',
+  '@media (max-width: 768px)': {
+    gap: '26px',
   },
 });
 
@@ -156,7 +160,7 @@ export const SocialButtonWrapper = styled('div')({
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '16px',
     },
   },
 });

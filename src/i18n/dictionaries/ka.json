@@ -110,7 +110,8 @@
     "passwordMismatch": "პაროლები არ ემთხვევა",
     "passwordTooShort": "პაროლი მინ. 8 სიმბოლო",
     "requiredField": "სავალდებულო ველი",
-    "invalidEmail": "არასწორი ელ-ფოსტა"
+    "invalidEmail": "არასწორი ელ-ფოსტა",
+    "repeatPassword": "გაიმეორეთ პაროლი"
   },
   "login": {
     "back": "უკან",
@@ -132,7 +133,8 @@
     "passwordRequired": "პაროლი აუცილებელია",
     "invalidCredentials": "არასწორი ელფოსტა ან პაროლი. სცადეთ თავიდან.",
     "networkError": "ქსელის შეცდომა. გთხოვთ შეამოწმოთ კავშირი და სცადოთ თავიდან.",
-    "loginFailed": "შესვლა ვერ მოხერხდა. სცადეთ თავიდან."
+    "loginFailed": "შესვლა ვერ მოხერხდა. სცადეთ თავიდან.",
+    "orDivider": "ან"
   },
   "passwordReset": {
     "back": "უკან",

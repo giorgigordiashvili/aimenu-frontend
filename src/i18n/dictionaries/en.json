@@ -110,7 +110,8 @@
     "passwordMismatch": "Passwords do not match",
     "passwordTooShort": "Password must be at least 8 characters",
     "requiredField": "Required field",
-    "invalidEmail": "Invalid email"
+    "invalidEmail": "Invalid email",
+    "repeatPassword": "Confirm Password"
   },
   "login": {
     "back": "Back",
@@ -132,7 +133,8 @@
     "passwordRequired": "Password is required",
     "invalidCredentials": "Invalid email or password. Please try again.",
     "networkError": "Network error. Please check your connection and try again.",
-    "loginFailed": "Login failed. Please try again."
+    "loginFailed": "Login failed. Please try again.",
+    "orDivider": "or"
   },
   "passwordReset": {
     "back": "Back",

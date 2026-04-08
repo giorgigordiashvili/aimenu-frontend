@@ -12,7 +12,6 @@ import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
-import ArrowIcon from '@/icons/Arrow';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
 import GoogleIcon from '@/icons/Google';
@@ -29,8 +28,9 @@ const Page = styled('div')({
   padding: '24px',
   background: tokens.white,
   '@media (max-width: 768px)': {
-    padding: '16px',
-    alignItems: 'center',
+    padding: '20px',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
 });
 
@@ -60,25 +60,11 @@ const Card = styled('div')({
   border: `1px solid ${tokens.slate200}`,
   padding: '40px 32px',
   '@media (max-width: 768px)': {
-    padding: '32px 24px',
+    padding: '0',
     maxWidth: '100%',
     boxShadow: 'none',
     borderRadius: 0,
     border: 'none',
-  },
-});
-
-const BackLink = styled(Link)({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '6px',
-  fontSize: '14px',
-  fontWeight: 500,
-  color: tokens.muted,
-  textDecoration: 'none',
-  marginBottom: '16px',
-  '&:hover': {
-    color: tokens.foreground,
   },
 });
 
@@ -130,11 +116,11 @@ const PasswordHint = styled('span')({
 const ResponsiveButton = styled('div')({
   '& button': {
     justifyContent: 'center',
-    padding: '8px 16px',
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '16px',
+      borderRadius: '120px',
     },
   },
 });
@@ -155,7 +141,7 @@ const Divider = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  margin: '24px 0',
+  margin: '28px 0',
 });
 
 const DividerLine = styled('div')({
@@ -175,8 +161,8 @@ const DividerText = styled('span')({
 const SocialRow = styled('div')({
   display: 'flex',
   gap: '12px',
-  '@media (max-width: 400px)': {
-    flexDirection: 'column',
+  '@media (max-width: 768px)': {
+    gap: '26px',
   },
 });
 
@@ -187,7 +173,7 @@ const SocialButtonWrapper = styled('div')({
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '16px',
     },
   },
 });
@@ -229,6 +215,7 @@ interface FormErrors {
   fullName?: string;
   email?: string;
   password?: string;
+  repeatPassword?: string;
 }
 
 interface RegisterFormProps {
@@ -245,6 +232,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
@@ -263,6 +251,12 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
       next.password = t.register.requiredField;
     } else if (password.length < 8) {
       next.password = t.register.passwordTooShort;
+    }
+
+    if (!repeatPassword) {
+      next.repeatPassword = t.register.requiredField;
+    } else if (password !== repeatPassword) {
+      next.repeatPassword = t.register.passwordMismatch;
     }
 
     setErrors(next);
@@ -285,7 +279,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
       await authRegisterCreate({
         email: email.trim(),
         password,
-        password_confirm: password,
+        password_confirm: repeatPassword,
         first_name,
         last_name,
       });
@@ -317,11 +311,6 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
         </LogoWrapper>
 
         <Card>
-          <BackLink href={`/${locale}`}>
-            <ArrowIcon />
-            {t.register.backLink}
-          </BackLink>
-
           <Header>
             <CardTitle>{t.register.title}</CardTitle>
             <CardSubtitle>{t.register.subtitle}</CardSubtitle>
@@ -393,6 +382,25 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 }}
               />
               <PasswordHint>{t.register.passwordHint}</PasswordHint>
+            </Field>
+
+            <Field>
+              <TextInput
+                variant='outlined'
+                label={t.register.repeatPassword}
+                id='register-repeat-password'
+                type='password'
+                autoComplete='new-password'
+                required
+                value={repeatPassword}
+                icon={EyeIcon}
+                errorMessage={errors.repeatPassword}
+                onChange={e => {
+                  setRepeatPassword(e.target.value);
+                  if (errors.repeatPassword)
+                    setErrors(prev => ({ ...prev, repeatPassword: undefined }));
+                }}
+              />
             </Field>
 
             <ResponsiveButton>
