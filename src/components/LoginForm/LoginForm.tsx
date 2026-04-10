@@ -24,6 +24,7 @@ import {
   AlertBox,
   Card,
   DesktopLangWrapper,
+  DesktopSocialRow,
   Divider,
   DividerLine,
   DividerText,
@@ -37,10 +38,10 @@ import {
   LoginFormProps,
   LogoText,
   LogoWrapper,
+  MobileSocialRow,
   Page,
   ResponsiveButton,
   SocialButtonWrapper,
-  SocialRow,
   Subtitle,
   Title,
 } from './shared';
@@ -196,15 +197,25 @@ export default function LoginForm({ locale }: LoginFormProps) {
             <DividerLine />
           </Divider>
 
-          <SocialRow>
+          {/* Desktop: show text */}
+          <DesktopSocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
+            </SocialButtonWrapper>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
+            </SocialButtonWrapper>
+          </DesktopSocialRow>
+
+          {/* Mobile: icon only */}
+          <MobileSocialRow>
             <SocialButtonWrapper>
               <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
             </SocialButtonWrapper>
-
             <SocialButtonWrapper>
               <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
             </SocialButtonWrapper>
-          </SocialRow>
+          </MobileSocialRow>
 
           <Footer>
             {t.login.noAccount} <Link href={`/${locale}/register`}>{t.login.signUp}</Link>

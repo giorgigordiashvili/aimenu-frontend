@@ -164,10 +164,18 @@ const DividerText = styled('span')({
 
 // ── Social ────────────────────────────────────────────────────────────────
 
-const SocialRow = styled('div')({
+const DesktopSocialRow = styled('div')({
   display: 'flex',
   gap: '12px',
   '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
+const MobileSocialRow = styled('div')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'flex',
     gap: '26px',
   },
 });
@@ -443,15 +451,25 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             <DividerLine />
           </Divider>
 
-          <SocialRow>
+          {/* Desktop: show text */}
+          <DesktopSocialRow>
             <SocialButtonWrapper>
               <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
             </SocialButtonWrapper>
-
             <SocialButtonWrapper>
               <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
             </SocialButtonWrapper>
-          </SocialRow>
+          </DesktopSocialRow>
+
+          {/* Mobile: icon only */}
+          <MobileSocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
+            </SocialButtonWrapper>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
+            </SocialButtonWrapper>
+          </MobileSocialRow>
 
           <Footer>
             {t.register.haveAccount} <Link href={`/${locale}/login`}>{t.register.loginLink}</Link>

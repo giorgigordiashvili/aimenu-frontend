@@ -20,6 +20,7 @@ export interface FormErrors {
 export const Page = styled('div')({
   minHeight: '100vh',
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   padding: '24px',
@@ -145,10 +146,20 @@ export const DividerText = styled('span')({
   whiteSpace: 'nowrap',
 });
 
-export const SocialRow = styled('div')({
+// Desktop social row — visible only on desktop
+export const DesktopSocialRow = styled('div')({
   display: 'flex',
   gap: '12px',
   '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
+// Mobile social row — visible only on mobile
+export const MobileSocialRow = styled('div')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'flex',
     gap: '26px',
   },
 });
