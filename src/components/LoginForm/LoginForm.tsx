@@ -43,6 +43,7 @@ import {
   ResponsiveButton,
   SocialButtonWrapper,
   Subtitle,
+  SubmitButton,
   Title,
 } from './shared';
 
@@ -179,15 +180,10 @@ export default function LoginForm({ locale }: LoginFormProps) {
               <ForgotLink href={`/${locale}/password-reset`}>{t.login.forgotPassword}</ForgotLink>
             </Field>
 
-            <ResponsiveButton
-              style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
-            >
-              <MainButton
-                variant='rose_cta'
-                fullWidth
-                type='submit'
-                title={isLoading ? '...' : t.login.signIn}
-              />
+            <ResponsiveButton>
+              <SubmitButton type='submit' disabled={isLoading}>
+                {isLoading ? '...' : t.login.signIn}
+              </SubmitButton>
             </ResponsiveButton>
           </Form>
 

@@ -233,6 +233,31 @@ const AlertBox = styled('div')({
   marginBottom: '20px',
 });
 
+const SubmitButton = styled('button')({
+  padding: '16px',
+  borderRadius: '16px',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: '14px',
+  fontFamily: 'Inter',
+  lineHeight: '20px',
+  letterSpacing: '-0.15px',
+  fontWeight: 500,
+  backgroundColor: '#EC003F',
+  color: '#ffffff',
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '&:hover': {
+    backgroundColor: '#BE123C',
+  },
+  '&:disabled': {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
+});
+
 // ── Validation helpers ────────────────────────────────────────────────────
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -436,13 +461,9 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             </Field>
 
             <ResponsiveButton>
-              <MainButton
-                variant='rose_cta'
-                fullWidth
-                type='submit'
-                disabled={isLoading}
-                title={t.register.submit}
-              />
+              <SubmitButton type='submit' disabled={isLoading}>
+                {isLoading ? '...' : t.register.submit}
+              </SubmitButton>
             </ResponsiveButton>
           </Form>
 

@@ -10,9 +10,12 @@ const Text = styled('p')({
   fontFamily: 'Inter',
   lineHeight: '17px',
   letterSpacing: '-0.15px',
-  fontWeight: 500,
+  fontWeight: 400,
   color: '#0A0A0A',
   margin: '0 0 8px 0',
+  '@media (max-width: 768px)': {
+    fontSize: '12px',
+  },
 });
 
 const ErrorText = styled('p')({
@@ -41,10 +44,6 @@ const LeftIconWrapper = styled('div')({
   '& svg': {
     width: '16px',
     height: '16px',
-  },
-
-  '@media (max-width: 768px)': {
-    transform: 'translateY(calc(-50% + 2px))',
   },
 });
 
