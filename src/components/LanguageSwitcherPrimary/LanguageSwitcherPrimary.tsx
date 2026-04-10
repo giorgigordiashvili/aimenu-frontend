@@ -63,7 +63,7 @@ const Dropdown = styled('div')({
   borderRadius: '16px',
   boxShadow: '0 8px 32px rgba(0,0,0,0.14)',
   padding: '8px',
-  minWidth: '100px',
+  width: '100%',
   zIndex: 400,
   display: 'flex',
   flexDirection: 'column',

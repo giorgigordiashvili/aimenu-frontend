@@ -110,12 +110,13 @@
     "passwordMismatch": "პაროლები არ ემთხვევა",
     "passwordTooShort": "პაროლი მინ. 8 სიმბოლო",
     "requiredField": "სავალდებულო ველი",
-    "invalidEmail": "არასწორი ელ-ფოსტა"
+    "invalidEmail": "არასწორი ელ-ფოსტა",
+    "repeatPassword": "გაიმეორეთ პაროლი"
   },
   "login": {
     "back": "უკან",
-    "title": "კეთილი იყოს თქვენი დაბრუნება",
-    "subtitle": "შეიყვანეთ თქვენი მონაცემები ანგარიშზე წვდომისთვის",
+    "title": "ავტორიზაცია",
+    "subtitle": "შეიყვანეთ თქვენი მონაცემები სისტემაში შესასვლელად",
     "email": "ელფოსტა",
     "emailPlaceholder": "შეიყვანეთ ელფოსტა",
     "password": "პაროლი",
@@ -124,7 +125,7 @@
     "forgotPassword": "დაგავიწყდათ პაროლი?",
     "signIn": "შესვლა",
     "noAccount": "არ გაქვთ ანგარიში?",
-    "signUp": "რეგისტრაცია",
+    "signUp": "დარეგისტრირდით",
     "orContinueWith": "ან გააგრძელეთ",
     "continueWithGoogle": "Google-ით გაგრძელება",
     "continueWithFacebook": "Facebook-ით გაგრძელება",
@@ -132,7 +133,8 @@
     "passwordRequired": "პაროლი აუცილებელია",
     "invalidCredentials": "არასწორი ელფოსტა ან პაროლი. სცადეთ თავიდან.",
     "networkError": "ქსელის შეცდომა. გთხოვთ შეამოწმოთ კავშირი და სცადოთ თავიდან.",
-    "loginFailed": "შესვლა ვერ მოხერხდა. სცადეთ თავიდან."
+    "loginFailed": "შესვლა ვერ მოხერხდა. სცადეთ თავიდან.",
+    "orDivider": "ან"
   },
   "passwordReset": {
     "back": "უკან",

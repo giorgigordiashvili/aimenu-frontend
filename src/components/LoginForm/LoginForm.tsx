@@ -1,24 +1,30 @@
 'use client';
 
+import { styled } from '@pigment-css/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { authLoginCreate } from '@/api/generated';
-import CheckboxWithText from '@/components/Checkbox/Checkbox';
+import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
+import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { useAuth } from '@/context/AuthContext';
+import { useLocale } from '@/context/LocaleContext';
 import { getDictionary } from '@/i18n/getDictionary';
-import ArrowIcon from '@/icons/Arrow';
+import EmailIcon from '@/icons/Email';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
 import GoogleIcon from '@/icons/Google';
+import LockIcon from '@/icons/Lock';
 
 import {
   AlertBox,
-  BackLink,
   Card,
+  DesktopLangWrapper,
+  DesktopSocialRow,
   Divider,
   DividerLine,
   DividerText,
@@ -30,24 +36,34 @@ import {
   FormErrors,
   Header,
   LoginFormProps,
+  LogoText,
+  LogoWrapper,
+  MobileSocialRow,
   Page,
-  RememberRow,
   ResponsiveButton,
   SocialButtonWrapper,
-  SocialRow,
   Subtitle,
+  SubmitButton,
   Title,
 } from './shared';
+
+const MobileHeaderWrapper = styled('div')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'block',
+    width: '100%',
+  },
+});
 
 export default function LoginForm({ locale }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
+  const { locale: currentLocale } = useLocale();
   const t = getDictionary(locale);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -83,11 +99,6 @@ export default function LoginForm({ locale }: LoginFormProps) {
       // Use AuthContext login to set tokens and fetch user
       await login({ access, refresh });
 
-      // Also set sessionStorage if rememberMe is false (for session-only persistence)
-      if (!rememberMe) {
-        sessionStorage.setItem('session_only', 'true');
-      }
-
       const redirect = searchParams.get('redirect');
       router.push(redirect || `/${locale}`);
     } catch (err: unknown) {
@@ -111,95 +122,105 @@ export default function LoginForm({ locale }: LoginFormProps) {
   }
 
   return (
-    <Page>
-      <Card>
-        <BackLink href={`/${locale}`}>
-          <ArrowIcon />
-          {t.login.back}
-        </BackLink>
+    <>
+      <MobileHeaderWrapper>
+        <HeaderPrimary />
+      </MobileHeaderWrapper>
+      <Page>
+        <LogoWrapper>
+          <Image src='/logo.png' alt='AiMenu' width={40} height={40} />
+          <LogoText>AiMenu</LogoText>
+        </LogoWrapper>
+        <Card>
+          <Header>
+            <Title>{t.login.title}</Title>
+            <Subtitle>{t.login.subtitle}</Subtitle>
+          </Header>
 
-        <Header>
-          <Title>{t.login.title}</Title>
-          <Subtitle>{t.login.subtitle}</Subtitle>
-        </Header>
+          {apiError && <AlertBox style={{ marginBottom: '20px' }}>{apiError}</AlertBox>}
 
-        {apiError && <AlertBox style={{ marginBottom: '20px' }}>{apiError}</AlertBox>}
+          <Form onSubmit={handleSubmit} noValidate>
+            <Field>
+              <TextInput
+                label={t.login.email}
+                id='login-email'
+                type='email'
+                placeholder={t.login.emailPlaceholder}
+                autoComplete='email'
+                required
+                value={email}
+                variant='outlined'
+                leftIcon={EmailIcon}
+                errorMessage={errors.email}
+                onChange={e => {
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                }}
+              />
+            </Field>
 
-        <Form onSubmit={handleSubmit} noValidate>
-          <Field>
-            <TextInput
-              label={t.login.email}
-              id='login-email'
-              type='email'
-              placeholder={t.login.emailPlaceholder}
-              autoComplete='email'
-              required
-              value={email}
-              errorMessage={errors.email}
-              onChange={e => {
-                setEmail(e.target.value);
-                if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
-              }}
-            />
-          </Field>
+            <Field>
+              <TextInput
+                label={t.login.password}
+                id='login-password'
+                type='password'
+                placeholder={t.login.passwordPlaceholder}
+                autoComplete='current-password'
+                required
+                value={password}
+                variant='outlined'
+                leftIcon={LockIcon}
+                icon={EyeIcon}
+                errorMessage={errors.password}
+                onChange={e => {
+                  setPassword(e.target.value);
+                  if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                }}
+              />
+              <ForgotLink href={`/${locale}/password-reset`}>{t.login.forgotPassword}</ForgotLink>
+            </Field>
 
-          <Field>
-            <TextInput
-              label={t.login.password}
-              id='login-password'
-              type='password'
-              placeholder={t.login.passwordPlaceholder}
-              autoComplete='current-password'
-              required
-              value={password}
-              icon={EyeIcon}
-              errorMessage={errors.password}
-              onChange={e => {
-                setPassword(e.target.value);
-                if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
-              }}
-            />
-            <ForgotLink href={`/${locale}/password-reset`}>{t.login.forgotPassword}</ForgotLink>
-          </Field>
+            <ResponsiveButton>
+              <SubmitButton type='submit' disabled={isLoading}>
+                {isLoading ? '...' : t.login.signIn}
+              </SubmitButton>
+            </ResponsiveButton>
+          </Form>
 
-          <RememberRow
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}
-          >
-            <CheckboxWithText label={t.login.rememberMe} />
-          </RememberRow>
+          <Divider>
+            <DividerLine />
+            <DividerText>{t.login.orDivider}</DividerText>
+            <DividerLine />
+          </Divider>
 
-          <ResponsiveButton
-            style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
-          >
-            <MainButton
-              variant='rose_cta'
-              fullWidth
-              type='submit'
-              title={isLoading ? '...' : t.login.signIn}
-            />
-          </ResponsiveButton>
-        </Form>
+          {/* Desktop: show text */}
+          <DesktopSocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
+            </SocialButtonWrapper>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
+            </SocialButtonWrapper>
+          </DesktopSocialRow>
 
-        <Divider>
-          <DividerLine />
-          <DividerText>{t.login.orContinueWith}</DividerText>
-          <DividerLine />
-        </Divider>
+          {/* Mobile: icon only */}
+          <MobileSocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
+            </SocialButtonWrapper>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
+            </SocialButtonWrapper>
+          </MobileSocialRow>
 
-        <SocialRow>
-          <SocialButtonWrapper>
-            <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
-          </SocialButtonWrapper>
-
-          <SocialButtonWrapper>
-            <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
-          </SocialButtonWrapper>
-        </SocialRow>
-
-        <Footer>
-          {t.login.noAccount} <Link href={`/${locale}/register`}>{t.login.signUp}</Link>
-        </Footer>
-      </Card>
-    </Page>
+          <Footer>
+            {t.login.noAccount} <Link href={`/${locale}/register`}>{t.login.signUp}</Link>
+          </Footer>
+        </Card>
+        <DesktopLangWrapper>
+          <LanguageSwitcherPrimary currentLocale={currentLocale} />
+        </DesktopLangWrapper>
+      </Page>
+    </>
   );
 }

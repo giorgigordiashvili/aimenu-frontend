@@ -20,14 +20,15 @@ export interface FormErrors {
 export const Page = styled('div')({
   minHeight: '100vh',
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   padding: '24px',
   background: tokens.white,
   '@media (max-width: 768px)': {
-    padding: '16px',
+    padding: '20px',
     alignItems: 'flex-start',
-    paddingTop: '48px',
+    justifyContent: 'flex-start',
   },
 });
 
@@ -37,11 +38,14 @@ export const Card = styled('div')({
   background: tokens.white,
   borderRadius: tokens.radiusMd,
   boxShadow: tokens.shadowMd,
+  border: `1px solid ${tokens.slate200}`,
   padding: '40px 32px',
   '@media (max-width: 768px)': {
-    padding: '32px 24px',
+    padding: '0',
+    maxWidth: '100%',
     boxShadow: 'none',
     borderRadius: 0,
+    border: 'none',
   },
 });
 
@@ -112,7 +116,8 @@ export const ResponsiveButton = styled('div')({
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '16px',
+      borderRadius: '16px',
     },
   },
 });
@@ -126,7 +131,7 @@ export const Divider = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  margin: '24px 0',
+  margin: '28px 0',
 });
 
 export const DividerLine = styled('div')({
@@ -141,11 +146,21 @@ export const DividerText = styled('span')({
   whiteSpace: 'nowrap',
 });
 
-export const SocialRow = styled('div')({
+// Desktop social row — visible only on desktop
+export const DesktopSocialRow = styled('div')({
   display: 'flex',
   gap: '12px',
-  '@media (max-width: 400px)': {
-    flexDirection: 'column',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
+// Mobile social row — visible only on mobile
+export const MobileSocialRow = styled('div')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'flex',
+    gap: '26px',
   },
 });
 
@@ -156,7 +171,7 @@ export const SocialButtonWrapper = styled('div')({
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '16px',
     },
   },
 });
@@ -183,4 +198,56 @@ export const AlertBox = styled('div')({
   borderRadius: tokens.radiusSm,
   fontSize: '14px',
   lineHeight: '20px',
+});
+
+export const LogoWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '8px',
+  marginBottom: '32px',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
+export const LogoText = styled('span')({
+  fontSize: '24px',
+  fontWeight: 700,
+  color: tokens.primary,
+});
+
+export const DesktopLangWrapper = styled('div')({
+  marginTop: '44px',
+  marginBottom: '20px',
+  display: 'flex',
+  justifyContent: 'center',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
+export const SubmitButton = styled('button')({
+  padding: '8px 16px',
+  borderRadius: '8px',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: '14px',
+  fontFamily: 'Inter',
+  lineHeight: '20px',
+  letterSpacing: '-0.15px',
+  fontWeight: 500,
+  backgroundColor: tokens.redBrand,
+  color: tokens.white,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '&:hover': {
+    backgroundColor: tokens.rose700,
+  },
+  '&:disabled': {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
 });

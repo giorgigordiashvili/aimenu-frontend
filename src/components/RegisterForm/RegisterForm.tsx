@@ -8,14 +8,19 @@ import { useState } from 'react';
 
 import { authRegisterCreate } from '@/api/generated';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
+import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
+import { useLocale } from '@/context/LocaleContext';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
-import ArrowIcon from '@/icons/Arrow';
+import EmailIcon from '@/icons/Email';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
 import GoogleIcon from '@/icons/Google';
+import LockIcon from '@/icons/Lock';
+import ManIcon from '@/icons/Man';
+import PhoneIcon from '@/icons/Phone';
 import * as tokens from '@/tokens';
 
 // ── Layout ────────────────────────────────────────────────────────────────
@@ -29,8 +34,9 @@ const Page = styled('div')({
   padding: '24px',
   background: tokens.white,
   '@media (max-width: 768px)': {
-    padding: '16px',
-    alignItems: 'center',
+    padding: '20px',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
 });
 
@@ -60,25 +66,11 @@ const Card = styled('div')({
   border: `1px solid ${tokens.slate200}`,
   padding: '40px 32px',
   '@media (max-width: 768px)': {
-    padding: '32px 24px',
+    padding: '0',
     maxWidth: '100%',
     boxShadow: 'none',
     borderRadius: 0,
     border: 'none',
-  },
-});
-
-const BackLink = styled(Link)({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '6px',
-  fontSize: '14px',
-  fontWeight: 500,
-  color: tokens.muted,
-  textDecoration: 'none',
-  marginBottom: '16px',
-  '&:hover': {
-    color: tokens.foreground,
   },
 });
 
@@ -130,11 +122,11 @@ const PasswordHint = styled('span')({
 const ResponsiveButton = styled('div')({
   '& button': {
     justifyContent: 'center',
-    padding: '8px 16px',
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '16px',
+      borderRadius: '16px',
     },
   },
 });
@@ -155,7 +147,7 @@ const Divider = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  margin: '24px 0',
+  margin: '28px 0',
 });
 
 const DividerLine = styled('div')({
@@ -172,11 +164,19 @@ const DividerText = styled('span')({
 
 // ── Social ────────────────────────────────────────────────────────────────
 
-const SocialRow = styled('div')({
+const DesktopSocialRow = styled('div')({
   display: 'flex',
   gap: '12px',
-  '@media (max-width: 400px)': {
-    flexDirection: 'column',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
+const MobileSocialRow = styled('div')({
+  display: 'none',
+  '@media (max-width: 768px)': {
+    display: 'flex',
+    gap: '26px',
   },
 });
 
@@ -187,7 +187,7 @@ const SocialButtonWrapper = styled('div')({
   },
   '@media (max-width: 768px)': {
     '& button': {
-      padding: '10px 24px',
+      padding: '16px',
     },
   },
 });
@@ -209,6 +209,18 @@ const Footer = styled('p')({
   },
 });
 
+// ── Desktop lang wrapper ──────────────────────────────────────────────────
+
+const DesktopLangWrapper = styled('div')({
+  marginTop: '44px',
+  marginBottom: '20px',
+  display: 'flex',
+  justifyContent: 'center',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
 // ── Alert ─────────────────────────────────────────────────────────────────
 
 const AlertBox = styled('div')({
@@ -221,6 +233,31 @@ const AlertBox = styled('div')({
   marginBottom: '20px',
 });
 
+const SubmitButton = styled('button')({
+  padding: '8px 16px',
+  borderRadius: '8px',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: '14px',
+  fontFamily: 'Inter',
+  lineHeight: '20px',
+  letterSpacing: '-0.15px',
+  fontWeight: 500,
+  backgroundColor: tokens.redBrand,
+  color: tokens.white,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '&:hover': {
+    backgroundColor: tokens.rose700,
+  },
+  '&:disabled': {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
+});
+
 // ── Validation helpers ────────────────────────────────────────────────────
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -229,6 +266,7 @@ interface FormErrors {
   fullName?: string;
   email?: string;
   password?: string;
+  repeatPassword?: string;
 }
 
 interface RegisterFormProps {
@@ -239,12 +277,14 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ locale }: RegisterFormProps) {
   const router = useRouter();
+  const { locale: currentLocale } = useLocale();
   const t = getDictionary(locale);
 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
@@ -263,6 +303,12 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
       next.password = t.register.requiredField;
     } else if (password.length < 8) {
       next.password = t.register.passwordTooShort;
+    }
+
+    if (!repeatPassword) {
+      next.repeatPassword = t.register.requiredField;
+    } else if (password !== repeatPassword) {
+      next.repeatPassword = t.register.passwordMismatch;
     }
 
     setErrors(next);
@@ -285,7 +331,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
       await authRegisterCreate({
         email: email.trim(),
         password,
-        password_confirm: password,
+        password_confirm: repeatPassword,
         first_name,
         last_name,
       });
@@ -317,11 +363,6 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
         </LogoWrapper>
 
         <Card>
-          <BackLink href={`/${locale}`}>
-            <ArrowIcon />
-            {t.register.backLink}
-          </BackLink>
-
           <Header>
             <CardTitle>{t.register.title}</CardTitle>
             <CardSubtitle>{t.register.subtitle}</CardSubtitle>
@@ -339,6 +380,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 autoComplete='name'
                 required
                 value={fullName}
+                leftIcon={ManIcon}
                 errorMessage={errors.fullName}
                 onChange={e => {
                   setFullName(e.target.value);
@@ -355,6 +397,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 type='tel'
                 autoComplete='tel'
                 value={phone}
+                leftIcon={PhoneIcon}
                 onChange={e => setPhone(e.target.value)}
               />
             </Field>
@@ -368,6 +411,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 autoComplete='email'
                 required
                 value={email}
+                leftIcon={EmailIcon}
                 errorMessage={errors.email}
                 onChange={e => {
                   setEmail(e.target.value);
@@ -385,6 +429,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 autoComplete='new-password'
                 required
                 value={password}
+                leftIcon={LockIcon}
                 icon={EyeIcon}
                 errorMessage={errors.password}
                 onChange={e => {
@@ -395,14 +440,30 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
               <PasswordHint>{t.register.passwordHint}</PasswordHint>
             </Field>
 
-            <ResponsiveButton>
-              <MainButton
-                variant='rose_cta'
-                fullWidth
-                type='submit'
-                disabled={isLoading}
-                title={t.register.submit}
+            <Field>
+              <TextInput
+                variant='outlined'
+                label={t.register.repeatPassword}
+                id='register-repeat-password'
+                type='password'
+                autoComplete='new-password'
+                required
+                value={repeatPassword}
+                leftIcon={LockIcon}
+                icon={EyeIcon}
+                errorMessage={errors.repeatPassword}
+                onChange={e => {
+                  setRepeatPassword(e.target.value);
+                  if (errors.repeatPassword)
+                    setErrors(prev => ({ ...prev, repeatPassword: undefined }));
+                }}
               />
+            </Field>
+
+            <ResponsiveButton>
+              <SubmitButton type='submit' disabled={isLoading}>
+                {isLoading ? '...' : t.register.submit}
+              </SubmitButton>
             </ResponsiveButton>
           </Form>
 
@@ -412,20 +473,33 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             <DividerLine />
           </Divider>
 
-          <SocialRow>
+          {/* Desktop: show text */}
+          <DesktopSocialRow>
             <SocialButtonWrapper>
               <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
             </SocialButtonWrapper>
-
             <SocialButtonWrapper>
               <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
             </SocialButtonWrapper>
-          </SocialRow>
+          </DesktopSocialRow>
+
+          {/* Mobile: icon only */}
+          <MobileSocialRow>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
+            </SocialButtonWrapper>
+            <SocialButtonWrapper>
+              <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
+            </SocialButtonWrapper>
+          </MobileSocialRow>
 
           <Footer>
             {t.register.haveAccount} <Link href={`/${locale}/login`}>{t.register.loginLink}</Link>
           </Footer>
         </Card>
+        <DesktopLangWrapper>
+          <LanguageSwitcherPrimary currentLocale={currentLocale} />
+        </DesktopLangWrapper>
       </Page>
     </>
   );

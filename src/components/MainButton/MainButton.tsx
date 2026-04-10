@@ -17,7 +17,7 @@ type Variant =
 type Props = {
   variant?: Variant;
   title?: string;
-  size?: 'small' | 'default' | 'large' | 'extra_small';
+  size?: 'small' | 'default' | 'large' | 'extra_large' | 'extra_small';
   icon?: IconComponent;
   iconGap?: number;
   iconPosition?: 'left' | 'right';
@@ -32,7 +32,7 @@ type IconComponent = React.ComponentType;
 
 const DefaultButton = styled('button')<{
   variant: Variant;
-  size: 'small' | 'default' | 'large' | 'extra_small';
+  size: 'small' | 'default' | 'large' | 'extra_large' | 'extra_small';
 }>({
   padding: '8px 16px',
   borderRadius: '8px',
@@ -151,6 +151,12 @@ const DefaultButton = styled('button')<{
       props: { size: 'large' },
       style: {
         padding: '10px 24px',
+      },
+    },
+    {
+      props: { size: 'extra_large' },
+      style: {
+        padding: '16px',
       },
     },
   ],

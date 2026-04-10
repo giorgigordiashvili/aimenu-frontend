@@ -10,9 +10,12 @@ const Text = styled('p')({
   fontFamily: 'Inter',
   lineHeight: '17px',
   letterSpacing: '-0.15px',
-  fontWeight: 500,
+  fontWeight: 400,
   color: '#0A0A0A',
   margin: '0 0 8px 0',
+  '@media (max-width: 768px)': {
+    fontSize: '12px',
+  },
 });
 
 const ErrorText = styled('p')({
@@ -42,13 +45,6 @@ const LeftIconWrapper = styled('div')({
     width: '16px',
     height: '16px',
   },
-
-  '@media (max-width: 768px)': {
-    '& svg': {
-      width: '20px',
-      height: '20px',
-    },
-  },
 });
 
 const RightIconButton = styled('button')({
@@ -68,13 +64,6 @@ const RightIconButton = styled('button')({
     width: '16px',
     height: '16px',
     pointerEvents: 'none',
-  },
-
-  '@media (max-width: 768px)': {
-    '& svg': {
-      width: '20px',
-      height: '20px',
-    },
   },
 });
 
@@ -146,6 +135,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   errorMessage?: string;
   icon?: IconComponent;
+  leftIcon?: React.ElementType;
   onIconClick?: () => void;
   variant?: 'default' | 'outlined';
 };
@@ -155,6 +145,7 @@ function TextInput({
   errorMessage,
   type = 'text',
   icon: Icon,
+  leftIcon: LeftIcon,
   onIconClick,
   variant = 'default',
   ...props
@@ -173,7 +164,13 @@ function TextInput({
       {label && <Text>{label}</Text>}
 
       <InputWrapper>
-        {Icon && !isPassword && !isLocation && !isDate && !isTime && (
+        {LeftIcon && (
+          <LeftIconWrapper>
+            <LeftIcon />
+          </LeftIconWrapper>
+        )}
+
+        {!LeftIcon && Icon && !isPassword && !isLocation && !isDate && !isTime && (
           <LeftIconWrapper>
             <Icon />
           </LeftIconWrapper>
@@ -188,7 +185,9 @@ function TextInput({
           aria-invalid={isError}
           style={{
             paddingLeft:
-              Icon && !isPassword && !isLocation && !isDate && !isTime ? '40px' : undefined,
+              LeftIcon || (!LeftIcon && Icon && !isPassword && !isLocation && !isDate && !isTime)
+                ? '36px'
+                : undefined,
             paddingRight: isPassword || isLocation || isDate || isTime ? '40px' : undefined,
           }}
           onBlur={e => {

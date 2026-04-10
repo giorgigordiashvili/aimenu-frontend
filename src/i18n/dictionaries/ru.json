@@ -110,12 +110,13 @@
     "passwordMismatch": "Пароли не совпадают",
     "passwordTooShort": "Пароль должен содержать минимум 8 символов",
     "requiredField": "Обязательное поле",
-    "invalidEmail": "Неверный email"
+    "invalidEmail": "Неверный email",
+    "repeatPassword": "Повторите пароль"
   },
   "login": {
     "back": "Назад",
-    "title": "Добро пожаловать",
-    "subtitle": "Введите данные для входа в аккаунт",
+    "title": "Авторизация",
+    "subtitle": "Введите данные для входа в систему",
     "email": "Эл. почта",
     "emailPlaceholder": "Введите эл. почту",
     "password": "Пароль",
@@ -132,7 +133,8 @@
     "passwordRequired": "Пароль обязателен",
     "invalidCredentials": "Неверный email или пароль. Попробуйте снова.",
     "networkError": "Ошибка сети. Проверьте подключение и попробуйте снова.",
-    "loginFailed": "Вход не удался. Попробуйте снова."
+    "loginFailed": "Вход не удался. Попробуйте снова.",
+    "orDivider": "или"
   },
   "passwordReset": {
     "back": "Назад",

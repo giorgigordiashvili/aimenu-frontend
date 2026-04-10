@@ -110,12 +110,13 @@
     "passwordMismatch": "Passwords do not match",
     "passwordTooShort": "Password must be at least 8 characters",
     "requiredField": "Required field",
-    "invalidEmail": "Invalid email"
+    "invalidEmail": "Invalid email",
+    "repeatPassword": "Confirm Password"
   },
   "login": {
     "back": "Back",
-    "title": "Welcome Back",
-    "subtitle": "Enter your credentials to access your account",
+    "title": "Sign In",
+    "subtitle": "Enter your details to sign in",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "password": "Password",
@@ -124,7 +125,7 @@
     "forgotPassword": "Forgot password?",
     "signIn": "Sign In",
     "noAccount": "Don't have an account?",
-    "signUp": "Sign Up",
+    "signUp": "Sign up",
     "orContinueWith": "or continue with",
     "continueWithGoogle": "Continue with Google",
     "continueWithFacebook": "Continue with Facebook",
@@ -132,7 +133,8 @@
     "passwordRequired": "Password is required",
     "invalidCredentials": "Invalid email or password. Please try again.",
     "networkError": "Network error. Please check your connection and try again.",
-    "loginFailed": "Login failed. Please try again."
+    "loginFailed": "Login failed. Please try again.",
+    "orDivider": "or"
   },
   "passwordReset": {
     "back": "Back",
