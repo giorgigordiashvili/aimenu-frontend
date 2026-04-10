@@ -305,12 +305,19 @@ export default function BookingForm({
   }, []);
 
   // Passed to BookingRightPanel for user-initiated step transitions.
-  // Clearing paymentError when advancing to payment lets the panel escape the
-  // derived 'fail' state (e.g. after a failed payment the user retries).
-  const handleStepChange = useCallback((s: 'contact' | 'payment') => {
-    setInternalStep(s);
-    if (s === 'payment') setPaymentError(null);
-  }, []);
+  // When skipPayment is true, advancing to 'payment' directly calls handlePay.
+  const handleStepChange = useCallback(
+    (s: 'contact' | 'payment') => {
+      if (s === 'payment') {
+        // Skip payment step — directly create reservation
+        handlePay();
+        return;
+      }
+      setInternalStep(s);
+      setPaymentError(null);
+    },
+    [handlePay]
+  );
 
   // DEV-only: pre-set a visual state via ?state=success|fail in the URL so you can
   // inspect the success/fail UI without making real API calls.
@@ -520,7 +527,7 @@ export default function BookingForm({
             size='large'
             fullWidth
             type='button'
-            onClick={() => setInternalStep('payment')}
+            onClick={handlePay}
           />
         </MobileFooter>
 

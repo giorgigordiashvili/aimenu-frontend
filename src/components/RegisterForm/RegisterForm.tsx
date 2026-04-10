@@ -8,13 +8,19 @@ import { useState } from 'react';
 
 import { authRegisterCreate } from '@/api/generated';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
+import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
+import { useLocale } from '@/context/LocaleContext';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import EmailIcon from '@/icons/Email';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
 import GoogleIcon from '@/icons/Google';
+import LockIcon from '@/icons/Lock';
+import ManIcon from '@/icons/Man';
+import PhoneIcon from '@/icons/Phone';
 import * as tokens from '@/tokens';
 
 // ── Layout ────────────────────────────────────────────────────────────────
@@ -195,6 +201,17 @@ const Footer = styled('p')({
   },
 });
 
+// ── Desktop lang wrapper ──────────────────────────────────────────────────
+
+const DesktopLangWrapper = styled('div')({
+  marginTop: '44px',
+  display: 'flex',
+  justifyContent: 'center',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
 // ── Alert ─────────────────────────────────────────────────────────────────
 
 const AlertBox = styled('div')({
@@ -226,6 +243,7 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ locale }: RegisterFormProps) {
   const router = useRouter();
+  const { locale: currentLocale } = useLocale();
   const t = getDictionary(locale);
 
   const [fullName, setFullName] = useState('');
@@ -328,6 +346,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 autoComplete='name'
                 required
                 value={fullName}
+                leftIcon={ManIcon}
                 errorMessage={errors.fullName}
                 onChange={e => {
                   setFullName(e.target.value);
@@ -344,6 +363,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 type='tel'
                 autoComplete='tel'
                 value={phone}
+                leftIcon={PhoneIcon}
                 onChange={e => setPhone(e.target.value)}
               />
             </Field>
@@ -357,6 +377,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 autoComplete='email'
                 required
                 value={email}
+                leftIcon={EmailIcon}
                 errorMessage={errors.email}
                 onChange={e => {
                   setEmail(e.target.value);
@@ -374,6 +395,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 autoComplete='new-password'
                 required
                 value={password}
+                leftIcon={LockIcon}
                 icon={EyeIcon}
                 errorMessage={errors.password}
                 onChange={e => {
@@ -393,6 +415,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 autoComplete='new-password'
                 required
                 value={repeatPassword}
+                leftIcon={LockIcon}
                 icon={EyeIcon}
                 errorMessage={errors.repeatPassword}
                 onChange={e => {
@@ -434,6 +457,9 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             {t.register.haveAccount} <Link href={`/${locale}/login`}>{t.register.loginLink}</Link>
           </Footer>
         </Card>
+        <DesktopLangWrapper>
+          <LanguageSwitcherPrimary currentLocale={currentLocale} />
+        </DesktopLangWrapper>
       </Page>
     </>
   );

@@ -188,3 +188,29 @@ export const AlertBox = styled('div')({
   fontSize: '14px',
   lineHeight: '20px',
 });
+
+export const LogoWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '8px',
+  marginBottom: '32px',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});
+
+export const LogoText = styled('span')({
+  fontSize: '24px',
+  fontWeight: 700,
+  color: tokens.primary,
+});
+
+export const DesktopLangWrapper = styled('div')({
+  marginTop: '44px',
+  display: 'flex',
+  justifyContent: 'center',
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+});

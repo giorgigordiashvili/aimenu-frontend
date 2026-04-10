@@ -146,6 +146,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   errorMessage?: string;
   icon?: IconComponent;
+  leftIcon?: React.ElementType;
   onIconClick?: () => void;
   variant?: 'default' | 'outlined';
 };
@@ -155,6 +156,7 @@ function TextInput({
   errorMessage,
   type = 'text',
   icon: Icon,
+  leftIcon: LeftIcon,
   onIconClick,
   variant = 'default',
   ...props
@@ -173,7 +175,13 @@ function TextInput({
       {label && <Text>{label}</Text>}
 
       <InputWrapper>
-        {Icon && !isPassword && !isLocation && !isDate && !isTime && (
+        {LeftIcon && (
+          <LeftIconWrapper>
+            <LeftIcon />
+          </LeftIconWrapper>
+        )}
+
+        {!LeftIcon && Icon && !isPassword && !isLocation && !isDate && !isTime && (
           <LeftIconWrapper>
             <Icon />
           </LeftIconWrapper>
@@ -188,7 +196,9 @@ function TextInput({
           aria-invalid={isError}
           style={{
             paddingLeft:
-              Icon && !isPassword && !isLocation && !isDate && !isTime ? '40px' : undefined,
+              LeftIcon || (!LeftIcon && Icon && !isPassword && !isLocation && !isDate && !isTime)
+                ? '36px'
+                : undefined,
             paddingRight: isPassword || isLocation || isDate || isTime ? '40px' : undefined,
           }}
           onBlur={e => {

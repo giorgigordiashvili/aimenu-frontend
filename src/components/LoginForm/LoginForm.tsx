@@ -1,23 +1,29 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { authLoginCreate } from '@/api/generated';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
+import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { useAuth } from '@/context/AuthContext';
+import { useLocale } from '@/context/LocaleContext';
 import { getDictionary } from '@/i18n/getDictionary';
+import EmailIcon from '@/icons/Email';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
 import GoogleIcon from '@/icons/Google';
+import LockIcon from '@/icons/Lock';
 
 import {
   AlertBox,
   Card,
+  DesktopLangWrapper,
   Divider,
   DividerLine,
   DividerText,
@@ -29,6 +35,8 @@ import {
   FormErrors,
   Header,
   LoginFormProps,
+  LogoText,
+  LogoWrapper,
   Page,
   ResponsiveButton,
   SocialButtonWrapper,
@@ -49,6 +57,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
+  const { locale: currentLocale } = useLocale();
   const t = getDictionary(locale);
 
   const [email, setEmail] = useState('');
@@ -116,6 +125,10 @@ export default function LoginForm({ locale }: LoginFormProps) {
         <HeaderPrimary />
       </MobileHeaderWrapper>
       <Page>
+        <LogoWrapper>
+          <Image src='/logo.png' alt='AiMenu' width={40} height={40} />
+          <LogoText>AiMenu</LogoText>
+        </LogoWrapper>
         <Card>
           <Header>
             <Title>{t.login.title}</Title>
@@ -134,6 +147,8 @@ export default function LoginForm({ locale }: LoginFormProps) {
                 autoComplete='email'
                 required
                 value={email}
+                variant='outlined'
+                leftIcon={EmailIcon}
                 errorMessage={errors.email}
                 onChange={e => {
                   setEmail(e.target.value);
@@ -151,6 +166,8 @@ export default function LoginForm({ locale }: LoginFormProps) {
                 autoComplete='current-password'
                 required
                 value={password}
+                variant='outlined'
+                leftIcon={LockIcon}
                 icon={EyeIcon}
                 errorMessage={errors.password}
                 onChange={e => {
@@ -193,6 +210,9 @@ export default function LoginForm({ locale }: LoginFormProps) {
             {t.login.noAccount} <Link href={`/${locale}/register`}>{t.login.signUp}</Link>
           </Footer>
         </Card>
+        <DesktopLangWrapper>
+          <LanguageSwitcherPrimary currentLocale={currentLocale} />
+        </DesktopLangWrapper>
       </Page>
     </>
   );
