@@ -117,7 +117,7 @@ export const ResponsiveButton = styled('div')({
   '@media (max-width: 768px)': {
     '& button': {
       padding: '16px',
-      borderRadius: '120px',
+      borderRadius: '16px',
     },
   },
 });
