@@ -234,8 +234,8 @@ const AlertBox = styled('div')({
 });
 
 const SubmitButton = styled('button')({
-  padding: '16px',
-  borderRadius: '16px',
+  padding: '8px 16px',
+  borderRadius: '8px',
   border: 'none',
   cursor: 'pointer',
   fontSize: '14px',
