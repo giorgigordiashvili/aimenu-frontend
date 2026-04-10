@@ -10,7 +10,7 @@ const ManIcon = (props: React.SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      stroke='#90A1B9'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}

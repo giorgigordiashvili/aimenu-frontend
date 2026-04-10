@@ -253,6 +253,8 @@ const OverlayFooter = styled('div')({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
+const skipPayment = process.env.NEXT_PUBLIC_BYPASS_PAYMENT === 'true';
+
 export default function BookingForm({
   slug,
   onClose,
@@ -309,9 +311,10 @@ export default function BookingForm({
   const handleStepChange = useCallback(
     (s: 'contact' | 'payment') => {
       if (s === 'payment') {
-        // Skip payment step — directly create reservation
-        handlePay();
-        return;
+        if (skipPayment) {
+          handlePay();
+          return;
+        }
       }
       setInternalStep(s);
       setPaymentError(null);
@@ -527,7 +530,7 @@ export default function BookingForm({
             size='large'
             fullWidth
             type='button'
-            onClick={handlePay}
+            onClick={skipPayment ? handlePay : () => setInternalStep('payment')}
           />
         </MobileFooter>
 

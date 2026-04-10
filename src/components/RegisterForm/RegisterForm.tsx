@@ -243,14 +243,14 @@ const SubmitButton = styled('button')({
   lineHeight: '20px',
   letterSpacing: '-0.15px',
   fontWeight: 500,
-  backgroundColor: '#EC003F',
-  color: '#ffffff',
+  backgroundColor: tokens.redBrand,
+  color: tokens.white,
   width: '100%',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   '&:hover': {
-    backgroundColor: '#BE123C',
+    backgroundColor: tokens.rose700,
   },
   '&:disabled': {
     opacity: 0.5,
