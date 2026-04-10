@@ -20,7 +20,6 @@ const LABELS: Record<Locale, string> = {
 const Wrapper = styled('div')({
   position: 'relative',
   flexShrink: 0,
-  marginBottom: '20px',
 });
 
 /** Pill trigger button — rounded border, "GEO ˅" */

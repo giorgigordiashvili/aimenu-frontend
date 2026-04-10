@@ -219,6 +219,7 @@ export const LogoText = styled('span')({
 
 export const DesktopLangWrapper = styled('div')({
   marginTop: '44px',
+  marginBottom: '20px',
   display: 'flex',
   justifyContent: 'center',
   '@media (max-width: 768px)': {

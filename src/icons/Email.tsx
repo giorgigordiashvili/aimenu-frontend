@@ -3,7 +3,14 @@ import * as React from 'react';
 type EmailIconProps = React.SVGProps<SVGSVGElement> & { open?: boolean };
 
 const EmailIcon = ({ width = 16, height = 16, open: _open, ...props }: EmailIconProps) => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} fill='none' {...props}>
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width={width}
+    height={height}
+    viewBox='0 0 16 16'
+    fill='none'
+    {...props}
+  >
     <path
       stroke='currentColor'
       strokeLinecap='round'

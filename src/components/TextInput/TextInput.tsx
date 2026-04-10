@@ -45,10 +45,6 @@ const LeftIconWrapper = styled('div')({
 
   '@media (max-width: 768px)': {
     transform: 'translateY(calc(-50% + 2px))',
-    '& svg': {
-      width: '20px',
-      height: '20px',
-    },
   },
 });
 
@@ -69,13 +65,6 @@ const RightIconButton = styled('button')({
     width: '16px',
     height: '16px',
     pointerEvents: 'none',
-  },
-
-  '@media (max-width: 768px)': {
-    '& svg': {
-      width: '20px',
-      height: '20px',
-    },
   },
 });
 
