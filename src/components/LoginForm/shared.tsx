@@ -39,7 +39,7 @@ export const Card = styled('div')({
   borderRadius: tokens.radiusMd,
   boxShadow: tokens.shadowMd,
   border: `1px solid ${tokens.slate200}`,
-  padding: '40px 32px',
+  padding: '24px',
   '@media (max-width: 768px)': {
     padding: '0',
     maxWidth: '100%',
@@ -74,7 +74,7 @@ export const Title = styled('h1')({
   color: tokens.foreground,
   margin: '0 0 8px',
   '@media (max-width: 768px)': {
-    fontSize: '20px',
+    fontSize: '26px',
   },
 });
 
@@ -88,7 +88,7 @@ export const Subtitle = styled('p')({
 export const Form = styled('form')({
   display: 'flex',
   flexDirection: 'column',
-  gap: '20px',
+  gap: '16px',
 });
 
 export const Field = styled('div')({
@@ -131,7 +131,10 @@ export const Divider = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  margin: '28px 0',
+  margin: '24px 0',
+  '@media (max-width: 768px)': {
+    margin: '28px 0',
+  },
 });
 
 export const DividerLine = styled('div')({
@@ -188,6 +191,9 @@ export const Footer = styled('p')({
   },
   '& a:hover': {
     textDecoration: 'underline',
+  },
+  '@media (max-width: 768px)': {
+    margin: '28px 0 0',
   },
 });
 

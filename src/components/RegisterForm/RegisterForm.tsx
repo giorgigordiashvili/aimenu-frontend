@@ -64,7 +64,7 @@ const Card = styled('div')({
   borderRadius: tokens.radiusMd,
   boxShadow: tokens.shadowMd,
   border: `1px solid ${tokens.slate200}`,
-  padding: '40px 32px',
+  padding: '24px',
   '@media (max-width: 768px)': {
     padding: '0',
     maxWidth: '100%',
@@ -105,7 +105,7 @@ const CardSubtitle = styled('p')({
 const Form = styled('form')({
   display: 'flex',
   flexDirection: 'column',
-  gap: '20px',
+  gap: '16px',
 });
 
 const Field = styled('div')({
@@ -147,7 +147,10 @@ const Divider = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  margin: '28px 0',
+  margin: '24px 0',
+  '@media (max-width: 768px)': {
+    margin: '28px 0',
+  },
 });
 
 const DividerLine = styled('div')({
@@ -206,6 +209,9 @@ const Footer = styled('p')({
   },
   '& a:hover': {
     textDecoration: 'underline',
+  },
+  '@media (max-width: 768px)': {
+    margin: '28px 0 0',
   },
 });
 
