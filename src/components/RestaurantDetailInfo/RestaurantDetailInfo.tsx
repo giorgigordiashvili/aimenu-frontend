@@ -230,6 +230,16 @@ export default function RestaurantDetailInfo({
             onClick={handleFavoriteToggle}
           />
           <MainButton variant='ghost' size='extra_small' icon={Share} />
+          <MainButton
+            variant='ghost'
+            size='extra_small'
+            icon={Gallery}
+            onClick={() =>
+              window.dispatchEvent(
+                new CustomEvent('photo-gallery:open', { detail: { index: 0 } })
+              )
+            }
+          />
         </MobileRightSection>
       </MobileTopRow>
 
