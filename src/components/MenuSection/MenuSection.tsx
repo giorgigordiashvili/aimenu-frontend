@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import ProductDetailModal from '@/components/ProductDetailModal';
+import { CategoryTabsSkeleton, MenuSectionSkeleton } from '@/components/Skeleton';
 import { useCart } from '@/context/CartContext';
 import { useMenuData } from '@/hooks/useMenuData';
 import type { Locale } from '@/i18n/config';
@@ -245,16 +246,6 @@ const QtyCount = styled('span')({
   userSelect: 'none',
 });
 
-// ── Loading / Empty ───────────────────────────────────────────────────────────
-
-const LoadingText = styled('p')({
-  fontSize: '14px',
-  color: muted,
-  textAlign: 'center',
-  padding: '24px 0',
-  margin: 0,
-});
-
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface MenuProduct {
@@ -323,30 +314,36 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
       </SectionHeader>
 
       {/* Category Tabs */}
-      <TabsWrapper>
-        <TabsList>
-          <MainButton
-            variant={activeCategoryId === null ? 'slate_cta' : 'outline'}
-            size='default'
-            rounded
-            title={t.restaurant.allCategories}
-            onClick={() => setActiveCategoryId(null)}
-          />
-          {categories.map(cat => (
+      {isLoading ? (
+        <TabsWrapper>
+          <CategoryTabsSkeleton count={5} />
+        </TabsWrapper>
+      ) : (
+        <TabsWrapper>
+          <TabsList>
             <MainButton
-              key={cat.id}
-              variant={activeCategoryId === cat.id ? 'slate_cta' : 'outline'}
+              variant={activeCategoryId === null ? 'slate_cta' : 'outline'}
               size='default'
               rounded
-              title={cat.name}
-              onClick={() => setActiveCategoryId(cat.id)}
+              title={t.restaurant.allCategories}
+              onClick={() => setActiveCategoryId(null)}
             />
-          ))}
-        </TabsList>
-      </TabsWrapper>
+            {categories.map(cat => (
+              <MainButton
+                key={cat.id}
+                variant={activeCategoryId === cat.id ? 'slate_cta' : 'outline'}
+                size='default'
+                rounded
+                title={cat.name}
+                onClick={() => setActiveCategoryId(cat.id)}
+              />
+            ))}
+          </TabsList>
+        </TabsWrapper>
+      )}
 
-      {/* Loading */}
-      {isLoading && <LoadingText>{t.common.loading}</LoadingText>}
+      {/* Loading skeleton — keeps layout stable while SWR fetches */}
+      {isLoading && <MenuSectionSkeleton groups={2} />}
 
       {/* Menu Items grouped by category */}
       {!isLoading &&

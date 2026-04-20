@@ -8,4 +8,8 @@ export {
   ProductListSkeleton,
   CategoryTabSkeleton,
   CategoryTabsSkeleton,
+  MenuItemRowSkeleton,
+  MenuGroupSkeleton,
+  MenuSectionSkeleton,
+  SimilarRestaurantsSkeleton,
 } from './Skeleton';

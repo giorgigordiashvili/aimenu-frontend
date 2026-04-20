@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { restaurantsList } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
+import { SimilarRestaurantsSkeleton } from '@/components/Skeleton';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
@@ -77,6 +78,7 @@ export default function SimilarRestaurants({
   const t = getDictionary(locale);
   const router = useRouter();
   const [restaurants, setRestaurants] = useState<RestaurantList[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchRestaurants() {
@@ -100,10 +102,21 @@ export default function SimilarRestaurants({
         setRestaurants(filtered);
       } catch {
         // silently fail - similar restaurants are non-critical
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchRestaurants();
   }, [cuisineType, currentSlug]);
+
+  if (isLoading) {
+    return (
+      <Section>
+        <SectionTitle>{t.restaurant.similar}</SectionTitle>
+        <SimilarRestaurantsSkeleton count={3} />
+      </Section>
+    );
+  }
 
   if (restaurants.length === 0) return null;
 
