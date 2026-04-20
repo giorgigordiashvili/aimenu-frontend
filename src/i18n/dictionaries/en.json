@@ -392,6 +392,9 @@
   },
   "reservationWidget": {
     "title": "Reservation",
+    "orderTitle": "Order",
+    "order": "Place order",
+    "browseMenu": "Browse menu",
     "book": "Book",
     "bookWithOrder": "Order & Book",
     "deposit": "Deposit",

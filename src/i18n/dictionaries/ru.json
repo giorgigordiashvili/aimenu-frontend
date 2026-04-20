@@ -392,6 +392,9 @@
   },
   "reservationWidget": {
     "title": "Бронирование",
+    "orderTitle": "Заказ",
+    "order": "Оформить заказ",
+    "browseMenu": "Посмотреть меню",
     "book": "Забронировать",
     "bookWithOrder": "Заказать и забронировать",
     "deposit": "Депозит",

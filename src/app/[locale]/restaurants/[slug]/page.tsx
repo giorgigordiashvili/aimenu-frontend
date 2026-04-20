@@ -1,7 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { restaurantsRetrieve } from '@/api/generated/api';
@@ -17,7 +17,6 @@ import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import { useTable } from '@/context/TableContext';
 import { primary } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
@@ -107,14 +106,6 @@ export default function RestaurantDetailPage() {
   const slug = params.slug as string;
   const { locale } = useLocale();
   const t = useTranslations();
-  const { tableData } = useTable();
-  const searchParams = useSearchParams();
-  const hasTableParam = !!searchParams.get('table');
-  // Hide the reservation widget as soon as the user arrives with a table
-  // QR code in the URL — no need to wait for validation to finish, they
-  // are clearly at the restaurant and just want to order.
-  const isSeated = hasTableParam || (!!tableData?.isValidated && tableData.restaurantSlug === slug);
-
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -173,9 +164,10 @@ export default function RestaurantDetailPage() {
     ? getTranslation(restaurant.category.translations, 'name', locale)
     : undefined;
 
-  // Skip the reservation widget when the user is already seated at this restaurant
-  // via a QR-scanned table session — they can just order, no booking needed.
-  const showWidget = restaurant.accepts_reservations === true && !isSeated;
+  // Widget is always shown when the restaurant accepts reservations. Its
+  // internals switch to "order only" (QR dine-in) when the URL has ?table=
+  // — handled inside ReservationWidget itself.
+  const showWidget = restaurant.accepts_reservations === true;
 
   return (
     <Page>

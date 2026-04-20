@@ -1,7 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { reservationsSettingsRetrieve } from '@/api/generated/api';
@@ -198,6 +198,8 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   const t = useTranslations();
   const { locale: ctxLocale } = useLocale();
   const { getTotalItems, getTotalPrice } = useCart();
+  const searchParams = useSearchParams();
+  const hasTableParam = !!searchParams.get('table');
   const cartTotal = getTotalPrice();
   const [depositAmount, setDepositAmount] = useState(10.0);
 
@@ -296,6 +298,56 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   }
 
   const guestOptions = Array.from({ length: 10 }, (_, i) => i + 1);
+
+  // QR dine-in mode: user is at the restaurant, no date/time/guests needed.
+  // Show a compact card with a single "Order" CTA that jumps straight to
+  // the menu (CTA disabled until they've added items; then it goes to the
+  // order-review / cart).
+  if (hasTableParam) {
+    const itemCount = getTotalItems();
+    const orderHref = localePath(activeLocale, '/order-review');
+    const menuHref = `#menu`;
+    return (
+      <WidgetCard>
+        <WidgetHeader>
+          <CalendarIconWrap>
+            <CalendarIcon />
+          </CalendarIconWrap>
+          <WidgetTitle>{t.reservationWidget.orderTitle ?? 'შეკვეთა'}</WidgetTitle>
+        </WidgetHeader>
+
+        <PriceSummarySection
+          depositLabel={t.reservationWidget.deposit}
+          totalLabel={t.reservationWidget.grandTotal}
+          itemsLabel={t.reservationWidget.items}
+          depositAmount={0}
+          cartTotal={cartTotal}
+          itemCount={itemCount}
+        />
+
+        <MainButton
+          variant={itemCount > 0 ? 'green_cta' : 'rose_cta'}
+          fullWidth
+          size='large'
+          title={
+            itemCount > 0
+              ? (t.reservationWidget.order ?? 'შეკვეთა')
+              : (t.reservationWidget.browseMenu ?? 'მენიუ')
+          }
+          onClick={() => {
+            if (itemCount > 0) router.push(orderHref);
+            else {
+              // Scroll to menu section; fall back to anchor if not found.
+              const menuEl =
+                typeof document !== 'undefined' ? document.getElementById('menu') : null;
+              if (menuEl) menuEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              else window.location.hash = menuHref;
+            }
+          }}
+        />
+      </WidgetCard>
+    );
+  }
 
   return (
     <WidgetCard>

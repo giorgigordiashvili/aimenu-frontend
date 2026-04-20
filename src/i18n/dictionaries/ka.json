@@ -392,6 +392,9 @@
   },
   "reservationWidget": {
     "title": "ჯავშანი",
+    "orderTitle": "შეკვეთა",
+    "order": "შეკვეთის გაფორმება",
+    "browseMenu": "მენიუს ნახვა",
     "book": "დაჯავშნა",
     "bookWithOrder": "შეკვეთა და დაჯავშნა",
     "deposit": "დეპოზიტი",
