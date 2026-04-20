@@ -34,7 +34,12 @@ const Image = styled('div')({
   borderRadius: '10px',
   overflow: 'hidden',
   flexShrink: 0,
+  // Ship a known-good demo image as the CSS-layer fallback so the tile is
+  // never empty, even before JS attaches the `style={backgroundImage: ...}`
+  // from props (which happens after hydration) or when the URL from the API
+  // is an empty string.
   backgroundColor: slate300,
+  backgroundImage: `url(/demo/RestaurantCardImage.jpg)`,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
 });
@@ -69,6 +74,8 @@ export default function BookingRestaurantCard({ name, subtitle, rating, image }:
       <Image
         role='img'
         aria-label={name}
+        // Truthy-check so empty-string URLs from the API don't overwrite the
+        // CSS-layer fallback with `url()` (which renders nothing).
         style={image ? { backgroundImage: `url(${image})` } : undefined}
       />
       <Info>
