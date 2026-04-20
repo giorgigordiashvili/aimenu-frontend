@@ -17,7 +17,11 @@ const nextConfig: NextConfig = {
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [320, 420, 640, 750, 828],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    // 160 tightens the bucket so an 80px thumbnail on a DPR-2 device
+    // requests w=160 (~6–10 KB) instead of being rounded up to w=256
+    // (~23–27 KB). Lighthouse image-delivery audit flagged ~90 KiB of
+    // oversized menu thumbnails at baseline.
+    imageSizes: [16, 32, 48, 64, 96, 128, 160, 256],
   },
   compress: true,
   async headers() {

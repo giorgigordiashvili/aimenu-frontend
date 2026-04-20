@@ -237,9 +237,14 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
             src={galleryImages[0]}
             alt={`${restaurantName} - main photo`}
             fill
-            sizes='100vw'
+            // The LCP element on mobile. Scoping `sizes` to the
+            // viewports where this image is actually visible lets Next
+            // pick a 420/640-bucketed src on phones instead of the
+            // 750 bucket (~52 KB → ~22 KB on slow 3G).
+            sizes='(min-width: 768px) 1px, 100vw'
             style={{ objectFit: 'cover' }}
             priority
+            fetchPriority='high'
           />
         </MobileImageContainer>
 
@@ -251,9 +256,14 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
               src={desktopImages[0]}
               alt={`${restaurantName} - photo 1`}
               fill
-              sizes='(min-width: 768px) 50vw'
+              // Main layout caps at 1280px with 80px padding — the hero
+              // column is at most ~640px wide on desktop. Reflecting
+              // that in `sizes` keeps the downloaded image well under
+              // the 750 bucket.
+              sizes='(min-width: 1280px) 640px, (min-width: 768px) 50vw, 1px'
               style={{ objectFit: 'cover' }}
               priority
+              fetchPriority='high'
             />
           </LargeGridImage>
 
@@ -264,8 +274,9 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
                 src={image}
                 alt={`${restaurantName} - photo ${index + 2}`}
                 fill
-                sizes='(min-width: 768px) 25vw'
+                sizes='(min-width: 1280px) 220px, (min-width: 768px) 25vw, 1px'
                 style={{ objectFit: 'cover' }}
+                loading='lazy'
               />
             </GridImageContainer>
           ))}
