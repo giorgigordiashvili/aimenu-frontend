@@ -11,13 +11,13 @@ import {
   SearchBar,
   CategoryTabs,
   ProductCard,
-  CartButton,
   ProductListSkeleton,
   CategoryTabsSkeleton,
 } from '@/components';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useCategoryProducts } from '@/hooks/useMenuData';
+import { localePath } from '@/i18n/routing';
 
 const shimmer = keyframes({
   '0%': { backgroundPosition: '-200% 0' },
@@ -189,7 +189,7 @@ export default function CategoryPage() {
 
   const handleCategoryChange = (newCategoryId: string | null) => {
     if (newCategoryId && newCategoryId !== categoryId) {
-      router.push(`/${locale}/restaurant/${slug}/category/${newCategoryId}`);
+      router.push(localePath(locale, `/restaurant/${slug}/category/${newCategoryId}`));
     }
   };
 
@@ -298,13 +298,18 @@ export default function CategoryPage() {
         </ProductsList>
       </Main>
 
-      <CartButton />
+      {/*
+        Legacy /restaurant/[slug] menu browser is read-only — ordering lives
+        on the modern /restaurants/[slug] path which has MenuSection + cart
+        wiring. No CartButton here; ProductDetailModal runs in readOnly mode.
+      */}
 
       {selectedProduct && (
         <ProductDetailModal
           isOpen={!!selectedProduct}
           onClose={handleCloseModal}
           product={selectedProduct}
+          readOnly
         />
       )}
     </Page>

@@ -14,6 +14,7 @@ import TextInput from '@/components/TextInput/TextInput';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale } from '@/context/LocaleContext';
 import { getDictionary } from '@/i18n/getDictionary';
+import { localePath } from '@/i18n/routing';
 import EmailIcon from '@/icons/Email';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
@@ -100,7 +101,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
       await login({ access, refresh });
 
       const redirect = searchParams.get('redirect');
-      router.push(redirect || `/${locale}`);
+      router.push(redirect || localePath(locale));
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
         const axiosErr = err as { response?: { status?: number; data?: { detail?: string } } };
@@ -177,7 +178,9 @@ export default function LoginForm({ locale }: LoginFormProps) {
                   if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
                 }}
               />
-              <ForgotLink href={`/${locale}/password-reset`}>{t.login.forgotPassword}</ForgotLink>
+              <ForgotLink href={localePath(locale, '/password-reset')}>
+                {t.login.forgotPassword}
+              </ForgotLink>
             </Field>
 
             <ResponsiveButton>
@@ -214,7 +217,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
           </MobileSocialRow>
 
           <Footer>
-            {t.login.noAccount} <Link href={`/${locale}/register`}>{t.login.signUp}</Link>
+            {t.login.noAccount} <Link href={localePath(locale, '/register')}>{t.login.signUp}</Link>
           </Footer>
         </Card>
         <DesktopLangWrapper>

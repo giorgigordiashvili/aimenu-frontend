@@ -42,14 +42,21 @@
     "selectedItems": "არჩეულია {count} კერძი"
   },
   "product": {
-    "total": "ჯამი"
+    "total": "ჯამი",
+    "required": "გთხოვთ აირჩიოთ ვარიანტი.",
+    "pickAtLeast": "აირჩიეთ მინიმუმ {count}.",
+    "pickAtMost": "აირჩიეთ მაქსიმუმ {count}."
   },
   "cart": {
     "title": "კალათა",
     "empty": "კალათა ცარიელია",
     "items": "ნივთები",
     "subtotal": "ქვეჯამი",
-    "total": "ჯამი"
+    "total": "ჯამი",
+    "switchTitle": "ახალი შეკვეთის დაწყება?",
+    "switchBody": "თქვენს კალათაში სხვა რესტორნის ნივთები გაქვთ. ამ რესტორნიდან შეკვეთისთვის გაასუფთავეთ კალათა.",
+    "switchClear": "კალათის გასუფთავება",
+    "switchKeep": "კალათის შენარჩუნება"
   },
   "table": {
     "scanQr": "დაასკანერეთ QR კოდი",
@@ -111,7 +118,13 @@
     "passwordTooShort": "პაროლი მინ. 8 სიმბოლო",
     "requiredField": "სავალდებულო ველი",
     "invalidEmail": "არასწორი ელ-ფოსტა",
-    "repeatPassword": "გაიმეორეთ პაროლი"
+    "repeatPassword": "გაიმეორეთ პაროლი",
+    "firstNamePlaceholder": "შეიყვანეთ სახელი",
+    "lastNamePlaceholder": "შეიყვანეთ გვარი",
+    "phonePlaceholder": "შეიყვანეთ ტელეფონის ნომერი",
+    "emailPlaceholder": "შეიყვანეთ ელფოსტა",
+    "passwordPlaceholder": "შეიყვანეთ პაროლი",
+    "repeatPasswordPlaceholder": "გაიმეორეთ პაროლი"
   },
   "login": {
     "back": "უკან",
@@ -328,7 +341,54 @@
     "addToList": "დამატება სიაში",
     "restaurantPlaceholder": "რესტორანი",
     "cuisinePlaceholder": "სამზარეულო",
+    "invalidContact": "გთხოვთ შეიყვანოთ სწორი ელ-ფოსტა ან ტელეფონის ნომერი",
+    "pendingInvite": "ჯერ დაადასტურეთ ან წაშალეთ მოწვევის ბმული."
+  },
+  "paymentReturn": {
+    "verifying": "გადახდის დადასტურება...",
+    "successOrder": "გადახდა მიღებულია — თქვენი შეკვეთა კეთდება.",
+    "successReservation": "ჯავშანი დადასტურდა.",
+    "successAddCard": "ბარათი შენახულია.",
+    "failTitle": "გადახდა ვერ შესრულდა",
+    "failBody": "ბანკის პასუხი: {reason}. თანხა არ ჩამოგეჭრათ.",
+    "unknownFail": "გადახდის შეცდომა",
+    "backToCart": "კალათაში დაბრუნება",
+    "backToReservations": "ჩემი ჯავშნები",
+    "backToPayment": "შენახული ბარათები",
+    "stillPending": "გადახდა ჯერ მუშავდება. ცოტა ხანში დაინახავთ შედეგს."
+  },
+  "inviteJoin": {
+    "title": "მიუერთდით მაგიდას",
+    "subtitle": "დააფიქსირეთ თქვენი მონაცემები და შეუერთდით სხვებთან ერთად.",
+    "host": "მასპინძელი",
+    "restaurant": "რესტორანი",
+    "table": "მაგიდა",
+    "namePlaceholder": "თქვენი სახელი",
+    "contactPlaceholder": "ელფოსტა ან ტელეფონი",
+    "confirm": "მიერთება",
+    "joining": "მიერთება...",
+    "joined": "მიუერთდით სესიას.",
+    "expired": "მოწვევის ბმული აღარ მოქმედებს.",
+    "failed": "მიერთება ვერ მოხერხდა. სცადეთ თავიდან.",
     "invalidContact": "გთხოვთ შეიყვანოთ სწორი ელ-ფოსტა ან ტელეფონის ნომერი"
+  },
+  "orders": {
+    "title": "შეკვეთა",
+    "orderNumber": "შეკვეთა #{number}",
+    "total": "ჯამი",
+    "yourOrder": "თქვენი შეკვეთა",
+    "placedAt": "გაფორმდა",
+    "notFound": "შეკვეთა ვერ მოიძებნა.",
+    "status": {
+      "pending_payment": "გადახდის მოლოდინში",
+      "pending": "მოლოდინშია",
+      "confirmed": "დადასტურდა",
+      "preparing": "მზადდება",
+      "ready": "მზადაა",
+      "served": "მიტანილია",
+      "completed": "დასრულდა",
+      "cancelled": "გაუქმდა"
+    }
   },
   "reservationWidget": {
     "title": "ჯავშანი",
@@ -408,7 +468,7 @@
     "noResults": "რესტორანი ვერ მოიძებნა",
     "title": "რესტორნები",
     "subtitle": "იპოვეთ თქვენთვის სასურველი ადგილი",
-    "filters": "ფილტრები:",
+    "filters": "ფილტრები",
     "allCities": "ყველა ქალაქი",
     "search": "ძიება...",
     "allCategories": "ყველა"
@@ -506,6 +566,7 @@
     "noCards": "შენახული ბარათები არ გაქვთ",
     "deleteSuccess": "ბარათი წაიშალა",
     "deleteError": "ბარათის წაშლა ვერ მოხერხდა",
-    "addCardComingSoon": "მალე დაემატება"
+    "addCardComingSoon": "მალე დაემატება",
+    "addCardFailed": "ბარათის დამატება ვერ მოხერხდა. სცადეთ თავიდან."
   }
 }

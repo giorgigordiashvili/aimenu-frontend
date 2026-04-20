@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import CloseIcon from '@/icons/Close';
 import HeartOutlineIcon from '@/icons/HeartOutline';
 import HistoryIcon from '@/icons/History';
@@ -485,20 +486,20 @@ export default function HeaderPrimary() {
     : '';
 
   const navLinks = [
-    { label: t.header.home, href: `/${locale}/restaurants` },
-    { label: t.header.restaurants, href: `/${locale}/restaurants-search` },
-    { label: t.header.about, href: `/${locale}/about` },
-    { label: t.header.contact, href: `/${locale}/contact` },
+    { label: t.header.home, href: localePath(locale, '/restaurants') },
+    { label: t.header.restaurants, href: localePath(locale, '/restaurants-search') },
+    { label: t.header.about, href: localePath(locale, '/about') },
+    { label: t.header.contact, href: localePath(locale, '/contact') },
   ];
 
   return (
     <>
       <HeaderWrapper>
         {/* Logo */}
-        <LogoLink href={`/${locale}`}>
+        <LogoLink href={localePath(locale)}>
           <Image
             src='/logo.png'
-            alt='AiMenu'
+            alt=''
             width={32}
             height={32}
             style={{ height: '32px', width: '32px', objectFit: 'contain' }}
@@ -544,7 +545,7 @@ export default function HeaderPrimary() {
                 {userMenuOpen && (
                   <DropdownMenu>
                     <DropdownItem
-                      href={`/${locale}/profile`}
+                      href={localePath(locale, '/profile')}
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <IconWrap>
@@ -553,7 +554,7 @@ export default function HeaderPrimary() {
                       {t.header.profile}
                     </DropdownItem>
                     <DropdownItem
-                      href={`/${locale}/favorites`}
+                      href={localePath(locale, '/favorites')}
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <IconWrap>
@@ -562,7 +563,7 @@ export default function HeaderPrimary() {
                       {t.header.favorites}
                     </DropdownItem>
                     <DropdownItem
-                      href={`/${locale}/profile/reservations`}
+                      href={localePath(locale, '/profile/reservations')}
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <IconWrap>
@@ -581,8 +582,10 @@ export default function HeaderPrimary() {
               </DropdownWrap>
             ) : (
               <>
-                <LoginButton href={`/${locale}/login`}>{t.header.login}</LoginButton>
-                <RegisterButton href={`/${locale}/register`}>{t.header.register}</RegisterButton>
+                <LoginButton href={localePath(locale, '/login')}>{t.header.login}</LoginButton>
+                <RegisterButton href={localePath(locale, '/register')}>
+                  {t.header.register}
+                </RegisterButton>
               </>
             )}
           </DesktopControls>
@@ -603,10 +606,10 @@ export default function HeaderPrimary() {
       <DrawerOverlay open={drawerOpen} onClick={() => setDrawerOpen(false)} />
       <Drawer open={drawerOpen}>
         <DrawerHeader>
-          <LogoLink href={`/${locale}`} onClick={() => setDrawerOpen(false)}>
+          <LogoLink href={localePath(locale)} onClick={() => setDrawerOpen(false)}>
             <Image
               src='/logo.png'
-              alt='AiMenu'
+              alt=''
               width={32}
               height={32}
               style={{ height: '32px', width: '32px', objectFit: 'contain' }}
@@ -655,14 +658,17 @@ export default function HeaderPrimary() {
                   <DrawerUserName>{displayName}</DrawerUserName>
                 </DrawerUserInfo>
 
-                <DrawerMenuNavItem href={`/${locale}/profile`} onClick={() => setDrawerOpen(false)}>
+                <DrawerMenuNavItem
+                  href={localePath(locale, '/profile')}
+                  onClick={() => setDrawerOpen(false)}
+                >
                   <IconWrap>
                     <UserIcon width={24} height={24} />
                   </IconWrap>
                   {t.header.profile}
                 </DrawerMenuNavItem>
                 <DrawerMenuNavItem
-                  href={`/${locale}/favorites`}
+                  href={localePath(locale, '/favorites')}
                   onClick={() => setDrawerOpen(false)}
                 >
                   <IconWrap>
@@ -671,7 +677,7 @@ export default function HeaderPrimary() {
                   {t.header.favorites}
                 </DrawerMenuNavItem>
                 <DrawerMenuNavItem
-                  href={`/${locale}/profile/reservations`}
+                  href={localePath(locale, '/profile/reservations')}
                   onClick={() => setDrawerOpen(false)}
                 >
                   <IconWrap>
@@ -688,11 +694,14 @@ export default function HeaderPrimary() {
               </>
             ) : (
               <DrawerAuthButtons>
-                <DrawerLoginBtn href={`/${locale}/login`} onClick={() => setDrawerOpen(false)}>
+                <DrawerLoginBtn
+                  href={localePath(locale, '/login')}
+                  onClick={() => setDrawerOpen(false)}
+                >
                   {t.header.login}
                 </DrawerLoginBtn>
                 <DrawerRegisterBtn
-                  href={`/${locale}/register`}
+                  href={localePath(locale, '/register')}
                   onClick={() => setDrawerOpen(false)}
                 >
                   {t.header.register}

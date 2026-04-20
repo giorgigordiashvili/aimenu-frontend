@@ -1,21 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { locales, defaultLocale, isValidLocale } from './i18n/config';
+import { defaultLocale, isValidLocale } from './i18n/config';
+import { localePath, stripLocale } from './i18n/routing';
 
-// Routes that require authentication
 const protectedPaths = ['/profile', '/reservations', '/orders'];
-
-// Routes that should redirect to home if already authenticated
 const authPaths = ['/login', '/register', '/password-reset'];
 
-function getLocaleFromRequest(request: NextRequest): string {
-  // Check cookie first
+function getPreferredLocale(request: NextRequest): string {
   const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
   if (cookieLocale && isValidLocale(cookieLocale)) {
     return cookieLocale;
   }
 
-  // Check Accept-Language header
   const acceptLanguage = request.headers.get('Accept-Language');
   if (acceptLanguage) {
     const preferred = acceptLanguage
@@ -29,9 +25,8 @@ function getLocaleFromRequest(request: NextRequest): string {
 }
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
 
-  // Skip static files, api routes, and Next.js internals
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
@@ -41,51 +36,43 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check if pathname already has a locale
-  const pathnameHasLocale = locales.some(
-    locale => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  );
-
-  // Get the actual path without locale prefix for auth checks
-  let pathWithoutLocale = pathname;
-  if (pathnameHasLocale) {
-    const locale = locales.find(l => pathname.startsWith(`/${l}/`) || pathname === `/${l}`);
-    if (locale) {
-      pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
-    }
-  }
-
-  // Check for access token in cookies
+  const { locale: urlLocale, pathWithoutLocale } = stripLocale(pathname);
+  const effectiveLocale =
+    urlLocale ?? (pathname === '/' ? getPreferredLocale(request) : defaultLocale);
   const token = request.cookies.get('access_token')?.value;
 
-  // Get locale for redirects
-  const locale = pathnameHasLocale
-    ? locales.find(l => pathname.startsWith(`/${l}/`) || pathname === `/${l}`) || defaultLocale
-    : getLocaleFromRequest(request);
-
-  // Redirect to login if accessing protected route without token
   if (protectedPaths.some(p => pathWithoutLocale.startsWith(p)) && !token) {
-    const loginUrl = new URL(`/${locale}/login`, request.url);
+    const loginUrl = new URL(localePath(effectiveLocale, '/login'), request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redirect to home if accessing auth pages while logged in
   if (authPaths.some(p => pathWithoutLocale.startsWith(p)) && token) {
-    return NextResponse.redirect(new URL(`/${locale}`, request.url));
+    return NextResponse.redirect(new URL(localePath(effectiveLocale, '/'), request.url));
   }
 
-  if (pathnameHasLocale) {
+  // Strip default-locale prefix from URL: /ka/... → /...
+  if (urlLocale === defaultLocale) {
+    const cleanUrl = new URL(pathWithoutLocale, request.url);
+    cleanUrl.search = search;
+    return NextResponse.redirect(cleanUrl);
+  }
+
+  // Non-default locale prefix passes through: /en/..., /ru/...
+  if (urlLocale) {
     return NextResponse.next();
   }
 
-  // Redirect to locale-prefixed path
-  const newUrl = new URL(`/${locale}${pathname}`, request.url);
+  // Bare `/` with non-default locale preference → redirect to /en or /ru
+  if (pathname === '/' && effectiveLocale !== defaultLocale) {
+    return NextResponse.redirect(new URL(`/${effectiveLocale}`, request.url));
+  }
 
-  // Preserve query parameters
-  newUrl.search = request.nextUrl.search;
-
-  return NextResponse.redirect(newUrl);
+  // Unprefixed path → render with default locale while keeping URL clean.
+  const rewriteTarget = pathname === '/' ? `/${defaultLocale}` : `/${defaultLocale}${pathname}`;
+  const rewriteUrl = new URL(rewriteTarget, request.url);
+  rewriteUrl.search = search;
+  return NextResponse.rewrite(rewriteUrl);
 }
 
 export const config = {

@@ -3,9 +3,12 @@
 import { styled } from '@pigment-css/react';
 import { useState, useCallback } from 'react';
 
+import { tablesSessionsInviteCreate } from '@/api/generated/api';
 import MainButton from '@/components/MainButton/MainButton';
 import { useTranslations } from '@/context/LocaleContext';
+import { useTable } from '@/context/TableContext';
 import { Locale } from '@/i18n/config';
+import { localePath } from '@/i18n/routing';
 import CheckmarkIcon from '@/icons/Checkmark';
 import CopyIcon from '@/icons/Copy';
 import InviteArrow from '@/icons/InviteArrow';
@@ -137,35 +140,48 @@ const InfoText = styled('p')({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+// Response shape for POST /api/v1/tables/sessions/{sessionId}/invite/.
+// The generated client returns `any`; keep a local type until drf-spectacular
+// annotates the endpoint.
+interface InviteCreateResponse {
+  invite_code: string;
+  expires_at?: string;
+}
+
 export default function InviteFriendsSection({ locale, paymentMethod }: InviteFriendsSectionProps) {
   const t = useTranslations();
+  const { tableData } = useTable();
+  const sessionId = tableData?.sessionId;
 
   const [isCreatingLink, setIsCreatingLink] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
 
   const handleCreateLink = useCallback(async () => {
+    if (!sessionId) {
+      setLinkError(t.orderReview.inviteLinkDescription);
+      return;
+    }
+
     setIsCreatingLink(true);
+    setLinkError(null);
     try {
-      // TODO: IMPORTANT - Replace with backend API call to create validated invitation link
-      // Current implementation uses client-side UUID which creates dead URLs
-      // Backend should:
-      // 1. Generate a unique, validated invite code
-      // 2. Store it with order/session data
-      // 3. Return the shareable URL
-      // Example: const response = await api.post('/invitations', { orderId, locale });
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Generate a UUID-based link (temporary - needs backend validation)
-      const uuid = crypto.randomUUID();
+      const response = (await tablesSessionsInviteCreate(sessionId)) as InviteCreateResponse;
+      const inviteCode = response?.invite_code;
+      if (!inviteCode) {
+        throw new Error('missing invite_code in response');
+      }
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-      const inviteLink = `${baseUrl}/${locale}/order-review/invite/${uuid}`;
+      const inviteLink = `${baseUrl}${localePath(locale, `/order-review/invite/${inviteCode}`)}`;
       setGeneratedLink(inviteLink);
-    } catch {
-      // Handle error
+    } catch (err) {
+      if (process.env.NODE_ENV !== 'production') console.error('[createInvite]', err);
+      setLinkError(t.orderReview.invitationFailed);
     } finally {
       setIsCreatingLink(false);
     }
-  }, [locale]);
+  }, [locale, sessionId, t.orderReview.inviteLinkDescription, t.orderReview.invitationFailed]);
 
   const handleCopyLink = useCallback(async () => {
     if (!generatedLink) return;
@@ -204,13 +220,14 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
           <InviteLinkContent>
             <InviteLinkTitle>{t.orderReview.inviteLink}</InviteLinkTitle>
             <InviteLinkDescription>{t.orderReview.inviteLinkDescription}</InviteLinkDescription>
+            {linkError && <InviteLinkDescription>{linkError}</InviteLinkDescription>}
           </InviteLinkContent>
           <MainButton
             variant='rose_cta'
             title={isCreatingLink ? t.orderReview.placing : t.orderReview.createLink}
             icon={InviteArrow}
             onClick={handleCreateLink}
-            disabled={isCreatingLink}
+            disabled={isCreatingLink || !sessionId}
           />
         </InviteLinkHeader>
       </InviteLinkCard>

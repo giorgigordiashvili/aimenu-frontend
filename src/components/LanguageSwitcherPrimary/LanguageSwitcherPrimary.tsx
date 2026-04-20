@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { Locale, locales } from '@/i18n/config';
+import { localePath, stripLocale } from '@/i18n/routing';
 import { foreground, muted, slate100, slate200, slate400, white } from '@/tokens';
 
 // ── Locale labels ─────────────────────────────────────────────────────────────
@@ -121,13 +122,8 @@ export default function LanguageSwitcherPrimary({ currentLocale }: Props) {
   }, []);
 
   function switchLocale(next: Locale) {
-    const segments = pathname.split('/');
-    if (locales.includes(segments[1] as Locale)) {
-      segments[1] = next;
-    } else {
-      segments.splice(1, 0, next);
-    }
-    const newPath = segments.join('/') || '/';
+    const { pathWithoutLocale } = stripLocale(pathname);
+    const newPath = localePath(next, pathWithoutLocale);
     document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000`;
     router.push(newPath);
     setOpen(false);

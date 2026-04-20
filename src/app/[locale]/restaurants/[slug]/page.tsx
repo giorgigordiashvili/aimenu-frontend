@@ -6,15 +6,18 @@ import { useEffect, useState } from 'react';
 
 import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
-import { Header, ReservationWidget } from '@/components';
+import { ReservationWidget } from '@/components';
 import CartBadge from '@/components/CartBadge';
 import ContactInfo from '@/components/ContactInfo';
 import Footer from '@/components/Footer';
+import HeaderPrimary from '@/components/HeaderPrimary';
 import MenuSection from '@/components/MenuSection';
 import PhotoGallery from '@/components/PhotoGallery';
+import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { useTable } from '@/context/TableContext';
 import { primary } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
@@ -54,7 +57,9 @@ const RightColumn = styled('div')({
     width: '380px',
     flexShrink: 0,
     position: 'sticky',
-    top: '24px',
+    // 64px sticky header height + 24px breathing room — otherwise the widget
+    // scrolls under the Header.
+    top: '88px',
   },
 });
 
@@ -102,6 +107,8 @@ export default function RestaurantDetailPage() {
   const slug = params.slug as string;
   const { locale } = useLocale();
   const t = useTranslations();
+  const { tableData } = useTable();
+  const isSeated = !!tableData?.isValidated && tableData.restaurantSlug === slug;
 
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -130,7 +137,7 @@ export default function RestaurantDetailPage() {
   if (loading) {
     return (
       <Page>
-        <Header />
+        <HeaderPrimary />
         <Main>
           <LoadingContainer>
             <Spinner />
@@ -143,7 +150,7 @@ export default function RestaurantDetailPage() {
   if (error || !restaurant) {
     return (
       <Page>
-        <Header />
+        <HeaderPrimary />
         <Main>
           <ErrorContainer>
             <ErrorText>{error || t.restaurantDetail.notFound}</ErrorText>
@@ -161,11 +168,13 @@ export default function RestaurantDetailPage() {
     ? getTranslation(restaurant.category.translations, 'name', locale)
     : undefined;
 
-  const showWidget = restaurant.accepts_reservations === true;
+  // Skip the reservation widget when the user is already seated at this restaurant
+  // via a QR-scanned table session — they can just order, no booking needed.
+  const showWidget = restaurant.accepts_reservations === true && !isSeated;
 
   return (
     <Page>
-      <Header />
+      <HeaderPrimary />
 
       <Main>
         {/* Photo Gallery — full width above columns */}
@@ -174,6 +183,7 @@ export default function RestaurantDetailPage() {
         <ContentLayout>
           {/* Left column — main content */}
           <LeftColumn>
+            <RestaurantCartScopeBanner slug={slug} />
             {/* Restaurant Info */}
             <RestaurantDetailInfo
               name={restaurant.name}

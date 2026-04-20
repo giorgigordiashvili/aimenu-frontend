@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 
 interface CartItemModifier {
   id: string;
@@ -24,6 +24,7 @@ interface CartContextType {
   items: CartItem[];
   restaurantSlug: string | null;
   setRestaurantSlug: (slug: string) => void;
+  hasCartFromOtherRestaurant: (slug: string) => boolean;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
@@ -34,17 +35,72 @@ interface CartContextType {
   getTotalPrice: () => number;
   getSubtotal: () => number;
   clearCart: () => void;
+  isSubmitting: boolean;
+  setSubmitting: (v: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_STORAGE_KEY = 'cart.v1';
+// Expire an untouched cart after 12 hours — protects stale tabs.
+const CART_MAX_AGE_MS = 12 * 60 * 60 * 1000;
+
+interface StoredCart {
+  items: CartItem[];
+  restaurantSlug: string | null;
+  updatedAt: number;
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [restaurantSlug, setRestaurantSlugState] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Hydrate once from localStorage on mount
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<StoredCart>;
+        const fresh =
+          typeof parsed.updatedAt === 'number' && Date.now() - parsed.updatedAt < CART_MAX_AGE_MS;
+        if (fresh && Array.isArray(parsed.items)) {
+          setItems(parsed.items);
+          setRestaurantSlugState(parsed.restaurantSlug ?? null);
+        } else {
+          window.localStorage.removeItem(CART_STORAGE_KEY);
+        }
+      }
+    } catch {
+      // Corrupt payload or storage disabled — start empty.
+    }
+    setHydrated(true);
+  }, []);
+
+  // Persist whenever items or restaurantSlug change (but not before hydration finishes).
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      if (items.length === 0 && restaurantSlug === null) {
+        window.localStorage.removeItem(CART_STORAGE_KEY);
+        return;
+      }
+      const payload: StoredCart = { items, restaurantSlug, updatedAt: Date.now() };
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // Quota exceeded or unavailable — carry on with in-memory state.
+    }
+  }, [items, restaurantSlug, hydrated]);
 
   const setRestaurantSlug = useCallback((slug: string) => {
     setRestaurantSlugState(slug);
   }, []);
+
+  const hasCartFromOtherRestaurant = useCallback(
+    (slug: string) => items.length > 0 && restaurantSlug !== null && restaurantSlug !== slug,
+    [items.length, restaurantSlug]
+  );
 
   const addItem = useCallback((item: Omit<CartItem, 'quantity'>) => {
     setItems(prevItems => {
@@ -115,12 +171,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setRestaurantSlugState(null);
   }, []);
 
+  const setSubmitting = useCallback((v: boolean) => {
+    setIsSubmitting(v);
+  }, []);
+
   return (
     <CartContext.Provider
       value={{
         items,
         restaurantSlug,
         setRestaurantSlug,
+        hasCartFromOtherRestaurant,
         addItem,
         removeItem,
         updateQuantity,
@@ -131,6 +192,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         getTotalPrice,
         getSubtotal,
         clearCart,
+        isSubmitting,
+        setSubmitting,
       }}
     >
       {children}

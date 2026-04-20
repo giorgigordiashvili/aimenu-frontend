@@ -42,14 +42,21 @@
     "selectedItems": "{count} dishes selected"
   },
   "product": {
-    "total": "Total"
+    "total": "Total",
+    "required": "Please pick an option.",
+    "pickAtLeast": "Pick at least {count}.",
+    "pickAtMost": "Pick at most {count}."
   },
   "cart": {
     "title": "Cart",
     "empty": "Cart is empty",
     "items": "Items",
     "subtotal": "Subtotal",
-    "total": "Total"
+    "total": "Total",
+    "switchTitle": "Start a new order?",
+    "switchBody": "Your cart has items from another restaurant. Clear it to order from here.",
+    "switchClear": "Clear cart",
+    "switchKeep": "Keep cart"
   },
   "table": {
     "scanQr": "Scan QR Code",
@@ -111,7 +118,13 @@
     "passwordTooShort": "Password must be at least 8 characters",
     "requiredField": "Required field",
     "invalidEmail": "Invalid email",
-    "repeatPassword": "Confirm Password"
+    "repeatPassword": "Confirm Password",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNamePlaceholder": "Enter your last name",
+    "phonePlaceholder": "Enter your phone number",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "repeatPasswordPlaceholder": "Re-enter your password"
   },
   "login": {
     "back": "Back",
@@ -326,9 +339,56 @@
     "namePlaceholder": "Name and surname",
     "contactPlaceholder": "Email or phone",
     "addToList": "Add to list",
+    "pendingInvite": "Confirm or remove the invite link before placing the order.",
     "restaurantPlaceholder": "Restaurant",
     "cuisinePlaceholder": "Cuisine",
     "invalidContact": "Please enter a valid email or phone number"
+  },
+  "paymentReturn": {
+    "verifying": "Confirming your payment…",
+    "successOrder": "Payment received — your order is on its way.",
+    "successReservation": "Reservation confirmed.",
+    "successAddCard": "Card saved.",
+    "failTitle": "Payment didn't go through",
+    "failBody": "The bank returned: {reason}. Nothing was charged.",
+    "unknownFail": "Payment failed.",
+    "backToCart": "Back to cart",
+    "backToReservations": "My reservations",
+    "backToPayment": "Back to saved cards",
+    "stillPending": "We're still confirming your payment. You'll see the result shortly."
+  },
+  "inviteJoin": {
+    "title": "Join the table",
+    "subtitle": "Confirm your name and contact to join the shared session.",
+    "host": "Host",
+    "restaurant": "Restaurant",
+    "table": "Table",
+    "namePlaceholder": "Your name",
+    "contactPlaceholder": "Email or phone",
+    "confirm": "Join",
+    "joining": "Joining...",
+    "joined": "You've joined the session.",
+    "expired": "This invite is no longer active.",
+    "failed": "Couldn't join the table. Please try again.",
+    "invalidContact": "Please enter a valid email or phone number"
+  },
+  "orders": {
+    "title": "Order",
+    "orderNumber": "Order #{number}",
+    "total": "Total",
+    "yourOrder": "Your order",
+    "placedAt": "Placed",
+    "notFound": "Order not found.",
+    "status": {
+      "pending_payment": "Awaiting payment",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "preparing": "Preparing",
+      "ready": "Ready",
+      "served": "Served",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
   },
   "reservationWidget": {
     "title": "Reservation",
@@ -408,7 +468,7 @@
     "noResults": "No restaurants found",
     "title": "Restaurants",
     "subtitle": "Find your perfect dining spot",
-    "filters": "Filters:",
+    "filters": "Filters",
     "allCities": "All Cities",
     "search": "Search...",
     "allCategories": "All"
@@ -506,6 +566,7 @@
     "noCards": "No saved cards",
     "deleteSuccess": "Card deleted successfully",
     "deleteError": "Failed to delete card",
-    "addCardComingSoon": "Coming soon"
+    "addCardComingSoon": "Coming soon",
+    "addCardFailed": "Couldn't start the add-card flow. Please try again."
   }
 }

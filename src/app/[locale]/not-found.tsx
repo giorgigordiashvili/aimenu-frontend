@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import ArrowIcon from '@/icons/Arrow';
 import Error404Icon from '@/icons/Error404';
 import House from '@/icons/House';
@@ -91,7 +92,7 @@ export default function NotFoundPage() {
           <MainButton
             variant='rose_cta'
             title={t.notFound.goHome}
-            onClick={() => router.push(`/${locale}`)}
+            onClick={() => router.push(localePath(locale))}
             icon={House}
             iconPosition='left'
           />

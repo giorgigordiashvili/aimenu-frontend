@@ -19,6 +19,7 @@ import {
   TableIndicator,
   CategoryListSkeleton,
 } from '@/components';
+import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { useTable } from '@/context/TableContext';
 import { getTranslation } from '@/utils/translations';
@@ -296,6 +297,8 @@ export default function RestaurantDetailPage() {
           <BackButton />
           <PageTitle>{t.restaurant.menu}</PageTitle>
         </TitleSection>
+
+        <RestaurantCartScopeBanner slug={slug} />
 
         <RestaurantInfo
           name={restaurant.name}

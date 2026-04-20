@@ -87,6 +87,7 @@ import type {
   PaginatedFavoriteRestaurantList,
   FavoriteRestaurantCreateRequest,
   FavoriteRestaurantCreate,
+  PaginatedOrderList,
   PaginatedPaymentMethodList,
   ReservationCreateRequest,
   ReservationCreate,
@@ -1362,6 +1363,50 @@ export async function ordersCreateCreate(): Promise<any> {
   return response.data;
 }
 
+export async function ordersMyList(
+  ordering?: string,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+): Promise<PaginatedOrderList> {
+  const response = await axios.get(
+    `/api/v1/orders/my/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        page ? 'page=' + encodeURIComponent(page) : null,
+        pageSize ? 'page_size=' + encodeURIComponent(pageSize) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function ordersMyRetrieve(orderNumber: string): Promise<Order> {
+  const response = await axios.get(`/api/v1/orders/my/${orderNumber}/`);
+  return response.data;
+}
+
+export async function paymentsBogInitiateCreate(): Promise<any> {
+  const response = await axios.post(`/api/v1/payments/bog/initiate/`);
+  return response.data;
+}
+
+export async function paymentsBogStatusRetrieve(
+  bogOrderId: string,
+): Promise<any> {
+  const response = await axios.get(
+    `/api/v1/payments/bog/status/${bogOrderId}/`,
+  );
+  return response.data;
+}
+
+export async function paymentsBogWebhookCreate(): Promise<any> {
+  const response = await axios.post(`/api/v1/payments/bog/webhook/`);
+  return response.data;
+}
+
 export async function paymentsHistoryList(
   ordering?: string,
   page?: number,
@@ -1590,10 +1635,37 @@ export async function restaurantsMenuItemsRetrieve(
   return response.data;
 }
 
+export async function restaurantsCitiesRetrieve(): Promise<any> {
+  const response = await axios.get(`/api/v1/restaurants/cities/`);
+  return response.data;
+}
+
 export async function restaurantsCreateCreate(
   data: RestaurantCreateRequest,
 ): Promise<RestaurantCreate> {
   const response = await axios.post(`/api/v1/restaurants/create/`, data);
+  return response.data;
+}
+
+export async function restaurantsSearchRetrieve(
+  city?: string,
+  date?: string,
+  partySize?: number,
+  search?: string,
+  time?: string,
+): Promise<any> {
+  const response = await axios.get(
+    `/api/v1/restaurants/search/${(() => {
+      const parts = [
+        city ? 'city=' + encodeURIComponent(city) : null,
+        date ? 'date=' + encodeURIComponent(date) : null,
+        partySize ? 'party_size=' + encodeURIComponent(partySize) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+        time ? 'time=' + encodeURIComponent(time) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
   return response.data;
 }
 

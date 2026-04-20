@@ -42,14 +42,21 @@
     "selectedItems": "Выбрано {count} блюд"
   },
   "product": {
-    "total": "Итого"
+    "total": "Итого",
+    "required": "Пожалуйста, выберите вариант.",
+    "pickAtLeast": "Выберите минимум {count}.",
+    "pickAtMost": "Выберите максимум {count}."
   },
   "cart": {
     "title": "Корзина",
     "empty": "Корзина пуста",
     "items": "Товары",
     "subtotal": "Подытог",
-    "total": "Итого"
+    "total": "Итого",
+    "switchTitle": "Начать новый заказ?",
+    "switchBody": "В вашей корзине есть товары из другого ресторана. Очистите её, чтобы заказать здесь.",
+    "switchClear": "Очистить корзину",
+    "switchKeep": "Оставить корзину"
   },
   "table": {
     "scanQr": "Сканировать QR",
@@ -111,7 +118,13 @@
     "passwordTooShort": "Пароль должен содержать минимум 8 символов",
     "requiredField": "Обязательное поле",
     "invalidEmail": "Неверный email",
-    "repeatPassword": "Повторите пароль"
+    "repeatPassword": "Повторите пароль",
+    "firstNamePlaceholder": "Введите имя",
+    "lastNamePlaceholder": "Введите фамилию",
+    "phonePlaceholder": "Введите номер телефона",
+    "emailPlaceholder": "Введите email",
+    "passwordPlaceholder": "Введите пароль",
+    "repeatPasswordPlaceholder": "Повторите пароль"
   },
   "login": {
     "back": "Назад",
@@ -328,7 +341,54 @@
     "addToList": "Добавить в список",
     "restaurantPlaceholder": "Ресторан",
     "cuisinePlaceholder": "Кухня",
+    "invalidContact": "Пожалуйста, введите корректный email или номер телефона",
+    "pendingInvite": "Сначала подтвердите или удалите ссылку приглашения."
+  },
+  "paymentReturn": {
+    "verifying": "Подтверждаем оплату…",
+    "successOrder": "Платёж получен — ваш заказ готовится.",
+    "successReservation": "Бронирование подтверждено.",
+    "successAddCard": "Карта сохранена.",
+    "failTitle": "Платёж не прошёл",
+    "failBody": "Банк ответил: {reason}. Списания не было.",
+    "unknownFail": "Ошибка платежа.",
+    "backToCart": "Вернуться в корзину",
+    "backToReservations": "Мои бронирования",
+    "backToPayment": "Сохранённые карты",
+    "stillPending": "Мы всё ещё подтверждаем платёж. Результат появится вскоре."
+  },
+  "inviteJoin": {
+    "title": "Присоединиться к столу",
+    "subtitle": "Подтвердите имя и контакт, чтобы присоединиться к совместной сессии.",
+    "host": "Хозяин",
+    "restaurant": "Ресторан",
+    "table": "Стол",
+    "namePlaceholder": "Ваше имя",
+    "contactPlaceholder": "Email или телефон",
+    "confirm": "Присоединиться",
+    "joining": "Присоединяемся...",
+    "joined": "Вы присоединились к сессии.",
+    "expired": "Эта ссылка больше не активна.",
+    "failed": "Не удалось присоединиться. Попробуйте снова.",
     "invalidContact": "Пожалуйста, введите корректный email или номер телефона"
+  },
+  "orders": {
+    "title": "Заказ",
+    "orderNumber": "Заказ №{number}",
+    "total": "Итого",
+    "yourOrder": "Ваш заказ",
+    "placedAt": "Оформлен",
+    "notFound": "Заказ не найден.",
+    "status": {
+      "pending_payment": "Ожидает оплаты",
+      "pending": "В ожидании",
+      "confirmed": "Подтверждён",
+      "preparing": "Готовится",
+      "ready": "Готов",
+      "served": "Подан",
+      "completed": "Завершён",
+      "cancelled": "Отменён"
+    }
   },
   "reservationWidget": {
     "title": "Бронирование",
@@ -408,7 +468,7 @@
     "noResults": "Рестораны не найдены",
     "title": "Рестораны",
     "subtitle": "Найдите подходящее место",
-    "filters": "Фильтры:",
+    "filters": "Фильтры",
     "allCities": "Все города",
     "search": "Поиск...",
     "allCategories": "Все"
@@ -506,6 +566,7 @@
     "noCards": "Нет сохранённых карт",
     "deleteSuccess": "Карта удалена",
     "deleteError": "Не удалось удалить карту",
-    "addCardComingSoon": "Скоро появится"
+    "addCardComingSoon": "Скоро появится",
+    "addCardFailed": "Не удалось начать добавление карты. Попробуйте снова."
   }
 }

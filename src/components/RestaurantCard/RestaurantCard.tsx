@@ -8,6 +8,7 @@ import { memo, useMemo } from 'react';
 import type { Amenity } from '@/api/generated/interfaces';
 import { Locale, defaultLocale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import { localePath } from '@/i18n/routing';
 import { getTranslation } from '@/utils/translations';
 
 // Helper to parse translations string or object
@@ -261,7 +262,7 @@ const RestaurantCard = memo(function RestaurantCard({
   const extraAmenitiesCount = amenities.length - 2;
 
   return (
-    <Card href={`/${locale}/restaurant/${slug}`}>
+    <Card href={localePath(locale, `/restaurant/${slug}`)}>
       <ImageContainer>
         {logo ? (
           <StyledImage

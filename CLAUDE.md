@@ -3,6 +3,25 @@
 This is a Next.js 16 restaurant menu and ordering platform with multi-language
 support.
 
+## CRITICAL: API Client Usage
+
+**Always use the auto-generated API client in `src/api/generated/`** for all
+backend interactions (types, interfaces, and API functions). Do NOT hand-write
+request code or redefine these types elsewhere.
+
+- **Never edit files inside `src/api/generated/`** — they are fully overwritten
+  on regeneration.
+- API types and functions are produced by the `@gordela/api-generator` npm
+  package.
+- To regenerate after backend/OpenAPI changes, run:
+
+  ```bash
+  npm run generate:api
+  ```
+
+- If an endpoint or field appears missing, regenerate first before writing
+  workarounds.
+
 ## Project Overview
 
 A digital restaurant menu system that allows customers to browse menus, view

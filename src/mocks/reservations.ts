@@ -1,4 +1,4 @@
-import { ReservationDetail, ReservationList } from '@/api/generated/interfaces';
+import { ReservationDetail } from '@/api/generated/interfaces';
 
 // ─── Profile ───────────────────────────────────────────────────────────────────
 
@@ -37,7 +37,10 @@ export const MOCK_RESTAURANTS = [
 
 // ─── Active reservations ───────────────────────────────────────────────────────
 
-export const MOCK_ACTIVE: ReservationList[] = [
+// The backend's ReservationList now includes restaurant_* + deposit_amount +
+// payment_status fields. Mock entries don't set them — cast via unknown so TS
+// doesn't flag missing properties; consumers handle undefined gracefully.
+export const MOCK_ACTIVE = [
   {
     id: 'mock-1',
     confirmation_code: 'AIM-2847',
@@ -168,7 +171,7 @@ export const MOCK_ACTIVE: ReservationList[] = [
 
 // ─── History reservations ──────────────────────────────────────────────────────
 
-export const MOCK_HISTORY: ReservationList[] = [
+export const MOCK_HISTORY = [
   {
     id: 'mock-3',
     confirmation_code: 'AIM-1102',
@@ -363,5 +366,5 @@ export function getMockReservationDetail(id: string, today: string): Reservation
     is_upcoming: found.reservation_date >= today,
     history: [],
     updated_at: found.created_at,
-  };
+  } as unknown as ReservationDetail;
 }

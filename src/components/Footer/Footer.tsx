@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { CONTACT_EMAIL, CONTACT_PHONE } from '@/config/contact';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import { localePath } from '@/i18n/routing';
 import { slate400, white, slate900 } from '@/tokens';
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ const BrandDescription = styled('p')({
   margin: 0,
 });
 
-const ColumnTitle = styled('h4')({
+const ColumnTitle = styled('h2')({
   fontSize: '14px',
   fontWeight: 600,
   color: white,
@@ -130,7 +131,7 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
           <BrandRow>
             <Image
               src='/logo.png'
-              alt='AiMenu'
+              alt=''
               width={32}
               height={32}
               style={{ height: '32px', width: '32px', objectFit: 'contain' }}
@@ -145,13 +146,13 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
           <ColumnTitle>{t.footer.navigation}</ColumnTitle>
           <LinksList>
             <li>
-              <NavLink href={`/${locale}/`}>{t.footer.home}</NavLink>
+              <NavLink href={localePath(locale)}>{t.footer.home}</NavLink>
             </li>
             <li>
-              <NavLink href={`/${locale}/restaurants`}>{t.footer.restaurants}</NavLink>
+              <NavLink href={localePath(locale, '/restaurants')}>{t.footer.restaurants}</NavLink>
             </li>
             <li>
-              <NavLink href={`/${locale}/blog`}>{t.footer.blog}</NavLink>
+              <NavLink href={localePath(locale, '/blog')}>{t.footer.blog}</NavLink>
             </li>
           </LinksList>
         </Column>
@@ -161,13 +162,13 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
           <ColumnTitle>{t.footer.help}</ColumnTitle>
           <LinksList>
             <li>
-              <NavLink href={`/${locale}/faq`}>{t.footer.faq}</NavLink>
+              <NavLink href={localePath(locale, '/faq')}>{t.footer.faq}</NavLink>
             </li>
             <li>
-              <NavLink href={`/${locale}/privacy`}>{t.footer.privacy}</NavLink>
+              <NavLink href={localePath(locale, '/privacy')}>{t.footer.privacy}</NavLink>
             </li>
             <li>
-              <NavLink href={`/${locale}/terms`}>{t.footer.terms}</NavLink>
+              <NavLink href={localePath(locale, '/terms')}>{t.footer.terms}</NavLink>
             </li>
           </LinksList>
         </Column>

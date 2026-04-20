@@ -4,6 +4,7 @@ import { styled } from '@pigment-css/react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { Locale, locales, localeNames } from '@/i18n/config';
+import { localePath, stripLocale } from '@/i18n/routing';
 
 const Container = styled('div')({
   display: 'flex',
@@ -25,7 +26,7 @@ const Button = styled('button')<ButtonProps>({
   background: 'transparent',
   fontSize: '12px',
   fontWeight: 500,
-  color: '#62748e',
+  color: '#334155',
   cursor: 'pointer',
   transition: 'all 0.2s ease',
   boxShadow: 'none',
@@ -57,13 +58,8 @@ export default function LanguageSwitcher({ currentLocale }: LanguageSwitcherProp
   const router = useRouter();
 
   const switchLocale = (newLocale: Locale) => {
-    const segments = pathname.split('/');
-    if (locales.includes(segments[1] as Locale)) {
-      segments[1] = newLocale;
-    } else {
-      segments.splice(1, 0, newLocale);
-    }
-    const newPath = segments.join('/') || '/';
+    const { pathWithoutLocale } = stripLocale(pathname);
+    const newPath = localePath(newLocale, pathWithoutLocale);
 
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
 

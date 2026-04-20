@@ -14,6 +14,7 @@ import TextInput from '@/components/TextInput/TextInput';
 import { useLocale } from '@/context/LocaleContext';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import { localePath } from '@/i18n/routing';
 import EmailIcon from '@/icons/Email';
 import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
@@ -263,7 +264,8 @@ const SubmitButton = styled('button')({
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface FormErrors {
-  fullName?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   password?: string;
   repeatPassword?: string;
@@ -280,7 +282,8 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   const { locale: currentLocale } = useLocale();
   const t = getDictionary(locale);
 
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -293,7 +296,8 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   function validate(): boolean {
     const next: FormErrors = {};
 
-    if (!fullName.trim()) next.fullName = t.register.requiredField;
+    if (!firstName.trim()) next.firstName = t.register.requiredField;
+    if (!lastName.trim()) next.lastName = t.register.requiredField;
 
     if (!email.trim() || !EMAIL_RE.test(email)) {
       next.email = t.register.invalidEmail;
@@ -324,19 +328,15 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
-      const parts = fullName.trim().split(/\s+/);
-      const first_name = parts[0] || '';
-      const last_name = parts.slice(1).join(' ') || parts[0] || '';
-
       await authRegisterCreate({
         email: email.trim(),
         password,
         password_confirm: repeatPassword,
-        first_name,
-        last_name,
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
       });
 
-      router.push(`/${locale}/login`);
+      router.push(localePath(locale, '/login'));
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: Record<string, string[]> } };
       const data = axiosErr?.response?.data;
@@ -374,17 +374,37 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
             <Field>
               <TextInput
                 variant='outlined'
-                label={t.register.fullName}
-                id='register-full-name'
+                label={t.register.firstName}
+                placeholder={t.register.firstNamePlaceholder}
+                id='register-first-name'
                 type='text'
-                autoComplete='name'
+                autoComplete='given-name'
                 required
-                value={fullName}
+                value={firstName}
                 leftIcon={ManIcon}
-                errorMessage={errors.fullName}
+                errorMessage={errors.firstName}
                 onChange={e => {
-                  setFullName(e.target.value);
-                  if (errors.fullName) setErrors(prev => ({ ...prev, fullName: undefined }));
+                  setFirstName(e.target.value);
+                  if (errors.firstName) setErrors(prev => ({ ...prev, firstName: undefined }));
+                }}
+              />
+            </Field>
+
+            <Field>
+              <TextInput
+                variant='outlined'
+                label={t.register.lastName}
+                placeholder={t.register.lastNamePlaceholder}
+                id='register-last-name'
+                type='text'
+                autoComplete='family-name'
+                required
+                value={lastName}
+                leftIcon={ManIcon}
+                errorMessage={errors.lastName}
+                onChange={e => {
+                  setLastName(e.target.value);
+                  if (errors.lastName) setErrors(prev => ({ ...prev, lastName: undefined }));
                 }}
               />
             </Field>
@@ -393,6 +413,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
               <TextInput
                 variant='outlined'
                 label={t.register.phone}
+                placeholder={t.register.phonePlaceholder}
                 id='register-phone'
                 type='tel'
                 autoComplete='tel'
@@ -406,6 +427,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
               <TextInput
                 variant='outlined'
                 label={t.register.email}
+                placeholder={t.register.emailPlaceholder}
                 id='register-email'
                 type='email'
                 autoComplete='email'
@@ -424,6 +446,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
               <TextInput
                 variant='outlined'
                 label={t.register.password}
+                placeholder={t.register.passwordPlaceholder}
                 id='register-password'
                 type='password'
                 autoComplete='new-password'
@@ -444,6 +467,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
               <TextInput
                 variant='outlined'
                 label={t.register.repeatPassword}
+                placeholder={t.register.repeatPasswordPlaceholder}
                 id='register-repeat-password'
                 type='password'
                 autoComplete='new-password'
@@ -494,7 +518,8 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
           </MobileSocialRow>
 
           <Footer>
-            {t.register.haveAccount} <Link href={`/${locale}/login`}>{t.register.loginLink}</Link>
+            {t.register.haveAccount}{' '}
+            <Link href={localePath(locale, '/login')}>{t.register.loginLink}</Link>
           </Footer>
         </Card>
         <DesktopLangWrapper>

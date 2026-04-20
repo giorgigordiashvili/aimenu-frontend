@@ -9,6 +9,7 @@ import type { RestaurantList } from '@/api/generated/interfaces';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import { localePath } from '@/i18n/routing';
 import { foreground } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
@@ -117,7 +118,7 @@ export default function SimilarRestaurants({
           return (
             <CardWrapper
               key={restaurant.id}
-              onClick={() => router.push(`/${locale}/restaurants/${restaurant.slug}`)}
+              onClick={() => router.push(localePath(locale, `/restaurants/${restaurant.slug}`))}
             >
               <RestaurantCardPrimary
                 variant='default'

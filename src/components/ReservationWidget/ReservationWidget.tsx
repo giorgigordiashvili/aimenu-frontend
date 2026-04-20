@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { reservationsSettingsRetrieve } from '@/api/generated/api';
 import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
 import ClockIcon from '@/icons/Clock';
@@ -290,7 +291,7 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
     if (!selectedDate || !selectedTime) return;
     const dateParam = formatDateParam(selectedDate);
     router.push(
-      `/${activeLocale}/restaurants/${slug}/book?date=${dateParam}&time=${selectedTime}&guests=${guests}`
+      `${localePath(activeLocale, `/restaurants/${slug}/book`)}?date=${dateParam}&time=${selectedTime}&guests=${guests}`
     );
   }
 

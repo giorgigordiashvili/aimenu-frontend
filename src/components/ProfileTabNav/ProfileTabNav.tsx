@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import CalendarIcon from '@/icons/Calendar';
 import CreditCardIcon from '@/icons/CreditCard';
 import UserIcon from '@/icons/User';
@@ -61,15 +62,13 @@ export default function ProfileTabNav() {
   const { locale } = useLocale();
   const pathname = usePathname();
 
-  const reservationsHref = `/${locale}/profile/reservations`;
-  const settingsHref = `/${locale}/profile/settings`;
-  const paymentHref = `/${locale}/profile/payment`;
+  const reservationsHref = localePath(locale, '/profile/reservations');
+  const settingsHref = localePath(locale, '/profile/settings');
+  const paymentHref = localePath(locale, '/profile/payment');
 
-  const isReservations =
-    pathname === reservationsHref || pathname.startsWith(`/${locale}/profile/reservations`);
-  const isSettings =
-    pathname === settingsHref || pathname.startsWith(`/${locale}/profile/settings`);
-  const isPayment = pathname === paymentHref || pathname.startsWith(`/${locale}/profile/payment`);
+  const isReservations = pathname === reservationsHref || pathname.startsWith(reservationsHref);
+  const isSettings = pathname === settingsHref || pathname.startsWith(settingsHref);
+  const isPayment = pathname === paymentHref || pathname.startsWith(paymentHref);
 
   return (
     <TabNavRoot>

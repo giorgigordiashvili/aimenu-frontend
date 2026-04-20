@@ -119,7 +119,7 @@ export interface KitchenOrder {
   id: string;
   order_number: string;
   order_type?: OrderTypeEnum;
-  status?: StatusAeeEnum;
+  status?: Status3f5enum;
   table_number: string;
   customer_notes?: string;
   items: string;
@@ -333,7 +333,7 @@ export interface Order {
   id: string;
   order_number: string;
   order_type?: OrderTypeEnum;
-  status?: StatusAeeEnum;
+  status?: Status3f5enum;
   table?: string;
   table_number: string;
   customer_name?: string;
@@ -384,7 +384,7 @@ export interface OrderList {
   id: string;
   order_number: string;
   order_type?: OrderTypeEnum;
-  status?: StatusAeeEnum;
+  status?: Status3f5enum;
   table_number: string;
   customer_name?: string;
   total?: string;
@@ -453,6 +453,13 @@ export interface PaginatedModifierGroupList {
   next?: string;
   previous?: string;
   results: ModifierGroup[];
+}
+
+export interface PaginatedOrderList {
+  count: number;
+  next?: string;
+  previous?: string;
+  results: Order[];
 }
 
 export interface PaginatedOrderListList {
@@ -844,7 +851,7 @@ export interface ReservationDashboardCreate {
   party_size: number;
   duration?: string;
   table?: string;
-  status?: Status229enum;
+  status?: StatusAe9enum;
   source?: SourceEnum;
   special_requests?: string;
   internal_notes?: string;
@@ -860,7 +867,7 @@ export interface ReservationDashboardCreateRequest {
   party_size: number;
   duration?: string;
   table?: string;
-  status?: Status229enum;
+  status?: StatusAe9enum;
   source?: SourceEnum;
   special_requests?: string;
   internal_notes?: string;
@@ -870,6 +877,13 @@ export interface ReservationDetail {
   id: string;
   confirmation_code: string;
   restaurant: string;
+  restaurant_name: string;
+  restaurant_slug: string;
+  restaurant_logo: string;
+  restaurant_cover_image: string;
+  restaurant_city: string;
+  restaurant_phone: string;
+  restaurant_average_rating: string;
   customer?: string;
   customer_email: string;
   guest_name: string;
@@ -881,7 +895,7 @@ export interface ReservationDetail {
   duration?: string;
   table?: string;
   table_number: string;
-  status?: Status229enum;
+  status?: StatusAe9enum;
   status_display: string;
   source?: SourceEnum;
   source_display: string;
@@ -892,6 +906,10 @@ export interface ReservationDetail {
   cancellation_reason?: string;
   seated_at: string;
   completed_at: string;
+  deposit_amount: string;
+  deposit_currency: string;
+  payment_status: string;
+  payment_code_description: string;
   can_cancel: boolean;
   can_modify: boolean;
   is_upcoming: boolean;
@@ -918,12 +936,20 @@ export interface ReservationList {
   reservation_date: string;
   reservation_time: string;
   party_size: number;
-  status: Status229enum;
+  status: StatusAe9enum;
   status_display: string;
   source: SourceEnum;
   source_display: string;
   table: string;
   table_number: string;
+  restaurant_name: string;
+  restaurant_slug: string;
+  restaurant_logo: string;
+  restaurant_cover_image: string;
+  restaurant_city: string;
+  restaurant_average_rating: string;
+  deposit_amount: string;
+  payment_status: string;
   can_cancel: boolean;
   can_modify: boolean;
   created_at: string;
@@ -1084,6 +1110,7 @@ export interface RestaurantList {
   description?: string;
   logo?: string;
   city?: string;
+  city_obj: string;
   category: RestaurantCategory;
   amenities: Amenity[];
   average_rating?: string;
@@ -1181,11 +1208,11 @@ export interface StaffRoleRequest {
   description?: string;
 }
 
-export interface Status229enum {
+export interface Status3f5enum {
   [key: string]: any;
 }
 
-export interface StatusAeeEnum {
+export interface StatusAe9enum {
   [key: string]: any;
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
@@ -12,8 +13,6 @@ import {
 } from '@/components/ReservationWidget/DropdownShared';
 import GuestsDropdown from '@/components/ReservationWidget/GuestsDropdown';
 import TimeDropdown from '@/components/ReservationWidget/TimeDropdown';
-import MobileSelectModal from '@/components/RestaurantsListPage/MobileSelectModal';
-import SearchCalendarPicker from '@/components/RestaurantsListPage/SearchCalendarPicker';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
@@ -27,10 +26,22 @@ import {
   rose600,
   rose700,
   slate100,
-  slate400,
   slate50,
+  slate500,
+  slate600,
   white,
 } from '@/tokens';
+
+// Heavy client-only pickers — only needed after a user clicks a field.
+// Dynamic-import to keep them out of the initial JS bundle.
+const MobileSelectModal = dynamic(
+  () => import('@/components/RestaurantsListPage/MobileSelectModal'),
+  { ssr: false }
+);
+const SearchCalendarPicker = dynamic(
+  () => import('@/components/RestaurantsListPage/SearchCalendarPicker'),
+  { ssr: false }
+);
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -221,7 +232,7 @@ const FieldLabel = styled('label')({
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
-  color: slate400,
+  color: slate600,
   marginBottom: 4,
   display: 'block',
   transition: 'color 0.15s',
@@ -246,7 +257,7 @@ const FieldText = styled('span')<{ isPlaceholder?: boolean }>({
   transition: 'color 0.15s',
   '@media (max-width: 768px)': { fontSize: 16 },
   variants: [
-    { props: { isPlaceholder: true }, style: { color: slate400, fontWeight: 400 } },
+    { props: { isPlaceholder: true }, style: { color: slate500, fontWeight: 400 } },
     { props: { isPlaceholder: false }, style: { color: foreground } },
   ],
 });
@@ -256,7 +267,7 @@ const IconWrap = styled('span')({
   display: 'flex',
   alignItems: 'center',
   flexShrink: 0,
-  color: slate400,
+  color: slate500,
   marginRight: 8,
   transition: 'color 0.15s',
   '& svg': { width: 16, height: 16 },
@@ -267,7 +278,7 @@ const ChevronWrap = styled('span')({
   display: 'flex',
   alignItems: 'center',
   flexShrink: 0,
-  color: slate400,
+  color: slate500,
   transition: 'color 0.15s',
 });
 
@@ -471,7 +482,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                 </FieldInput>
               </FieldLeft>
               <ChevronWrap>
-                <ChevronDownIcon color={slate400} size={14} />
+                <ChevronDownIcon color={slate500} size={14} />
               </ChevronWrap>
             </FieldInner>
             {showCity && (
@@ -526,22 +537,24 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                   </FieldInput>
                 </FieldLeft>
                 <ChevronWrap>
-                  <ChevronDownIcon color={slate400} size={14} />
+                  <ChevronDownIcon color={slate500} size={14} />
                 </ChevronWrap>
               </FieldInner>
-              <SearchCalendarPicker
-                show={showCal}
-                selectedDate={value.date}
-                today={today}
-                maxDate={maxDate}
-                viewYear={viewYear}
-                viewMonth={viewMonth}
-                onNavigate={navigateMonth}
-                onSelectDay={handleDaySelect}
-                monthYearLabel={monthYearLabel}
-                dayNamesShort={dayNamesShort}
-                containerRef={calRef}
-              />
+              {showCal && (
+                <SearchCalendarPicker
+                  show={showCal}
+                  selectedDate={value.date}
+                  today={today}
+                  maxDate={maxDate}
+                  viewYear={viewYear}
+                  viewMonth={viewMonth}
+                  onNavigate={navigateMonth}
+                  onSelectDay={handleDaySelect}
+                  monthYearLabel={monthYearLabel}
+                  dayNamesShort={dayNamesShort}
+                  containerRef={calRef}
+                />
+              )}
             </FilterField>
 
             {/* Time */}
@@ -568,7 +581,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                   </FieldInput>
                 </FieldLeft>
                 <ChevronWrap>
-                  <ChevronDownIcon color={slate400} size={14} />
+                  <ChevronDownIcon color={slate500} size={14} />
                 </ChevronWrap>
               </FieldInner>
               <TimeDropdown
@@ -608,7 +621,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                 </FieldInput>
               </FieldLeft>
               <ChevronWrap>
-                <ChevronDownIcon color={slate400} size={14} />
+                <ChevronDownIcon color={slate500} size={14} />
               </ChevronWrap>
             </FieldInner>
             <GuestsDropdown

@@ -5,9 +5,11 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { paymentsMethodsDestroy, paymentsMethodsList } from '@/api/generated/api';
 import type { PaymentMethod } from '@/api/generated/interfaces';
+import { initiateAddCard } from '@/api/payments/bog';
 import ToastNotification from '@/components/ToastNotification';
-import { useTranslations } from '@/context/LocaleContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
+import { localePath } from '@/i18n/routing';
 import {
   border,
   foreground,
@@ -184,6 +186,7 @@ function PlusIcon() {
 
 export default function ProfilePaymentPage() {
   const t = useTranslations();
+  const { locale } = useLocale();
   const { toast, showToast, hideToast } = useToast();
 
   const [cards, setCards] = useState<PaymentMethod[]>([]);
@@ -224,6 +227,19 @@ export default function ProfilePaymentPage() {
     }
   };
 
+  const handleAddCard = useCallback(async () => {
+    try {
+      const returnUrl = `${window.location.origin}${localePath(
+        locale,
+        '/payments/return'
+      )}?flow=add_card`;
+      const { redirect_url } = await initiateAddCard(returnUrl);
+      window.location.assign(redirect_url);
+    } catch {
+      showToast(t.payment.addCardFailed ?? t.payment.deleteError, 'error');
+    }
+  }, [locale, showToast, t.payment.addCardFailed, t.payment.deleteError]);
+
   return (
     <PageInner>
       <Card>
@@ -251,7 +267,7 @@ export default function ProfilePaymentPage() {
           )}
         </CardList>
 
-        <AddCardBtn type='button' onClick={() => showToast(t.payment.addCardComingSoon, 'info')}>
+        <AddCardBtn type='button' onClick={handleAddCard}>
           <PlusIcon />
           {t.payment.addNewCard}
         </AddCardBtn>

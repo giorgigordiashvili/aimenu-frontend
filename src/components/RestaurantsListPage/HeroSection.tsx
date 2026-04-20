@@ -1,9 +1,10 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import Image from 'next/image';
 
 import { useTranslations } from '@/context/LocaleContext';
-import { rose500, slate200, white } from '@/tokens';
+import { rose500, slate200, slate900, white } from '@/tokens';
 
 import SearchFilters, { SearchFiltersValue } from './SearchFilters';
 
@@ -14,13 +15,20 @@ const Hero = styled('section')({
   // zIndex: 2 ensures the section's stacking context is above the restaurant
   // grid that follows it, so overflowing dropdowns render on top correctly.
   zIndex: 2,
-  backgroundImage: 'url(/demo/RestaurantCardImage.jpg)',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
+  // Dark placeholder fills the hero before the image paints, so there's no
+  // flash of bright background during load.
+  background: slate900,
+  overflow: 'hidden',
   padding: '64px 20px 96px',
   '@media (min-width: 768px)': {
     padding: '80px 80px 112px',
   },
+});
+
+const BackgroundWrap = styled('div')({
+  position: 'absolute',
+  inset: 0,
+  zIndex: 0,
 });
 
 /** Dark overlay so text stays readable over the background image */
@@ -28,13 +36,13 @@ const Overlay = styled('div')({
   position: 'absolute',
   inset: 0,
   background: 'rgba(0, 0, 0, 0.55)',
-  zIndex: 0,
+  zIndex: 1,
   pointerEvents: 'none',
 });
 
 const HeroContent = styled('div')({
   position: 'relative',
-  zIndex: 1,
+  zIndex: 2,
   maxWidth: '1280px',
   margin: '0 auto',
   display: 'flex',
@@ -112,6 +120,16 @@ export default function HeroSection({ filters, onFiltersChange, onSearch }: Hero
 
   return (
     <Hero>
+      <BackgroundWrap>
+        <Image
+          src='/demo/RestaurantCardImage.jpg'
+          alt=''
+          fill
+          priority
+          sizes='100vw'
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
+        />
+      </BackgroundWrap>
       <Overlay />
       <HeroContent>
         <TitleWrap>

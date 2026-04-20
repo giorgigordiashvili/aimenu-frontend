@@ -14,10 +14,15 @@ import { border, foreground, slate500, white, primary, slate50, red50, slate100 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface Guest {
+export interface Guest {
   id: string;
   name: string;
   contact: string;
+}
+
+interface GuestAddSectionProps {
+  guests: Guest[];
+  onChange: (next: Guest[]) => void;
 }
 
 // ─── Styled components ────────────────────────────────────────────────────────
@@ -136,10 +141,9 @@ const RemoveButton = styled('button')({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function GuestAddSection() {
+export default function GuestAddSection({ guests, onChange }: GuestAddSectionProps) {
   const t = useTranslations();
 
-  const [guests, setGuests] = useState<Guest[]>([]);
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [contactError, setContactError] = useState<string | null>(null);
@@ -182,15 +186,18 @@ export default function GuestAddSection() {
       contact: contact.trim(),
     };
 
-    setGuests(prev => [...prev, newGuest]);
+    onChange([...guests, newGuest]);
     setName('');
     setContact('');
     setContactError(null);
-  }, [name, contact, isValidContact, t.orderReview.invalidContact]);
+  }, [name, contact, isValidContact, t.orderReview.invalidContact, guests, onChange]);
 
-  const handleRemoveGuest = useCallback((id: string) => {
-    setGuests(prev => prev.filter(guest => guest.id !== id));
-  }, []);
+  const handleRemoveGuest = useCallback(
+    (id: string) => {
+      onChange(guests.filter(guest => guest.id !== id));
+    },
+    [guests, onChange]
+  );
 
   const isAddDisabled = !name.trim() || !contact.trim();
 

@@ -8,6 +8,7 @@ import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
 import BookingPaymentForm from '@/components/BookingPaymentForm/BookingPaymentForm';
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import CloseIcon from '@/icons/Close';
 import { slate100, slate600, white } from '@/tokens';
 
@@ -133,8 +134,8 @@ export default function BookingRightPanel({
       {step === 'success' && (
         <BookingSuccessPanel
           reservationId={reservationId}
-          onGoHome={() => router.push(`/${locale}`)}
-          onMyReservations={() => router.push(`/${locale}/reservations`)}
+          onGoHome={() => router.push(localePath(locale))}
+          onMyReservations={() => router.push(localePath(locale, '/reservations'))}
         />
       )}
 

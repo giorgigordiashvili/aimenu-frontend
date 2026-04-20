@@ -10,7 +10,7 @@ import ReservationsSidebar from '@/components/ReservationsSidebar';
 import { ReservationsSidebarProps } from '@/components/ReservationsSidebar/ReservationsSidebar';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from '@/context/LocaleContext';
-import { getMockRestaurantData } from '@/hooks/useReservations';
+import { getMockRestaurantData, MOCK_MODE } from '@/hooks/useReservations';
 import { useReservationsPagination } from '@/hooks/useReservationsPagination';
 import { useToast } from '@/hooks/useToast';
 import ClockIcon from '@/icons/Clock';
@@ -164,6 +164,31 @@ const Toast = styled('div')({
   boxShadow: shadowCard,
 });
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+// Reservation rows from /api/v1/reservations/my/ now include restaurant metadata
+// as flat fields (restaurant_name, restaurant_logo, etc.). Until the generated
+// TypeScript interface catches up with the latest deployed schema, read through
+// a runtime shape so both old and new payloads work.
+interface EnrichedReservation {
+  restaurant_name?: string;
+  restaurant_logo?: string;
+  restaurant_cover_image?: string;
+  restaurant_city?: string;
+  restaurant_average_rating?: string;
+}
+
+function restaurantPropsFromReservation(r: unknown) {
+  const source = r as EnrichedReservation;
+  if (!source?.restaurant_name && !source?.restaurant_logo) return {};
+  return {
+    restaurantName: source.restaurant_name,
+    restaurantImage: source.restaurant_logo || source.restaurant_cover_image,
+    restaurantCity: source.restaurant_city,
+    restaurantRating: source.restaurant_average_rating,
+  };
+}
+
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 export default function ReservationsPage() {
@@ -221,7 +246,7 @@ export default function ReservationsPage() {
     totalSpent,
   };
 
-  const selectedRestaurant = selectedId ? getMockRestaurantData(selectedId) : null;
+  const selectedRestaurant = MOCK_MODE && selectedId ? getMockRestaurantData(selectedId) : null;
 
   return (
     <>
@@ -252,7 +277,9 @@ export default function ReservationsPage() {
                         variant='alt'
                         reservation={r}
                         onClick={setSelectedId}
-                        {...(getMockRestaurantData(r.id) ?? {})}
+                        {...(MOCK_MODE
+                          ? (getMockRestaurantData(r.id) ?? {})
+                          : restaurantPropsFromReservation(r))}
                       />
                     ))}
                     {activeHasMore ? (
@@ -295,7 +322,9 @@ export default function ReservationsPage() {
                         variant='alt'
                         reservation={r}
                         onClick={setSelectedId}
-                        {...(getMockRestaurantData(r.id) ?? {})}
+                        {...(MOCK_MODE
+                          ? (getMockRestaurantData(r.id) ?? {})
+                          : restaurantPropsFromReservation(r))}
                       />
                     ))}
                     {historyHasMore ? (

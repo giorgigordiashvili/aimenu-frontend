@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { Locale, defaultLocale } from '@/i18n/config';
+import { localePath } from '@/i18n/routing';
 
 const List = styled('div')({
   display: 'flex',
@@ -114,7 +115,7 @@ export default function CategoryList({
       {categories.map(category => (
         <Item
           key={category.id}
-          href={`/${locale}/restaurant/${restaurantSlug}/category/${category.id}`}
+          href={localePath(locale, `/restaurant/${restaurantSlug}/category/${category.id}`)}
         >
           <ImageContainer>
             {category.image ? (

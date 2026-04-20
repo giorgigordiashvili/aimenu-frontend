@@ -198,6 +198,14 @@ const GroupTitle = styled('h3')({
   },
 });
 
+const GroupError = styled('p')({
+  fontSize: '12px',
+  fontWeight: 500,
+  color: '#ec003f',
+  margin: '4px 0 12px',
+  lineHeight: '16px',
+});
+
 const OptionsList = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -317,12 +325,20 @@ interface ModifierGroupType {
   name: string;
   type: 'single' | 'multiple';
   required?: boolean;
+  minSelections?: number;
+  maxSelections?: number;
   modifiers: Modifier[];
 }
 
 interface ProductDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /**
+   * Hides the "Add to cart" button. Used on the legacy /restaurant/[slug]
+   * menu browser where ordering isn't wired — customers can still see the
+   * product + modifiers + price, but can't add anything to the cart.
+   */
+  readOnly?: boolean;
   product: {
     id: string;
     name: string;
@@ -347,11 +363,35 @@ function getInitialSelections(modifierGroups?: ModifierGroupType[]): Record<stri
   return initialSelections;
 }
 
+function validateGroup(
+  group: ModifierGroupType,
+  selected: string[],
+  t: {
+    required: string;
+    pickAtLeast: string;
+    pickAtMost: string;
+  }
+): string | null {
+  const min = group.minSelections ?? 0;
+  const max = group.maxSelections ?? 0;
+  if (group.required && selected.length === 0) {
+    return t.required;
+  }
+  if (min > 0 && selected.length < min) {
+    return t.pickAtLeast.replace('{count}', String(min));
+  }
+  if (max > 0 && selected.length > max) {
+    return t.pickAtMost.replace('{count}', String(max));
+  }
+  return null;
+}
+
 export default function ProductDetailModal({
   isOpen,
   onClose,
   product,
   initialModifiers,
+  readOnly = false,
 }: ProductDetailModalProps) {
   // Compute initial selections based on product (or pre-loaded modifiers from cart)
   const initialSelections = useMemo(
@@ -411,6 +451,17 @@ export default function ProductDetailModal({
     });
   };
 
+  const violations: Record<string, string> = {};
+  product.modifierGroups?.forEach(group => {
+    const error = validateGroup(group, selectedModifiers[group.id] || [], {
+      required: t.product.required,
+      pickAtLeast: t.product.pickAtLeast,
+      pickAtMost: t.product.pickAtMost,
+    });
+    if (error) violations[group.id] = error;
+  });
+  const hasViolations = Object.keys(violations).length > 0;
+
   const calculateTotalPrice = () => {
     let total = product.price;
     product.modifierGroups?.forEach(group => {
@@ -436,6 +487,8 @@ export default function ProductDetailModal({
   });
 
   function handleAddToCart() {
+    if (hasViolations) return;
+
     // Generate a unique cart ID per modifier combination so different selections
     // are stored as separate line items and don't overwrite each other's price.
     const modKey = selectedModifiersList
@@ -522,6 +575,7 @@ export default function ProductDetailModal({
                   );
                 })}
               </OptionsList>
+              {violations[group.id] && <GroupError>{violations[group.id]}</GroupError>}
             </ModifierGroup>
           ))}
         </Content>
@@ -532,12 +586,15 @@ export default function ProductDetailModal({
             <PriceLabel>{t.product.total}:</PriceLabel>
             <PriceValue>{totalPrice.toFixed(2)} ₾</PriceValue>
           </PriceDisplay>
-          <MainButton
-            variant='rose_cta'
-            title={t.restaurant.addToCart}
-            onClick={handleAddToCart}
-            fullWidth
-          />
+          {!readOnly && (
+            <MainButton
+              variant='rose_cta'
+              title={t.restaurant.addToCart}
+              onClick={handleAddToCart}
+              disabled={hasViolations}
+              fullWidth
+            />
+          )}
         </Footer>
       </Modal>
     </Overlay>

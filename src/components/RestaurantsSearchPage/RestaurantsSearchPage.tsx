@@ -13,6 +13,7 @@ import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import {
   border,
   foreground,
@@ -22,6 +23,7 @@ import {
   slate100,
   slate200,
   slate400,
+  slate500,
   white,
 } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
@@ -72,31 +74,59 @@ const FiltersCard = styled('div')({
   background: white,
   borderRadius: '14px',
   boxShadow: shadowCard,
-  padding: '12px 24px',
+  padding: '14px 20px',
   display: 'flex',
   alignItems: 'center',
   gap: '16px',
+  '@media (max-width: 640px)': {
+    padding: '12px 16px',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: '8px',
+  },
 });
 
 const FiltersLabel = styled('span')({
-  fontSize: '14px',
-  fontWeight: 500,
-  color: muted,
+  fontSize: '11px',
+  fontWeight: 700,
+  color: slate500,
   flexShrink: 0,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  lineHeight: 1,
 });
 
 const CitySelect = styled('select')({
-  padding: '8px 12px',
+  flex: 1,
+  maxWidth: '280px',
+  padding: '10px 36px 10px 14px',
   border: `1px solid ${border}`,
-  borderRadius: '8px',
+  borderRadius: '10px',
   fontSize: '14px',
+  fontWeight: 500,
   color: foreground,
   background: white,
   cursor: 'pointer',
   outline: 'none',
   fontFamily: 'inherit',
+  appearance: 'none',
+  WebkitAppearance: 'none',
+  MozAppearance: 'none',
+  backgroundImage:
+    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2362748e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 12px center',
+  transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+  '&:hover': {
+    borderColor: slate400,
+  },
   '&:focus': {
     borderColor: slate400,
+    boxShadow: `0 0 0 3px rgba(148, 163, 184, 0.15)`,
+  },
+  '@media (max-width: 640px)': {
+    maxWidth: '100%',
+    width: '100%',
   },
 });
 
@@ -326,13 +356,13 @@ export default function RestaurantsSearchPage() {
 
   const handleSearchSubmit = useCallback(() => {
     const qs = buildParams({ search: searchInput, page: 1 });
-    router.push(`/${locale}/restaurants-search?${qs}`);
+    router.push(`${localePath(locale, '/restaurants-search')}?${qs}`);
   }, [buildParams, searchInput, locale, router]);
 
   const handleCategoryChange = useCallback(
     (id: string | null) => {
       const qs = buildParams({ category: id, page: 1 });
-      router.push(`/${locale}/restaurants-search?${qs}`);
+      router.push(`${localePath(locale, '/restaurants-search')}?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -340,7 +370,7 @@ export default function RestaurantsSearchPage() {
   const handleCityChange = useCallback(
     (city: string) => {
       const qs = buildParams({ city, page: 1 });
-      router.push(`/${locale}/restaurants-search?${qs}`);
+      router.push(`${localePath(locale, '/restaurants-search')}?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -348,7 +378,7 @@ export default function RestaurantsSearchPage() {
   const handlePageChange = useCallback(
     (p: number) => {
       const qs = buildParams({ page: p });
-      router.push(`/${locale}/restaurants-search?${qs}`);
+      router.push(`${localePath(locale, '/restaurants-search')}?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -457,7 +487,7 @@ export default function RestaurantsSearchPage() {
                         rating={parseFloat(restaurant.average_rating || '0')}
                         filterText={categoryName}
                         priceLevel='₾₾'
-                        href={`/${locale}/restaurants/${restaurant.slug}`}
+                        href={localePath(locale, `/restaurants/${restaurant.slug}`)}
                         detailsLabel={t.restaurantsList.details}
                         showDetailsButton={true}
                         showBookButton={false}

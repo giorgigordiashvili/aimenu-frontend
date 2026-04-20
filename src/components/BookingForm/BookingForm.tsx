@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
+import { initiateReservationPayment } from '@/api/payments/bog';
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
 import BookingDateTimeSection from '@/components/BookingDateTimeSection/BookingDateTimeSection';
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
@@ -16,8 +17,10 @@ import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRes
 import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel';
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import MainButton from '@/components/MainButton/MainButton';
+import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import ArrowIcon from '@/icons/Arrow';
 import CloseIcon from '@/icons/Close';
 import { background, border, foreground, slate100, slate600, white } from '@/tokens';
@@ -253,7 +256,13 @@ const OverlayFooter = styled('div')({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-const skipPayment = process.env.NEXT_PUBLIC_BYPASS_PAYMENT === 'true';
+// Show a payment review step between contact info and the BOG redirect. The
+// local card form in BookingPaymentForm is stripped (BOG hosts card entry) but
+// the step still exists so the user can eyeball the amount and explicitly click
+// "Pay" before leaving the site. When NEXT_PUBLIC_BYPASS_PAYMENT=true the step
+// still shows; the pay handler just writes the reservation inline instead of
+// redirecting.
+const skipPayment = false;
 
 export default function BookingForm({
   slug,
@@ -356,13 +365,35 @@ export default function BookingForm({
     return isNaN(n) ? 2 : n;
   }, [searchParams]);
 
+  const { user } = useAuth();
+
+  // Pre-fill contact fields from the authenticated user so logged-in customers
+  // don't have to re-enter their name/phone/email on every booking.
+  const initialName = user
+    ? `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim() || user.full_name || ''
+    : '';
+  const initialPhone = user?.phone_number ?? '';
+  const initialEmail = user?.email ?? '';
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate);
   const [time, setTime] = useState(initialTime);
   const [guests, setGuests] = useState(initialGuests);
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState(initialName);
+  const [phone, setPhone] = useState(initialPhone);
+  const [email, setEmail] = useState(initialEmail);
   const [notes, setNotes] = useState('');
+
+  // If the user logs in while the form is already open, pull in their details.
+  useEffect(() => {
+    if (!user) return;
+    setName(prev =>
+      prev
+        ? prev
+        : `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim() || user.full_name || ''
+    );
+    setPhone(prev => prev || user.phone_number || '');
+    setEmail(prev => prev || user.email || '');
+  }, [user]);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>(DEFAULT_TIME_SLOTS);
   const [maxAdvanceDays, setMaxAdvanceDays] = useState(DEFAULT_MAX_ADVANCE_DAYS);
   const [minGuests, setMinGuests] = useState(DEFAULT_MIN_GUESTS);
@@ -418,20 +449,53 @@ export default function BookingForm({
     setIsPaymentLoading(true);
     setPaymentError(null);
 
-    try {
-      const result = await axiosInstance.post<{ id?: string }>('/api/v1/reservations/create/', {
-        guest_name: name,
-        guest_phone: phone,
-        guest_email: email || undefined,
-        reservation_date: selectedDate.toISOString().split('T')[0],
-        reservation_time: time,
-        party_size: guests,
-        special_requests: notes || undefined,
-        ...(slug ? { restaurant_slug: slug } : {}),
-      });
+    const reservationBody = {
+      guest_name: name,
+      guest_phone: phone,
+      guest_email: email || undefined,
+      reservation_date: selectedDate.toISOString().split('T')[0],
+      reservation_time: time,
+      party_size: guests,
+      special_requests: notes || undefined,
+    };
 
-      const id = result.data.id ?? null;
-      setReservationId(id); // step derives to 'success'
+    try {
+      if (process.env.NEXT_PUBLIC_BYPASS_PAYMENT === 'true') {
+        const result = await axiosInstance.post<{ id?: string }>('/api/v1/reservations/create/', {
+          ...reservationBody,
+          ...(slug ? { restaurant_slug: slug } : {}),
+        });
+        const id = result.data.id ?? null;
+        setReservationId(id); // step derives to 'success'
+        return;
+      }
+
+      if (!slug) {
+        setPaymentError(t.common.error);
+        return;
+      }
+
+      const returnUrl = `${window.location.origin}${localePath(
+        locale,
+        '/payments/return'
+      )}?flow=reservation`;
+      // Bundle cart items into the reservation payment — BOG charges deposit
+      // + food in one transaction and the backend creates a sibling Order.
+      const itemsForPayload = cartItems.map(item => ({
+        menu_item_id: item.menuItemId,
+        quantity: item.quantity,
+        modifier_ids: (item.modifiers ?? []).map(m => m.id),
+        special_instructions: item.specialInstructions || undefined,
+      }));
+      const { redirect_url } = await initiateReservationPayment({
+        reservation_payload: {
+          ...reservationBody,
+          restaurant_slug: slug,
+          items: itemsForPayload.length > 0 ? itemsForPayload : undefined,
+        },
+        return_url: returnUrl,
+      });
+      window.location.assign(redirect_url);
     } catch (err: unknown) {
       if (process.env.NODE_ENV !== 'production') {
         console.error('[BookingForm] handlePay error:', err);
@@ -588,8 +652,8 @@ export default function BookingForm({
           <OverlayContent>
             <BookingSuccessPanel
               reservationId={reservationId}
-              onGoHome={() => router.push(`/${locale}`)}
-              onMyReservations={() => router.push(`/${locale}/reservations`)}
+              onGoHome={() => router.push(localePath(locale))}
+              onMyReservations={() => router.push(localePath(locale, '/reservations'))}
             />
           </OverlayContent>
         </MobilePaymentOverlay>

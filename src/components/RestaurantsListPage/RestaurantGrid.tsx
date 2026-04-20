@@ -4,10 +4,11 @@ import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 
 import type { RestaurantList } from '@/api/generated/interfaces';
+import MainButton from '@/components/MainButton/MainButton';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
-import MainButton from '@/components/MainButton/MainButton';
-import { foreground, muted, primary } from '@/tokens';
+import { localePath } from '@/i18n/routing';
+import { foreground, muted, rose700 } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
 // ── Styled ────────────────────────────────────────────────────────────────────
@@ -100,7 +101,7 @@ const ErrorState = styled('div')({
   gridColumn: '1 / -1',
   textAlign: 'center',
   padding: '64px 20px',
-  color: primary,
+  color: rose700,
   fontSize: '15px',
 });
 
@@ -124,11 +125,19 @@ interface RestaurantGridProps {
   restaurants: RestaurantList[];
   loading: boolean;
   error?: string | null;
+  favoritedIds?: Set<string | number>;
+  onToggleFavorite?: (restaurantId: string | number) => void;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function RestaurantGrid({ restaurants, loading, error }: RestaurantGridProps) {
+export default function RestaurantGrid({
+  restaurants,
+  loading,
+  error,
+  favoritedIds,
+  onToggleFavorite,
+}: RestaurantGridProps) {
   const t = useTranslations();
   const { locale } = useLocale();
   const router = useRouter();
@@ -143,7 +152,7 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
         <MainButton
           variant='outline'
           title={t.restaurantsList.viewAll}
-          onClick={() => router.push(`/${locale}/restaurants`)}
+          onClick={() => router.push(localePath(locale, '/restaurants'))}
         />
       </SectionHead>
 
@@ -168,6 +177,10 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
               .map(a => getTranslation(parseTranslations(a.translations), 'name', locale) || a.slug)
               .filter(Boolean);
 
+            const isFavorited =
+              !!favoritedIds &&
+              (favoritedIds.has(String(restaurant.id)) || favoritedIds.has(restaurant.id));
+
             return (
               <CardWrapper key={restaurant.id}>
                 <RestaurantCardPrimary
@@ -178,7 +191,7 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
                   rating={parseFloat(restaurant.average_rating || '0')}
                   filterText={categoryName}
                   priceLevel='₾₾'
-                  href={`/${locale}/restaurants/${restaurant.slug}`}
+                  href={localePath(locale, `/restaurants/${restaurant.slug}`)}
                   detailsLabel={t.restaurantsList.details}
                   showDetailsButton={true}
                   showBookButton={false}
@@ -187,6 +200,10 @@ export default function RestaurantGrid({ restaurants, loading, error }: Restaura
                   showRating={!!restaurant.average_rating}
                   showFilterText={!!categoryName}
                   amenities={amenityNames}
+                  isFavorited={isFavorited}
+                  onFavoriteToggle={
+                    onToggleFavorite ? () => onToggleFavorite(restaurant.id) : undefined
+                  }
                 />
               </CardWrapper>
             );

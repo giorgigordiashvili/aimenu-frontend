@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useLocale } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 
 const HeaderWrapper = styled('header')({
   position: 'sticky',
@@ -41,7 +42,7 @@ export default function Header() {
 
   return (
     <HeaderWrapper>
-      <LogoContainer href={`/${locale}`}>
+      <LogoContainer href={localePath(locale)}>
         <Image
           src='/logo.png'
           alt='AiMenu'

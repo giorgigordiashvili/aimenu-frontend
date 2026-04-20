@@ -13,6 +13,7 @@ import ProfileTabNav from '@/components/ProfileTabNav';
 import { useAuth } from '@/context/AuthContext';
 import { MOCK_MODE, MOCK_PROFILE } from '@/hooks/useReservations';
 import { Locale } from '@/i18n/config';
+import { localePath } from '@/i18n/routing';
 import { slate50 } from '@/tokens';
 
 const ShellWrapper = styled('div')({
@@ -34,7 +35,7 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
 
   useEffect(() => {
     if (!authLoading && !authUser) {
-      router.push(`/${locale}/login`);
+      router.push(localePath(locale, '/login'));
     }
     if (authUser) setUser(authUser);
   }, [authLoading, authUser, router, locale]);
@@ -83,7 +84,7 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
         initials={initials}
         avatar={displayUser.avatar}
         logout={logout}
-        onHome={() => router.push(`/${locale}`)}
+        onHome={() => router.push(localePath(locale))}
       />
       <ProfileTabNav />
       <main>{children}</main>

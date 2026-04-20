@@ -42,10 +42,10 @@ export function useActiveReservations(page = 1) {
     { revalidateOnFocus: false, keepPreviousData: true }
   );
 
-  const reservations = useMemo(() => {
+  const reservations = useMemo<ReservationList[]>(() => {
     if (MOCK_MODE) {
       const start = (page - 1) * MOCK_PAGE_SIZE;
-      return MOCK_ACTIVE.slice(start, start + MOCK_PAGE_SIZE);
+      return MOCK_ACTIVE.slice(start, start + MOCK_PAGE_SIZE) as unknown as ReservationList[];
     }
     return (data?.results ?? []).filter((r: ReservationList) => r.reservation_date >= TODAY);
   }, [data, page]);
@@ -67,10 +67,10 @@ export function useHistoryReservations(page = 1) {
     { revalidateOnFocus: false, keepPreviousData: true }
   );
 
-  const reservations = useMemo(() => {
+  const reservations = useMemo<ReservationList[]>(() => {
     if (MOCK_MODE) {
       const start = (page - 1) * MOCK_PAGE_SIZE;
-      return MOCK_HISTORY.slice(start, start + MOCK_PAGE_SIZE);
+      return MOCK_HISTORY.slice(start, start + MOCK_PAGE_SIZE) as unknown as ReservationList[];
     }
     return (data?.results ?? []).filter((r: ReservationList) => r.reservation_date < TODAY);
   }, [data, page]);

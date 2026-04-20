@@ -8,6 +8,7 @@ import { authPasswordResetConfirmCreate } from '@/api/generated';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { getDictionary } from '@/i18n/getDictionary';
+import { localePath } from '@/i18n/routing';
 import ArrowIcon from '@/icons/Arrow';
 import Checkmark from '@/icons/Checkmark';
 import EyeIcon from '@/icons/Eye';
@@ -50,7 +51,7 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        router.push(`/${locale}/login`);
+        router.push(localePath(locale, '/login'));
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -128,7 +129,7 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
           <AlertBox style={{ marginBottom: '20px' }}>{t.passwordReset.invalidToken}</AlertBox>
 
           <Footer>
-            <Link href={`/${locale}/password-reset`}>{t.passwordReset.requestTitle}</Link>
+            <Link href={localePath(locale, '/password-reset')}>{t.passwordReset.requestTitle}</Link>
           </Footer>
         </Card>
       </Page>
@@ -151,7 +152,7 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
           <SuccessBox style={{ marginBottom: '20px' }}>{t.passwordReset.resetSuccess}</SuccessBox>
 
           <Footer>
-            <Link href={`/${locale}/login`}>{t.passwordReset.backToLogin}</Link>
+            <Link href={localePath(locale, '/login')}>{t.passwordReset.backToLogin}</Link>
           </Footer>
         </Card>
       </Page>
@@ -161,7 +162,7 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
   return (
     <Page>
       <Card>
-        <BackLink href={`/${locale}/login`}>
+        <BackLink href={localePath(locale, '/login')}>
           <ArrowIcon />
           {t.passwordReset.back}
         </BackLink>
@@ -224,7 +225,7 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
         </Form>
 
         <Footer>
-          <Link href={`/${locale}/login`}>{t.passwordReset.backToLogin}</Link>
+          <Link href={localePath(locale, '/login')}>{t.passwordReset.backToLogin}</Link>
         </Footer>
       </Card>
     </Page>

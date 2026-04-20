@@ -4,7 +4,6 @@ import { styled } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
-import TextInput from '@/components/TextInput/TextInput';
 import { useTranslations } from '@/context/LocaleContext';
 import CheckmarkIcon from '@/icons/Checkmark';
 import CreditCardIcon from '@/icons/CreditCard';
@@ -39,13 +38,6 @@ type Props = {
   onPay: () => void;
   onValidChange?: (valid: boolean) => void;
 };
-
-// ─── Inline icons ─────────────────────────────────────────────────────────────
-
-// Adapter so CreditCardIcon satisfies TextInput's IconComponent type
-function CardFieldIcon(_props?: { open?: boolean }) {
-  return <CreditCardIcon />;
-}
 
 // ─── Styled components ────────────────────────────────────────────────────────
 
@@ -162,22 +154,6 @@ const RadioDot = styled('div')({
   },
 });
 
-const CardForm = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-  marginBottom: '24px',
-  border: `1px solid ${slate200}`,
-  borderRadius: '14px',
-  padding: '24px',
-});
-
-const TwoCol = styled('div')({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: '10px',
-});
-
 const AmountSection = styled('div')({
   paddingTop: '20px',
   borderTop: `1px solid ${border}`,
@@ -280,19 +256,6 @@ const ButtonGroup = styled('div')({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-// Returns true when the expiry string (MM/YY) represents a card that is not yet expired.
-function isExpiryValid(val: string): boolean {
-  if (!/^\d{2}\/\d{2}$/.test(val)) return false;
-  const [mm, yy] = val.split('/').map(Number);
-  if (mm < 1 || mm > 12) return false;
-  const now = new Date();
-  const currentYear = now.getFullYear() % 100;
-  const currentMonth = now.getMonth() + 1;
-  if (yy < currentYear) return false;
-  if (yy === currentYear && mm < currentMonth) return false;
-  return true;
-}
-
 export default function BookingPaymentForm({
   depositAmount,
   grandTotal,
@@ -306,34 +269,12 @@ export default function BookingPaymentForm({
   const total = grandTotal ?? depositAmount;
   const t = useTranslations();
   const [method, setMethod] = useState<PaymentMethod>(savedCard ? 'saved' : 'card');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
 
-  // true when the card form is sufficiently filled to attempt payment
-  const isCardValid =
-    method !== 'card' ||
-    (cardNumber.replace(/\s/g, '').length === 16 &&
-      isExpiryValid(expiry) &&
-      cvv.length >= 3 &&
-      cardHolder.trim().length > 0);
-
-  // Notify parent whenever validity changes (e.g. to gate the mobile pay button)
+  // Nothing to validate locally — BOG hosts the card form. Keep the callback
+  // alive for parents that still read it, but always report "valid".
   useEffect(() => {
-    onValidChange?.(isCardValid);
-  }, [isCardValid, onValidChange]);
-
-  function formatCardNumber(val: string) {
-    const digits = val.replace(/\D/g, '').slice(0, 16);
-    return digits.match(/.{1,4}/g)?.join(' ') ?? '';
-  }
-
-  function formatExpiry(val: string) {
-    const digits = val.replace(/\D/g, '').slice(0, 4);
-    if (digits.length > 2) return digits.slice(0, 2) + '/' + digits.slice(2);
-    return digits;
-  }
+    onValidChange?.(true);
+  }, [onValidChange]);
 
   return (
     <Container>
@@ -342,7 +283,8 @@ export default function BookingPaymentForm({
         <Subtitle>{t.booking.selectPaymentMethod}</Subtitle>
       </Header>
 
-      {/* Payment method selection */}
+      {/* Payment method selection. Only 'card' is wired to BOG; the other
+          rows stay as visual hints for future providers. */}
       <MethodList>
         <MethodOption
           type='button'
@@ -386,58 +328,8 @@ export default function BookingPaymentForm({
         </MethodOption>
       </MethodList>
 
-      {/* Card form — UI placeholder only; fields are collected here but payment processing
-          will be handled by a payment gateway (e.g. Stripe/BOG) in a future integration */}
-      {method === 'card' && (
-        <CardForm>
-          <div>
-            <TextInput
-              label={t.booking.cardNumber}
-              type='text'
-              inputMode='numeric'
-              placeholder={t.booking.cardNumberPlaceholder}
-              value={cardNumber}
-              onChange={e => setCardNumber(formatCardNumber(e.target.value))}
-              autoComplete='cc-number'
-              icon={CardFieldIcon}
-            />
-          </div>
-          <TwoCol>
-            <div>
-              <TextInput
-                label={t.booking.expiry}
-                type='text'
-                inputMode='numeric'
-                placeholder={t.booking.expiryPlaceholder}
-                value={expiry}
-                onChange={e => setExpiry(formatExpiry(e.target.value))}
-                autoComplete='cc-exp'
-              />
-            </div>
-            <div>
-              <TextInput
-                label={t.booking.cvv}
-                type='text'
-                inputMode='numeric'
-                placeholder={t.booking.cvvPlaceholder}
-                value={cvv}
-                onChange={e => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                autoComplete='cc-csc'
-              />
-            </div>
-          </TwoCol>
-          <div>
-            <TextInput
-              label={t.booking.cardHolder}
-              type='text'
-              placeholder={t.booking.cardHolderPlaceholder}
-              value={cardHolder}
-              onChange={e => setCardHolder(e.target.value.toUpperCase())}
-              autoComplete='cc-name'
-            />
-          </div>
-        </CardForm>
-      )}
+      {/* Card entry happens on BOG's hosted page at payment-sandbox.bog.ge /
+          payment.bog.ge — we intentionally don't collect card data locally. */}
 
       {/* Amount section — mobile only (desktop already shows it in left column) */}
       <MobileAmountSection>
@@ -479,7 +371,7 @@ export default function BookingPaymentForm({
           title={isLoading ? t.common.loading : `${t.booking.pay} ${total.toFixed(2)} ₾`}
           size='large'
           fullWidth
-          disabled={isLoading || !isCardValid}
+          disabled={isLoading}
           type='button'
           onClick={onPay}
         />

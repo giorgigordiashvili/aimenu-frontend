@@ -4,15 +4,22 @@ import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect } from 'react';
 
+import { restaurantsRetrieve } from '@/api/generated/api';
+import type { RestaurantDetail } from '@/api/generated/interfaces';
+import { submitOrder } from '@/api/order';
+import type { CreateOrderRequest, OrderItemPayload } from '@/api/order-payload';
+import { initiateOrderPayment } from '@/api/payments/bog';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
-import GuestAddSection from '@/components/GuestAddSection';
+import GuestAddSection, { type Guest } from '@/components/GuestAddSection/GuestAddSection';
 import InviteFriendsSection from '@/components/InviteFriendsSection';
 import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
 import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
+import { useTable } from '@/context/TableContext';
 import { useToast } from '@/hooks/useToast';
 import { Locale } from '@/i18n/config';
+import { localePath } from '@/i18n/routing';
 import ArrowRightIcon from '@/icons/ArrowRight';
 import {
   background,
@@ -125,7 +132,7 @@ const CancelButton = styled('button')({
   },
 });
 
-const SendInvitationButton = styled('button')({
+const SubmitButton = styled('button')({
   flex: 1,
   display: 'flex',
   alignItems: 'center',
@@ -141,8 +148,12 @@ const SendInvitationButton = styled('button')({
   fontFamily: 'Inter, sans-serif',
   cursor: 'pointer',
   transition: 'background-color 0.2s ease',
-  '&:hover': {
+  '&:hover:not(:disabled)': {
     backgroundColor: lime600,
+  },
+  '&:disabled': {
+    opacity: 0.6,
+    cursor: 'not-allowed',
   },
 });
 
@@ -163,52 +174,105 @@ const ToastContainer = styled('div')({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+function formatGuestsNote(guests: Guest[]): string {
+  if (guests.length === 0) return '';
+  return `Guests: ${guests.map(g => `${g.name} (${g.contact})`).join('; ')}`;
+}
+
 export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const t = useTranslations();
   const router = useRouter();
-  const { items, restaurantSlug } = useCart();
+  const { items, restaurantSlug, clearCart, isSubmitting, setSubmitting } = useCart();
+  const { tableData } = useTable();
   const { toast, showToast } = useToast();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('iWillPay');
+  const [guests, setGuests] = useState<Guest[]>([]);
+  const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
 
-  // Restaurant data state - TODO: Replace with actual API call when backend is ready
-  const [restaurantData, setRestaurantData] = useState({
-    name: t.orderReview.restaurantPlaceholder,
-    subtitle: t.orderReview.cuisinePlaceholder,
-    rating: 0,
-    image: '/demo/RestaurantCardImage.jpg',
-  });
-
-  // Fetch restaurant data when slug is available
+  // Fetch real restaurant data by slug so the header card doesn't show a placeholder.
   useEffect(() => {
     if (!restaurantSlug) return;
-
-    // TODO: Replace with actual API call: fetchRestaurantBySlug(restaurantSlug)
-    // For now, use slug as a display name fallback
-    setRestaurantData(prev => ({
-      ...prev,
-      name: restaurantSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    }));
+    let cancelled = false;
+    restaurantsRetrieve(restaurantSlug)
+      .then(data => {
+        if (!cancelled) setRestaurant(data);
+      })
+      .catch(() => {
+        // Silent — the BookingRestaurantCard will fall back to the slug.
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [restaurantSlug]);
 
   const handleBackToMenu = useCallback(() => {
-    router.push(`/${locale}`);
+    router.push(localePath(locale));
   }, [locale, router]);
 
   const handleCancel = useCallback(() => {
-    // Navigate back to the previous page or restaurant page
     router.back();
   }, [router]);
 
-  const handleSendInvitation = useCallback(() => {
-    // TODO: Implement send invitation logic
-    // This should:
-    // 1. Validate that at least one guest has been added or invite link was created
-    // 2. Send invitation emails/SMS to all guests
-    // 3. Create order record in backend with payment method and guest list
-    // 4. Navigate to order confirmation or payment page
-    showToast('Coming soon! This feature is under development.');
-  }, [showToast]);
+  const handlePlaceOrder = useCallback(async () => {
+    if (!restaurantSlug || items.length === 0 || isSubmitting) return;
+
+    const notes: string[] = [];
+    const guestNote = formatGuestsNote(guests);
+    if (guestNote) notes.push(guestNote);
+    notes.push(`Payment: ${paymentMethod}`);
+
+    const payload: CreateOrderRequest = {
+      restaurant_slug: restaurantSlug,
+      order_type: 'dine_in',
+      table: tableData?.restaurantSlug === restaurantSlug ? tableData.code : undefined,
+      table_session: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
+      customer_notes: notes.join(' | '),
+      items: items.map<OrderItemPayload>(item => ({
+        menu_item: item.menuItemId,
+        quantity: item.quantity,
+        special_instructions: item.specialInstructions,
+        modifiers: (item.modifiers ?? []).map(m => ({ modifier: m.id })),
+      })),
+    };
+
+    setSubmitting(true);
+    try {
+      if (process.env.NEXT_PUBLIC_BYPASS_PAYMENT === 'true') {
+        const response = await submitOrder(payload);
+        clearCart();
+        router.push(localePath(locale, `/orders/${response.order_number}`));
+        return;
+      }
+
+      const returnUrl = `${window.location.origin}${localePath(
+        locale,
+        '/payments/return'
+      )}?flow=order`;
+      const { redirect_url } = await initiateOrderPayment({
+        order_payload: payload,
+        return_url: returnUrl,
+      });
+      window.location.assign(redirect_url);
+    } catch (err) {
+      if (process.env.NODE_ENV !== 'production') console.error('[submitOrder]', err);
+      showToast(t.orderReview.orderFailed);
+      setSubmitting(false);
+    }
+  }, [
+    clearCart,
+    guests,
+    isSubmitting,
+    items,
+    locale,
+    paymentMethod,
+    restaurantSlug,
+    router,
+    setSubmitting,
+    showToast,
+    t.orderReview.orderFailed,
+    tableData,
+  ]);
 
   // Empty cart state
   if (items.length === 0) {
@@ -228,15 +292,31 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     );
   }
 
+  const restaurantName = restaurant?.name
+    ? restaurant.name
+    : restaurantSlug
+      ? restaurantSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+      : t.orderReview.restaurantPlaceholder;
+  const cuisine = restaurant?.category
+    ? restaurant.category.slug
+    : t.orderReview.cuisinePlaceholder;
+  const heroImage = restaurant?.logo || restaurant?.cover_image || '/demo/RestaurantCardImage.jpg';
+
+  const submitLabel = isSubmitting
+    ? t.orderReview.placing
+    : guests.length > 0
+      ? t.orderReview.sendInvitation
+      : t.orderReview.placeOrder;
+
   return (
     <Wrapper>
       <ContentContainer>
         {/* Restaurant Card */}
         <BookingRestaurantCard
-          name={restaurantData.name}
-          subtitle={restaurantData.subtitle}
-          rating={restaurantData.rating}
-          image={restaurantData.image}
+          name={restaurantName}
+          subtitle={cuisine}
+          rating={parseFloat(restaurant?.average_rating || '0')}
+          image={heroImage}
         />
 
         <Divider />
@@ -252,17 +332,17 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
         <InviteFriendsSection locale={locale} paymentMethod={paymentMethod} />
 
         {/* Guest Add Section */}
-        <GuestAddSection />
+        <GuestAddSection guests={guests} onChange={setGuests} />
 
         {/* Action Buttons */}
         <ActionButtonsContainer>
-          <CancelButton type='button' onClick={handleCancel}>
+          <CancelButton type='button' onClick={handleCancel} disabled={isSubmitting}>
             {t.orderReview.cancel}
           </CancelButton>
-          <SendInvitationButton type='button' onClick={handleSendInvitation}>
-            {t.orderReview.sendInvitation}
+          <SubmitButton type='button' onClick={handlePlaceOrder} disabled={isSubmitting}>
+            {submitLabel}
             <ArrowRightIcon color={white} />
-          </SendInvitationButton>
+          </SubmitButton>
         </ActionButtonsContainer>
       </ContentContainer>
 

@@ -19,6 +19,8 @@ interface FormattedProduct {
     name: string;
     type: 'single' | 'multiple';
     required?: boolean;
+    minSelections?: number;
+    maxSelections?: number;
     modifiers: { id: string; name: string; price: number }[];
   }[];
 }
@@ -77,6 +79,8 @@ const formatMenuItem = (item: MenuItem, locale: Locale): FormattedProduct => {
       | 'single'
       | 'multiple',
     required: group.is_required || false,
+    minSelections: group.min_selections,
+    maxSelections: group.max_selections,
     modifiers: (group.modifiers || []).map((mod: Modifier) => ({
       id: mod.id,
       name: getTranslatedField(mod.translations, 'name', locale),

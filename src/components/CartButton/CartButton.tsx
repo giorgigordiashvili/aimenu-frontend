@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 
 const CartButtonStyled = styled('button')({
   position: 'fixed',
@@ -71,7 +72,7 @@ interface CartButtonProps {
 
 export default function CartButton({ onClick }: CartButtonProps) {
   const router = useRouter();
-  const locale = useLocale();
+  const { locale } = useLocale();
   const t = useTranslations();
   const { getTotalItems, getTotalPrice } = useCart();
   const totalItems = getTotalItems();
@@ -85,7 +86,7 @@ export default function CartButton({ onClick }: CartButtonProps) {
     if (onClick) {
       onClick();
     } else {
-      router.push(`/${locale}/order-review`);
+      router.push(localePath(locale, '/order-review'));
     }
   };
 

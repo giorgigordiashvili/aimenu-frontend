@@ -15,6 +15,7 @@ import Pagination from '@/components/RestaurantsSearchPage/Pagination';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from '@/context/LocaleContext';
 import type { Locale } from '@/i18n/config';
+import { localePath } from '@/i18n/routing';
 import {
   border,
   foreground,
@@ -64,31 +65,63 @@ const FiltersCard = styled('div')({
   background: white,
   borderRadius: '14px',
   boxShadow: shadowCard,
-  padding: '12px 0',
+  padding: '14px 20px',
   display: 'flex',
   alignItems: 'center',
   gap: '16px',
+  '@media (max-width: 640px)': {
+    padding: '12px 16px',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: '8px',
+  },
 });
 
 const FiltersLabel = styled('span')({
-  fontSize: '14px',
-  fontWeight: 500,
-  color: muted,
+  fontSize: '11px',
+  fontWeight: 700,
+  color: slate500,
   flexShrink: 0,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  lineHeight: 1,
 });
 
 const CitySelect = styled('select')({
-  padding: '8px 12px',
+  flex: 1,
+  maxWidth: '280px',
+  padding: '10px 36px 10px 14px',
   border: `1px solid ${border}`,
-  borderRadius: '8px',
+  borderRadius: '10px',
   fontSize: '14px',
+  fontWeight: 500,
   color: foreground,
   background: white,
   cursor: 'pointer',
   outline: 'none',
   fontFamily: 'inherit',
+  appearance: 'none',
+  WebkitAppearance: 'none',
+  MozAppearance: 'none',
+  backgroundImage:
+    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2362748e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 12px center',
+  transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+  '&:disabled': {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
+  '&:hover:not(:disabled)': {
+    borderColor: slate400,
+  },
   '&:focus': {
     borderColor: slate400,
+    boxShadow: `0 0 0 3px rgba(148, 163, 184, 0.15)`,
+  },
+  '@media (max-width: 640px)': {
+    maxWidth: '100%',
+    width: '100%',
   },
 });
 
@@ -201,7 +234,7 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
   // Auth redirect
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push(`/${locale}/login`);
+      router.push(localePath(locale, '/login'));
     }
   }, [user, authLoading, locale, router]);
 
@@ -279,13 +312,13 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
 
   const handleSearchSubmit = useCallback(() => {
     const qs = buildParams({ search: searchInput, page: 1 });
-    router.push(`/${locale}/favorites?${qs}`);
+    router.push(`${localePath(locale, '/favorites')}?${qs}`);
   }, [buildParams, searchInput, locale, router]);
 
   const handleCategoryChange = useCallback(
     (id: string | null) => {
       const qs = buildParams({ category: id, page: 1 });
-      router.push(`/${locale}/favorites?${qs}`);
+      router.push(`${localePath(locale, '/favorites')}?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -293,7 +326,7 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
   const handlePageChange = useCallback(
     (p: number) => {
       const qs = buildParams({ page: p });
-      router.push(`/${locale}/favorites?${qs}`);
+      router.push(`${localePath(locale, '/favorites')}?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -378,7 +411,7 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
                       locationText={fav.restaurant_city}
                       filterText={fav.restaurant_cuisine_type || undefined}
                       priceLevel='₾₾'
-                      href={`/${locale}/restaurants/${fav.restaurant_slug}`}
+                      href={localePath(locale, `/restaurants/${fav.restaurant_slug}`)}
                       detailsLabel={t.restaurantsList.details}
                       showDetailsButton={true}
                       showBookButton={false}

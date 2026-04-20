@@ -7,6 +7,7 @@ import { authPasswordResetCreate } from '@/api/generated';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { getDictionary } from '@/i18n/getDictionary';
+import { localePath } from '@/i18n/routing';
 import ArrowIcon from '@/icons/Arrow';
 import Checkmark from '@/icons/Checkmark';
 
@@ -94,7 +95,7 @@ export default function PasswordResetRequest({ locale }: PasswordResetProps) {
           </Header>
 
           <Footer>
-            <Link href={`/${locale}/login`}>{t.passwordReset.backToLogin}</Link>
+            <Link href={localePath(locale, '/login')}>{t.passwordReset.backToLogin}</Link>
           </Footer>
         </Card>
       </Page>
@@ -104,7 +105,7 @@ export default function PasswordResetRequest({ locale }: PasswordResetProps) {
   return (
     <Page>
       <Card>
-        <BackLink href={`/${locale}/login`}>
+        <BackLink href={localePath(locale, '/login')}>
           <ArrowIcon />
           {t.passwordReset.back}
         </BackLink>
@@ -147,7 +148,7 @@ export default function PasswordResetRequest({ locale }: PasswordResetProps) {
         </Form>
 
         <Footer>
-          <Link href={`/${locale}/login`}>{t.passwordReset.backToLogin}</Link>
+          <Link href={localePath(locale, '/login')}>{t.passwordReset.backToLogin}</Link>
         </Footer>
       </Card>
     </Page>

@@ -3,11 +3,11 @@
 import { styled, keyframes } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
 
-import BookingOrderSummary from '@/components/BookingOrderSummary';
+import BookingOrderSummary, { type OrderItem } from '@/components/BookingOrderSummary';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import MainButton from '@/components/MainButton/MainButton';
 import { useTranslations } from '@/context/LocaleContext';
-import { useReservationDetail } from '@/hooks/useReservations';
+import { MOCK_MODE, useReservationDetail } from '@/hooks/useReservations';
 import CalendarIcon from '@/icons/Calendar';
 import CloseIcon from '@/icons/Close';
 import DeleteIcon from '@/icons/Delete';
@@ -45,6 +45,31 @@ function formatTime(timeStr: string): string {
 }
 
 // ─── Styled components ─────────────────────────────────────────────────────────
+
+const DepositOnlyRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  margin: '0 20px 20px',
+  padding: '16px 18px',
+  borderRadius: '12px',
+  border: `1px solid #e2e8f0`,
+  background: '#ffffff',
+});
+
+const DepositLabel = styled('span')({
+  fontSize: '14px',
+  fontWeight: 500,
+  color: '#62748e',
+});
+
+const DepositValue = styled('span')({
+  fontSize: '16px',
+  fontWeight: 700,
+  color: '#0f172a',
+});
+
+// ─── Generated styled components ─────────────────────────────────────────────
 
 const Overlay = styled('div')({
   position: 'fixed',
@@ -335,7 +360,40 @@ export default function ReservationDetailModal({
 
   if (!reservationId) return null;
 
-  const orderItems = MOCK_ORDER_ITEMS[reservationId] ?? [];
+  // Real deposit + pre-order come from the linked BogTransaction / Order via
+  // the ReservationDetail serializer. Generated TS types may lag behind the
+  // live schema — read through a runtime shape so we're forwards-compatible.
+  interface OrderItemShape {
+    id: string;
+    item_name: string;
+    quantity?: number;
+    total_price: string;
+  }
+  interface PreOrderShape {
+    order_number?: string;
+    items?: OrderItemShape[];
+    total?: string;
+  }
+  const reservationWithPayment = reservation as
+    | (typeof reservation & {
+        deposit_amount?: string | null;
+        pre_order?: PreOrderShape | null;
+      })
+    | null;
+  const preOrder = reservationWithPayment?.pre_order ?? null;
+  const realItems: OrderItem[] = (preOrder?.items ?? []).map(item => ({
+    id: item.id,
+    quantity: item.quantity ?? 1,
+    name: item.item_name,
+    price: parseFloat(item.total_price || '0'),
+  }));
+  const mockItems = MOCK_MODE ? (MOCK_ORDER_ITEMS[reservationId] ?? []) : [];
+  const orderItems: OrderItem[] = realItems.length > 0 ? realItems : mockItems;
+
+  const realDeposit = reservationWithPayment?.deposit_amount
+    ? parseFloat(reservationWithPayment.deposit_amount)
+    : null;
+  const depositAmount = MOCK_MODE ? MOCK_DEPOSIT : (realDeposit ?? 0);
 
   const handleCancelConfirm = async () => {
     if (!reservation) return;
@@ -406,7 +464,18 @@ export default function ReservationDetailModal({
               <Divider />
 
               {/* ── Order summary ─────────────────────────────── */}
-              <BookingOrderSummary items={orderItems} depositAmount={MOCK_DEPOSIT} />
+              {/* Only render the full order-summary block when there's
+                  actually something to show — empty basket + deposit alone
+                  looks like a bug. Reservations don't carry attached items
+                  until the reservation+pre-order flow ships (Phase D). */}
+              {orderItems.length > 0 ? (
+                <BookingOrderSummary items={orderItems} depositAmount={depositAmount} />
+              ) : depositAmount > 0 ? (
+                <DepositOnlyRow>
+                  <DepositLabel>{t.reservationWidget.deposit}</DepositLabel>
+                  <DepositValue>{depositAmount.toFixed(2)} ₾</DepositValue>
+                </DepositOnlyRow>
+              ) : null}
 
               {/* ── Cancel button (hidden while cancel card is open) ── */}
               {reservation.can_cancel && !showCancel && (
