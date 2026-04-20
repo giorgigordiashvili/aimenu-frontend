@@ -9,6 +9,7 @@ import TagButton from '@/components/TagButton';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import ChefHat from '@/icons/ChefHat';
+import Gallery from '@/icons/Gallery';
 import HeartOutline from '@/icons/HeartOutline';
 import Location from '@/icons/Location';
 import RestaurantUtensils from '@/icons/RestaurantUtensils';
@@ -66,6 +67,19 @@ const DesktopLeftSection = styled('div')({
   alignItems: 'center',
   gap: '8px',
   flexWrap: 'wrap',
+});
+
+// Desktop-only action strip (Favorite / Share / Gallery). Mirrors the
+// mobile right-section icons, plus a Gallery button that opens the
+// lightbox — we stopped rendering the photo grid on desktop to save
+// bandwidth, so this is the only way in to the lightbox there.
+const DesktopActions = styled('div')({
+  display: 'none',
+  '@media (min-width: 768px)': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
 });
 
 const Name = styled('h1')({
@@ -222,19 +236,38 @@ export default function RestaurantDetailInfo({
       {/* Mobile: Name */}
       <MobileName>{name}</MobileName>
 
-      {/* Desktop: Name + Reviews | Rating */}
+      {/* Desktop: Name + Reviews | Rating | Action icons */}
       <DesktopNameRow>
         <DesktopLeftSection>
           <Name>{name}</Name>
           {reviewText && <ReviewCount>{reviewText}</ReviewCount>}
         </DesktopLeftSection>
 
-        {rating > 0 && (
-          <RatingBadge>
-            <Star color={lime500} size={16} />
-            <RatingText>{rating.toFixed(1)}</RatingText>
-          </RatingBadge>
-        )}
+        <DesktopActions>
+          {rating > 0 && (
+            <RatingBadge>
+              <Star color={lime500} size={16} />
+              <RatingText>{rating.toFixed(1)}</RatingText>
+            </RatingBadge>
+          )}
+          <MainButton
+            variant='ghost'
+            size='extra_small'
+            icon={props => <HeartOutline variant={isFavorite ? 'filled' : 'outlined'} {...props} />}
+            onClick={handleFavoriteToggle}
+          />
+          <MainButton variant='ghost' size='extra_small' icon={Share} />
+          <MainButton
+            variant='ghost'
+            size='extra_small'
+            icon={Gallery}
+            onClick={() =>
+              window.dispatchEvent(
+                new CustomEvent('photo-gallery:open', { detail: { index: 0 } })
+              )
+            }
+          />
+        </DesktopActions>
       </DesktopNameRow>
 
       {/* Meta Row: Location | Cuisine | Category */}

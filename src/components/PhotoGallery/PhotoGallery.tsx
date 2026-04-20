@@ -2,7 +2,7 @@
 
 import { keyframes, styled } from '@pigment-css/react';
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { blurhashToDataUrl } from '@/components/ProgressiveImage';
 import { foreground, slate200, slate300, slate400, white } from '@/tokens';
@@ -20,7 +20,9 @@ const slideUp = keyframes({
 const Container = styled('div')({
   marginBottom: '24px',
   '@media (min-width: 768px)': {
-    marginBottom: '32px',
+    // Desktop renders nothing here — icons + lightbox are owned by
+    // RestaurantDetailInfo / this component's invisible event listener.
+    marginBottom: 0,
   },
 });
 
@@ -38,18 +40,6 @@ const MobileImageContainer = styled('div')({
   },
   '@media (min-width: 768px)': {
     display: 'none',
-  },
-});
-
-// Desktop: Grid layout
-const DesktopGrid = styled('div')({
-  display: 'none',
-  '@media (min-width: 768px)': {
-    display: 'grid',
-    gridTemplateColumns: '2fr 1fr 1fr',
-    gridTemplateRows: '1fr 1fr',
-    gap: '12px',
-    height: '400px',
   },
 });
 
@@ -77,23 +67,6 @@ const BlurBackdrop = styled('div')({
   // an inline background-image (blurhash) overrides the gradient the
   // keyframe has nothing to animate over.
   animation: `${shimmer} 1.5s infinite`,
-});
-
-const GridImageContainer = styled('div')({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  borderRadius: '12px',
-  overflow: 'hidden',
-  cursor: 'pointer',
-  transition: 'transform 0.2s ease',
-  '&:hover': {
-    transform: 'scale(1.02)',
-  },
-});
-
-const LargeGridImage = styled(GridImageContainer)({
-  gridRow: 'span 2',
 });
 
 const ImagePlaceholder = styled('div')({
@@ -250,18 +223,24 @@ export default function PhotoGallery({ images, blurhashes, restaurantName }: Pho
   // Ensure we have at least one image
   const galleryImages = images.length > 0 ? images : [];
 
-  // Prepare 5 images for desktop grid (1 large + 4 small)
-  const desktopImages = galleryImages.length > 0 ? galleryImages.slice(0, 5) : [];
-  while (desktopImages.length < 5 && desktopImages.length > 0) {
-    desktopImages.push(galleryImages[0]);
-  }
-
   const openLightbox = (index: number) => {
     setCurrentIndex(index);
     setHiResLoaded(false);
     setLightboxOpen(true);
     document.body.style.overflow = 'hidden';
   };
+
+  // Desktop drops the photo grid and instead shows action icons in
+  // RestaurantDetailInfo. The Gallery icon dispatches this event to open
+  // the lightbox without needing to lift state out of PhotoGallery.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ index?: number }>).detail;
+      openLightbox(detail?.index ?? 0);
+    };
+    window.addEventListener('photo-gallery:open', handler);
+    return () => window.removeEventListener('photo-gallery:open', handler);
+  }, []);
 
   const closeLightbox = () => {
     setLightboxOpen(false);
@@ -318,53 +297,8 @@ export default function PhotoGallery({ images, blurhashes, restaurantName }: Pho
           />
         </MobileImageContainer>
 
-        {/* Desktop: Grid Layout */}
-        <DesktopGrid>
-          {/* Large image on left (spans 2 rows) */}
-          <LargeGridImage onClick={() => openLightbox(0)}>
-            <BlurBackdrop
-              style={heroBlurhashUrl ? { backgroundImage: `url(${heroBlurhashUrl})` } : undefined}
-            />
-            <Image
-              src={desktopImages[0]}
-              alt={`${restaurantName} - photo 1`}
-              fill
-              // Main layout caps at 1280px with 80px padding — the hero
-              // column is at most ~640px wide on desktop. Reflecting
-              // that in `sizes` keeps the downloaded image well under
-              // the 750 bucket.
-              sizes='(min-width: 1280px) 640px, (min-width: 768px) 50vw, 1px'
-              style={{ objectFit: 'cover' }}
-              priority
-              fetchPriority='high'
-            />
-          </LargeGridImage>
-
-          {/* 4 smaller images on right (2x2 grid) */}
-          {desktopImages.slice(1, 5).map((image, index) => {
-            // The right-side grid slots are usually duplicates of the same
-            // two backend images (cover + logo), so reuse their blurhashes
-            // by looking up the original index inside `images`.
-            const originalIndex = images.indexOf(image);
-            const bhUrl =
-              originalIndex >= 0 ? blurhashToDataUrl(blurhashes?.[originalIndex]) : null;
-            return (
-              <GridImageContainer key={index} onClick={() => openLightbox(index + 1)}>
-                <BlurBackdrop
-                  style={bhUrl ? { backgroundImage: `url(${bhUrl})` } : undefined}
-                />
-                <Image
-                  src={image}
-                  alt={`${restaurantName} - photo ${index + 2}`}
-                  fill
-                  sizes='(min-width: 1280px) 220px, (min-width: 768px) 25vw, 1px'
-                  style={{ objectFit: 'cover' }}
-                  loading='lazy'
-                />
-              </GridImageContainer>
-            );
-          })}
-        </DesktopGrid>
+        {/* Desktop: no image load — icons live in RestaurantDetailInfo and
+            the lightbox opens via the 'photo-gallery:open' window event. */}
       </Container>
 
       {/* Lightbox Modal */}
