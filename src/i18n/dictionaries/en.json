@@ -459,8 +459,30 @@
     "passwordsDoNotMatch": "Passwords do not match",
     "tabs": {
       "reservations": "Reservations",
+      "loyalty": "Loyalty",
       "profile": "Profile",
       "payment": "Payment"
+    }
+  },
+  "loyalty": {
+    "title": "Your loyalty cards",
+    "subtitle": "Track your progress and redeem free items at your favourite spots",
+    "empty": "No punches yet. Place an order at a restaurant running a loyalty program to start collecting.",
+    "progress": "{{punches}} / {{threshold}}",
+    "claim": "Claim reward",
+    "issuing": "Generating code…",
+    "ready": "Reward ready!",
+    "rewardLabel": "Reward: {{quantity}}× {{name}}",
+    "triggerLabel": "Buy {{threshold}}× {{name}} to earn 1 reward",
+    "showQrTitle": "Show this QR to staff",
+    "codeLabel": "Code",
+    "expiresAt": "Expires {{time}}",
+    "close": "Close",
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "insufficient": "You don't have enough punches yet.",
+      "not_live": "This program is not currently running.",
+      "not_found": "Program not found."
     }
   },
   "restaurantsSearch": {

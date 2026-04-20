@@ -20,6 +20,7 @@
     "@pigment-css/react": "^0.0.30",
     "eslint-config-next": "^15.5.9",
     "next": "^15.5.9",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "swr": "^2.3.7"
