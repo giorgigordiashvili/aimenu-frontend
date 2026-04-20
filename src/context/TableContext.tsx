@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
+import axiosInstance from '@/api/axios';
+
 interface TableData {
   code: string;
   tableNumber?: string;
@@ -33,6 +35,25 @@ export function TableProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(raw) as TableData;
         if (parsed && typeof parsed === 'object' && parsed.code) {
           setTableDataState(parsed);
+          // Verify the session is still alive on the server; if it's
+          // been closed by staff the client must drop the stale tableData
+          // so order / invite flows stop pointing at a dead session.
+          if (parsed.sessionId) {
+            axiosInstance
+              .get(`/api/v1/tables/sessions/${parsed.sessionId}/`)
+              .catch((err: { response?: { status?: number } }) => {
+                const code = err?.response?.status;
+                if (code === 404 || code === 410) {
+                  setTableDataState(null);
+                  try {
+                    sessionStorage.removeItem('tableCode');
+                    sessionStorage.removeItem('tableData');
+                  } catch {
+                    /* ignore */
+                  }
+                }
+              });
+          }
         }
       }
     } catch {
