@@ -311,3 +311,170 @@ issues. You may need to update component types to match new API interfaces.
 **Formatting conflicts:** Run `npm run format` to auto-fix formatting issues. If
 conflicts persist, check your editor's Prettier settings match the project
 configuration.
+
+---
+
+## Working across the Telos apps (the three siblings)
+
+This frontend is one of three apps that share the `restaurant_platform` backend:
+
+| App | Path | Purpose | DO app id | Deploy trigger |
+| --- | --- | --- | --- | --- |
+| Customer web | `~/Telos/restaurant-frontend` → `aimenu.ge` | Guests browse menus, book, order, see loyalty | `757f027d-ad10-4dd3-be1b-a955842ebc87` | Auto on push to main (GitHub integration) |
+| POS (Expo web) | `~/Telos/aimenu-pos` → `pos.aimenu.ge` | Staff accept reservations, run kitchen kanban, redeem loyalty codes | `00d9f4f3-73c1-4d32-bff9-158f3cda290f` | **Manual** — `doctl apps create-deployment <id>` (spec uses `git:` source, not `github:`, so no auto-deploy) |
+| Backend (Django) | `~/Telos/restaurant_platform` → `admin.aimenu.ge` | DRF API, Django admin | `3076a3a7-33de-4587-949c-1cf87ac5fbed` | Auto on push to main |
+
+The **`telos` doctl context** (created via `DIGITALOCEAN_ACCESS_TOKEN` env var
+in `.env`) has the aimenu-* apps. The default `doctl` profile on this machine
+only has `echodesk-*`; check with `doctl account get` before running any
+`doctl apps ...` command to avoid hitting the wrong account.
+
+## Multi-tenant API: `X-Restaurant` header
+
+Dashboard endpoints (`/api/v1/dashboard/**`) are tenant-scoped by
+`apps/core/middleware/tenant.py`. The middleware reads **`X-Restaurant`** from
+request headers (or falls back to subdomain); without it, views raise 404 via
+`@require_restaurant`.
+
+- The POS injects the slug on every request via axios interceptor in
+  `src/api/client.ts`. Slug is stored alongside tokens on login and editable
+  from Settings.
+- Backend's `CORS_ALLOW_HEADERS` in `config/settings/base.py` must include
+  `x-restaurant` or the browser preflight will block POS requests with a
+  misleading CORS error.
+- The allowlist regex `^https://.*\.aimenu\.ge$` in `config/settings/prod.py`
+  already covers `pos.aimenu.ge`; the DO default URL
+  (`aimenu-pos-*.ondigitalocean.app`) is **not** covered — tell users to use
+  the custom domain.
+
+## Auth endpoints: login is `/login/` not `/token/`
+
+`apps/accounts/urls.py` exposes:
+
+- `POST /api/v1/auth/login/` — obtain JWT pair
+- `POST /api/v1/auth/token/refresh/` — refresh access token
+- `POST /api/v1/auth/register/` — new customer signup
+
+There's no `/api/v1/auth/token/` endpoint. If you hit 404, check the path.
+
+## Django migration gotcha — check deps before pushing
+
+`manage.py makemigrations <app>` scans **all** installed apps and silently
+generates migrations for any model whose Meta / field definitions drifted
+since the last migration. This is the case with the translation-model Meta
+options on `menu`, `tenants`, `staff` — there is always drift.
+
+Your new `<app>/migrations/0001_initial.py` will reference those
+freshly-generated parents in its `dependencies = [...]` list. If you delete
+the unrelated migrations (because they're not yours to merge), the dep becomes
+**dangling** and `python manage.py migrate` fails on DO with
+`NodeNotFoundError`. DO then auto-rolls-back.
+
+Workflow when adding a new app:
+
+1. `source .venv/bin/activate && python manage.py makemigrations <newapp>`
+2. `git status` — note any other apps' migrations that showed up.
+3. Open your new migration and **change `dependencies`** to point at the
+   already-merged parents on `main` (e.g. `menu.0002_...`, `tenants.0009_...`)
+   instead of the freshly-generated noise.
+4. Delete the unrelated migrations that `makemigrations` produced.
+5. **Verify** with `DATABASE_URL=sqlite:///t.db python manage.py migrate --plan`
+   (sqlite has quirks with postgres-specific schema so full `migrate` may
+   fail on unrelated apps — `--plan` is enough to confirm the graph is
+   consistent).
+6. Or, better: `docker compose -f ~/Telos/restaurant_platform/docker-compose.yml up -d db`
+   (pick a non-5432 port if other postgres instances are running) then
+   `DATABASE_URL=postgres://...@localhost:<port>/db python manage.py migrate`.
+
+`manage.py check` does **not** catch this — it only validates Python imports
+and model field definitions.
+
+## API regeneration flow
+
+The backend exposes the OpenAPI spec at `https://admin.aimenu.ge/api/schema/`
+via drf-spectacular. Both the customer frontend and POS use
+`@gordela/api-generator` (script: `npm run generate:api`). Env vars come from
+`.env`:
+
+```
+API_URL=https://admin.aimenu.ge
+SWAGGER_PATH=/api/schema
+API_NAMESPACE=Api
+OUTPUT_DIR=./src/api/generated
+```
+
+**After backend schema changes:**
+
+1. Deploy backend (auto on push to main).
+2. Wait for `ACTIVE` on DO before regenerating (the spec endpoint serves the
+   new deploy's schema).
+3. `cd ~/Telos/restaurant-frontend && npm run generate:api`
+4. `cd ~/Telos/aimenu-pos && npm run generate:api`
+5. Both `src/api/generated/*` checked in.
+
+**Gotcha:** if a DRF APIView uses `request.data` without an explicit
+`@extend_schema(request=<Serializer>)`, the generator emits a no-arg function
+(e.g. `dashboardLoyaltyRedeemConfirmCreate(): Promise<any>`). Add a
+`@extend_schema(request=<Serializer>)` decorator to the view so the generator
+can type the body, or keep a thin hand-written wrapper in `src/api/<thing>.ts`
+(POS uses `src/api/loyalty.ts` for exactly this reason).
+
+## TanStack Query freshness (POS)
+
+The POS is tuned for continuous freshness (defaults in `app/_layout.tsx`):
+
+- `refetchOnWindowFocus: 'always'` + `refetchOnReconnect: 'always'`.
+- React Native AppState is bridged into `focusManager.setFocused(...)` so the
+  iPad refetches when the app regains focus (React Native alone doesn't wire
+  this up).
+- Polling per-screen: 5 s orders board, 10 s order detail / reservations
+  today, 15 s reservation detail, 30 s reservations upcoming / orders
+  history. All with `refetchIntervalInBackground: false` to pause on hidden
+  tabs.
+- **Cross-invalidation** matters: reservation accept/reject/seat → invalidate
+  `orders-board` (backend's kitchen-filter gates on reservation status).
+  Order status changes → invalidate `reservations-today/upcoming` (their
+  `pre_order_summary` is derived from Order.total).
+
+## Drag-and-drop kanban
+
+POS orders board uses **`@hello-pangea/dnd`** (same library echodesk uses) on
+the web path. React-native-gesture-handler Pan + Reanimated was the first
+attempt; dropped because `measureInWindow` gave unreliable bounds for
+cross-column drop detection on react-native-web. On native (iPad)
+`@hello-pangea/dnd` isn't supported — the kanban falls back to non-DnD
+columns and users advance status via the order detail screen.
+
+## Pigment CSS styled with dynamic props
+
+Don't do this (type-checks fail):
+
+```ts
+const Dot = styled('span')<{ filled: boolean }>(({ filled }) => ({
+  backgroundColor: filled ? primary : '#F3F4F6',
+}));
+```
+
+Do this instead — attribute selectors:
+
+```ts
+const Dot = styled('span')({
+  backgroundColor: '#F3F4F6',
+  '&[data-filled="true"]': { backgroundColor: primary },
+});
+// <Dot data-filled={isFilled ? 'true' : undefined} />
+```
+
+## Sandbox authorization quirks (Claude Code)
+
+For this project the harness:
+
+- Blocks direct `git push` to backend `main` until you explicitly say
+  "merge it" or similar. Same for opening PRs via `gh`.
+- Blocks `gh repo edit --visibility public` unless the user types a clear
+  consent phrase quoting the repo name.
+- Blocks direct production DB queries (`psql`) even with credentials — use
+  the Django shell via `docker compose exec web` or the admin UI instead.
+
+When in doubt, push as a branch + let the user merge. Never amend published
+commits.
