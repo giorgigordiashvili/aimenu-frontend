@@ -1,7 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import ProductDetailModal from '@/components/ProductDetailModal';
@@ -58,7 +58,6 @@ const SectionTitle = styled('h2')({
 
 const TabsWrapper = styled('div')({
   overflowX: 'auto',
-  marginBottom: '24px',
   // hide scrollbar
   scrollbarWidth: 'none',
   '&::-webkit-scrollbar': {
@@ -66,20 +65,33 @@ const TabsWrapper = styled('div')({
   },
   // Keep the category chips visible while the user scrolls through a long
   // menu. HeaderPrimary is 64px tall and sticks at top:0 with z-index:200;
-  // we live just under it. Solid background so content doesn't bleed
-  // through, slight blur to match the header. Negative horizontal margin
-  // + matching padding lets the row span edge-to-edge on narrow viewports
-  // so the first/last chip line up with the content below.
+  // this row lives just under it. We break out of the ancestor's
+  // max-width + padding so the background spans the full viewport, while
+  // the inner chip list stays visually aligned with the menu items below.
   position: 'sticky',
   top: '64px',
   zIndex: 10,
   background: 'rgba(255, 255, 255, 0.95)',
   backdropFilter: 'blur(8px)',
-  margin: '0 -20px 16px',
+  // Full-viewport span trick: this offsets the element by half the
+  // difference between viewport width and its parent's computed width,
+  // then overrides its own width to 100vw — lands it flush left at 0
+  // and flush right at 100vw regardless of what column / container it
+  // was rendered inside.
+  marginLeft: 'calc(50% - 50vw)',
+  marginRight: 'calc(50% - 50vw)',
+  width: '100vw',
+  // Inner padding aligns the first chip with the content column. On
+  // wide viewports the Main has max-width 1280 centered with 80px
+  // horizontal padding — so chips start (100vw - 1280)/2 + 80 in from
+  // the viewport edge. `max()` keeps the mobile baseline padding when
+  // the viewport is narrower than the breakpoints.
   padding: '10px 20px',
+  marginBottom: '16px',
+  boxSizing: 'border-box',
   '@media (min-width: 768px)': {
-    margin: '0 -24px 20px',
-    padding: '12px 24px',
+    padding: '12px max(24px, calc((100vw - 1280px) / 2 + 80px))',
+    marginBottom: '20px',
   },
 });
 
@@ -295,6 +307,10 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
   const { products, categories, isLoading } = useMenuData(slug, locale);
   const { items: cartItems, getTotalQuantityByMenuItemId, updateQuantity } = useCart();
 
+  // `activeCategoryId` tracks which category's section is currently in the
+  // viewport so the chip highlights. Category chips no longer filter the
+  // list — instead, clicking a chip scrolls the page to that section
+  // (scrollspy pattern). All categories are always rendered.
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<MenuProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -302,8 +318,59 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
     Record<string, string[]> | undefined
   >(undefined);
 
-  const displayCategories =
-    activeCategoryId === null ? categories : categories.filter(c => c.id === activeCategoryId);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const tabRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const tabsScrollRef = useRef<HTMLDivElement | null>(null);
+  // Ignore scrollspy updates briefly after a programmatic jump so the user's
+  // clicked chip stays highlighted through the scroll animation rather than
+  // flashing through every section it passes over.
+  const suppressScrollspyRef = useRef(false);
+
+  const scrollToCategory = useCallback((categoryId: string) => {
+    const node = sectionRefs.current[categoryId];
+    if (!node) return;
+    setActiveCategoryId(categoryId);
+    suppressScrollspyRef.current = true;
+    // HeaderPrimary (64px) + sticky tabs (~56px) need to be cleared.
+    const offset = 64 + 56 + 8;
+    const top = node.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+    window.setTimeout(() => {
+      suppressScrollspyRef.current = false;
+    }, 700);
+  }, []);
+
+  // Scrollspy: highlight the chip whose section is nearest the top of the
+  // viewport (below the sticky header + tabs zone).
+  useEffect(() => {
+    if (isLoading || categories.length === 0) return;
+    if (typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      entries => {
+        if (suppressScrollspyRef.current) return;
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) {
+          const id = visible[0].target.getAttribute('data-category-id');
+          if (id) setActiveCategoryId(id);
+        }
+      },
+      // Trigger zone is the band right under the sticky header + tabs.
+      { rootMargin: '-128px 0px -60% 0px', threshold: 0 }
+    );
+    Object.values(sectionRefs.current).forEach(node => {
+      if (node) observer.observe(node);
+    });
+    return () => observer.disconnect();
+  }, [isLoading, categories.length]);
+
+  // Keep the active chip visible in the horizontal scroll row.
+  useEffect(() => {
+    if (!activeCategoryId) return;
+    const chip = tabRefs.current[activeCategoryId];
+    if (chip) chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, [activeCategoryId]);
 
   // Opens the modal; if the product is already in cart, pre-load its modifier selection.
   const openModal = (product: MenuProduct, e?: React.MouseEvent) => {
@@ -337,24 +404,23 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
           <CategoryTabsSkeleton count={5} />
         </TabsWrapper>
       ) : (
-        <TabsWrapper>
+        <TabsWrapper ref={tabsScrollRef}>
           <TabsList>
-            <MainButton
-              variant={activeCategoryId === null ? 'slate_cta' : 'outline'}
-              size='default'
-              rounded
-              title={t.restaurant.allCategories}
-              onClick={() => setActiveCategoryId(null)}
-            />
             {categories.map(cat => (
-              <MainButton
+              <div
                 key={cat.id}
-                variant={activeCategoryId === cat.id ? 'slate_cta' : 'outline'}
-                size='default'
-                rounded
-                title={cat.name}
-                onClick={() => setActiveCategoryId(cat.id)}
-              />
+                ref={el => {
+                  tabRefs.current[cat.id] = el;
+                }}
+              >
+                <MainButton
+                  variant={activeCategoryId === cat.id ? 'slate_cta' : 'outline'}
+                  size='default'
+                  rounded
+                  title={cat.name}
+                  onClick={() => scrollToCategory(cat.id)}
+                />
+              </div>
             ))}
           </TabsList>
         </TabsWrapper>
@@ -363,13 +429,20 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
       {/* Loading skeleton — keeps layout stable while SWR fetches */}
       {isLoading && <MenuSectionSkeleton groups={2} />}
 
-      {/* Menu Items grouped by category */}
+      {/* Menu Items grouped by category — always render all so the chip
+          click can scroll to any section. */}
       {!isLoading &&
-        displayCategories.map(cat => {
+        categories.map(cat => {
           const catProducts = products.filter(p => p.categoryId === cat.id);
           if (catProducts.length === 0) return null;
           return (
-            <CategoryGroup key={cat.id}>
+            <CategoryGroup
+              key={cat.id}
+              data-category-id={cat.id}
+              ref={(el: HTMLDivElement | null) => {
+                sectionRefs.current[cat.id] = el;
+              }}
+            >
               <CategoryHeading>{cat.name}</CategoryHeading>
               {catProducts.map(product => (
                 <ItemCard

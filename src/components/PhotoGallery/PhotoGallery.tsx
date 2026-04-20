@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
 import { blurhashToDataUrl } from '@/components/ProgressiveImage';
-import { foreground, slate200, slate300, slate400, white } from '@/tokens';
+import { foreground, white } from '@/tokens';
 
 const fadeIn = keyframes({
   from: { opacity: 0 },
@@ -15,32 +15,6 @@ const fadeIn = keyframes({
 const slideUp = keyframes({
   from: { transform: 'scale(0.95)', opacity: 0 },
   to: { transform: 'scale(1)', opacity: 1 },
-});
-
-const Container = styled('div')({
-  marginBottom: '24px',
-  '@media (min-width: 768px)': {
-    // Desktop renders nothing here — icons + lightbox are owned by
-    // RestaurantDetailInfo / this component's invisible event listener.
-    marginBottom: 0,
-  },
-});
-
-// Mobile: Single image
-const MobileImageContainer = styled('div')({
-  position: 'relative',
-  width: '100%',
-  height: '300px',
-  borderRadius: '16px',
-  overflow: 'hidden',
-  cursor: 'pointer',
-  transition: 'transform 0.2s ease',
-  '&:hover': {
-    transform: 'scale(1.02)',
-  },
-  '@media (min-width: 768px)': {
-    display: 'none',
-  },
 });
 
 const shimmer = keyframes({
@@ -67,17 +41,6 @@ const BlurBackdrop = styled('div')({
   // an inline background-image (blurhash) overrides the gradient the
   // keyframe has nothing to animate over.
   animation: `${shimmer} 1.5s infinite`,
-});
-
-const ImagePlaceholder = styled('div')({
-  width: '100%',
-  height: '100%',
-  background: `linear-gradient(135deg, ${slate200} 0%, ${slate300} 100%)`,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: slate400,
-  fontSize: '14px',
 });
 
 // Lightbox Modal Styles
@@ -214,7 +177,6 @@ export default function PhotoGallery({ images, blurhashes, restaurantName }: Pho
   // immediately and fade in the full-res once decoded.
   const [hiResLoaded, setHiResLoaded] = useState(false);
 
-  const heroBlurhashUrl = useMemo(() => blurhashToDataUrl(blurhashes?.[0] ?? null), [blurhashes]);
   const lightboxBlurhashUrl = useMemo(
     () => blurhashToDataUrl(blurhashes?.[currentIndex] ?? null),
     [blurhashes, currentIndex]
@@ -265,41 +227,16 @@ export default function PhotoGallery({ images, blurhashes, restaurantName }: Pho
   };
 
   if (galleryImages.length === 0) {
-    return (
-      <Container>
-        <MobileImageContainer>
-          <ImagePlaceholder>No images available</ImagePlaceholder>
-        </MobileImageContainer>
-      </Container>
-    );
+    // No images = no lightbox to open. The Gallery icon won't have
+    // anything to show but that's handled gracefully by early-return.
+    return null;
   }
 
   return (
     <>
-      <Container>
-        {/* Mobile: Single Image */}
-        <MobileImageContainer onClick={() => openLightbox(0)}>
-          <BlurBackdrop
-            style={heroBlurhashUrl ? { backgroundImage: `url(${heroBlurhashUrl})` } : undefined}
-          />
-          <Image
-            src={galleryImages[0]}
-            alt={`${restaurantName} - main photo`}
-            fill
-            // The LCP element on mobile. Scoping `sizes` to the
-            // viewports where this image is actually visible lets Next
-            // pick a 420/640-bucketed src on phones instead of the
-            // 750 bucket (~52 KB → ~22 KB on slow 3G).
-            sizes='(min-width: 768px) 1px, 100vw'
-            style={{ objectFit: 'cover' }}
-            priority
-            fetchPriority='high'
-          />
-        </MobileImageContainer>
-
-        {/* Desktop: no image load — icons live in RestaurantDetailInfo and
-            the lightbox opens via the 'photo-gallery:open' window event. */}
-      </Container>
+      {/* No hero image on mobile or desktop any more — the Gallery icon
+          in RestaurantDetailInfo opens the lightbox via a window event.
+          This component is only here for that listener + the lightbox. */}
 
       {/* Lightbox Modal */}
       {lightboxOpen && (
