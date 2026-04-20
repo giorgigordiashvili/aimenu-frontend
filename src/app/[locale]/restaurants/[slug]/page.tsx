@@ -119,7 +119,11 @@ export default function RestaurantDetailPage() {
   // so invite-link + cart-attachment flows have sessionId available later.
   useEffect(() => {
     if (!tableCode) return;
-    if (tableData?.code === tableCode && tableData.isValidated) return;
+    // Re-validate if code is new OR if we have stale state missing sessionId
+    // (happened when earlier validate versions didn't return session_id).
+    const alreadyFresh =
+      tableData?.code === tableCode && tableData.isValidated && !!tableData.sessionId;
+    if (alreadyFresh) return;
     let cancelled = false;
     (async () => {
       try {
@@ -145,7 +149,7 @@ export default function RestaurantDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [tableCode, tableData?.code, tableData?.isValidated, setTableData]);
+  }, [tableCode, tableData?.code, tableData?.isValidated, tableData?.sessionId, setTableData]);
 
   useEffect(() => {
     async function fetchRestaurant() {
