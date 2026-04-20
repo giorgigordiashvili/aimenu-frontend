@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import ProfileHeader from '@/components/ProfileHeader';
 import ProfileTabNav from '@/components/ProfileTabNav';
+import ProfileTabSlide from '@/components/ProfileTabSlide';
 import { useAuth } from '@/context/AuthContext';
 import { MOCK_MODE, MOCK_PROFILE } from '@/hooks/useReservations';
 import { Locale } from '@/i18n/config';
@@ -87,7 +88,9 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
         onHome={() => router.push(localePath(locale))}
       />
       <ProfileTabNav />
-      <main>{children}</main>
+      <main>
+        <ProfileTabSlide>{children}</ProfileTabSlide>
+      </main>
       <Footer locale={locale} />
     </ShellWrapper>
   );

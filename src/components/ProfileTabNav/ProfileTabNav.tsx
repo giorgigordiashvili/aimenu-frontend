@@ -26,11 +26,23 @@ const TabNavInner = styled('div')({
   maxWidth: '1100px',
   margin: '0 auto',
   display: 'flex',
-  gap: '0',
+  gap: '4px',
   backgroundColor: white,
   border: `1px solid ${border}`,
   borderRadius: radiusMd,
   padding: '4px',
+  // Below the desktop breakpoint, allow horizontal scroll so 4+ tabs never
+  // squish. Hide the scrollbar; snap each item to the viewport edge.
+  overflowX: 'auto',
+  overflowY: 'hidden',
+  scrollbarWidth: 'none',
+  WebkitOverflowScrolling: 'touch',
+  scrollSnapType: 'x mandatory',
+  '&::-webkit-scrollbar': { display: 'none' },
+  '@media (min-width: 768px)': {
+    overflowX: 'visible',
+    scrollSnapType: 'none',
+  },
 });
 
 const TabItem = styled(Link)({
@@ -38,8 +50,8 @@ const TabItem = styled(Link)({
   alignItems: 'center',
   justifyContent: 'center',
   gap: '8px',
-  flex: 1,
-  padding: '10px 16px',
+  flex: '0 0 auto',
+  padding: '10px 14px',
   fontSize: '14px',
   fontWeight: 500,
   color: slate500,
@@ -49,10 +61,15 @@ const TabItem = styled(Link)({
   cursor: 'pointer',
   whiteSpace: 'nowrap',
   textDecoration: 'none',
+  scrollSnapAlign: 'start',
   transition: 'background 0.15s, color 0.15s',
   '&[data-active="true"]': {
     color: white,
     background: foreground,
+  },
+  '@media (min-width: 768px)': {
+    flex: 1,
+    padding: '10px 16px',
   },
 });
 
