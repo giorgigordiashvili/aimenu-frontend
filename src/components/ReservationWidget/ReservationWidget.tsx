@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { reservationsSettingsRetrieve } from '@/api/generated/api';
 import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { useTable } from '@/context/TableContext';
 import { localePath } from '@/i18n/routing';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
@@ -244,8 +245,15 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   const t = useTranslations();
   const { locale: ctxLocale } = useLocale();
   const { getTotalItems, getTotalPrice, items: cartItems } = useCart();
+  const { tableData } = useTable();
   const searchParams = useSearchParams();
-  const hasTableParam = !!searchParams.get('table');
+  // Order-mode whenever the user is at a table for this restaurant — either
+  // via ?table=<code> in the URL (fresh QR scan) or via a validated
+  // TableSession from a prior scan / invite-join (persisted in TableContext).
+  const hasTableSession =
+    !!searchParams.get('table') ||
+    (!!tableData?.isValidated && !!tableData.sessionId && tableData.restaurantSlug === slug);
+  const hasTableParam = hasTableSession;
   const cartTotal = getTotalPrice();
   const [depositAmount, setDepositAmount] = useState(10.0);
 
