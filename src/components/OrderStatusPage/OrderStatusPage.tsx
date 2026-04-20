@@ -1,13 +1,16 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 
+import axiosInstance from '@/api/axios';
 import { ordersRetrieve } from '@/api/generated/api';
 import type { Order } from '@/api/generated/interfaces';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
+import { useTable } from '@/context/TableContext';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
@@ -177,8 +180,19 @@ function resolveStatusKey(raw: unknown): StatusKey {
   return (STATUS_KEYS.find(k => k === str) ?? 'pending') as StatusKey;
 }
 
+interface SessionUnpaidSummary {
+  payment_mode: string;
+  host: string;
+  orders_summary?: {
+    unpaid_count: number;
+    unpaid_total: string;
+  };
+}
+
 export default function OrderStatusPage({ locale, orderNumber }: Props) {
   const t = getDictionary(locale);
+  const router = useRouter();
+  const { tableData } = useTable();
 
   const { data, error, isLoading } = useSWR<Order>(
     ['order', orderNumber],
@@ -186,6 +200,17 @@ export default function OrderStatusPage({ locale, orderNumber }: Props) {
     {
       refreshInterval: 15_000,
       revalidateOnFocus: true,
+    }
+  );
+
+  // Only worth fetching when the user is on an active table session — otherwise
+  // there's no settle CTA to show anyway.
+  const { data: session } = useSWR<SessionUnpaidSummary>(
+    tableData?.sessionId ? ['session-settle', tableData.sessionId] : null,
+    async () => {
+      const res = await axiosInstance.get(`/api/v1/tables/sessions/${tableData!.sessionId}/`);
+      const body = res.data as SessionUnpaidSummary | { data: SessionUnpaidSummary };
+      return (body as { data?: SessionUnpaidSummary }).data ?? (body as SessionUnpaidSummary);
     }
   );
 
@@ -231,6 +256,12 @@ export default function OrderStatusPage({ locale, orderNumber }: Props) {
 
   const statusKey = resolveStatusKey(data.status);
   const total = parseFloat(data.total || '0');
+  const orderSuccessCopy = (t as unknown as { orderSuccess?: Record<string, string> }).orderSuccess;
+  const showSettleCta =
+    !!session &&
+    session.payment_mode === 'host_covers' &&
+    (session.orders_summary?.unpaid_count ?? 0) > 0 &&
+    !!orderSuccessCopy;
 
   return (
     <Page>
@@ -271,6 +302,25 @@ export default function OrderStatusPage({ locale, orderNumber }: Props) {
             <TotalValue>{total.toFixed(2)} ₾</TotalValue>
           </TotalRow>
         </Card>
+
+        {showSettleCta && orderSuccessCopy && (
+          <Card>
+            <SectionHeading>{orderSuccessCopy.settleCtaTitle}</SectionHeading>
+            <ItemMeta>
+              {orderSuccessCopy.settleCtaBody
+                .replace('{count}', String(session!.orders_summary!.unpaid_count))
+                .replace('{total}', parseFloat(session!.orders_summary!.unpaid_total).toFixed(2))}
+            </ItemMeta>
+            <div style={{ marginTop: 12 }}>
+              <MainButton
+                variant='rose_cta'
+                title={orderSuccessCopy.settleCtaButton}
+                onClick={() => router.push(localePath(locale, '/table/settle'))}
+                rounded
+              />
+            </div>
+          </Card>
+        )}
 
         <Actions>
           <MainButton

@@ -358,6 +358,7 @@
     "successOrder": "Payment received — your order is on its way.",
     "successReservation": "Reservation confirmed.",
     "successAddCard": "Card saved.",
+    "successSessionSettle": "Table paid — everyone's square. Thanks!",
     "failTitle": "Payment didn't go through",
     "failBody": "The bank returned: {reason}. Nothing was charged.",
     "unknownFail": "Payment failed.",
@@ -365,6 +366,25 @@
     "backToReservations": "My reservations",
     "backToPayment": "Back to saved cards",
     "stillPending": "We're still confirming your payment. You'll see the result shortly."
+  },
+  "settleTable": {
+    "title": "Pay for the table",
+    "subtitle": "You're covering these orders on behalf of the table.",
+    "noneUnpaid": "Nothing to pay — every order on this table is already settled.",
+    "orderLabel": "Order",
+    "totalLabel": "Table total",
+    "tipLabel": "Tip (optional)",
+    "tipCustomPlaceholder": "Custom",
+    "payButton": "Pay {total} ₾",
+    "failed": "Couldn't start the payment. Try again.",
+    "notHost": "Only the person who started this table can pay for everyone.",
+    "missingSession": "No active table found on this device.",
+    "grandTotal": "Grand total"
+  },
+  "orderSuccess": {
+    "settleCtaTitle": "You still owe for the rest of the table",
+    "settleCtaBody": "{count} order(s) totalling {total} ₾ are waiting on you.",
+    "settleCtaButton": "Pay for the table"
   },
   "inviteJoin": {
     "title": "Join the table",

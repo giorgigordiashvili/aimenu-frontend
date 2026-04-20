@@ -80,10 +80,10 @@ const Spinner = styled('div')({
   },
 });
 
-type Flow = 'order' | 'reservation' | 'add_card';
+type Flow = 'order' | 'reservation' | 'add_card' | 'session_settle';
 
 function parseFlow(raw: string | null): Flow {
-  if (raw === 'reservation' || raw === 'add_card') return raw;
+  if (raw === 'reservation' || raw === 'add_card' || raw === 'session_settle') return raw;
   return 'order';
 }
 
@@ -118,6 +118,10 @@ export default function PaymentReturnPage({ locale }: Props) {
         }
       } else if (flow === 'reservation') {
         router.replace(localePath(locale, '/profile/reservations'));
+      } else if (flow === 'session_settle') {
+        // Table fully paid — land back on home. The host's session orders
+        // remain viewable from /profile/orders.
+        router.replace(localePath(locale, '/?table_settled=1'));
       } else {
         router.replace(localePath(locale, '/profile/payment'));
       }
@@ -185,6 +189,8 @@ export default function PaymentReturnPage({ locale }: Props) {
   const successTitle = (() => {
     if (flow === 'order') return t.paymentReturn.successOrder;
     if (flow === 'reservation') return t.paymentReturn.successReservation;
+    if (flow === 'session_settle')
+      return t.paymentReturn.successSessionSettle ?? t.paymentReturn.successOrder;
     return t.paymentReturn.successAddCard;
   })();
 

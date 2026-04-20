@@ -62,6 +62,23 @@ export interface InitiateReservationPaymentBody {
   return_url: string;
 }
 
+export interface SessionSettlePayload {
+  restaurant_slug: string;
+  session_id: string;
+  tip_amount?: number;
+}
+
+export interface InitiateSessionSettleBody {
+  session_payload: SessionSettlePayload;
+  return_url: string;
+}
+
+export interface SessionSettleResponse extends InitiatePaymentResponse {
+  session_id?: string;
+  covered_order_numbers?: string[];
+  amount?: string;
+}
+
 export async function initiateOrderPayment(
   body: InitiateOrderPaymentBody
 ): Promise<InitiatePaymentResponse> {
@@ -78,6 +95,16 @@ export async function initiateReservationPayment(
   const response = await axiosInstance.post<BackendEnvelope<InitiatePaymentResponse>>(
     '/api/v1/payments/bog/initiate/',
     { target: 'reservation', ...body }
+  );
+  return unwrap(response.data);
+}
+
+export async function initiateSessionSettle(
+  body: InitiateSessionSettleBody
+): Promise<SessionSettleResponse> {
+  const response = await axiosInstance.post<BackendEnvelope<SessionSettleResponse>>(
+    '/api/v1/payments/bog/initiate/',
+    { target: 'session', ...body }
   );
   return unwrap(response.data);
 }
@@ -109,6 +136,8 @@ export interface BogStatusResponse {
   order_number?: string | null;
   reservation_id?: string | null;
   payment_method_id?: string | null;
+  session_id?: string | null;
+  flow_type?: string;
 }
 
 export async function fetchBogStatus(bogOrderId: string): Promise<BogStatusResponse> {
