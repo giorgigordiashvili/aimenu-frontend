@@ -64,6 +64,23 @@ const TabsWrapper = styled('div')({
   '&::-webkit-scrollbar': {
     display: 'none',
   },
+  // Keep the category chips visible while the user scrolls through a long
+  // menu. HeaderPrimary is 64px tall and sticks at top:0 with z-index:200;
+  // we live just under it. Solid background so content doesn't bleed
+  // through, slight blur to match the header. Negative horizontal margin
+  // + matching padding lets the row span edge-to-edge on narrow viewports
+  // so the first/last chip line up with the content below.
+  position: 'sticky',
+  top: '64px',
+  zIndex: 10,
+  background: 'rgba(255, 255, 255, 0.95)',
+  backdropFilter: 'blur(8px)',
+  margin: '0 -20px 16px',
+  padding: '10px 20px',
+  '@media (min-width: 768px)': {
+    margin: '0 -24px 20px',
+    padding: '12px 24px',
+  },
 });
 
 const TabsList = styled('div')({
