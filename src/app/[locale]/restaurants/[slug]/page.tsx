@@ -1,10 +1,10 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { restaurantsRetrieve } from '@/api/generated/api';
+import { restaurantsRetrieve, tablesValidateRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
 import { ReservationWidget } from '@/components';
 import CartBadge from '@/components/CartBadge';
@@ -17,6 +17,7 @@ import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { useTable } from '@/context/TableContext';
 import { primary } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
@@ -106,9 +107,44 @@ export default function RestaurantDetailPage() {
   const slug = params.slug as string;
   const { locale } = useLocale();
   const t = useTranslations();
+  const searchParams = useSearchParams();
+  const tableCode = searchParams.get('table');
+  const { tableData, setTableData } = useTable();
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Validate ?table=<code> against the backend, establishing a TableSession
+  // so invite-link + cart-attachment flows have sessionId available later.
+  useEffect(() => {
+    if (!tableCode) return;
+    if (tableData?.code === tableCode && tableData.isValidated) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = (await tablesValidateRetrieve(tableCode)) as {
+          table_number?: string;
+          table_name?: string;
+          restaurant_slug?: string;
+          session_id?: string;
+        };
+        if (cancelled) return;
+        setTableData({
+          code: tableCode,
+          tableNumber: r.table_number,
+          tableName: r.table_name,
+          restaurantSlug: r.restaurant_slug,
+          sessionId: r.session_id,
+          isValidated: true,
+        });
+      } catch (err) {
+        if (process.env.NODE_ENV !== 'production') console.error('[validateTable]', err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tableCode, tableData?.code, tableData?.isValidated, setTableData]);
 
   useEffect(() => {
     async function fetchRestaurant() {

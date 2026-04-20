@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
 interface TableData {
   code: string;
@@ -22,6 +22,23 @@ const TableContext = createContext<TableContextType | undefined>(undefined);
 
 export function TableProvider({ children }: { children: ReactNode }) {
   const [tableData, setTableDataState] = useState<TableData | null>(null);
+
+  // Rehydrate from sessionStorage on mount so navigations (restaurant page →
+  // order-review) don't lose the session id / validation state.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = sessionStorage.getItem('tableData');
+      if (raw) {
+        const parsed = JSON.parse(raw) as TableData;
+        if (parsed && typeof parsed === 'object' && parsed.code) {
+          setTableDataState(parsed);
+        }
+      }
+    } catch {
+      // Corrupt JSON — ignore.
+    }
+  }, []);
 
   const setTableCode = useCallback((code: string) => {
     setTableDataState({
