@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { restaurantsList } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
@@ -77,10 +77,40 @@ export default function SimilarRestaurants({
 }: SimilarRestaurantsProps) {
   const t = getDictionary(locale);
   const router = useRouter();
+  const sectionRef = useRef<HTMLElement | null>(null);
   const [restaurants, setRestaurants] = useState<RestaurantList[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // Defer the network request until the user scrolls the section near the
+  // viewport. Keeps the restaurant-detail page feeling like it loads top-
+  // to-bottom rather than every below-the-fold fetch firing at hydration.
+  const [shouldFetch, setShouldFetch] = useState(false);
 
   useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setShouldFetch(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries.some(e => e.isIntersecting)) {
+          setShouldFetch(true);
+          observer.disconnect();
+        }
+      },
+      // Start fetching a little before the section is actually visible so
+      // the skeleton gets replaced with real cards around the time the
+      // user arrives at it.
+      { rootMargin: '400px 0px' }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldFetch) return;
+    let cancelled = false;
     async function fetchRestaurants() {
       try {
         // Pass pageSize=20 to reduce over-fetching; filter client-side for category/exclude
@@ -96,6 +126,7 @@ export default function SimilarRestaurants({
           1,
           20
         );
+        if (cancelled) return;
         const filtered = data.results
           .filter(r => r.slug !== currentSlug && r.category?.slug === cuisineType)
           .slice(0, 4);
@@ -103,15 +134,18 @@ export default function SimilarRestaurants({
       } catch {
         // silently fail - similar restaurants are non-critical
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     }
     fetchRestaurants();
-  }, [cuisineType, currentSlug]);
+    return () => {
+      cancelled = true;
+    };
+  }, [shouldFetch, cuisineType, currentSlug]);
 
   if (isLoading) {
     return (
-      <Section>
+      <Section ref={sectionRef}>
         <SectionTitle>{t.restaurant.similar}</SectionTitle>
         <SimilarRestaurantsSkeleton count={3} />
       </Section>
