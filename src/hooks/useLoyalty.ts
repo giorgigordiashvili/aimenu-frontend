@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 
-import { loyaltyMyList } from '@/api/generated';
+import { loyaltyMyRetrieve } from '@/api/generated';
 
 export interface LoyaltyCounterRow {
   id: string;
@@ -29,7 +29,7 @@ interface PaginatedCounters {
 export function useLoyaltyCounters() {
   const { data, error, isLoading, mutate } = useSWR<PaginatedCounters>(
     ['loyalty', 'my'],
-    () => loyaltyMyList() as unknown as Promise<PaginatedCounters>,
+    () => loyaltyMyRetrieve() as unknown as Promise<PaginatedCounters>,
     { revalidateOnFocus: true, keepPreviousData: true }
   );
   return {

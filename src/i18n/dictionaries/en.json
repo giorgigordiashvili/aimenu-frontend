@@ -290,6 +290,7 @@
   "orderReview": {
     "title": "Invite Friends",
     "subtitle": "Add guests and specify who will pay",
+    "coveredGuestNote": "Your host is covering this table. Tap submit — your order goes straight to the kitchen, no payment needed from you.",
     "yourOrder": "Your Order",
     "emptyCart": "Your cart is empty",
     "emptyCartDescription": "Add some items to your cart to place an order",

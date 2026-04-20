@@ -4,8 +4,9 @@ import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect } from 'react';
 
-import { restaurantsRetrieve } from '@/api/generated/api';
-import type { RestaurantDetail } from '@/api/generated/interfaces';
+import axiosInstance from '@/api/axios';
+import { restaurantsRetrieve, tablesSessionsRetrieve } from '@/api/generated/api';
+import type { RestaurantDetail, TableSessionDetail } from '@/api/generated/interfaces';
 import { submitOrder } from '@/api/order';
 import type { CreateOrderRequest, OrderItemPayload } from '@/api/order-payload';
 import { initiateOrderPayment } from '@/api/payments/bog';
@@ -64,6 +65,17 @@ const Divider = styled('hr')({
   border: 'none',
   borderTop: `1px solid ${border}`,
   margin: '0 0 24px 0',
+});
+
+const CoveredGuestNotice = styled('div')({
+  padding: '14px 16px',
+  borderRadius: '12px',
+  backgroundColor: slate100,
+  color: foreground,
+  fontSize: '14px',
+  lineHeight: '20px',
+  marginBottom: '24px',
+  border: `1px solid ${border}`,
 });
 
 const PageTitle = styled('h1')({
@@ -189,6 +201,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('iWillPay');
   const [guests, setGuests] = useState<Guest[]>([]);
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
+  const [session, setSession] = useState<TableSessionDetail | null>(null);
 
   // Fetch real restaurant data by slug so the header card doesn't show a placeholder.
   useEffect(() => {
@@ -205,6 +218,51 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       cancelled = true;
     };
   }, [restaurantSlug]);
+
+  // If we have a table session, pull its details so we know the payment_mode
+  // and host — drives whether we hide the selector and skip BOG for shared-tab
+  // guests.
+  useEffect(() => {
+    const sessionId = tableData?.sessionId;
+    if (!sessionId) {
+      setSession(null);
+      return;
+    }
+    let cancelled = false;
+    tablesSessionsRetrieve(sessionId)
+      .then(data => {
+        if (!cancelled) setSession(data as unknown as TableSessionDetail);
+      })
+      .catch(() => {
+        if (!cancelled) setSession(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [tableData?.sessionId]);
+
+  // Track "I am the host of this session" on the client via a sessionStorage
+  // marker set when we (this browser) flip mode to host_covers. This keeps
+  // the anonymous-scan flow working without a real login.
+  const [isSessionHost, setIsSessionHost] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!session) {
+      setIsSessionHost(false);
+      return;
+    }
+    try {
+      const marker = window.sessionStorage.getItem(`table.host.${session.id}`);
+      setIsSessionHost(marker === 'true');
+    } catch {
+      setIsSessionHost(false);
+    }
+  }, [session]);
+
+  // Guest on a session that's been flipped to host_covers — submit their
+  // order straight to the kitchen, skip the payment form + BOG.
+  const isCoveredGuest =
+    !!session && (session.payment_mode as unknown as string) === 'host_covers' && !isSessionHost;
 
   const handleBackToMenu = useCallback(() => {
     router.push(localePath(locale));
@@ -238,6 +296,36 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
 
     setSubmitting(true);
     try {
+      // 1. Host picked "I'll pay for the whole table" → persist on the
+      //    session BEFORE the BOG initiate so subsequent guest submissions
+      //    see the host_covers mode.
+      if (
+        paymentMethod === 'iWillPay' &&
+        tableData?.sessionId &&
+        (session?.payment_mode as unknown as string) !== 'host_covers'
+      ) {
+        try {
+          await axiosInstance.patch(`/api/v1/tables/sessions/${tableData.sessionId}/mode/`, {
+            payment_mode: 'host_covers',
+          });
+          if (typeof window !== 'undefined') {
+            window.sessionStorage.setItem(`table.host.${tableData.sessionId}`, 'true');
+          }
+        } catch {
+          // If this fails it's not fatal — the host still pays their own
+          // order via BOG; guests just fall back to paying themselves.
+        }
+      }
+
+      // 2. Guest covered by the host → skip BOG, send straight to kitchen.
+      if (isCoveredGuest) {
+        const response = await submitOrder(payload);
+        clearCart();
+        router.push(localePath(locale, `/orders/${response.order_number}?covered=1`));
+        return;
+      }
+
+      // 3. Dev / bypass mode
       if (process.env.NEXT_PUBLIC_BYPASS_PAYMENT === 'true') {
         const response = await submitOrder(payload);
         clearCart();
@@ -245,14 +333,14 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
         return;
       }
 
+      // 4. Normal BOG flow — either the host (iWillPay/everyonePays) or a
+      //    solo customer not in a covered session.
       const returnUrl = `${window.location.origin}${localePath(
         locale,
         '/payments/return'
       )}?flow=order`;
       // BOG initiate serializer (apps/payments/bog/serializers.py) expects
       // menu_item_id + modifier_ids[] rather than the /orders/create shape.
-      // Build a BOG-flavoured payload right here without changing the cart
-      // or the /orders/create call above.
       const bogPayload = {
         ...payload,
         items: items.map(item => ({
@@ -275,12 +363,14 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   }, [
     clearCart,
     guests,
+    isCoveredGuest,
     isSubmitting,
     items,
     locale,
     paymentMethod,
     restaurantSlug,
     router,
+    session?.payment_mode,
     setSubmitting,
     showToast,
     t.orderReview.orderFailed,
@@ -338,11 +428,19 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
         <PageTitle>{t.orderReview.title}</PageTitle>
         <PageSubtitle>{t.orderReview.subtitle}</PageSubtitle>
 
-        {/* Payment Method Section */}
-        <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+        {/* Payment Method Section — hidden for guests whose host covers */}
+        {isCoveredGuest ? (
+          <CoveredGuestNotice>
+            {(t.orderReview.coveredGuestNote as string | undefined) ??
+              'Your host is covering this order. Tap submit to send it to the kitchen.'}
+          </CoveredGuestNotice>
+        ) : (
+          <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+        )}
 
-        {/* Invite Link Section */}
-        <InviteFriendsSection locale={locale} paymentMethod={paymentMethod} />
+        {/* Invite Link Section — covered guests can't invite from a tab they
+            don't own; only the host / solo customer sees it. */}
+        {!isCoveredGuest && <InviteFriendsSection locale={locale} paymentMethod={paymentMethod} />}
 
         {/* Guest Add Section */}
         <GuestAddSection guests={guests} onChange={setGuests} />

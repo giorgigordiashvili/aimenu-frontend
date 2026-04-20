@@ -127,18 +127,6 @@ export interface KitchenOrder {
   created_at: string;
 }
 
-export interface LoyaltyCounter {
-  id: string;
-  program: LoyaltyProgram;
-  restaurant_name: string;
-  restaurant_slug: string;
-  restaurant_logo: string;
-  punches: number;
-  can_redeem: boolean;
-  last_earned_at: string;
-  created_at: string;
-}
-
 export interface LoyaltyProgram {
   id: string;
   name: string;
@@ -497,13 +485,6 @@ export interface PaginatedKitchenOrderList {
   results: KitchenOrder[];
 }
 
-export interface PaginatedLoyaltyCounterList {
-  count: number;
-  next?: string;
-  previous?: string;
-  results: LoyaltyCounter[];
-}
-
 export interface PaginatedLoyaltyProgramList {
   count: number;
   next?: string;
@@ -851,6 +832,10 @@ export interface PaymentMethod {
 }
 
 export interface PaymentMethodEnum {
+  [key: string]: any;
+}
+
+export interface PaymentModeEnum {
   [key: string]: any;
 }
 
@@ -1405,6 +1390,8 @@ export interface TableSession {
   table_number: string;
   guest_count?: number;
   status?: StatusB75enum;
+  payment_mode?: PaymentModeEnum;
+  host: string;
   started_at: string;
   closed_at: string;
   notes?: string;
@@ -1419,6 +1406,7 @@ export interface TableSessionDetail {
   invite_code: string;
   guest_count: number;
   status: StatusB75enum;
+  payment_mode: PaymentModeEnum;
   started_at: string;
   closed_at: string;
   duration_minutes: number;
@@ -1432,6 +1420,7 @@ export interface TableSessionGuest {
   user: string;
   user_email: string;
   guest_name?: string;
+  guest_contact?: string;
   display_name: string;
   is_host: boolean;
   status?: TableSessionGuestStatusEnum;
