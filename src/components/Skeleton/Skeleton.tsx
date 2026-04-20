@@ -341,3 +341,139 @@ export function CategoryTabsSkeleton({ count = 5 }: { count?: number }) {
     </CategoryTabsContainer>
   );
 }
+
+// ── Menu row skeleton (horizontal layout used on restaurant detail) ──────────
+
+const MenuRowCard = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '12px 8px',
+  border: '1px solid #e2e8f0',
+  borderRadius: '8px',
+});
+
+const MenuRowImage = styled('div')({
+  width: '72px',
+  height: '72px',
+  borderRadius: '10px',
+  flexShrink: 0,
+  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
+  backgroundSize: '200% 100%',
+  animation: `${shimmer} 1.5s infinite`,
+  '@media (min-width: 768px)': {
+    width: '80px',
+    height: '80px',
+  },
+});
+
+const MenuRowContent = styled('div')({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+  minWidth: 0,
+});
+
+const MenuRowName = styled(SkeletonBase)({
+  height: '16px',
+  width: '55%',
+});
+
+const MenuRowDescription = styled(SkeletonBase)({
+  height: '13px',
+  width: '90%',
+});
+
+const MenuRowPrice = styled(SkeletonBase)({
+  height: '14px',
+  width: '50px',
+  marginTop: '2px',
+});
+
+const MenuRowAddBtn = styled(SkeletonBase)({
+  width: '44px',
+  height: '44px',
+  borderRadius: '10px',
+  flexShrink: 0,
+});
+
+const MenuGroup = styled('div')({
+  marginBottom: '24px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
+
+const MenuGroupHeading = styled(SkeletonBase)({
+  height: '18px',
+  width: '120px',
+  marginBottom: '8px',
+});
+
+export function MenuItemRowSkeleton() {
+  return (
+    <MenuRowCard>
+      <MenuRowImage />
+      <MenuRowContent>
+        <MenuRowName />
+        <MenuRowDescription />
+        <MenuRowPrice />
+      </MenuRowContent>
+      <MenuRowAddBtn />
+    </MenuRowCard>
+  );
+}
+
+export function MenuGroupSkeleton({ rows = 3 }: { rows?: number }) {
+  return (
+    <MenuGroup>
+      <MenuGroupHeading />
+      {Array.from({ length: rows }).map((_, i) => (
+        <MenuItemRowSkeleton key={i} />
+      ))}
+    </MenuGroup>
+  );
+}
+
+export function MenuSectionSkeleton({ groups = 2 }: { groups?: number }) {
+  return (
+    <>
+      {Array.from({ length: groups }).map((_, i) => (
+        <MenuGroupSkeleton key={i} rows={i === 0 ? 4 : 3} />
+      ))}
+    </>
+  );
+}
+
+// ── Similar restaurants horizontal scroll skeleton ───────────────────────────
+
+const SimilarRow = styled('div')({
+  display: 'flex',
+  gap: '16px',
+  padding: '8px 8px 16px',
+  margin: '0 -8px',
+  '@media (max-width: 767px)': {
+    flexDirection: 'column',
+  },
+});
+
+const SimilarCard = styled('div')({
+  width: '264px',
+  flexShrink: 0,
+  '@media (max-width: 767px)': {
+    width: '100%',
+  },
+});
+
+export function SimilarRestaurantsSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <SimilarRow>
+      {Array.from({ length: count }).map((_, i) => (
+        <SimilarCard key={i}>
+          <RestaurantCardSkeleton />
+        </SimilarCard>
+      ))}
+    </SimilarRow>
+  );
+}
