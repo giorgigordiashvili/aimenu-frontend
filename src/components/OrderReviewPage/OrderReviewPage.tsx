@@ -15,6 +15,7 @@ import GuestAddSection, { type Guest } from '@/components/GuestAddSection/GuestA
 import InviteFriendsSection from '@/components/InviteFriendsSection';
 import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
+import TipSelector from '@/components/TipSelector';
 import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
 import { useTable } from '@/context/TableContext';
@@ -199,6 +200,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const { toast, showToast } = useToast();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('iWillPay');
+  const [tipAmount, setTipAmount] = useState<number>(0);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [session, setSession] = useState<TableSessionDetail | null>(null);
@@ -302,6 +304,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       order_type: 'dine_in',
       session_id: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
       customer_notes: notes.join(' | '),
+      tip_amount: tipAmount || 0,
       items: items.map(item => ({
         menu_item_id: item.menuItemId,
         quantity: item.quantity,
@@ -359,6 +362,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       // menu_item_id + modifier_ids[] rather than the /orders/create shape.
       const bogPayload = {
         ...payload,
+        tip_amount: tipAmount || 0,
         items: items.map(item => ({
           menu_item_id: item.menuItemId,
           quantity: item.quantity,
@@ -391,6 +395,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     showToast,
     t.orderReview.orderFailed,
     tableData,
+    tipAmount,
   ]);
 
   // Empty cart state
@@ -452,6 +457,22 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
           </CoveredGuestNotice>
         ) : (
           <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+        )}
+
+        {/* Tip — only for people actually paying right now (host / solo);
+            covered guests don't swipe a card on this page. */}
+        {!isCoveredGuest && (
+          <TipSelector
+            subtotal={items.reduce(
+              (sum, item) =>
+                sum +
+                (item.price + (item.modifiers ?? []).reduce((s, m) => s + m.price, 0)) *
+                  item.quantity,
+              0
+            )}
+            value={tipAmount}
+            onChange={setTipAmount}
+          />
         )}
 
         {/* Invite Link Section — covered guests can't invite from a tab they

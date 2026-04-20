@@ -287,6 +287,13 @@
     "loyaltyDescPre": "Collect",
     "loyaltyDescPost": "more points to get 10% discount at all restaurants."
   },
+  "tip": {
+    "title": "Tip",
+    "none": "No tip",
+    "custom": "Custom",
+    "customPlaceholder": "Amount in ₾",
+    "preview": "Tip: {{amount}} ₾"
+  },
   "orderReview": {
     "title": "Invite Friends",
     "subtitle": "Add guests and specify who will pay",
