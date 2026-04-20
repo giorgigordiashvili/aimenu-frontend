@@ -1,7 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { restaurantsRetrieve } from '@/api/generated/api';
@@ -108,7 +108,12 @@ export default function RestaurantDetailPage() {
   const { locale } = useLocale();
   const t = useTranslations();
   const { tableData } = useTable();
-  const isSeated = !!tableData?.isValidated && tableData.restaurantSlug === slug;
+  const searchParams = useSearchParams();
+  const hasTableParam = !!searchParams.get('table');
+  // Hide the reservation widget as soon as the user arrives with a table
+  // QR code in the URL — no need to wait for validation to finish, they
+  // are clearly at the restaurant and just want to order.
+  const isSeated = hasTableParam || (!!tableData?.isValidated && tableData.restaurantSlug === slug);
 
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [loading, setLoading] = useState(true);
