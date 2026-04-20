@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { defaultLocale, isValidLocale } from './i18n/config';
 import { localePath, stripLocale } from './i18n/routing';
 
-const protectedPaths = ['/profile', '/reservations', '/orders'];
+// /orders/<number> is a public status page (order_number is the lookup key).
+// /profile/orders is still gated via /profile prefix.
+const protectedPaths = ['/profile', '/reservations'];
 const authPaths = ['/login', '/register', '/password-reset'];
 
 function getPreferredLocale(request: NextRequest): string {
