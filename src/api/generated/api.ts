@@ -542,6 +542,13 @@ export async function dashboardOrdersItemsCreate(id: string): Promise<any> {
   return response.data;
 }
 
+export async function dashboardOrdersServerPartialUpdate(
+  id: string,
+): Promise<any> {
+  const response = await axios.patch(`/api/v1/dashboard/orders/${id}/server/`);
+  return response.data;
+}
+
 export async function dashboardOrdersStatusPartialUpdate(
   id: string,
 ): Promise<any> {
@@ -602,6 +609,11 @@ export async function dashboardOrdersKitchenList(
       return parts.length > 0 ? '?' + parts.join('&') : '';
     })()}`,
   );
+  return response.data;
+}
+
+export async function dashboardOrdersTipsReportRetrieve(): Promise<any> {
+  const response = await axios.get(`/api/v1/dashboard/orders/tips/report/`);
   return response.data;
 }
 

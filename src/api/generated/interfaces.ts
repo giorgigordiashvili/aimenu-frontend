@@ -396,6 +396,8 @@ export interface Order {
   tax_amount: string;
   service_charge: string;
   discount_amount?: string;
+  tip_amount?: string;
+  server?: string;
   total: string;
   estimated_ready_at?: string;
   confirmed_at: string;
@@ -439,6 +441,8 @@ export interface OrderList {
   table_number: string;
   customer_name?: string;
   total?: string;
+  tip_amount?: string;
+  server?: string;
   items_count: string;
   created_at: string;
 }
@@ -1396,6 +1400,7 @@ export interface TableSession {
   closed_at: string;
   notes?: string;
   duration_minutes: number;
+  orders_summary: string;
 }
 
 export interface TableSessionDetail {
