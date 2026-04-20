@@ -184,6 +184,52 @@ const GuestsTextWrap = styled('span')({
   flex: 1,
 });
 
+// ─── Order-mode item list ─────────────────────────────────────────────────────
+
+const OrderItemsList = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '10px',
+  paddingTop: '4px',
+});
+
+const OrderItemRow = styled('div')({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: '10px',
+  paddingBottom: '8px',
+  borderBottom: `1px dashed ${slate200}`,
+  '&:last-child': { borderBottom: 'none' },
+});
+
+const OrderItemQty = styled('span')({
+  fontSize: '14px',
+  fontWeight: 700,
+  color: foreground,
+  minWidth: '28px',
+});
+
+const OrderItemName = styled('div')({
+  flex: 1,
+  fontSize: '14px',
+  fontWeight: 500,
+  color: foreground,
+  lineHeight: '18px',
+});
+
+const OrderItemSub = styled('div')({
+  fontSize: '12px',
+  color: muted,
+  marginTop: '2px',
+});
+
+const OrderItemPrice = styled('span')({
+  fontSize: '14px',
+  fontWeight: 600,
+  color: foreground,
+  whiteSpace: 'nowrap',
+});
+
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface ReservationWidgetProps {
@@ -197,7 +243,7 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   const router = useRouter();
   const t = useTranslations();
   const { locale: ctxLocale } = useLocale();
-  const { getTotalItems, getTotalPrice } = useCart();
+  const { getTotalItems, getTotalPrice, items: cartItems } = useCart();
   const searchParams = useSearchParams();
   const hasTableParam = !!searchParams.get('table');
   const cartTotal = getTotalPrice();
@@ -300,9 +346,7 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   const guestOptions = Array.from({ length: 10 }, (_, i) => i + 1);
 
   // QR dine-in mode: user is at the restaurant, no date/time/guests needed.
-  // Show a compact card with a single "Order" CTA that jumps straight to
-  // the menu (CTA disabled until they've added items; then it goes to the
-  // order-review / cart).
+  // Show a compact card with a summary of chosen items + a single Order CTA.
   if (hasTableParam) {
     const itemCount = getTotalItems();
     const orderHref = localePath(activeLocale, '/order-review');
@@ -315,6 +359,29 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
           </CalendarIconWrap>
           <WidgetTitle>{t.reservationWidget.orderTitle ?? 'შეკვეთა'}</WidgetTitle>
         </WidgetHeader>
+
+        {cartItems.length > 0 ? (
+          <OrderItemsList>
+            {cartItems.map(ci => (
+              <OrderItemRow key={ci.id}>
+                <OrderItemQty>{ci.quantity}×</OrderItemQty>
+                <OrderItemName>
+                  {ci.name}
+                  {ci.modifiers && ci.modifiers.length > 0 ? (
+                    <OrderItemSub>{ci.modifiers.map(m => m.name).join(', ')}</OrderItemSub>
+                  ) : null}
+                </OrderItemName>
+                <OrderItemPrice>
+                  {(
+                    (ci.price + (ci.modifiers ?? []).reduce((s, m) => s + m.price, 0)) *
+                    ci.quantity
+                  ).toFixed(2)}{' '}
+                  ₾
+                </OrderItemPrice>
+              </OrderItemRow>
+            ))}
+          </OrderItemsList>
+        ) : null}
 
         <PriceSummarySection
           depositLabel={t.reservationWidget.deposit}
@@ -337,7 +404,6 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
           onClick={() => {
             if (itemCount > 0) router.push(orderHref);
             else {
-              // Scroll to menu section; fall back to anchor if not found.
               const menuEl =
                 typeof document !== 'undefined' ? document.getElementById('menu') : null;
               if (menuEl) menuEl.scrollIntoView({ behavior: 'smooth', block: 'start' });

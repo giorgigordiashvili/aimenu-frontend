@@ -249,8 +249,21 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
         locale,
         '/payments/return'
       )}?flow=order`;
+      // BOG initiate serializer (apps/payments/bog/serializers.py) expects
+      // menu_item_id + modifier_ids[] rather than the /orders/create shape.
+      // Build a BOG-flavoured payload right here without changing the cart
+      // or the /orders/create call above.
+      const bogPayload = {
+        ...payload,
+        items: items.map(item => ({
+          menu_item_id: item.menuItemId,
+          quantity: item.quantity,
+          special_instructions: item.specialInstructions,
+          modifier_ids: (item.modifiers ?? []).map(m => m.id),
+        })),
+      };
       const { redirect_url } = await initiateOrderPayment({
-        order_payload: payload,
+        order_payload: bogPayload as unknown as CreateOrderRequest,
         return_url: returnUrl,
       });
       window.location.assign(redirect_url);
