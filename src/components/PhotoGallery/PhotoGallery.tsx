@@ -53,6 +53,15 @@ const DesktopGrid = styled('div')({
   },
 });
 
+const shimmer = keyframes({
+  '0%': { backgroundPosition: '-200% 0' },
+  '100%': { backgroundPosition: '200% 0' },
+});
+
+// Base layer: shimmer skeleton that shows before blurhash decodes (SSR has
+// no blurhash data URL, and canvas-decoding on hydration takes a frame or
+// two). When the decoded blurhash is passed via inline `backgroundImage`,
+// it layers on top and hides the shimmer.
 const BlurBackdrop = styled('div')({
   position: 'absolute',
   inset: 0,
@@ -61,6 +70,13 @@ const BlurBackdrop = styled('div')({
   filter: 'blur(6px)',
   transform: 'scale(1.05)',
   zIndex: 0,
+  background:
+    'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
+  backgroundRepeat: 'repeat-x',
+  // Fallback animation only runs while the solid gradient is visible; once
+  // an inline background-image (blurhash) overrides the gradient the
+  // keyframe has nothing to animate over.
+  animation: `${shimmer} 1.5s infinite`,
 });
 
 const GridImageContainer = styled('div')({
@@ -284,9 +300,9 @@ export default function PhotoGallery({ images, blurhashes, restaurantName }: Pho
       <Container>
         {/* Mobile: Single Image */}
         <MobileImageContainer onClick={() => openLightbox(0)}>
-          {heroBlurhashUrl && (
-            <BlurBackdrop style={{ backgroundImage: `url(${heroBlurhashUrl})` }} />
-          )}
+          <BlurBackdrop
+            style={heroBlurhashUrl ? { backgroundImage: `url(${heroBlurhashUrl})` } : undefined}
+          />
           <Image
             src={galleryImages[0]}
             alt={`${restaurantName} - main photo`}
@@ -306,9 +322,9 @@ export default function PhotoGallery({ images, blurhashes, restaurantName }: Pho
         <DesktopGrid>
           {/* Large image on left (spans 2 rows) */}
           <LargeGridImage onClick={() => openLightbox(0)}>
-            {heroBlurhashUrl && (
-              <BlurBackdrop style={{ backgroundImage: `url(${heroBlurhashUrl})` }} />
-            )}
+            <BlurBackdrop
+              style={heroBlurhashUrl ? { backgroundImage: `url(${heroBlurhashUrl})` } : undefined}
+            />
             <Image
               src={desktopImages[0]}
               alt={`${restaurantName} - photo 1`}
@@ -325,18 +341,29 @@ export default function PhotoGallery({ images, blurhashes, restaurantName }: Pho
           </LargeGridImage>
 
           {/* 4 smaller images on right (2x2 grid) */}
-          {desktopImages.slice(1, 5).map((image, index) => (
-            <GridImageContainer key={index} onClick={() => openLightbox(index + 1)}>
-              <Image
-                src={image}
-                alt={`${restaurantName} - photo ${index + 2}`}
-                fill
-                sizes='(min-width: 1280px) 220px, (min-width: 768px) 25vw, 1px'
-                style={{ objectFit: 'cover' }}
-                loading='lazy'
-              />
-            </GridImageContainer>
-          ))}
+          {desktopImages.slice(1, 5).map((image, index) => {
+            // The right-side grid slots are usually duplicates of the same
+            // two backend images (cover + logo), so reuse their blurhashes
+            // by looking up the original index inside `images`.
+            const originalIndex = images.indexOf(image);
+            const bhUrl =
+              originalIndex >= 0 ? blurhashToDataUrl(blurhashes?.[originalIndex]) : null;
+            return (
+              <GridImageContainer key={index} onClick={() => openLightbox(index + 1)}>
+                <BlurBackdrop
+                  style={bhUrl ? { backgroundImage: `url(${bhUrl})` } : undefined}
+                />
+                <Image
+                  src={image}
+                  alt={`${restaurantName} - photo ${index + 2}`}
+                  fill
+                  sizes='(min-width: 1280px) 220px, (min-width: 768px) 25vw, 1px'
+                  style={{ objectFit: 'cover' }}
+                  loading='lazy'
+                />
+              </GridImageContainer>
+            );
+          })}
         </DesktopGrid>
       </Container>
 
