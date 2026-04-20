@@ -294,6 +294,22 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       })),
     };
 
+    // Backend's OrderCreateSerializer uses the BOG shape (menu_item_id,
+    // modifier_ids[], session_id). Mirror the transform we do before the BOG
+    // call so the direct /orders/create path also validates.
+    const directPayload = {
+      restaurant_slug: restaurantSlug,
+      order_type: 'dine_in',
+      session_id: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
+      customer_notes: notes.join(' | '),
+      items: items.map(item => ({
+        menu_item_id: item.menuItemId,
+        quantity: item.quantity,
+        special_instructions: item.specialInstructions,
+        modifier_ids: (item.modifiers ?? []).map(m => m.id),
+      })),
+    } as unknown as CreateOrderRequest;
+
     setSubmitting(true);
     try {
       // 1. Host picked "I'll pay for the whole table" → persist on the
@@ -319,7 +335,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
 
       // 2. Guest covered by the host → skip BOG, send straight to kitchen.
       if (isCoveredGuest) {
-        const response = await submitOrder(payload);
+        const response = await submitOrder(directPayload);
         clearCart();
         router.push(localePath(locale, `/orders/${response.order_number}?covered=1`));
         return;
@@ -327,7 +343,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
 
       // 3. Dev / bypass mode
       if (process.env.NEXT_PUBLIC_BYPASS_PAYMENT === 'true') {
-        const response = await submitOrder(payload);
+        const response = await submitOrder(directPayload);
         clearCart();
         router.push(localePath(locale, `/orders/${response.order_number}`));
         return;
