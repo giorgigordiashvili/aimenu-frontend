@@ -2,8 +2,9 @@
 
 import { keyframes, styled } from '@pigment-css/react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
+import { blurhashToDataUrl } from '@/components/ProgressiveImage';
 import { foreground, slate200, slate300, slate400, white } from '@/tokens';
 
 const fadeIn = keyframes({
@@ -50,6 +51,16 @@ const DesktopGrid = styled('div')({
     gap: '12px',
     height: '400px',
   },
+});
+
+const BlurBackdrop = styled('div')({
+  position: 'absolute',
+  inset: 0,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  filter: 'blur(6px)',
+  transform: 'scale(1.05)',
+  zIndex: 0,
 });
 
 const GridImageContainer = styled('div')({
@@ -202,15 +213,23 @@ const Counter = styled('div')({
 
 interface PhotoGalleryProps {
   images: string[];
+  /** Parallel array of BlurHash strings for each image (optional). */
+  blurhashes?: (string | null | undefined)[];
   restaurantName: string;
 }
 
-export default function PhotoGallery({ images, restaurantName }: PhotoGalleryProps) {
+export default function PhotoGallery({ images, blurhashes, restaurantName }: PhotoGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   // Progressive image for the lightbox: show the cached grid thumbnail
   // immediately and fade in the full-res once decoded.
   const [hiResLoaded, setHiResLoaded] = useState(false);
+
+  const heroBlurhashUrl = useMemo(() => blurhashToDataUrl(blurhashes?.[0] ?? null), [blurhashes]);
+  const lightboxBlurhashUrl = useMemo(
+    () => blurhashToDataUrl(blurhashes?.[currentIndex] ?? null),
+    [blurhashes, currentIndex]
+  );
 
   // Ensure we have at least one image
   const galleryImages = images.length > 0 ? images : [];
@@ -265,6 +284,9 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
       <Container>
         {/* Mobile: Single Image */}
         <MobileImageContainer onClick={() => openLightbox(0)}>
+          {heroBlurhashUrl && (
+            <BlurBackdrop style={{ backgroundImage: `url(${heroBlurhashUrl})` }} />
+          )}
           <Image
             src={galleryImages[0]}
             alt={`${restaurantName} - main photo`}
@@ -284,6 +306,9 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
         <DesktopGrid>
           {/* Large image on left (spans 2 rows) */}
           <LargeGridImage onClick={() => openLightbox(0)}>
+            {heroBlurhashUrl && (
+              <BlurBackdrop style={{ backgroundImage: `url(${heroBlurhashUrl})` }} />
+            )}
             <Image
               src={desktopImages[0]}
               alt={`${restaurantName} - photo 1`}
@@ -364,15 +389,23 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
             )}
 
             <LightboxImageContainer>
-              {/* Cached grid-sized thumbnail as instant LQIP backdrop. */}
-              <LightboxThumb
-                key={`thumb-${currentIndex}`}
-                src={galleryImages[currentIndex]}
-                alt=''
-                aria-hidden='true'
-                fill
-                sizes='(min-width: 1280px) 640px, (min-width: 768px) 50vw, 100vw'
-              />
+              {/* Inline BlurHash backdrop when available (paints instantly,
+                  zero network). Falls back to the cached grid thumbnail. */}
+              {lightboxBlurhashUrl ? (
+                <BlurBackdrop
+                  key={`bh-${currentIndex}`}
+                  style={{ backgroundImage: `url(${lightboxBlurhashUrl})` }}
+                />
+              ) : (
+                <LightboxThumb
+                  key={`thumb-${currentIndex}`}
+                  src={galleryImages[currentIndex]}
+                  alt=''
+                  aria-hidden='true'
+                  fill
+                  sizes='(min-width: 1280px) 640px, (min-width: 768px) 50vw, 100vw'
+                />
+              )}
               <LightboxHiResLayer isLoaded={hiResLoaded}>
                 <Image
                   key={`hi-${currentIndex}`}

@@ -13,6 +13,7 @@ interface FormattedProduct {
   description: string;
   price: number;
   image?: string;
+  imageBlurhash?: string;
   categoryId: string;
   modifierGroups: {
     id: string;
@@ -94,6 +95,7 @@ const formatMenuItem = (item: MenuItem, locale: Locale): FormattedProduct => {
     description: getTranslatedField(item.translations, 'description', locale),
     price: parseFloat(item.price) || 0,
     image: item.image,
+    imageBlurhash: (item as { image_blurhash?: string }).image_blurhash,
     categoryId: item.category?.id || '',
     modifierGroups: formattedModifierGroups,
   };

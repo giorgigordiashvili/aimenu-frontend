@@ -136,6 +136,7 @@ export default function SimilarRestaurants({
               <RestaurantCardPrimary
                 variant='default'
                 imageSrc={restaurant.logo ?? '/RestaurantCardImage.jpg'}
+                imageBlurhash={(restaurant as { logo_blurhash?: string }).logo_blurhash}
                 restaurantTitle={restaurant.name}
                 locationText={restaurant.city}
                 filterText={categoryName}

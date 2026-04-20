@@ -4,6 +4,7 @@ import { styled, keyframes } from '@pigment-css/react';
 import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 
+import { blurhashToDataUrl } from '@/components/ProgressiveImage';
 import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
 
@@ -75,6 +76,18 @@ const StyledImage = styled(Image)({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
+});
+
+// Instant inline placeholder decoded from a BlurHash string. Slightly
+// up-scaled to hide the decode-canvas edges, same visual role as ThumbImage
+// but with zero network cost.
+const BlurhashBackdrop = styled('div')({
+  position: 'absolute',
+  inset: 0,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  filter: 'blur(6px)',
+  transform: 'scale(1.05)',
 });
 
 // Low-res thumbnail that sits beneath the hi-res image while it loads.
@@ -384,6 +397,7 @@ interface ProductDetailModalProps {
     description?: string;
     price: number;
     image?: string;
+    imageBlurhash?: string;
     modifierGroups?: ModifierGroupType[];
   };
   initialModifiers?: Record<string, string[]>;
@@ -446,6 +460,11 @@ export default function ProductDetailModal({
   // hi-res once it's decoded. Resets per-product so reopening the modal
   // on a different item doesn't flash the previous hi-res.
   const [hiResLoaded, setHiResLoaded] = useState(false);
+
+  const blurhashDataURL = useMemo(
+    () => blurhashToDataUrl(product.imageBlurhash),
+    [product.imageBlurhash]
+  );
 
   // Reset selections when modal opens with new product
   useEffect(() => {
@@ -560,17 +579,22 @@ export default function ProductDetailModal({
         <ImageContainer>
           {product.image ? (
             <>
-              {/* Low-res backdrop — same URL the menu list just fetched at
-                  the 160px bucket, so it's usually an instant cache hit. */}
-              <ThumbImage
-                src={product.image}
-                alt=''
-                aria-hidden='true'
-                fill
-                sizes='80px'
-                priority
-              />
-              {/* Hi-res fades in over the thumbnail when decoded. */}
+              {/* Inline BlurHash backdrop when available (zero network hop);
+                  otherwise fall back to the cached 80px thumbnail the menu
+                  list just fetched. */}
+              {blurhashDataURL ? (
+                <BlurhashBackdrop style={{ backgroundImage: `url(${blurhashDataURL})` }} />
+              ) : (
+                <ThumbImage
+                  src={product.image}
+                  alt=''
+                  aria-hidden='true'
+                  fill
+                  sizes='80px'
+                  priority
+                />
+              )}
+              {/* Hi-res fades in over the placeholder when decoded. */}
               <HiResLayer isLoaded={hiResLoaded}>
                 <StyledImage
                   src={product.image}

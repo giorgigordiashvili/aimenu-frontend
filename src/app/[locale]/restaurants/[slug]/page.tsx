@@ -131,6 +131,13 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   }
 
   const images = [restaurant.cover_image, restaurant.logo].filter(Boolean) as string[];
+  // Parallel array of blurhash strings for PhotoGallery — order matches
+  // `images` above. Silent fallback when a field isn't populated yet.
+  const r = restaurant as unknown as { cover_image_blurhash?: string; logo_blurhash?: string };
+  const blurhashes = [
+    restaurant.cover_image ? r.cover_image_blurhash : undefined,
+    restaurant.logo ? r.logo_blurhash : undefined,
+  ].filter((_, i) => (i === 0 ? !!restaurant.cover_image : !!restaurant.logo));
   const categoryName = restaurant.category
     ? getTranslation(restaurant.category.translations, 'name', locale)
     : undefined;
@@ -151,7 +158,7 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
         {/* Photo Gallery — full width above columns. Hero image goes out
             in the initial HTML so the preload scanner starts fetching
             it ASAP on slow 3G. */}
-        <PhotoGallery images={images} restaurantName={restaurant.name} />
+        <PhotoGallery images={images} blurhashes={blurhashes} restaurantName={restaurant.name} />
 
         <ContentLayout>
           <LeftColumn>
