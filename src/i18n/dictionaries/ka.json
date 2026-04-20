@@ -438,7 +438,11 @@
     "datePlaceholder": "თარიღი",
     "timePlaceholder": "დრო",
     "guestsPlaceholder": "სტუმრები",
-    "items": "კერძები"
+    "items": "კერძები",
+    "mobileStickyOpen": "დეტალების ნახვა",
+    "mobileStickyClose": "დახურვა",
+    "mobileStickyAria": "ჯავშნის ფორმის გახსნა",
+    "mobileOrderStickyAria": "შეკვეთის ფორმის გახსნა"
   },
   "restaurantsList": {
     "heroTitle": "აღმოაჩინე და დაჯავშნე საუკეთესო გემოები",
