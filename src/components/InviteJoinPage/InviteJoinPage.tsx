@@ -181,7 +181,22 @@ export default function InviteJoinPage({ locale, inviteCode }: Props) {
           sessionId: info.session_id,
           isValidated: true,
         });
-        router.push(localePath(locale, `/restaurant/${info.restaurant_slug}`));
+        // Remember we arrived via invite so the restaurant page can show
+        // "You're at <host>'s table" instead of the generic banner.
+        if (typeof window !== 'undefined') {
+          try {
+            window.sessionStorage.setItem(
+              'tableSharedSession',
+              JSON.stringify({
+                hostName: info.host_name ?? null,
+                joinedAt: new Date().toISOString(),
+              })
+            );
+          } catch {
+            /* sessionStorage full / blocked */
+          }
+        }
+        router.push(localePath(locale, `/restaurants/${info.restaurant_slug}`));
       } else {
         router.push(localePath(locale));
       }

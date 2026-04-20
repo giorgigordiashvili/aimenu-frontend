@@ -316,6 +316,7 @@
     "everyonePaysDescription": "ყველა თავის ნაწილს გადაიხდის",
     "inviteLink": "მოწვევის ბმული",
     "inviteLinkDescription": "შექმენით ბმული და გაუზიარეთ სტუმრებს",
+    "inviteLinkNoSession": "ჯერ დაასკანერე მაგიდის QR კოდი — მოწვევა მხოლოდ აქტიური მაგიდისთვის მუშაობს.",
     "createLink": "შექმნა",
     "shareLink": "გაზიარების ბმული",
     "copyLink": "კოპირება",
@@ -389,6 +390,12 @@
       "completed": "დასრულდა",
       "cancelled": "გაუქმდა"
     }
+  },
+  "sharedTable": {
+    "seatedTitle": "თქვენ ზიხართ ამ მაგიდასთან",
+    "joinedHost": "შემოუერთდით {{host}}-ს მაგიდასთან",
+    "tableHint": "მაგიდა {{table}} · შეკვეთები ემატება საერთო ანგარიშზე.",
+    "sub": "შეკვეთები ემატება საერთო მაგიდის ანგარიშზე."
   },
   "reservationWidget": {
     "title": "ჯავშანი",

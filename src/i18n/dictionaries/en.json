@@ -316,6 +316,7 @@
     "everyonePaysDescription": "Everyone pays their share",
     "inviteLink": "Invitation Link",
     "inviteLinkDescription": "Create a link and share with guests",
+    "inviteLinkNoSession": "Scan the restaurant table QR first — invites only work for an active table session.",
     "createLink": "Create",
     "shareLink": "Share Link",
     "copyLink": "Copy",
@@ -389,6 +390,12 @@
       "completed": "Completed",
       "cancelled": "Cancelled"
     }
+  },
+  "sharedTable": {
+    "seatedTitle": "You're seated at this table",
+    "joinedHost": "You joined {{host}}'s table",
+    "tableHint": "Table {{table}} · orders go on the shared check.",
+    "sub": "Your orders go on the shared table check."
   },
   "reservationWidget": {
     "title": "Reservation",

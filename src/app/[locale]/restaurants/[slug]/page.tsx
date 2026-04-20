@@ -15,6 +15,7 @@ import MenuSection from '@/components/MenuSection';
 import PhotoGallery from '@/components/PhotoGallery';
 import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
+import SharedTableBanner from '@/components/SharedTableBanner';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { useTable } from '@/context/TableContext';
@@ -216,6 +217,7 @@ export default function RestaurantDetailPage() {
         <ContentLayout>
           {/* Left column — main content */}
           <LeftColumn>
+            <SharedTableBanner slug={slug} />
             <RestaurantCartScopeBanner slug={slug} />
             {/* Restaurant Info */}
             <RestaurantDetailInfo

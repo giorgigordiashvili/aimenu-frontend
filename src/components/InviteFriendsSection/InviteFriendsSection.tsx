@@ -160,7 +160,11 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
 
   const handleCreateLink = useCallback(async () => {
     if (!sessionId) {
-      setLinkError(t.orderReview.inviteLinkDescription);
+      // Surface a concrete explanation so the button isn't a silent dead-end.
+      setLinkError(
+        t.orderReview.inviteLinkNoSession ??
+          'Scan the restaurant table QR first — invites only work for an active table session.'
+      );
       return;
     }
 
@@ -181,7 +185,7 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
     } finally {
       setIsCreatingLink(false);
     }
-  }, [locale, sessionId, t.orderReview.inviteLinkDescription, t.orderReview.invitationFailed]);
+  }, [locale, sessionId, t.orderReview.inviteLinkNoSession, t.orderReview.invitationFailed]);
 
   const handleCopyLink = useCallback(async () => {
     if (!generatedLink) return;
@@ -227,7 +231,7 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
             title={isCreatingLink ? t.orderReview.placing : t.orderReview.createLink}
             icon={InviteArrow}
             onClick={handleCreateLink}
-            disabled={isCreatingLink || !sessionId}
+            disabled={isCreatingLink}
           />
         </InviteLinkHeader>
       </InviteLinkCard>
