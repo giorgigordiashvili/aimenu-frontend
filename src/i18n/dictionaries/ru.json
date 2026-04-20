@@ -358,6 +358,7 @@
     "successOrder": "Платёж получен — ваш заказ готовится.",
     "successReservation": "Бронирование подтверждено.",
     "successAddCard": "Карта сохранена.",
+    "successSessionSettle": "Стол оплачен — спасибо!",
     "failTitle": "Платёж не прошёл",
     "failBody": "Банк ответил: {reason}. Списания не было.",
     "unknownFail": "Ошибка платежа.",
@@ -365,6 +366,25 @@
     "backToReservations": "Мои бронирования",
     "backToPayment": "Сохранённые карты",
     "stillPending": "Мы всё ещё подтверждаем платёж. Результат появится вскоре."
+  },
+  "settleTable": {
+    "title": "Оплатить стол",
+    "subtitle": "Вы закрываете эти заказы за весь стол.",
+    "noneUnpaid": "Платить нечего — все заказы за этим столом уже оплачены.",
+    "orderLabel": "Заказ",
+    "totalLabel": "Итого по столу",
+    "tipLabel": "Чаевые (по желанию)",
+    "tipCustomPlaceholder": "Другая сумма",
+    "payButton": "Оплатить {total} ₾",
+    "failed": "Не удалось начать оплату. Попробуйте ещё раз.",
+    "notHost": "Оплатить за весь стол может только тот, кто его открыл.",
+    "missingSession": "На этом устройстве нет активного стола.",
+    "grandTotal": "Всего"
+  },
+  "orderSuccess": {
+    "settleCtaTitle": "Оплатить остаток стола",
+    "settleCtaBody": "{count} заказ(ов) на сумму {total} ₾ ожидают оплаты.",
+    "settleCtaButton": "Оплатить стол"
   },
   "inviteJoin": {
     "title": "Присоединиться к столу",
