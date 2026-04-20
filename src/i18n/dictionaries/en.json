@@ -438,7 +438,11 @@
     "datePlaceholder": "Select date",
     "timePlaceholder": "Time",
     "guestsPlaceholder": "Guests",
-    "items": "Dishes"
+    "items": "Dishes",
+    "mobileStickyOpen": "View details",
+    "mobileStickyClose": "Close",
+    "mobileStickyAria": "Open reservation form",
+    "mobileOrderStickyAria": "Open order form"
   },
   "restaurantsList": {
     "heroTitle": "Discover and Book the Best Flavors",

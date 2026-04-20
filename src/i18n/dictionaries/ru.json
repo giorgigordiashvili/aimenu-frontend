@@ -438,7 +438,11 @@
     "datePlaceholder": "Выберите дату",
     "timePlaceholder": "Время",
     "guestsPlaceholder": "Гости",
-    "items": "Блюда"
+    "items": "Блюда",
+    "mobileStickyOpen": "Посмотреть детали",
+    "mobileStickyClose": "Закрыть",
+    "mobileStickyAria": "Открыть форму бронирования",
+    "mobileOrderStickyAria": "Открыть форму заказа"
   },
   "restaurantsList": {
     "heroTitle": "Открывайте и бронируйте лучшие вкусы",

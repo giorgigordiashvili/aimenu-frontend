@@ -8,6 +8,7 @@ import ContactInfo from '@/components/ContactInfo';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MenuSection from '@/components/MenuSection';
+import MobileReservationSheet from '@/components/MobileReservationSheet';
 import PhotoGallery from '@/components/PhotoGallery';
 import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
@@ -43,6 +44,12 @@ const Page = styled('div')({
 
 const Main = styled('main')({
   padding: '20px',
+  // Leave room on mobile for the fixed MobileReservationSheet bar so the
+  // last bit of content isn't hidden behind it. Desktop has no sticky bar.
+  paddingBottom: 'calc(88px + env(safe-area-inset-bottom))',
+  '@media (min-width: 1024px)': {
+    paddingBottom: '100px',
+  },
   '@media (min-width: 768px)': {
     padding: '32px 80px 100px',
     maxWidth: '1280px',
@@ -78,12 +85,6 @@ const RightColumn = styled('div')({
   },
 });
 
-const MobileReservation = styled('div')({
-  display: 'block',
-  '@media (min-width: 1024px)': {
-    display: 'none',
-  },
-});
 
 const ErrorContainer = styled('div')({
   textAlign: 'center',
@@ -176,11 +177,9 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
               locale={locale}
             />
 
-            {showWidget && (
-              <MobileReservation>
-                <ReservationWidget slug={slug} locale={locale} />
-              </MobileReservation>
-            )}
+            {/* Mobile reservation is now a sticky bottom bar + bottom
+                sheet; see MobileReservationSheet. The old inline widget
+                was removed to give the menu more vertical space. */}
 
             <MenuSection slug={slug} locale={locale} headerRight={<CartBadge />} />
 
@@ -207,6 +206,8 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
           )}
         </ContentLayout>
       </Main>
+
+      {showWidget && <MobileReservationSheet slug={slug} locale={locale} />}
 
       <Footer locale={locale} />
     </Page>
