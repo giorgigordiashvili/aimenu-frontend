@@ -1,11 +1,11 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import Image from 'next/image';
 import React, { useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import ProductDetailModal from '@/components/ProductDetailModal';
+import ProgressiveImage from '@/components/ProgressiveImage';
 import { CategoryTabsSkeleton, MenuSectionSkeleton } from '@/components/Skeleton';
 import { useCart } from '@/context/CartContext';
 import { useMenuData } from '@/hooks/useMenuData';
@@ -254,6 +254,7 @@ interface MenuProduct {
   description: string;
   price: number;
   image?: string;
+  imageBlurhash?: string;
   categoryId: string;
   modifierGroups: Array<{
     id: string;
@@ -361,7 +362,8 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
                 >
                   {product.image ? (
                     <ItemImageWrapper>
-                      <Image
+                      <ProgressiveImage
+                        blurhash={product.imageBlurhash}
                         src={product.image}
                         alt={product.name}
                         fill

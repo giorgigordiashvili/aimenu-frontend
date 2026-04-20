@@ -66,6 +66,7 @@ export interface RestaurantCardProps {
   showRating?: boolean;
   showFilterText?: boolean;
   imageSrc?: string;
+  imageBlurhash?: string;
   restaurantTitle?: string;
   locationText?: string;
   detailsVariant?: 'filled' | 'outlined';

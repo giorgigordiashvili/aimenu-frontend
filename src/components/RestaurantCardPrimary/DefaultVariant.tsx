@@ -2,8 +2,10 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
+import { blurhashToDataUrl } from '@/components/ProgressiveImage';
 import Heart from '@/icons/Heart';
 import LocationIcon from '@/icons/Location';
 import Star from '@/icons/Star';
@@ -49,7 +51,23 @@ const Image = styled('img')({
   objectFit: 'cover',
   objectPosition: 'center',
   zIndex: -1,
-  transition: 'transform 0.3s ease',
+  transition: 'transform 0.3s ease, opacity 0.3s ease',
+});
+
+// Absolutely-positioned inline BlurHash placeholder that paints instantly
+// from the string returned by the API. The real Image sits on top and fades
+// in on load.
+const BlurBackdrop = styled('div')({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  zIndex: -2,
+  filter: 'blur(6px)',
+  transform: 'scale(1.05)',
 });
 
 const ContentTop = styled('div')({
@@ -176,6 +194,7 @@ export default function DefaultVariant({
   showRating = true,
   showFilterText = true,
   imageSrc = '/RestaurantCardImage.jpg',
+  imageBlurhash,
   restaurantTitle,
   locationText,
   detailsVariant = 'filled',
@@ -191,6 +210,7 @@ export default function DefaultVariant({
   amenities,
 }: DefaultVariantProps) {
   const router = useRouter();
+  const blurhashDataURL = useMemo(() => blurhashToDataUrl(imageBlurhash), [imageBlurhash]);
 
   const handleCardClick = () => {
     if (href) router.push(href);
@@ -209,6 +229,7 @@ export default function DefaultVariant({
   return (
     <ContentGroup onClick={handleCardClick}>
       <ContentTop>
+        {blurhashDataURL && <BlurBackdrop style={{ backgroundImage: `url(${blurhashDataURL})` }} />}
         <Image src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
         <FavoriteGroup>
           {showFavoriteYellow && (
