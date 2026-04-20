@@ -38,7 +38,7 @@ export function getMockRestaurantData(id: string) {
 export function useActiveReservations(page = 1) {
   const { data, error, isLoading, mutate } = useSWR(
     MOCK_MODE ? null : ['reservations', 'active', page],
-    () => reservationsMyList('reservation_date', page, PAGE_SIZE),
+    () => reservationsMyList('-created_at', page, PAGE_SIZE),
     { revalidateOnFocus: false, keepPreviousData: true }
   );
 
@@ -63,7 +63,7 @@ export function useActiveReservations(page = 1) {
 export function useHistoryReservations(page = 1) {
   const { data, error, isLoading, mutate } = useSWR(
     MOCK_MODE ? null : ['reservations', 'history', page],
-    () => reservationsMyList('-reservation_date', page, PAGE_SIZE),
+    () => reservationsMyList('-created_at', page, PAGE_SIZE),
     { revalidateOnFocus: false, keepPreviousData: true }
   );
 
