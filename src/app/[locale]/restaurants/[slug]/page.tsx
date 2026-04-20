@@ -1,10 +1,6 @@
-'use client';
-
 import { styled } from '@pigment-css/react';
-import { useParams, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
-import { restaurantsRetrieve, tablesValidateRetrieve } from '@/api/generated/api';
+import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
 import { ReservationWidget } from '@/components';
 import CartBadge from '@/components/CartBadge';
@@ -17,10 +13,28 @@ import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
 import SharedTableBanner from '@/components/SharedTableBanner';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
-import { useLocale, useTranslations } from '@/context/LocaleContext';
-import { useTable } from '@/context/TableContext';
-import { primary } from '@/tokens';
+import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
+import { getDictionary } from '@/i18n/getDictionary';
 import { getTranslation } from '@/utils/translations';
+
+import TableValidator from './TableValidator';
+
+// This page is intentionally a Server Component. Previously it was
+// `'use client'` and kicked off `restaurantsRetrieve(slug)` only after
+// React hydration, which meant the hero image on slow 3G was discovered
+// roughly 3–5 seconds after TTFB (script-initiated fetch). Lighthouse
+// reported LCP ≈ 13 s on simulated slow 3G.
+//
+// By fetching server-side we ship the restaurant name + hero image
+// `<img srcset>` in the initial HTML response, so the browser's preload
+// scanner starts the image download before any JS is parsed.
+//
+// Interactivity on this page is isolated to:
+//   - `TableValidator`: processes ?table=<code> side effects
+//   - `PhotoGallery`: lightbox overlay
+//   - `ReservationWidget`, `MenuSection`, banners: cart/table context
+// Those are still client components; they SSR through the server tree
+// just fine.
 
 const Page = styled('div')({
   minHeight: '100vh',
@@ -71,26 +85,6 @@ const MobileReservation = styled('div')({
   },
 });
 
-const LoadingContainer = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  minHeight: '400px',
-});
-
-const Spinner = styled('div')({
-  width: '40px',
-  height: '40px',
-  border: `3px solid #e2e8f0`,
-  borderTop: `3px solid ${primary}`,
-  borderRadius: '50%',
-  animation: 'spin 0.8s linear infinite',
-  '@keyframes spin': {
-    '0%': { transform: 'rotate(0deg)' },
-    '100%': { transform: 'rotate(360deg)' },
-  },
-});
-
 const ErrorContainer = styled('div')({
   textAlign: 'center',
   padding: '40px 20px',
@@ -99,108 +93,44 @@ const ErrorContainer = styled('div')({
 
 const ErrorText = styled('p')({
   fontSize: '16px',
-  color: primary,
+  color: '#EC003F',
   marginBottom: '20px',
 });
 
-export default function RestaurantDetailPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const { locale } = useLocale();
-  const t = useTranslations();
-  const searchParams = useSearchParams();
-  const tableCode = searchParams.get('table');
-  const { tableData, setTableData } = useTable();
-  const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface PageProps {
+  params: Promise<{ locale: string; slug: string }>;
+}
 
-  // Validate ?table=<code> against the backend, establishing a TableSession
-  // so invite-link + cart-attachment flows have sessionId available later.
-  useEffect(() => {
-    if (!tableCode) return;
-    // Re-validate if code is new OR if we have stale state missing sessionId
-    // (happened when earlier validate versions didn't return session_id).
-    const alreadyFresh =
-      tableData?.code === tableCode && tableData.isValidated && !!tableData.sessionId;
-    if (alreadyFresh) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const r = (await tablesValidateRetrieve(tableCode)) as {
-          table_number?: string;
-          table_name?: string;
-          restaurant_slug?: string;
-          session_id?: string;
-        };
-        if (cancelled) return;
-        setTableData({
-          code: tableCode,
-          tableNumber: r.table_number,
-          tableName: r.table_name,
-          restaurantSlug: r.restaurant_slug,
-          sessionId: r.session_id,
-          isValidated: true,
-        });
-      } catch (err) {
-        if (process.env.NODE_ENV !== 'production') console.error('[validateTable]', err);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [tableCode, tableData?.code, tableData?.isValidated, tableData?.sessionId, setTableData]);
+export default async function RestaurantDetailPage({ params }: PageProps) {
+  const { locale: rawLocale, slug } = await params;
+  const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
+  const t = getDictionary(locale);
 
-  useEffect(() => {
-    async function fetchRestaurant() {
-      try {
-        setLoading(true);
-        const data = await restaurantsRetrieve(slug);
-        setRestaurant(data);
-        setError(null);
-      } catch (err) {
-        if (process.env.NODE_ENV !== 'production') console.error('[RestaurantDetail]', err);
-        setError(t.restaurantDetail.failedToLoad);
-      } finally {
-        setLoading(false);
-      }
+  let restaurant: RestaurantDetail | null = null;
+  let loadError: string | null = null;
+  try {
+    restaurant = await restaurantsRetrieve(slug);
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[RestaurantDetail SSR]', err);
     }
-
-    if (slug) {
-      fetchRestaurant();
-    }
-  }, [slug, t.restaurantDetail.failedToLoad]);
-
-  if (loading) {
-    return (
-      <Page>
-        <HeaderPrimary />
-        <Main>
-          <LoadingContainer>
-            <Spinner />
-          </LoadingContainer>
-        </Main>
-      </Page>
-    );
+    loadError = t.restaurantDetail.failedToLoad;
   }
 
-  if (error || !restaurant) {
+  if (loadError || !restaurant) {
     return (
       <Page>
         <HeaderPrimary />
         <Main>
           <ErrorContainer>
-            <ErrorText>{error || t.restaurantDetail.notFound}</ErrorText>
+            <ErrorText>{loadError || t.restaurantDetail.notFound}</ErrorText>
           </ErrorContainer>
         </Main>
       </Page>
     );
   }
 
-  // Prepare images array
   const images = [restaurant.cover_image, restaurant.logo].filter(Boolean) as string[];
-
-  // Get category name
   const categoryName = restaurant.category
     ? getTranslation(restaurant.category.translations, 'name', locale)
     : undefined;
@@ -214,16 +144,20 @@ export default function RestaurantDetailPage() {
     <Page>
       <HeaderPrimary />
 
+      {/* ?table=<code> side-effect validator — no UI, no perf cost */}
+      <TableValidator />
+
       <Main>
-        {/* Photo Gallery — full width above columns */}
+        {/* Photo Gallery — full width above columns. Hero image goes out
+            in the initial HTML so the preload scanner starts fetching
+            it ASAP on slow 3G. */}
         <PhotoGallery images={images} restaurantName={restaurant.name} />
 
         <ContentLayout>
-          {/* Left column — main content */}
           <LeftColumn>
             <SharedTableBanner slug={slug} />
             <RestaurantCartScopeBanner slug={slug} />
-            {/* Restaurant Info */}
+
             <RestaurantDetailInfo
               name={restaurant.name}
               description={restaurant.description}
@@ -235,7 +169,6 @@ export default function RestaurantDetailPage() {
               locale={locale}
             />
 
-            {/* ReservationWidget — mobile only (between RestaurantDetailInfo and MenuSection) */}
             {showWidget && (
               <MobileReservation>
                 <ReservationWidget slug={slug} locale={locale} />
@@ -244,7 +177,6 @@ export default function RestaurantDetailPage() {
 
             <MenuSection slug={slug} locale={locale} headerRight={<CartBadge />} />
 
-            {/* Contact & Hours */}
             <ContactInfo
               operatingHours={restaurant.operating_hours}
               phone={restaurant.phone}
@@ -254,7 +186,6 @@ export default function RestaurantDetailPage() {
               locale={locale}
             />
 
-            {/* Similar Restaurants */}
             <SimilarRestaurants
               cuisineType={restaurant.category?.slug ?? ''}
               currentSlug={slug}
@@ -262,7 +193,6 @@ export default function RestaurantDetailPage() {
             />
           </LeftColumn>
 
-          {/* Right column — sticky widget (desktop only) */}
           {showWidget && (
             <RightColumn>
               <ReservationWidget slug={slug} locale={locale} />

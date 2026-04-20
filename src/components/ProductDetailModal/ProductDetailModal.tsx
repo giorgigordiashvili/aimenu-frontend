@@ -77,6 +77,45 @@ const StyledImage = styled(Image)({
   },
 });
 
+// Low-res thumbnail that sits beneath the hi-res image while it loads.
+// Because the menu list already requested the same `src` at a ~160px bucket,
+// this paints instantly from the browser cache on slow connections.
+const ThumbImage = styled(Image)({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  // Slight blur masks the upscaling from w=160 to the container size;
+  // the crisp hi-res fades in on top and replaces it.
+  filter: 'blur(12px)',
+  transform: 'scale(1.05)',
+  borderBottomLeftRadius: '8px',
+  borderBottomRightRadius: '8px',
+  '@media (min-width: 768px)': {
+    borderRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+});
+
+interface HiResWrapProps {
+  isLoaded?: boolean;
+}
+
+// Wraps the priority hi-res <Image fill /> so we can fade it in atop the
+// cached thumbnail once decoding finishes.
+const HiResLayer = styled('div')<HiResWrapProps>({
+  position: 'absolute',
+  inset: 0,
+  opacity: 0,
+  transition: 'opacity 0.25s ease-out',
+  variants: [
+    {
+      props: { isLoaded: true },
+      style: { opacity: 1 },
+    },
+  ],
+});
+
 const ImagePlaceholder = styled('div')({
   width: '100%',
   height: '100%',
@@ -403,10 +442,16 @@ export default function ProductDetailModal({
   const [selectedModifiers, setSelectedModifiers] =
     useState<Record<string, string[]>>(initialSelections);
 
+  // Progressive image: start with the cached thumbnail, swap in the
+  // hi-res once it's decoded. Resets per-product so reopening the modal
+  // on a different item doesn't flash the previous hi-res.
+  const [hiResLoaded, setHiResLoaded] = useState(false);
+
   // Reset selections when modal opens with new product
   useEffect(() => {
     if (isOpen) {
       setSelectedModifiers(initialModifiers ?? getInitialSelections(product.modifierGroups));
+      setHiResLoaded(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, product.id]);
@@ -514,13 +559,29 @@ export default function ProductDetailModal({
         {/* Product Image */}
         <ImageContainer>
           {product.image ? (
-            <StyledImage
-              src={product.image}
-              alt={product.name}
-              fill
-              sizes='(min-width: 768px) 600px, 393px'
-              priority
-            />
+            <>
+              {/* Low-res backdrop — same URL the menu list just fetched at
+                  the 160px bucket, so it's usually an instant cache hit. */}
+              <ThumbImage
+                src={product.image}
+                alt=''
+                aria-hidden='true'
+                fill
+                sizes='80px'
+                priority
+              />
+              {/* Hi-res fades in over the thumbnail when decoded. */}
+              <HiResLayer isLoaded={hiResLoaded}>
+                <StyledImage
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  sizes='(min-width: 768px) 600px, 393px'
+                  priority
+                  onLoad={() => setHiResLoaded(true)}
+                />
+              </HiResLayer>
+            </>
           ) : (
             <ImagePlaceholder />
           )}

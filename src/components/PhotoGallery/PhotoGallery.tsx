@@ -108,6 +108,32 @@ const LightboxImageContainer = styled('div')({
   overflow: 'hidden',
 });
 
+// Low-res backdrop for the lightbox — the same URL is already cached from
+// the grid thumbnail, so users on a slow connection see something
+// immediately instead of a black box while the full-res decodes.
+const LightboxThumb = styled(Image)({
+  objectFit: 'contain',
+  filter: 'blur(18px)',
+  transform: 'scale(1.03)',
+});
+
+interface HiResWrapProps {
+  isLoaded?: boolean;
+}
+
+const LightboxHiResLayer = styled('div')<HiResWrapProps>({
+  position: 'absolute',
+  inset: 0,
+  opacity: 0,
+  transition: 'opacity 0.25s ease-out',
+  variants: [
+    {
+      props: { isLoaded: true },
+      style: { opacity: 1 },
+    },
+  ],
+});
+
 const CloseButton = styled('button')({
   position: 'absolute',
   top: '16px',
@@ -182,6 +208,9 @@ interface PhotoGalleryProps {
 export default function PhotoGallery({ images, restaurantName }: PhotoGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Progressive image for the lightbox: show the cached grid thumbnail
+  // immediately and fade in the full-res once decoded.
+  const [hiResLoaded, setHiResLoaded] = useState(false);
 
   // Ensure we have at least one image
   const galleryImages = images.length > 0 ? images : [];
@@ -194,6 +223,7 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
 
   const openLightbox = (index: number) => {
     setCurrentIndex(index);
+    setHiResLoaded(false);
     setLightboxOpen(true);
     document.body.style.overflow = 'hidden';
   };
@@ -204,10 +234,12 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
   };
 
   const goToPrevious = () => {
+    setHiResLoaded(false);
     setCurrentIndex(prev => (prev > 0 ? prev - 1 : galleryImages.length - 1));
   };
 
   const goToNext = () => {
+    setHiResLoaded(false);
     setCurrentIndex(prev => (prev < galleryImages.length - 1 ? prev + 1 : 0));
   };
 
@@ -237,9 +269,14 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
             src={galleryImages[0]}
             alt={`${restaurantName} - main photo`}
             fill
-            sizes='100vw'
+            // The LCP element on mobile. Scoping `sizes` to the
+            // viewports where this image is actually visible lets Next
+            // pick a 420/640-bucketed src on phones instead of the
+            // 750 bucket (~52 KB → ~22 KB on slow 3G).
+            sizes='(min-width: 768px) 1px, 100vw'
             style={{ objectFit: 'cover' }}
             priority
+            fetchPriority='high'
           />
         </MobileImageContainer>
 
@@ -251,9 +288,14 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
               src={desktopImages[0]}
               alt={`${restaurantName} - photo 1`}
               fill
-              sizes='(min-width: 768px) 50vw'
+              // Main layout caps at 1280px with 80px padding — the hero
+              // column is at most ~640px wide on desktop. Reflecting
+              // that in `sizes` keeps the downloaded image well under
+              // the 750 bucket.
+              sizes='(min-width: 1280px) 640px, (min-width: 768px) 50vw, 1px'
               style={{ objectFit: 'cover' }}
               priority
+              fetchPriority='high'
             />
           </LargeGridImage>
 
@@ -264,8 +306,9 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
                 src={image}
                 alt={`${restaurantName} - photo ${index + 2}`}
                 fill
-                sizes='(min-width: 768px) 25vw'
+                sizes='(min-width: 1280px) 220px, (min-width: 768px) 25vw, 1px'
                 style={{ objectFit: 'cover' }}
+                loading='lazy'
               />
             </GridImageContainer>
           ))}
@@ -321,13 +364,26 @@ export default function PhotoGallery({ images, restaurantName }: PhotoGalleryPro
             )}
 
             <LightboxImageContainer>
-              <Image
+              {/* Cached grid-sized thumbnail as instant LQIP backdrop. */}
+              <LightboxThumb
+                key={`thumb-${currentIndex}`}
                 src={galleryImages[currentIndex]}
-                alt={`${restaurantName} - photo ${currentIndex + 1}`}
+                alt=''
+                aria-hidden='true'
                 fill
-                sizes='90vw'
-                style={{ objectFit: 'contain' }}
+                sizes='(min-width: 1280px) 640px, (min-width: 768px) 50vw, 100vw'
               />
+              <LightboxHiResLayer isLoaded={hiResLoaded}>
+                <Image
+                  key={`hi-${currentIndex}`}
+                  src={galleryImages[currentIndex]}
+                  alt={`${restaurantName} - photo ${currentIndex + 1}`}
+                  fill
+                  sizes='90vw'
+                  style={{ objectFit: 'contain' }}
+                  onLoad={() => setHiResLoaded(true)}
+                />
+              </LightboxHiResLayer>
             </LightboxImageContainer>
           </ModalContent>
         </Overlay>
