@@ -534,8 +534,13 @@
     "subtitle": "Найдите подходящее место",
     "filters": "Фильтры",
     "allCities": "Все города",
-    "search": "Поиск...",
-    "allCategories": "Все"
+    "search": "Поиск ресторанов",
+    "allCategories": "Все",
+    "resultsCount": "{count} ресторанов",
+    "resultsCountZero": "Ничего не найдено",
+    "clearFilters": "Сбросить фильтры",
+    "clearSearch": "Очистить",
+    "cityLabel": "Город"
   },
   "footer": {
     "navigation": "Навигация",

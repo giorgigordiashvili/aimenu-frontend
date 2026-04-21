@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
 import { favoritesRestaurantsList, favoritesRestaurantsToggleCreate } from '@/api/generated/api';
@@ -18,12 +18,10 @@ import {
   border,
   foreground,
   muted,
-  shadowCard,
-  slate50,
+  rose600,
   slate100,
   slate200,
-  slate400,
-  slate500,
+  slate50,
   white,
 } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
@@ -51,91 +49,97 @@ const MainContent = styled('main')({
   flex: 1,
 });
 
-const TabsSection = styled('div')({
-  background: slate50,
-  padding: '16px 0',
-});
-
-const TabsInner = styled('div')({
+// Unified filter row: city dropdown on one side, "Clear filters" link on
+// the other. Category chips live in a separate row below. Consolidating
+// everything into two tidy rows instead of three reduces visual noise.
+const FilterRow = styled('div')({
   maxWidth: '1120px',
-  margin: '0 auto',
-  padding: '0',
-});
-
-const FiltersRow = styled('div')({
-  background: 'transparent',
-  paddingTop: '16px',
-  paddingBottom: '8px',
-});
-
-const FiltersCard = styled('div')({
-  maxWidth: '1120px',
-  margin: '0 auto',
-  background: white,
-  borderRadius: '14px',
-  boxShadow: shadowCard,
-  padding: '14px 20px',
+  margin: '12px auto 0',
   display: 'flex',
   alignItems: 'center',
-  gap: '16px',
-  '@media (max-width: 640px)': {
-    padding: '12px 16px',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    gap: '8px',
+  gap: '12px',
+  flexWrap: 'wrap',
+});
+
+const CitySelectWrap = styled('label')({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '8px',
+  height: '40px',
+  padding: '0 6px 0 14px',
+  border: `1px solid ${border}`,
+  borderRadius: '100px',
+  background: white,
+  cursor: 'pointer',
+  transition: 'border-color 0.15s ease',
+  '&:hover': {
+    borderColor: slate200,
+  },
+  '&:focus-within': {
+    borderColor: rose600,
+    boxShadow: `0 0 0 3px ${slate100}`,
   },
 });
 
-const FiltersLabel = styled('span')({
-  fontSize: '11px',
-  fontWeight: 700,
-  color: slate500,
-  flexShrink: 0,
+const CitySelectLabel = styled('span')({
+  fontSize: '12px',
+  fontWeight: 600,
+  color: muted,
   textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-  lineHeight: 1,
+  letterSpacing: '0.05em',
 });
 
 const CitySelect = styled('select')({
-  flex: 1,
-  maxWidth: '280px',
-  padding: '10px 36px 10px 14px',
-  border: `1px solid ${border}`,
-  borderRadius: '10px',
-  fontSize: '14px',
-  fontWeight: 500,
-  color: foreground,
-  background: white,
-  cursor: 'pointer',
-  outline: 'none',
-  fontFamily: 'inherit',
   appearance: 'none',
   WebkitAppearance: 'none',
   MozAppearance: 'none',
+  border: 'none',
+  background: 'transparent',
+  padding: '0 28px 0 0',
+  fontSize: '14px',
+  fontWeight: 600,
+  color: foreground,
+  outline: 'none',
+  cursor: 'pointer',
+  fontFamily: 'inherit',
   backgroundImage:
     "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2362748e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
   backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 12px center',
-  transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+  backgroundPosition: 'right 4px center',
+  paddingRight: '24px',
+});
+
+const ClearFiltersButton = styled('button')({
+  appearance: 'none',
+  border: 'none',
+  background: 'transparent',
+  color: rose600,
+  fontSize: '13px',
+  fontWeight: 600,
+  padding: '8px 10px',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  marginLeft: 'auto',
   '&:hover': {
-    borderColor: slate400,
+    background: slate100,
   },
-  '&:focus': {
-    borderColor: slate400,
-    boxShadow: `0 0 0 3px rgba(148, 163, 184, 0.15)`,
+  '&:focus-visible': {
+    outline: `2px solid ${rose600}`,
+    outlineOffset: '2px',
   },
-  '@media (max-width: 640px)': {
-    maxWidth: '100%',
-    width: '100%',
-  },
+});
+
+const TabsSection = styled('div')({
+  maxWidth: '1120px',
+  margin: '12px auto 0',
 });
 
 const GridSection = styled('div')({
   maxWidth: '1120px',
   margin: '0 auto',
-  padding: '32px 0 80px',
+  padding: '24px 0 80px',
   '@media (min-width: 768px)': {
-    padding: '48px 0 100px',
+    padding: '32px 0 100px',
   },
 });
 
@@ -151,7 +155,7 @@ const Grid = styled('div')({
     gridTemplateColumns: '1fr',
     gap: 16,
   },
-  marginTop: 24,
+  marginTop: 16,
 });
 
 const CardWrapper = styled('div')({
@@ -211,6 +215,28 @@ const parseTranslations = (translations: string | object | undefined): object =>
   }
   return translations;
 };
+
+// Extract unique categories from a list of restaurants, picking the best
+// translated name for the current locale. Shared between the "fetch once
+// unfiltered" category population and the fallback from the filtered page.
+function collectCategories(list: RestaurantList[], locale: string): Category[] {
+  const byId = new Map<string | number, Category>();
+  for (const r of list) {
+    if (!r.category) continue;
+    const parsed = parseTranslations(r.category.translations) as Record<
+      string,
+      { name?: string }
+    >;
+    const name =
+      parsed[locale]?.name ?? parsed['ka']?.name ?? parsed['en']?.name ?? r.category.slug;
+    byId.set(r.category.id, {
+      id: String(r.category.id),
+      name,
+      icon: r.category.icon,
+    });
+  }
+  return Array.from(byId.values());
+}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -273,6 +299,25 @@ export default function RestaurantsSearchPage() {
       });
   }, []);
 
+  // Fetch categories ONCE from a large unfiltered query — otherwise the
+  // chip list changes as the user paginates or applies filters, which
+  // makes it impossible to switch back to a category that's no longer on
+  // the current page.
+  useEffect(() => {
+    axiosInstance
+      .get('/api/v1/restaurants/', { params: { page: 1, page_size: 100 } })
+      .then(response => {
+        const data = response.data;
+        const results: RestaurantList[] = Array.isArray(data)
+          ? data
+          : (data?.results ?? []);
+        setCategories(collectCategories(results, locale));
+      })
+      .catch(() => {
+        setCategories([]);
+      });
+  }, [locale]);
+
   // Fetch restaurants when URL params change
   useEffect(() => {
     setLoading(true);
@@ -293,34 +338,6 @@ export default function RestaurantsSearchPage() {
         const count = data?.count ?? results.length;
         setRestaurants(results);
         setTotalCount(count);
-
-        // Derive unique categories from the restaurant list
-        const uniqueCategories: Category[] = Array.from(
-          new Map<string | number, Category>(
-            results
-              .filter((r: RestaurantList) => r.category)
-              .map((r: RestaurantList) => {
-                const parsed = parseTranslations(r.category.translations) as Record<
-                  string,
-                  { name?: string }
-                >;
-                const name =
-                  parsed[locale]?.name ??
-                  parsed['ka']?.name ??
-                  parsed['en']?.name ??
-                  r.category.slug;
-                return [
-                  r.category.id,
-                  {
-                    id: String(r.category.id),
-                    name,
-                    icon: r.category.icon,
-                  },
-                ];
-              })
-          ).values()
-        );
-        setCategories(uniqueCategories);
       })
       .catch(() => {
         setRestaurants([]);
@@ -329,9 +346,13 @@ export default function RestaurantsSearchPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [cityParam, categoryParam, searchParam, pageParam, locale]);
+  }, [cityParam, categoryParam, searchParam, pageParam]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const hasActiveFilters = useMemo(
+    () => Boolean(cityParam || categoryParam || searchParam),
+    [cityParam, categoryParam, searchParam]
+  );
 
   // ── URL helpers ────────────────────────────────────────────────────────────
 
@@ -383,6 +404,11 @@ export default function RestaurantsSearchPage() {
     [buildParams, locale, router]
   );
 
+  const handleClearFilters = useCallback(() => {
+    setSearchInput('');
+    router.push(localePath(locale, '/restaurants-search'));
+  }, [locale, router]);
+
   const handleToggleFavorite = useCallback(async (restaurantId: string | number) => {
     const id = String(restaurantId);
     // Optimistic update
@@ -421,27 +447,24 @@ export default function RestaurantsSearchPage() {
           <PageHeader
             title={t.restaurantsSearch.title}
             subtitle={t.restaurantsSearch.subtitle}
+            resultCount={loading ? undefined : totalCount}
+            resultCountTemplate={t.restaurantsSearch.resultsCount}
+            resultCountZeroLabel={t.restaurantsSearch.resultsCountZero}
             searchValue={searchInput}
             onSearchChange={setSearchInput}
             onSearchSubmit={handleSearchSubmit}
             searchPlaceholder={t.restaurantsSearch.search}
+            clearLabel={t.restaurantsSearch.clearSearch}
           />
 
-          <TabsSection>
-            <TabsInner>
-              <CategoryFilterTabs
-                categories={categories}
-                activeId={categoryParam}
-                allLabel={t.restaurantsSearch.allCategories}
-                onChange={handleCategoryChange}
-              />
-            </TabsInner>
-          </TabsSection>
-
-          <FiltersRow>
-            <FiltersCard>
-              <FiltersLabel>{t.restaurantsSearch.filters}</FiltersLabel>
-              <CitySelect value={cityParam} onChange={e => handleCityChange(e.target.value)}>
+          <FilterRow>
+            <CitySelectWrap>
+              <CitySelectLabel>{t.restaurantsSearch.cityLabel}</CitySelectLabel>
+              <CitySelect
+                value={cityParam}
+                onChange={e => handleCityChange(e.target.value)}
+                aria-label={t.restaurantsSearch.cityLabel}
+              >
                 <option value=''>{t.restaurantsSearch.allCities}</option>
                 {cities.map(city => (
                   <option key={city.slug} value={city.slug}>
@@ -451,8 +474,23 @@ export default function RestaurantsSearchPage() {
                   </option>
                 ))}
               </CitySelect>
-            </FiltersCard>
-          </FiltersRow>
+            </CitySelectWrap>
+
+            {hasActiveFilters && (
+              <ClearFiltersButton type='button' onClick={handleClearFilters}>
+                {t.restaurantsSearch.clearFilters} ✕
+              </ClearFiltersButton>
+            )}
+          </FilterRow>
+
+          <TabsSection>
+            <CategoryFilterTabs
+              categories={categories}
+              activeId={categoryParam}
+              allLabel={t.restaurantsSearch.allCategories}
+              onChange={handleCategoryChange}
+            />
+          </TabsSection>
 
           <GridSection>
             <Grid>
@@ -483,6 +521,9 @@ export default function RestaurantsSearchPage() {
                         variant='default'
                         restaurantTitle={restaurant.name}
                         imageSrc={restaurant.logo || '/RestaurantCardImage.jpg'}
+                        imageBlurhash={
+                          (restaurant as { logo_blurhash?: string }).logo_blurhash
+                        }
                         locationText={restaurant.city}
                         rating={parseFloat(restaurant.average_rating || '0')}
                         filterText={categoryName}
