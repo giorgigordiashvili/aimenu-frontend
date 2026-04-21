@@ -6,18 +6,20 @@ import PendingReviewsSection from '@/components/PendingReviewsSection';
 import ReviewCard from '@/components/ReviewCard';
 import { useTranslations } from '@/context/LocaleContext';
 import { useMyReviews } from '@/hooks/useReviews';
-import { border, foreground, muted, radiusMd, slate100 } from '@/tokens';
+import { background, border, foreground, muted, radiusMd, slate100, slate200, white } from '@/tokens';
 
-const PageInner = styled('div')({
-  maxWidth: '960px',
+const Root = styled('div')({
+  backgroundColor: background,
+  padding: '24px 16px 64px',
+  '@media (min-width: 768px)': { padding: '24px 24px 64px' },
+});
+
+const Inner = styled('div')({
+  maxWidth: '1100px',
   margin: '0 auto',
-  padding: '16px 16px 40px',
   display: 'flex',
   flexDirection: 'column',
-  gap: '24px',
-  '@media (min-width: 768px)': {
-    padding: '24px 0 60px',
-  },
+  gap: '20px',
 });
 
 const Title = styled('h2')({
@@ -25,21 +27,32 @@ const Title = styled('h2')({
   fontWeight: 700,
   color: foreground,
   margin: 0,
+  padding: '4px 0 0',
 });
 
 const Empty = styled('div')({
   padding: '40px 20px',
   textAlign: 'center',
   color: muted,
-  background: '#ffffff',
+  background: white,
   borderRadius: radiusMd,
   border: `1px dashed ${border}`,
 });
 
-const Skeleton = styled('div')({
-  height: '120px',
+// Shimmering skeleton — the existing project convention uses the same
+// 1.4s keyframe so review cards fade in matching the loyalty / grid
+// placeholders above the fold.
+const SkeletonRow = styled('div')({
+  height: '140px',
   borderRadius: radiusMd,
-  background: slate100,
+  border: `1px solid ${border}`,
+  background: `linear-gradient(90deg, ${slate100} 0%, ${slate200} 50%, ${slate100} 100%)`,
+  backgroundSize: '200% 100%',
+  animation: 'reviewsShimmer 1.4s infinite',
+  '@keyframes reviewsShimmer': {
+    '0%': { backgroundPosition: '200% 0' },
+    '100%': { backgroundPosition: '-200% 0' },
+  },
 });
 
 export default function MyReviewsPage() {
@@ -48,25 +61,24 @@ export default function MyReviewsPage() {
   const { results, isLoading, mutate } = useMyReviews(1);
 
   return (
-    <PageInner>
-      <PendingReviewsSection onSubmitted={() => void mutate()} />
+    <Root>
+      <Inner>
+        <PendingReviewsSection onSubmitted={() => void mutate()} />
 
-      <div>
         <Title>{copy.myReviewsTitle}</Title>
-      </div>
 
-      {isLoading && (
-        <>
-          <Skeleton />
-          <Skeleton />
-        </>
-      )}
-
-      {!isLoading && results.length === 0 && <Empty>{copy.myReviewsEmpty}</Empty>}
-
-      {results.map(r => (
-        <ReviewCard key={r.id} review={r} />
-      ))}
-    </PageInner>
+        {isLoading ? (
+          <>
+            <SkeletonRow />
+            <SkeletonRow />
+            <SkeletonRow />
+          </>
+        ) : results.length === 0 ? (
+          <Empty>{copy.myReviewsEmpty}</Empty>
+        ) : (
+          results.map(r => <ReviewCard key={r.id} review={r} />)
+        )}
+      </Inner>
+    </Root>
   );
 }
