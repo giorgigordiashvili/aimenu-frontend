@@ -63,35 +63,21 @@ const TabsWrapper = styled('div')({
   '&::-webkit-scrollbar': {
     display: 'none',
   },
-  // Keep the category chips visible while the user scrolls through a long
-  // menu. HeaderPrimary is 64px tall and sticks at top:0 with z-index:200;
-  // this row lives just under it. We break out of the ancestor's
-  // max-width + padding so the background spans the full viewport, while
-  // the inner chip list stays visually aligned with the menu items below.
+  // Sticky just below the global Header (64px). On mobile we break out to
+  // the Main padding edges so the background reaches the viewport edges
+  // (content inside Main has 20px padding). On desktop we stay within the
+  // content column — making it full-width looked broken because the menu
+  // lives inside LeftColumn, not Main.
   position: 'sticky',
   top: '64px',
   zIndex: 10,
   background: 'rgba(255, 255, 255, 0.95)',
   backdropFilter: 'blur(8px)',
-  // Full-viewport span trick: this offsets the element by half the
-  // difference between viewport width and its parent's computed width,
-  // then overrides its own width to 100vw — lands it flush left at 0
-  // and flush right at 100vw regardless of what column / container it
-  // was rendered inside.
-  marginLeft: 'calc(50% - 50vw)',
-  marginRight: 'calc(50% - 50vw)',
-  width: '100vw',
-  // Inner padding aligns the first chip with the content column. On
-  // wide viewports the Main has max-width 1280 centered with 80px
-  // horizontal padding — so chips start (100vw - 1280)/2 + 80 in from
-  // the viewport edge. `max()` keeps the mobile baseline padding when
-  // the viewport is narrower than the breakpoints.
+  margin: '0 -20px 16px',
   padding: '10px 20px',
-  marginBottom: '16px',
-  boxSizing: 'border-box',
   '@media (min-width: 768px)': {
-    padding: '12px max(24px, calc((100vw - 1280px) / 2 + 80px))',
-    marginBottom: '20px',
+    margin: '0 0 20px',
+    padding: '12px 0',
   },
 });
 
