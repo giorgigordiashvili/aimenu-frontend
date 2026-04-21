@@ -37,6 +37,33 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Permanent redirects for the old URL scheme. Keeps any previously-shared
+  // links (Google results, chat messages, QR codes) resolving to the new
+  // routes. The middleware's locale rewrite runs before these, so matching
+  // against the un-prefixed paths is enough.
+  async redirects() {
+    return [
+      // Old listing routes collapse into the new homepage.
+      { source: '/restaurants-search', destination: '/', permanent: true },
+      { source: '/restaurants', destination: '/', permanent: true },
+      // Detail page moved from plural to singular.
+      { source: '/restaurants/:slug', destination: '/restaurant/:slug', permanent: true },
+      { source: '/restaurants/:slug/book', destination: '/restaurant/:slug/book', permanent: true },
+      // Localised variants.
+      { source: '/:locale(en|ru)/restaurants-search', destination: '/:locale/', permanent: true },
+      { source: '/:locale(en|ru)/restaurants', destination: '/:locale/', permanent: true },
+      {
+        source: '/:locale(en|ru)/restaurants/:slug',
+        destination: '/:locale/restaurant/:slug',
+        permanent: true,
+      },
+      {
+        source: '/:locale(en|ru)/restaurants/:slug/book',
+        destination: '/:locale/restaurant/:slug/book',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withPigment(nextConfig, {

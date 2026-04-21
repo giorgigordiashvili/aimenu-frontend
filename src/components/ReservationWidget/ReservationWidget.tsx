@@ -347,7 +347,7 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
     if (!selectedDate || !selectedTime) return;
     const dateParam = formatDateParam(selectedDate);
     router.push(
-      `${localePath(activeLocale, `/restaurants/${slug}/book`)}?date=${dateParam}&time=${selectedTime}&guests=${guests}`
+      `${localePath(activeLocale, `/restaurant/${slug}/book`)}?date=${dateParam}&time=${selectedTime}&guests=${guests}`
     );
   }
 
