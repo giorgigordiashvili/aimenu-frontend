@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import { blurhashToDataUrl } from '@/components/ProgressiveImage';
@@ -210,6 +210,11 @@ export default function DefaultVariant({
 }: DefaultVariantProps) {
   const router = useRouter();
   const blurhashDataURL = useMemo(() => blurhashToDataUrl(imageBlurhash), [imageBlurhash]);
+  // When the remote image 404s / times out / CORS-blocks we'd otherwise be
+  // stuck staring at the blurhash forever. Fall through to the local
+  // /public asset so the card still shows a real image.
+  const [imgFailed, setImgFailed] = useState(false);
+  const resolvedImageSrc = imgFailed ? '/RestaurantCardImage.jpg' : imageSrc;
 
   const handleCardClick = () => {
     if (href) router.push(href);
@@ -229,7 +234,14 @@ export default function DefaultVariant({
     <ContentGroup onClick={handleCardClick}>
       <ContentTop>
         {blurhashDataURL && <BlurBackdrop style={{ backgroundImage: `url(${blurhashDataURL})` }} />}
-        <Image src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
+        <Image
+          src={resolvedImageSrc}
+          alt={restaurantTitle || 'Restaurant'}
+          loading='lazy'
+          onError={() => {
+            if (!imgFailed) setImgFailed(true);
+          }}
+        />
         <FavoriteGroup>
           {showFavoriteYellow && (
             <FavoriteYellow>

@@ -2,6 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import CalendarIcon from '@/icons/Calendar';
@@ -166,6 +167,7 @@ export default function XlVariant({
   favoriteLabel = 'რჩეული',
 }: XlVariantProps) {
   const router = useRouter();
+  const [xlImgFailed, setXlImgFailed] = useState(false);
 
   const handleCardClick = () => {
     if (href) router.push(href);
@@ -181,7 +183,13 @@ export default function XlVariant({
   return (
     <XlContainer onClick={handleCardClick}>
       <XlImageContainer>
-        <XlImage src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
+        <XlImage
+          src={xlImgFailed ? '/RestaurantCardImage.jpg' : imageSrc}
+          alt={restaurantTitle || 'Restaurant'}
+          onError={() => {
+            if (!xlImgFailed) setXlImgFailed(true);
+          }}
+        />
         {showFavoriteYellow && (
           <XlFavoriteYellowOverlay>
             <FavoriteYellow>

@@ -2,6 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import LocationIcon from '@/icons/Location';
@@ -140,6 +141,7 @@ export default function CompactVariant({
   favoriteLabel = 'რჩეული',
 }: CompactVariantProps) {
   const router = useRouter();
+  const [compactImgFailed, setCompactImgFailed] = useState(false);
 
   const handleCardClick = () => {
     if (href) router.push(href);
@@ -152,7 +154,13 @@ export default function CompactVariant({
   return (
     <CompactContainer onClick={handleCardClick}>
       <CompactImageContainer>
-        <CompactImage src={imageSrc} alt={restaurantTitle || 'Restaurant'} />
+        <CompactImage
+          src={compactImgFailed ? '/RestaurantCardImage.jpg' : imageSrc}
+          alt={restaurantTitle || 'Restaurant'}
+          onError={() => {
+            if (!compactImgFailed) setCompactImgFailed(true);
+          }}
+        />
         {showFavoriteYellow && (
           <CompactFavoriteYellowOverlay>
             <FavoriteYellow>

@@ -1,7 +1,7 @@
 'use client';
 
 import Image, { type ImageProps } from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { blurhashToDataUrl } from './blurhashDataUrl';
 
@@ -19,6 +19,13 @@ import { blurhashToDataUrl } from './blurhashDataUrl';
 interface Props extends Omit<ImageProps, 'placeholder' | 'blurDataURL' | 'onLoadingComplete'> {
   blurhash?: string | null;
 }
+
+// Maximum time we'll hold the blur filter. If the real image hasn't fired
+// `onLoad` within this window (CDN 404 / cold-TLS stall / broken URL), we
+// remove the filter anyway so users don't end up staring at a permanent
+// blurry smudge. The Image element still reports failures via onError,
+// but that only fires on some failure modes — the timeout catches the rest.
+const BLUR_TIMEOUT_MS = 6000;
 
 type IdleCb = (cb: () => void, opts?: { timeout: number }) => number;
 type CancelIdleCb = (handle: number) => void;
@@ -46,6 +53,7 @@ export default function ProgressiveImage({ blurhash, alt, style, ...rest }: Prop
   // own image pipeline handles the placeholder (solid background) until
   // the idle callback lands.
   const [blurDataURL, setBlurDataURL] = useState<string | false | null>(blurhash ? null : false);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!blurhash) {
@@ -64,6 +72,17 @@ export default function ProgressiveImage({ blurhash, alt, style, ...rest }: Prop
     };
   }, [blurhash]);
 
+  // Safety net: if the real image never fires `load` (CDN 404, CORS, cold
+  // connection that silently stalls, preload race where the event was
+  // dropped), clear the blur anyway so we don't look frozen forever.
+  useEffect(() => {
+    if (!blurDataURL || loaded) return;
+    timerRef.current = window.setTimeout(() => setLoaded(true), BLUR_TIMEOUT_MS);
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, [blurDataURL, loaded]);
+
   if (!blurDataURL) {
     return <Image alt={alt} style={style} {...rest} />;
   }
@@ -73,7 +92,14 @@ export default function ProgressiveImage({ blurhash, alt, style, ...rest }: Prop
       alt={alt}
       placeholder='blur'
       blurDataURL={blurDataURL}
-      onLoadingComplete={() => setLoaded(true)}
+      // `onLoad` is the modern event; fires reliably on both fresh loads
+      // and cached responses. (The deprecated `onLoadingComplete` has
+      // skipped in some Next 15 cache-hit paths.)
+      onLoad={() => setLoaded(true)}
+      // Image failed to download — stop pretending it's loading and
+      // show whatever fallback the parent supplied. Without this the
+      // blur filter would persist indefinitely.
+      onError={() => setLoaded(true)}
       style={{
         ...style,
         transition: 'filter 350ms ease',
