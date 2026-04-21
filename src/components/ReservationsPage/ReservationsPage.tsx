@@ -235,14 +235,12 @@ export default function ReservationsPage() {
     r => String(r.status).toLowerCase() === 'completed'
   ).length;
   const totalCount = (activeCount || 0) + (historyCount || 0);
-  const loyaltyPoints = user.profile?.loyalty_points ?? 0;
   const totalSpent = user.profile?.total_spent ?? '0';
 
   const sidebarProps: ReservationsSidebarProps = {
     totalCount,
     cancelledCount,
     completedCount,
-    loyaltyPoints,
     totalSpent,
   };
 
