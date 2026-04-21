@@ -535,6 +535,20 @@
     "orderingDisabledToast": "Ordering is disabled at this restaurant.",
     "inviteClosed": "This restaurant is menu-only — ordering is closed."
   },
+  "seo": {
+    "siteTitle": "aimenu.ge — restaurants, menus, reservations",
+    "siteDescription": "Discover and book Georgia's best restaurants. Browse menus, reserve a table, and order from your phone.",
+    "homeTitle": "Restaurants & menus in Georgia",
+    "homeDescription": "Find your next favourite spot. Browse menus, ratings and book a table in seconds.",
+    "searchTitle": "Search restaurants",
+    "searchDescription": "Filter by city, cuisine, and amenities. Browse menus and book in one place.",
+    "restaurantTitle": "{name} — menu, photos and reservations",
+    "restaurantDescription": "Browse {name}'s menu in {city}. See photos, ratings and book a table.",
+    "aboutTitle": "About aimenu.ge",
+    "aboutDescription": "How aimenu.ge helps customers and restaurants in Georgia.",
+    "contactTitle": "Contact aimenu.ge",
+    "contactDescription": "Get in touch with the aimenu.ge team — partnerships, support, feedback."
+  },
   "restaurantsSearch": {
     "loading": "Loading...",
     "noResults": "No restaurants found",

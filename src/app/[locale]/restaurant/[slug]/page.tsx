@@ -1,4 +1,5 @@
 import { styled } from '@pigment-css/react';
+import type { Metadata } from 'next';
 
 import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
@@ -14,6 +15,7 @@ import SharedTableBanner from '@/components/SharedTableBanner';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
 import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import { buildMetadata, localeUrl } from '@/lib/seo';
 import { getTranslation } from '@/utils/translations';
 
 import BelowFold from './BelowFold';
@@ -107,6 +109,33 @@ interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
 
+// Generated per-restaurant. We deliberately don't call restaurantsRetrieve
+// here because Pigment CSS's build-time sandbox can't evaluate the axios
+// transport (Node http2 import). For richer per-restaurant titles a
+// dedicated /restaurant/[slug]/opengraph-image route + a Server Component
+// that hits the API is the right place — this metadata path stays static
+// so the build is reliable.
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale: rawLocale, slug } = await params;
+  const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
+  const t = getDictionary(locale);
+  const seo = (t as unknown as { seo?: Record<string, string> }).seo ?? {};
+  // Slug → title-cased best guess for the visible name. The API-correct
+  // name still lands inside the page itself (h1 + JSON-LD).
+  const guessName = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const title = (seo.restaurantTitle ?? '{name}').replace('{name}', guessName);
+  const description = (seo.restaurantDescription ?? '{name}.')
+    .replace('{name}', guessName)
+    .replace('{city}', '');
+  return buildMetadata({
+    locale,
+    path: `/restaurant/${slug}`,
+    title,
+    description,
+    ogType: 'restaurant',
+  });
+}
+
 export default async function RestaurantDetailPage({ params }: PageProps) {
   const { locale: rawLocale, slug } = await params;
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
@@ -160,8 +189,56 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   // one of the two flows (reservation OR ordering) is active.
   const showMobileSheet = showWidget || orderingEnabled;
 
+  // schema.org/Restaurant JSON-LD for Google's rich result. Optional fields
+  // are only emitted when the API populated them so we don't ship empty
+  // strings (which Google flags).
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Restaurant',
+    '@id': localeUrl(locale, `/restaurant/${slug}`),
+    url: localeUrl(locale, `/restaurant/${slug}`),
+    name: restaurant.name,
+    image: [restaurant.cover_image, restaurant.logo].filter(Boolean),
+    servesCuisine: categoryName,
+    address: restaurant.address
+      ? {
+          '@type': 'PostalAddress',
+          streetAddress: restaurant.address,
+          addressLocality: restaurant.city,
+          addressCountry: restaurant.country || 'GE',
+        }
+      : undefined,
+    geo:
+      restaurant.latitude && restaurant.longitude
+        ? {
+            '@type': 'GeoCoordinates',
+            latitude: restaurant.latitude,
+            longitude: restaurant.longitude,
+          }
+        : undefined,
+    telephone: restaurant.phone || undefined,
+    priceRange: '₾₾',
+    aggregateRating:
+      restaurant.average_rating && parseFloat(restaurant.average_rating) > 0
+        ? {
+            '@type': 'AggregateRating',
+            ratingValue: restaurant.average_rating,
+            reviewCount: restaurant.total_reviews ?? 0,
+          }
+        : undefined,
+    acceptsReservations: !!restaurant.accepts_reservations,
+  };
+  // Strip undefined keys so the JSON output is tidy.
+  for (const k of Object.keys(jsonLd)) if (jsonLd[k] === undefined) delete jsonLd[k];
+
   return (
     <Page>
+      {/* schema.org/Restaurant for Google rich results. App Router emits
+          this server-side; no next/script wrapper needed. */}
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <HeaderPrimary />
 
       {/* ?table=<code> side-effect validator — no UI, no perf cost */}
