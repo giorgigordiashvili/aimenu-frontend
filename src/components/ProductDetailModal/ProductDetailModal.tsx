@@ -147,8 +147,9 @@ const ImagePlaceholder = styled('div')({
 
 const BackButtonContainer = styled('div')({
   position: 'absolute',
-  top: '67px',
-  left: '20px',
+  top: '16px',
+  left: '16px',
+  zIndex: 10,
   '@media (min-width: 768px)': {
     display: 'none',
   },
