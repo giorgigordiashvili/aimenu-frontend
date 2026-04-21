@@ -377,13 +377,13 @@ export default function RestaurantsSearchPage() {
 
   const handleSearchSubmit = useCallback(() => {
     const qs = buildParams({ search: searchInput, page: 1 });
-    router.push(`${localePath(locale, '/')}?${qs}`);
+    router.push(`${localePath(locale, '/restaurants')}?${qs}`);
   }, [buildParams, searchInput, locale, router]);
 
   const handleCategoryChange = useCallback(
     (id: string | null) => {
       const qs = buildParams({ category: id, page: 1 });
-      router.push(`${localePath(locale, '/')}?${qs}`);
+      router.push(`${localePath(locale, '/restaurants')}?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -391,7 +391,7 @@ export default function RestaurantsSearchPage() {
   const handleCityChange = useCallback(
     (city: string) => {
       const qs = buildParams({ city, page: 1 });
-      router.push(`${localePath(locale, '/')}?${qs}`);
+      router.push(`${localePath(locale, '/restaurants')}?${qs}`);
     },
     [buildParams, locale, router]
   );
@@ -399,14 +399,14 @@ export default function RestaurantsSearchPage() {
   const handlePageChange = useCallback(
     (p: number) => {
       const qs = buildParams({ page: p });
-      router.push(`${localePath(locale, '/')}?${qs}`);
+      router.push(`${localePath(locale, '/restaurants')}?${qs}`);
     },
     [buildParams, locale, router]
   );
 
   const handleClearFilters = useCallback(() => {
     setSearchInput('');
-    router.push(localePath(locale, '/'));
+    router.push(localePath(locale, '/restaurants'));
   }, [locale, router]);
 
   const handleToggleFavorite = useCallback(async (restaurantId: string | number) => {
