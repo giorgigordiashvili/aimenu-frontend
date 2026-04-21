@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: RegisterPageProps): Promise<M
   return {
     title: `${t.register.createAccount} | AiMenu`,
     description: t.register.userSubtitle,
+    robots: { index: false, follow: false },
   };
 }
 

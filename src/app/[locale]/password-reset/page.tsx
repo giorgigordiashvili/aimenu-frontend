@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: PasswordResetPageProps): Prom
   return {
     title: `${t.passwordReset.requestTitle} | AiMenu`,
     description: t.passwordReset.requestSubtitle,
+    robots: { index: false, follow: false },
   };
 }
 
