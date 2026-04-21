@@ -54,7 +54,12 @@ const Main = styled('main')({
   // has the Footer high in the viewport, then shifts down by hundreds
   // of pixels once the menu arrives. That shift was accounting for CLS
   // 0.38 on slow 3G.
-  minHeight: '100dvh',
+  //
+  // Using 100svh (small viewport) not 100dvh (dynamic). dvh re-computes
+  // on mobile whenever the URL bar shows/hides, which combined with the
+  // sticky category-tabs row caused a "can scroll down but not up"
+  // glitch. svh is pinned to the smallest layout and stays constant.
+  minHeight: '100svh',
   '@media (min-width: 1024px)': {
     paddingBottom: '100px',
   },
