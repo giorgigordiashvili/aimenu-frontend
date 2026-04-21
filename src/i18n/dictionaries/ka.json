@@ -534,8 +534,13 @@
     "subtitle": "იპოვეთ თქვენთვის სასურველი ადგილი",
     "filters": "ფილტრები",
     "allCities": "ყველა ქალაქი",
-    "search": "ძიება...",
-    "allCategories": "ყველა"
+    "search": "რესტორნის ძებნა",
+    "allCategories": "ყველა",
+    "resultsCount": "{count} რესტორანი",
+    "resultsCountZero": "შედეგი ვერ მოიძებნა",
+    "clearFilters": "ფილტრების გასუფთავება",
+    "clearSearch": "გასუფთავება",
+    "cityLabel": "ქალაქი"
   },
   "footer": {
     "navigation": "ნავიგაცია",

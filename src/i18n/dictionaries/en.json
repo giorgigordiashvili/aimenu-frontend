@@ -534,8 +534,13 @@
     "subtitle": "Find your perfect dining spot",
     "filters": "Filters",
     "allCities": "All Cities",
-    "search": "Search...",
-    "allCategories": "All"
+    "search": "Search restaurants",
+    "allCategories": "All",
+    "resultsCount": "{count} restaurants",
+    "resultsCountZero": "No results",
+    "clearFilters": "Clear filters",
+    "clearSearch": "Clear",
+    "cityLabel": "City"
   },
   "footer": {
     "navigation": "Navigation",
