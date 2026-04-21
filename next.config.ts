@@ -25,6 +25,27 @@ const nextConfig: NextConfig = {
   },
   compress: true,
   async headers() {
+    // Baseline production security headers. Skips Content-Security-Policy
+    // for now — Pigment CSS emits inline <style> tags and the BOG hosted
+    // checkout redirect needs explicit form-action allowances; CSP gets
+    // its own rollout once those are tested. Everything else here is
+    // safe to ship across the whole site.
+    const securityHeaders = [
+      {
+        key: 'Strict-Transport-Security',
+        value: 'max-age=31536000; includeSubDomains; preload',
+      },
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      // Block features we never use; geolocation kept open for `self`
+      // so a future "near me" feature works without another deploy.
+      {
+        key: 'Permissions-Policy',
+        value: 'camera=(), microphone=(), payment=(), geolocation=(self), browsing-topics=()',
+      },
+    ];
+
     return [
       {
         source: '/:all*(svg|jpg|jpeg|png|webp|avif|gif|ico|woff|woff2)',
@@ -34,6 +55,10 @@ const nextConfig: NextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
+      },
+      {
+        source: '/(.*)',
+        headers: securityHeaders,
       },
     ];
   },
