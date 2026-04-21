@@ -684,7 +684,8 @@
     "sortNewest": "Newest",
     "sortAz": "Name A–Z",
     "noResultsTitle": "No restaurants match your search",
-    "noResultsHint": "Try a different keyword or clear the filters to see everything."
+    "noResultsHint": "Try a different keyword or clear the filters to see everything.",
+    "reservingFor": "Reserving for:"
   },
   "footer": {
     "navigation": "Navigation",

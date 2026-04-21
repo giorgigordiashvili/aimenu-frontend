@@ -122,6 +122,56 @@ const ClearFiltersChip = styled('button')({
   },
 });
 
+// Reservation-context chips strip — shown only when the user arrived
+// with date/time/guests selected from the home hero. Each chip shows the
+// chosen value with an ✕ to clear it individually.
+const ReservationContextRow = styled('div')({
+  maxWidth: '1120px',
+  margin: '12px auto 0',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  flexWrap: 'wrap',
+});
+
+const ContextChip = styled('span')({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '8px',
+  padding: '0 6px 0 14px',
+  height: '36px',
+  borderRadius: '100px',
+  background: 'rgba(236, 0, 63, 0.08)',
+  color: rose600,
+  fontSize: '13px',
+  fontWeight: 600,
+  border: '1px solid rgba(236, 0, 63, 0.2)',
+});
+
+const ContextChipClose = styled('button')({
+  appearance: 'none',
+  border: 'none',
+  background: 'transparent',
+  color: rose600,
+  cursor: 'pointer',
+  width: '24px',
+  height: '24px',
+  borderRadius: '50%',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '14px',
+  '&:hover': {
+    background: 'rgba(236, 0, 63, 0.15)',
+  },
+});
+
+const ContextHint = styled('span')({
+  fontSize: '12px',
+  color: muted,
+  fontWeight: 500,
+});
+
 const TabsSection = styled('div')({
   maxWidth: '1120px',
   margin: '12px auto 0',
@@ -317,6 +367,13 @@ export default function RestaurantsSearchPage() {
   const pageParam = parseInt(searchParams.get('page') ?? '1', 10);
   const searchParam = searchParams.get('search') ?? '';
   const sortParam = searchParams.get('sort') ?? '-average_rating';
+  // Reservation-context params forwarded from the home hero.
+  const dateParam = searchParams.get('date') ?? '';
+  const timeParam = searchParams.get('time') ?? '';
+  const guestsParam = searchParams.get('guests') ?? '';
+  // When all three reservation inputs are present we can switch to the
+  // availability-checking backend endpoint (/api/v1/restaurants/search/).
+  const hasReservationContext = Boolean(dateParam && timeParam && guestsParam);
 
   // Local search input state
   const [searchInput, setSearchInput] = useState(searchParam);
@@ -381,26 +438,49 @@ export default function RestaurantsSearchPage() {
       });
   }, [locale]);
 
-  // Fetch restaurants when URL params change
+  // Fetch restaurants when URL params change. When the user arrived from
+  // the home hero with date+time+guests all selected, use the availability
+  // endpoint — it cross-references blocked times and table capacity so
+  // only restaurants that can actually seat the party appear. Otherwise,
+  // fall back to the regular paginated list.
   useEffect(() => {
     setLoading(true);
-    axiosInstance
-      .get('/api/v1/restaurants/', {
-        params: {
+
+    const shouldUseSearch = hasReservationContext;
+    const url = shouldUseSearch ? '/api/v1/restaurants/search/' : '/api/v1/restaurants/';
+    const params = shouldUseSearch
+      ? {
+          ...(cityParam ? { city: cityParam } : {}),
+          ...(searchParam ? { search: searchParam } : {}),
+          date: dateParam,
+          time: timeParam,
+          party_size: parseInt(guestsParam, 10),
+        }
+      : {
           ...(cityParam ? { city: cityParam } : {}),
           ...(categoryParam ? { category: categoryParam } : {}),
           ...(searchParam ? { search: searchParam } : {}),
           page: pageParam,
           page_size: PAGE_SIZE,
           ordering: sortParam,
-        },
-      })
+        };
+
+    axiosInstance
+      .get(url, { params })
       .then(response => {
         const data = response.data;
-        const results = Array.isArray(data) ? data : (data?.results ?? []);
-        const count = data?.count ?? results.length;
-        setRestaurants(results);
-        setTotalCount(count);
+        if (shouldUseSearch) {
+          // /search returns {success, data: {count, results, filters_applied}}
+          const results = data?.data?.results ?? [];
+          const count = data?.data?.count ?? results.length;
+          setRestaurants(results);
+          setTotalCount(count);
+        } else {
+          const results = Array.isArray(data) ? data : (data?.results ?? []);
+          const count = data?.count ?? results.length;
+          setRestaurants(results);
+          setTotalCount(count);
+        }
       })
       .catch(() => {
         setRestaurants([]);
@@ -409,12 +489,34 @@ export default function RestaurantsSearchPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [cityParam, categoryParam, searchParam, pageParam, sortParam]);
+  }, [
+    cityParam,
+    categoryParam,
+    searchParam,
+    pageParam,
+    sortParam,
+    hasReservationContext,
+    dateParam,
+    timeParam,
+    guestsParam,
+  ]);
 
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  // Search endpoint returns everything in one shot (no pagination); hide
+  // the pager in that mode.
+  const totalPages = hasReservationContext
+    ? 1
+    : Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasActiveFilters = useMemo(
-    () => Boolean(cityParam || categoryParam || searchParam),
-    [cityParam, categoryParam, searchParam]
+    () =>
+      Boolean(
+        cityParam ||
+          categoryParam ||
+          searchParam ||
+          dateParam ||
+          timeParam ||
+          guestsParam
+      ),
+    [cityParam, categoryParam, searchParam, dateParam, timeParam, guestsParam]
   );
 
   // ── URL helpers ────────────────────────────────────────────────────────────
@@ -426,6 +528,9 @@ export default function RestaurantsSearchPage() {
       page?: number;
       search?: string;
       sort?: string;
+      date?: string;
+      time?: string;
+      guests?: string;
     }) => {
       const params = new URLSearchParams();
       const city = 'city' in overrides ? overrides.city : cityParam;
@@ -433,16 +538,22 @@ export default function RestaurantsSearchPage() {
       const page = overrides.page ?? 1;
       const search = 'search' in overrides ? overrides.search : searchParam;
       const sort = 'sort' in overrides ? overrides.sort : sortParam;
+      const date = 'date' in overrides ? overrides.date : dateParam;
+      const time = 'time' in overrides ? overrides.time : timeParam;
+      const guests = 'guests' in overrides ? overrides.guests : guestsParam;
 
       if (city) params.set('city', city);
       if (category) params.set('category', category);
       if (search) params.set('search', search);
       // Omit the sort param when it's the default so URLs stay clean.
       if (sort && sort !== '-average_rating') params.set('sort', sort);
+      if (date) params.set('date', date);
+      if (time) params.set('time', time);
+      if (guests) params.set('guests', guests);
       params.set('page', String(page));
       return params.toString();
     },
-    [cityParam, categoryParam, searchParam, sortParam]
+    [cityParam, categoryParam, searchParam, sortParam, dateParam, timeParam, guestsParam]
   );
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -488,6 +599,26 @@ export default function RestaurantsSearchPage() {
     setSearchInput('');
     router.push(localePath(locale, '/restaurants'));
   }, [locale, router]);
+
+  // Per-chip clear — wipes only that reservation param, keeps the others.
+  const handleClearReservationParam = useCallback(
+    (which: 'date' | 'time' | 'guests') => {
+      const qs = buildParams({ [which]: '', page: 1 });
+      router.push(`${localePath(locale, '/restaurants')}${qs ? `?${qs}` : ''}`);
+    },
+    [buildParams, locale, router]
+  );
+
+  // Pretty-print the date chip in the visitor's locale.
+  const reservationDateLabel = useMemo(() => {
+    if (!dateParam) return '';
+    const d = new Date(`${dateParam}T00:00:00`);
+    if (Number.isNaN(d.getTime())) return dateParam;
+    return new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+    }).format(d);
+  }, [dateParam, locale]);
 
   const handleToggleFavorite = useCallback(async (restaurantId: string | number) => {
     const id = String(restaurantId);
@@ -539,6 +670,48 @@ export default function RestaurantsSearchPage() {
 
       <ContentWrapper>
         <MainContent>
+          {(dateParam || timeParam || guestsParam) && (
+            <ReservationContextRow aria-label='Reservation criteria'>
+              <ContextHint>{t.restaurantsSearch.reservingFor ?? 'Reserving for:'}</ContextHint>
+              {dateParam && (
+                <ContextChip>
+                  {reservationDateLabel}
+                  <ContextChipClose
+                    type='button'
+                    aria-label='Clear date'
+                    onClick={() => handleClearReservationParam('date')}
+                  >
+                    ✕
+                  </ContextChipClose>
+                </ContextChip>
+              )}
+              {timeParam && (
+                <ContextChip>
+                  {timeParam}
+                  <ContextChipClose
+                    type='button'
+                    aria-label='Clear time'
+                    onClick={() => handleClearReservationParam('time')}
+                  >
+                    ✕
+                  </ContextChipClose>
+                </ContextChip>
+              )}
+              {guestsParam && (
+                <ContextChip>
+                  {guestsParam} {t.booking.persons}
+                  <ContextChipClose
+                    type='button'
+                    aria-label='Clear guests'
+                    onClick={() => handleClearReservationParam('guests')}
+                  >
+                    ✕
+                  </ContextChipClose>
+                </ContextChip>
+              )}
+            </ReservationContextRow>
+          )}
+
           <FilterRow>
             <FilterPill>
               <FilterLabel>{t.restaurantsSearch.cityLabel}</FilterLabel>

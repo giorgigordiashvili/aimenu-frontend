@@ -107,16 +107,25 @@ export default function RestaurantsListPage() {
     };
   }, [user]);
 
-  // Trigger search and update URL with city param
+  // Trigger search — jumps to the dedicated /restaurants page with every
+  // selected filter preserved. Previously only `city` was forwarded so the
+  // date / time / guests selections were silently dropped on submit.
   const handleSearch = useCallback(() => {
-    fetchRestaurants(filters.city);
     const params = new URLSearchParams();
     if (filters.city) params.set('city', filters.city);
+    if (filters.date) {
+      // Local YYYY-MM-DD — `toISOString` in UTC could shift the date by a
+      // day in late/early hours, so we format manually.
+      const y = filters.date.getFullYear();
+      const m = String(filters.date.getMonth() + 1).padStart(2, '0');
+      const d = String(filters.date.getDate()).padStart(2, '0');
+      params.set('date', `${y}-${m}-${d}`);
+    }
+    if (filters.time) params.set('time', filters.time);
+    if (filters.guests) params.set('guests', String(filters.guests));
     const query = params.toString();
-    // Search jumps to the dedicated /restaurants search page so the user
-    // lands on the full filter/grid experience rather than the hero.
     router.push(`${localePath(locale, '/restaurants')}${query ? `?${query}` : ''}`);
-  }, [fetchRestaurants, filters.city, locale, router]);
+  }, [filters.city, filters.date, filters.time, filters.guests, locale, router]);
 
   const handleToggleFavorite = useCallback(
     async (restaurantId: string | number) => {

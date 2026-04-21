@@ -18,7 +18,11 @@ const Hero = styled('section')({
   // Dark placeholder fills the hero before the image paints, so there's no
   // flash of bright background during load.
   background: slate900,
-  overflow: 'hidden',
+  // Intentionally NOT `overflow: hidden` — the filter-bar dropdowns (city,
+  // date, time, guests) are absolutely positioned below the bar and extend
+  // past the section's bottom edge. A parent clip would cut them off.
+  // Background image still stays contained via its own absolutely-positioned
+  // BackgroundWrap (which has its own overflow:hidden).
   padding: '64px 20px 96px',
   '@media (min-width: 768px)': {
     padding: '80px 80px 112px',
@@ -29,6 +33,7 @@ const BackgroundWrap = styled('div')({
   position: 'absolute',
   inset: 0,
   zIndex: 0,
+  overflow: 'hidden',
 });
 
 /** Dark overlay so text stays readable over the background image */

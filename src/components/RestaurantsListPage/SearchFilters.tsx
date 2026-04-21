@@ -13,6 +13,7 @@ import {
 } from '@/components/ReservationWidget/DropdownShared';
 import GuestsDropdown from '@/components/ReservationWidget/GuestsDropdown';
 import TimeDropdown from '@/components/ReservationWidget/TimeDropdown';
+import { useListboxKeys } from '@/components/ReservationWidget/useListboxKeys';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
@@ -454,6 +455,40 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
     setShowGuests(w === 'guests' ? s => !s : false);
   };
 
+  // Trigger-field keyboard handler. Enter/Space or ArrowDown opens the
+  // corresponding popover (mobile modal). Escape closes any open popover.
+  const makeTriggerKeyDown =
+    (w: 'city' | 'cal' | 'time' | 'guests') =>
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (isMobile) {
+          setActiveModal(w === 'cal' ? 'date' : w);
+        } else {
+          toggle(w);
+        }
+      } else if (e.key === 'Escape') {
+        setShowCity(false);
+        setShowCal(false);
+        setShowTime(false);
+        setShowGuests(false);
+      }
+    };
+
+  // City listbox keyboard nav (shared hook). Uses the full cities array
+  // (including the "All cities" row) so option indices line up.
+  const cityListbox = useListboxKeys<string | undefined>({
+    isOpen: showCity,
+    options: cities.map(c => c.value),
+    isSelected: v => v === value.city,
+    onSelect: v => {
+      onChange({ ...value, city: v });
+      setShowCity(false);
+    },
+    onClose: () => setShowCity(false),
+    optionIdPrefix: 'city-opt',
+  });
+
   return (
     <>
       <FilterBar>
@@ -461,6 +496,13 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           {/* City — first field, extra left rounding */}
           <FilterFieldFirst
             ref={cityRef}
+            role='combobox'
+            tabIndex={0}
+            aria-haspopup='listbox'
+            aria-expanded={showCity}
+            aria-controls='city-listbox'
+            aria-labelledby='city-label'
+            onKeyDown={makeTriggerKeyDown('city')}
             onClick={() => {
               if (isMobile) {
                 setActiveModal('city');
@@ -471,7 +513,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           >
             <FieldInner>
               <FieldLeft>
-                <FieldLabel>{t.restaurantsList.cityFilter}</FieldLabel>
+                <FieldLabel id='city-label'>{t.restaurantsList.cityFilter}</FieldLabel>
                 <FieldInput>
                   <IconWrap className='field-icon'>
                     <LocationIcon size={16} />
@@ -486,12 +528,17 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
               </ChevronWrap>
             </FieldInner>
             {showCity && (
-              <DropdownList>
+              <DropdownList
+                {...cityListbox.containerProps}
+                id='city-listbox'
+                aria-labelledby='city-label'
+              >
                 {cities.map((c, idx) => {
                   const isSel = c.value === value.city;
                   return (
                     <DropdownRow
                       key={c.label}
+                      {...cityListbox.getOptionProps(idx)}
                       isSelected={isSel}
                       isLast={idx === cities.length - 1}
                       onClick={e => {
@@ -514,6 +561,12 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
             {/* Date */}
             <FilterField
               ref={calRef}
+              role='button'
+              tabIndex={0}
+              aria-haspopup='dialog'
+              aria-expanded={showCal}
+              aria-labelledby='date-label'
+              onKeyDown={makeTriggerKeyDown('cal')}
               onClick={() => {
                 if (isMobile) {
                   setActiveModal('date');
@@ -524,7 +577,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
             >
               <FieldInner>
                 <FieldLeft>
-                  <FieldLabel>{t.restaurantsList.dateFilter}</FieldLabel>
+                  <FieldLabel id='date-label'>{t.restaurantsList.dateFilter}</FieldLabel>
                   <FieldInput>
                     <IconWrap className='field-icon'>
                       <CalendarIcon />
@@ -560,6 +613,12 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
             {/* Time */}
             <FilterField
               ref={timeRef}
+              role='combobox'
+              tabIndex={0}
+              aria-haspopup='listbox'
+              aria-expanded={showTime}
+              aria-labelledby='time-label'
+              onKeyDown={makeTriggerKeyDown('time')}
               onClick={() => {
                 if (isMobile) {
                   setActiveModal('time');
@@ -570,7 +629,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
             >
               <FieldInner>
                 <FieldLeft>
-                  <FieldLabel>{t.restaurantsList.timeFilter}</FieldLabel>
+                  <FieldLabel id='time-label'>{t.restaurantsList.timeFilter}</FieldLabel>
                   <FieldInput>
                     <IconWrap className='field-icon'>
                       <ClockIcon size={16} />
@@ -592,7 +651,9 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                   onChange({ ...value, time: s });
                   setShowTime(false);
                 }}
+                onClose={() => setShowTime(false)}
                 containerRef={timeRef}
+                labelledBy='time-label'
               />
             </FilterField>
           </DateTimeRow>
@@ -600,6 +661,12 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           {/* Guests — last field, no right border */}
           <FilterFieldLast
             ref={guestsRef}
+            role='combobox'
+            tabIndex={0}
+            aria-haspopup='listbox'
+            aria-expanded={showGuests}
+            aria-labelledby='guests-label'
+            onKeyDown={makeTriggerKeyDown('guests')}
             onClick={() => {
               if (isMobile) {
                 setActiveModal('guests');
@@ -610,7 +677,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
           >
             <FieldInner>
               <FieldLeft>
-                <FieldLabel>{t.restaurantsList.guestsFilter}</FieldLabel>
+                <FieldLabel id='guests-label'>{t.restaurantsList.guestsFilter}</FieldLabel>
                 <FieldInput>
                   <IconWrap className='field-icon'>
                     <PeopleIcon />
@@ -632,8 +699,10 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
                 onChange({ ...value, guests: n });
                 setShowGuests(false);
               }}
+              onClose={() => setShowGuests(false)}
               containerRef={guestsRef}
               personsLabel={t.booking.persons}
+              labelledBy='guests-label'
             />
           </FilterFieldLast>
 

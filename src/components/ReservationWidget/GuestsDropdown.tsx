@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 
 import { CheckMark, DropdownList, DropdownRow, DropdownRowText } from './DropdownShared';
+import { useListboxKeys } from './useListboxKeys';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -9,8 +12,10 @@ interface GuestsDropdownProps {
   options: number[];
   selected: number;
   onSelect: (n: number) => void;
+  onClose?: () => void;
   containerRef: React.RefObject<HTMLDivElement | null>;
   personsLabel: string;
+  labelledBy?: string;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -20,18 +25,33 @@ export default function GuestsDropdown({
   options,
   selected,
   onSelect,
+  onClose,
   personsLabel,
-}: // containerRef is held by the parent GuestsFieldWrap for click-outside detection
-GuestsDropdownProps) {
+  labelledBy,
+}: GuestsDropdownProps) {
+  const { containerProps, getOptionProps } = useListboxKeys<number>({
+    isOpen: show,
+    options,
+    isSelected: n => n === selected,
+    onSelect: n => onSelect(n),
+    onClose: () => onClose?.(),
+    optionIdPrefix: 'guests-opt',
+  });
+
   if (!show) return null;
 
   return (
-    <DropdownList>
+    <DropdownList {...containerProps} aria-labelledby={labelledBy}>
       {options.map((n, idx) => {
         const isSelected = selected === n;
-        const isLast = idx === options.length - 1;
         return (
-          <DropdownRow key={n} isSelected={isSelected} isLast={isLast} onClick={() => onSelect(n)}>
+          <DropdownRow
+            key={n}
+            {...getOptionProps(idx)}
+            isSelected={isSelected}
+            isLast={idx === options.length - 1}
+            onClick={() => onSelect(n)}
+          >
             <DropdownRowText isSelected={isSelected}>
               {n} {personsLabel}
             </DropdownRowText>

@@ -684,7 +684,8 @@
     "sortNewest": "Новые",
     "sortAz": "По алфавиту",
     "noResultsTitle": "Ничего не найдено",
-    "noResultsHint": "Попробуйте другое слово или сбросьте фильтры."
+    "noResultsHint": "Попробуйте другое слово или сбросьте фильтры.",
+    "reservingFor": "Бронь:"
   },
   "footer": {
     "navigation": "Навигация",
