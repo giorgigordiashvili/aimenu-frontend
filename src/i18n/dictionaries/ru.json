@@ -595,6 +595,23 @@
       "not_found": "Программа не найдена."
     }
   },
+  "platformLoyalty": {
+    "yourStatus": "Ваш статус",
+    "pointsLabel": "баллов",
+    "toNextLabel": "до {{target}}",
+    "nextTeaser": "Наберите ещё <b>{{points}} баллов</b> — и получите <b>скидку {{discount}}%</b> в каждом ресторане.",
+    "topTierMessage": "Вы на вершине — <b>скидка {{discount}}%</b> в каждом ресторане.",
+    "signInPrompt": "Войдите, чтобы копить баллы и получать скидки в ресторанах.",
+    "badgeLabel": "Лояльность",
+    "filterLabel": "Партнёры программы",
+    "discountLineLabel": "Скидка {{tier}} {{discount}}%",
+    "tiers": {
+      "gourmand": "Гурман",
+      "silver": "Серебро",
+      "gold": "Золото",
+      "platinum": "Платина"
+    }
+  },
   "menuOnly": {
     "tag": "Только меню",
     "orderingDisabledToast": "Заказ в этом ресторане отключён.",

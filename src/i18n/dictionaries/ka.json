@@ -595,6 +595,23 @@
       "not_found": "პროგრამა ვერ მოიძებნა."
     }
   },
+  "platformLoyalty": {
+    "yourStatus": "თქვენი სტატუსი",
+    "pointsLabel": "ქულა",
+    "toNextLabel": "{{target}}-მდე",
+    "nextTeaser": "დააგროვეთ კიდევ <b>{{points}} ქულა</b> და მიიღეთ <b>{{discount}}% ფასდაქლება</b> ყველა რესტორანში.",
+    "topTierMessage": "უმაღლეს საფეხურზე ხართ — <b>{{discount}}% ფასდაქლება</b> ყველა რესტორანში.",
+    "signInPrompt": "გაიარეთ ავტორიზაცია, რომ ქულების დაგროვება დაიწყოთ და ფასდაქლებები მიიღოთ.",
+    "badgeLabel": "ლოიალურობა",
+    "filterLabel": "ლოიალურობის პარტნიორები",
+    "discountLineLabel": "{{tier}} {{discount}}% ფასდაქლება",
+    "tiers": {
+      "gourmand": "გურმანი",
+      "silver": "ვერცხლი",
+      "gold": "ოქრო",
+      "platinum": "პლატინა"
+    }
+  },
   "menuOnly": {
     "tag": "მხოლოდ მენიუ",
     "orderingDisabledToast": "ამ რესტორანში შეკვეთა გამორთულია.",

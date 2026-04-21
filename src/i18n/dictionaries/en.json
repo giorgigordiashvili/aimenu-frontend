@@ -595,6 +595,23 @@
       "not_found": "Program not found."
     }
   },
+  "platformLoyalty": {
+    "yourStatus": "Your status",
+    "pointsLabel": "points",
+    "toNextLabel": "up to {{target}}",
+    "nextTeaser": "Earn <b>{{points}} more points</b> and unlock <b>{{discount}}% off</b> at every participating restaurant.",
+    "topTierMessage": "You're at the top — <b>{{discount}}% off</b> at every participating restaurant.",
+    "signInPrompt": "Sign in to start collecting points and unlock cross-restaurant discounts.",
+    "badgeLabel": "Loyalty",
+    "filterLabel": "Loyalty partners",
+    "discountLineLabel": "{{tier}} {{discount}}% discount",
+    "tiers": {
+      "gourmand": "Gourmand",
+      "silver": "Silver",
+      "gold": "Gold",
+      "platinum": "Platinum"
+    }
+  },
   "menuOnly": {
     "tag": "Menu only",
     "orderingDisabledToast": "Ordering is disabled at this restaurant.",

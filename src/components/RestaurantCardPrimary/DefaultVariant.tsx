@@ -176,6 +176,25 @@ const ButtonGroup = styled('div')({
   marginTop: '24px',
 });
 
+// Rose-accent pill that marks a restaurant as a platform-loyalty
+// partner. Rendered on top of the hero image so it's visible without
+// opening the card.
+const LoyaltyBadge = styled('div')({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '4px',
+  padding: '2px 8px',
+  height: '22px',
+  borderRadius: '100px',
+  background: 'rgba(236, 0, 63, 0.92)',
+  color: '#ffffff',
+  fontSize: '11px',
+  fontWeight: 700,
+  letterSpacing: '0.02em',
+  textTransform: 'uppercase',
+  boxShadow: '0 2px 6px rgba(236, 0, 63, 0.35)',
+});
+
 interface DefaultVariantProps extends Omit<
   RestaurantCardProps,
   'variant' | 'descriptionText' | 'amenities'
@@ -207,6 +226,8 @@ export default function DefaultVariant({
   bookLabel = 'დაჯავშნა',
   favoriteLabel = 'რჩეული',
   amenities,
+  showLoyaltyBadge = false,
+  loyaltyBadgeLabel = 'Loyalty',
 }: DefaultVariantProps) {
   const router = useRouter();
   const blurhashDataURL = useMemo(() => blurhashToDataUrl(imageBlurhash), [imageBlurhash]);
@@ -264,6 +285,9 @@ export default function DefaultVariant({
           </FavoriteButton>
         </FavoriteGroup>
         <FilterRatingGroup>
+          {showLoyaltyBadge && (
+            <LoyaltyBadge title={loyaltyBadgeLabel}>★ {loyaltyBadgeLabel}</LoyaltyBadge>
+          )}
           {showFilterText && filterText && (
             <MainButton variant='secondary' title={filterText} size='extra_small' />
           )}

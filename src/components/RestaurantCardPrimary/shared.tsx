@@ -78,4 +78,9 @@ export interface RestaurantCardProps {
   isFavorited?: boolean;
   /** Called when the user toggles the favorite. */
   onFavoriteToggle?: () => void;
+  /** Render the "Loyalty partner" badge when the restaurant has opted
+   *  into the platform-wide loyalty program. */
+  showLoyaltyBadge?: boolean;
+  /** Localised label rendered next to the badge icon. */
+  loyaltyBadgeLabel?: string;
 }

@@ -205,6 +205,11 @@ export default function RestaurantGrid({
                   onFavoriteToggle={
                     onToggleFavorite ? () => onToggleFavorite(restaurant.id) : undefined
                   }
+                  showLoyaltyBadge={
+                    (restaurant as { accepts_platform_loyalty?: boolean })
+                      .accepts_platform_loyalty === true
+                  }
+                  loyaltyBadgeLabel={t.platformLoyalty.badgeLabel}
                 />
               </CardWrapper>
             );

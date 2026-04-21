@@ -97,6 +97,38 @@ const FilterSelect = styled('select')({
   backgroundPosition: 'right 0 center',
 });
 
+// Togglable pill for the "Loyalty partners only" filter. Flips to a
+// filled rose style when active.
+const LoyaltyTogglePill = styled('button')({
+  appearance: 'none',
+  border: `1px solid ${border}`,
+  background: white,
+  color: foreground,
+  fontSize: '13px',
+  fontWeight: 600,
+  padding: '0 14px',
+  height: '40px',
+  borderRadius: '100px',
+  cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease',
+  '&:hover': {
+    borderColor: rose600,
+    color: rose600,
+  },
+  '&:focus-visible': {
+    outline: `2px solid ${rose600}`,
+    outlineOffset: '2px',
+  },
+  '&[data-active="true"]': {
+    background: rose600,
+    color: white,
+    borderColor: rose600,
+  },
+});
+
 const ClearFiltersChip = styled('button')({
   appearance: 'none',
   border: `1px solid ${rose600}`,
@@ -371,6 +403,8 @@ export default function RestaurantsSearchPage() {
   const dateParam = searchParams.get('date') ?? '';
   const timeParam = searchParams.get('time') ?? '';
   const guestsParam = searchParams.get('guests') ?? '';
+  // Loyalty-partner-only filter. Truthy when user clicked the chip.
+  const loyaltyOnly = searchParams.get('loyalty') === '1';
   // When all three reservation inputs are present we can switch to the
   // availability-checking backend endpoint (/api/v1/restaurants/search/).
   const hasReservationContext = Boolean(dateParam && timeParam && guestsParam);
@@ -448,7 +482,7 @@ export default function RestaurantsSearchPage() {
 
     const shouldUseSearch = hasReservationContext;
     const url = shouldUseSearch ? '/api/v1/restaurants/search/' : '/api/v1/restaurants/';
-    const params = shouldUseSearch
+    const params: Record<string, string | number | boolean> = shouldUseSearch
       ? {
           ...(cityParam ? { city: cityParam } : {}),
           ...(searchParam ? { search: searchParam } : {}),
@@ -464,6 +498,9 @@ export default function RestaurantsSearchPage() {
           page_size: PAGE_SIZE,
           ordering: sortParam,
         };
+    if (loyaltyOnly) {
+      params.accepts_platform_loyalty = true;
+    }
 
     axiosInstance
       .get(url, { params })
@@ -498,6 +535,7 @@ export default function RestaurantsSearchPage() {
     dateParam,
     timeParam,
     guestsParam,
+    loyaltyOnly,
   ]);
 
   // Search endpoint returns everything in one shot (no pagination); hide
@@ -513,9 +551,10 @@ export default function RestaurantsSearchPage() {
           searchParam ||
           dateParam ||
           timeParam ||
-          guestsParam
+          guestsParam ||
+          loyaltyOnly
       ),
-    [cityParam, categoryParam, searchParam, dateParam, timeParam, guestsParam]
+    [cityParam, categoryParam, searchParam, dateParam, timeParam, guestsParam, loyaltyOnly]
   );
 
   // ── URL helpers ────────────────────────────────────────────────────────────
@@ -530,6 +569,7 @@ export default function RestaurantsSearchPage() {
       date?: string;
       time?: string;
       guests?: string;
+      loyalty?: boolean;
     }) => {
       const params = new URLSearchParams();
       const city = 'city' in overrides ? overrides.city : cityParam;
@@ -540,6 +580,7 @@ export default function RestaurantsSearchPage() {
       const date = 'date' in overrides ? overrides.date : dateParam;
       const time = 'time' in overrides ? overrides.time : timeParam;
       const guests = 'guests' in overrides ? overrides.guests : guestsParam;
+      const loyalty = 'loyalty' in overrides ? overrides.loyalty : loyaltyOnly;
 
       if (city) params.set('city', city);
       if (category) params.set('category', category);
@@ -549,10 +590,11 @@ export default function RestaurantsSearchPage() {
       if (date) params.set('date', date);
       if (time) params.set('time', time);
       if (guests) params.set('guests', guests);
+      if (loyalty) params.set('loyalty', '1');
       params.set('page', String(page));
       return params.toString();
     },
-    [cityParam, categoryParam, searchParam, sortParam, dateParam, timeParam, guestsParam]
+    [cityParam, categoryParam, searchParam, sortParam, dateParam, timeParam, guestsParam, loyaltyOnly]
   );
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -585,6 +627,11 @@ export default function RestaurantsSearchPage() {
     },
     [buildParams, locale, router]
   );
+
+  const handleLoyaltyToggle = useCallback(() => {
+    const qs = buildParams({ loyalty: !loyaltyOnly, page: 1 });
+    router.push(`${localePath(locale, '/restaurants')}?${qs}`);
+  }, [buildParams, loyaltyOnly, locale, router]);
 
   const handlePageChange = useCallback(
     (p: number) => {
@@ -743,6 +790,15 @@ export default function RestaurantsSearchPage() {
               </FilterSelect>
             </FilterPill>
 
+            <LoyaltyTogglePill
+              type='button'
+              onClick={handleLoyaltyToggle}
+              aria-pressed={loyaltyOnly}
+              data-active={loyaltyOnly ? 'true' : undefined}
+            >
+              ★ {t.platformLoyalty.filterLabel}
+            </LoyaltyTogglePill>
+
             {hasActiveFilters && (
               <ClearFiltersChip type='button' onClick={handleClearFilters}>
                 {t.restaurantsSearch.clearFilters} ✕
@@ -826,6 +882,11 @@ export default function RestaurantsSearchPage() {
                           favoritedIds.has(String(restaurant.id)) || favoritedIds.has(restaurant.id)
                         }
                         onFavoriteToggle={() => handleToggleFavorite(restaurant.id)}
+                        showLoyaltyBadge={
+                          (restaurant as { accepts_platform_loyalty?: boolean })
+                            .accepts_platform_loyalty === true
+                        }
+                        loyaltyBadgeLabel={t.platformLoyalty.badgeLabel}
                       />
                     </CardWrapper>
                   );

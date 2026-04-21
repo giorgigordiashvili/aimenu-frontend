@@ -3,6 +3,7 @@
 import { styled } from '@pigment-css/react';
 import { useState } from 'react';
 
+import PlatformStatusCard from '@/components/PlatformStatusCard';
 import { LoyaltyListSkeleton } from '@/components/Skeleton';
 import { useTranslations } from '@/context/LocaleContext';
 import { useLoyaltyCounters, type LoyaltyCounterRow } from '@/hooks/useLoyalty';
@@ -69,6 +70,8 @@ export default function LoyaltyPage() {
   return (
     <Root>
       <Inner>
+        <PlatformStatusCard />
+
         <Header>
           <Title>{t.loyalty.title}</Title>
           <Subtitle>{t.loyalty.subtitle}</Subtitle>

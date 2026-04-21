@@ -1308,6 +1308,15 @@ export async function dashboardTablesSessionsCloseCreate(
   return response.data;
 }
 
+export async function dashboardTablesSessionsMarkCashPaidCreate(
+  id: string,
+): Promise<any> {
+  const response = await axios.post(
+    `/api/v1/dashboard/tables/sessions/${id}/mark-cash-paid/`,
+  );
+  return response.data;
+}
+
 export async function dashboardTablesSessionsStartCreate(): Promise<any> {
   const response = await axios.post(`/api/v1/dashboard/tables/sessions/start/`);
   return response.data;
@@ -1457,6 +1466,11 @@ export async function loyaltyMyRetrieve(): Promise<any> {
 
 export async function loyaltyMyRedeemCreate(): Promise<any> {
   const response = await axios.post(`/api/v1/loyalty/my/redeem/`);
+  return response.data;
+}
+
+export async function loyaltyPlatformStatusRetrieve(): Promise<any> {
+  const response = await axios.get(`/api/v1/loyalty/platform/status/`);
   return response.data;
 }
 
