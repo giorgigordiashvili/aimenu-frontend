@@ -45,10 +45,17 @@ const MobileLeftSection = styled('div')({
   gap: '8px',
 });
 
-const MobileRightSection = styled('div')({
+// Mobile-only action strip (Favorite / Share / Gallery) that sits
+// inside the meta row next to the city, per the layout ask. Hidden on
+// desktop — DesktopActions handles that breakpoint.
+const MobileActions = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  gap: '8px',
+  gap: '4px',
+  marginLeft: 'auto',
+  '@media (min-width: 768px)': {
+    display: 'none',
+  },
 });
 
 // Desktop: Name + Reviews | Rating
@@ -210,7 +217,8 @@ export default function RestaurantDetailInfo({
 
   return (
     <Container>
-      {/* Mobile: Rating + Icons Row */}
+      {/* Mobile: Rating + reviews (the action icons moved down into
+          MetaRow — see MobileActions below). */}
       <MobileTopRow>
         <MobileLeftSection>
           {rating > 0 && (
@@ -221,31 +229,6 @@ export default function RestaurantDetailInfo({
           )}
           {reviewText && <ReviewCount>{reviewText}</ReviewCount>}
         </MobileLeftSection>
-
-        <MobileRightSection>
-          <MainButton
-            variant='ghost'
-            size='extra_small'
-            icon={props => <HeartOutline variant={isFavorite ? 'filled' : 'outlined'} {...props} />}
-            onClick={handleFavoriteToggle}
-            aria-label={t.restaurantDetail.favoriteToggle}
-          />
-          <MainButton
-            variant='ghost'
-            size='extra_small'
-            icon={Share}
-            aria-label={t.restaurantDetail.share}
-          />
-          <MainButton
-            variant='ghost'
-            size='extra_small'
-            icon={Gallery}
-            aria-label={t.restaurantDetail.openGallery}
-            onClick={() =>
-              window.dispatchEvent(new CustomEvent('photo-gallery:open', { detail: { index: 0 } }))
-            }
-          />
-        </MobileRightSection>
       </MobileTopRow>
 
       {/* Mobile: Name */}
@@ -313,6 +296,31 @@ export default function RestaurantDetailInfo({
         <MetaItem>
           <MetaText>{t.restaurantDetail.priceRange}</MetaText>
         </MetaItem>
+
+        <MobileActions>
+          <MainButton
+            variant='ghost'
+            size='extra_small'
+            icon={props => <HeartOutline variant={isFavorite ? 'filled' : 'outlined'} {...props} />}
+            onClick={handleFavoriteToggle}
+            aria-label={t.restaurantDetail.favoriteToggle}
+          />
+          <MainButton
+            variant='ghost'
+            size='extra_small'
+            icon={Share}
+            aria-label={t.restaurantDetail.share}
+          />
+          <MainButton
+            variant='ghost'
+            size='extra_small'
+            icon={Gallery}
+            aria-label={t.restaurantDetail.openGallery}
+            onClick={() =>
+              window.dispatchEvent(new CustomEvent('photo-gallery:open', { detail: { index: 0 } }))
+            }
+          />
+        </MobileActions>
       </MetaRow>
 
       {/* Description */}
