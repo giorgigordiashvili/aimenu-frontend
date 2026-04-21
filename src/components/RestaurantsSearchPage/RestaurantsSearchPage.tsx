@@ -468,19 +468,18 @@ export default function RestaurantsSearchPage() {
     axiosInstance
       .get(url, { params })
       .then(response => {
+        // `axiosInstance` installs a response interceptor that unwraps
+        // the `{ success, data: {...} }` envelope this backend uses, so
+        // both /restaurants/ and /restaurants/search/ land here as a
+        // flat object with `results` + `count` at the top level. Earlier
+        // code read `data.data.results` for the search endpoint which
+        // was wrong post-unwrap and produced zero restaurants on the
+        // reservation-context path.
         const data = response.data;
-        if (shouldUseSearch) {
-          // /search returns {success, data: {count, results, filters_applied}}
-          const results = data?.data?.results ?? [];
-          const count = data?.data?.count ?? results.length;
-          setRestaurants(results);
-          setTotalCount(count);
-        } else {
-          const results = Array.isArray(data) ? data : (data?.results ?? []);
-          const count = data?.count ?? results.length;
-          setRestaurants(results);
-          setTotalCount(count);
-        }
+        const results = Array.isArray(data) ? data : (data?.results ?? []);
+        const count = data?.count ?? results.length;
+        setRestaurants(results);
+        setTotalCount(count);
       })
       .catch(() => {
         setRestaurants([]);
