@@ -147,6 +147,13 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   // internals switch to "order only" (QR dine-in) when the URL has ?table=
   // — handled inside ReservationWidget itself.
   const showWidget = restaurant.accepts_reservations === true;
+  // Master ordering switch. When false, the customer can browse the menu
+  // but every order surface is suppressed (cart, checkout, QR dine-in).
+  // Defaults to true if the flag is missing from the API response.
+  const orderingEnabled = restaurant.accepts_remote_orders !== false;
+  // The mobile sticky bar / bottom sheet only makes sense when at least
+  // one of the two flows (reservation OR ordering) is active.
+  const showMobileSheet = showWidget || orderingEnabled;
 
   return (
     <Page>
@@ -181,7 +188,12 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
                 sheet; see MobileReservationSheet. The old inline widget
                 was removed to give the menu more vertical space. */}
 
-            <MenuSection slug={slug} locale={locale} headerRight={<CartBadge />} />
+            <MenuSection
+              slug={slug}
+              locale={locale}
+              headerRight={<CartBadge />}
+              orderingEnabled={orderingEnabled}
+            />
 
             <ContactInfo
               operatingHours={restaurant.operating_hours}
@@ -201,13 +213,24 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
 
           {showWidget && (
             <RightColumn>
-              <ReservationWidget slug={slug} locale={locale} />
+              <ReservationWidget
+                slug={slug}
+                locale={locale}
+                orderingEnabled={orderingEnabled}
+              />
             </RightColumn>
           )}
         </ContentLayout>
       </Main>
 
-      {showWidget && <MobileReservationSheet slug={slug} locale={locale} />}
+      {showMobileSheet && (
+        <MobileReservationSheet
+          slug={slug}
+          locale={locale}
+          orderingEnabled={orderingEnabled}
+          reservationsEnabled={showWidget}
+        />
+      )}
 
       <Footer locale={locale} />
     </Page>

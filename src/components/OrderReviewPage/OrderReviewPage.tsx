@@ -206,12 +206,25 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const [session, setSession] = useState<TableSessionDetail | null>(null);
 
   // Fetch real restaurant data by slug so the header card doesn't show a placeholder.
+  // Also enforce the master ordering switch: if the restaurant has flipped
+  // into menu-only mode we can't accept an order — clear the cart, toast,
+  // and bounce back to the menu. Covers direct-navigation and invite-join
+  // targets alongside the backend 403 guard.
   useEffect(() => {
     if (!restaurantSlug) return;
     let cancelled = false;
     restaurantsRetrieve(restaurantSlug)
       .then(data => {
-        if (!cancelled) setRestaurant(data);
+        if (cancelled) return;
+        setRestaurant(data);
+        if (data && (data as { accepts_remote_orders?: boolean }).accepts_remote_orders === false) {
+          clearCart();
+          showToast(
+            (t as unknown as { menuOnly?: { orderingDisabledToast?: string } }).menuOnly
+              ?.orderingDisabledToast ?? 'Ordering is disabled at this restaurant.'
+          );
+          router.replace(localePath(locale, `/restaurant/${restaurantSlug}`));
+        }
       })
       .catch(() => {
         // Silent — the BookingRestaurantCard will fall back to the slug.
@@ -219,7 +232,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [restaurantSlug]);
+  }, [restaurantSlug, clearCart, showToast, t, router, locale]);
 
   // If we have a table session, pull its details so we know the payment_mode
   // and host — drives whether we hide the selector and skip BOG for shared-tab

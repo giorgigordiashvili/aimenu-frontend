@@ -527,6 +527,11 @@
       "not_found": "Program not found."
     }
   },
+  "menuOnly": {
+    "tag": "Menu only",
+    "orderingDisabledToast": "Ordering is disabled at this restaurant.",
+    "inviteClosed": "This restaurant is menu-only — ordering is closed."
+  },
   "restaurantsSearch": {
     "loading": "Loading...",
     "noResults": "No restaurants found",

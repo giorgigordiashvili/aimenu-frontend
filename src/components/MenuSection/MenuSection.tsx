@@ -284,11 +284,23 @@ interface MenuSectionProps {
   slug: string;
   locale: Locale;
   headerRight?: React.ReactNode;
+  /**
+   * Master ordering switch from the restaurant settings. When false, the
+   * menu renders in "menu only" mode — no add-to-cart controls on item
+   * rows, the product modal opens read-only, and anything passed via
+   * `headerRight` (typically CartBadge) is skipped.
+   */
+  orderingEnabled?: boolean;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function MenuSection({ slug, locale, headerRight }: MenuSectionProps) {
+export default function MenuSection({
+  slug,
+  locale,
+  headerRight,
+  orderingEnabled = true,
+}: MenuSectionProps) {
   const t = getDictionary(locale);
   const { products, categories, isLoading } = useMenuData(slug, locale);
   const { items: cartItems, getTotalQuantityByMenuItemId, updateQuantity } = useCart();
@@ -381,7 +393,7 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
     <Section>
       <SectionHeader>
         <SectionTitle>{t.restaurant.menu}</SectionTitle>
-        {headerRight}
+        {orderingEnabled && headerRight}
       </SectionHeader>
 
       {/* Category Tabs */}
@@ -457,7 +469,10 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
                     )}
                     <ItemPrice>{product.price.toFixed(2)} ₾</ItemPrice>
                   </ItemContent>
-                  {getTotalQuantityByMenuItemId(product.id) > 0 ? (
+                  {/* Menu-only mode hides both the add-to-cart button and the
+                      per-item quantity stepper — the card stays tappable to
+                      open the read-only product modal. */}
+                  {!orderingEnabled ? null : getTotalQuantityByMenuItemId(product.id) > 0 ? (
                     <QuantityControl onClick={e => e.stopPropagation()}>
                       <QtyBtn
                         onClick={e => {
@@ -492,13 +507,15 @@ export default function MenuSection({ slug, locale, headerRight }: MenuSectionPr
           );
         })}
 
-      {/* Product Detail Modal */}
+      {/* Product Detail Modal — readOnly when the restaurant is in
+          menu-only mode so the "Add to cart" button is hidden. */}
       {selectedProduct && (
         <ProductDetailModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           product={selectedProduct}
           initialModifiers={modalInitialModifiers}
+          readOnly={!orderingEnabled}
         />
       )}
     </Section>
