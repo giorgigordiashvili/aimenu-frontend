@@ -1,11 +1,23 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+import { hasAnalyticsConsent, subscribeConsent } from '@/lib/consent';
 
 const CLARITY_PROJECT_ID = 'ugfe7kczrl';
 
 export default function ClarityProvider() {
+  // Clarity is gated behind the cookie banner. If the user hasn't accepted
+  // analytics cookies we do nothing; we re-evaluate as soon as they do.
+  const [allowed, setAllowed] = useState<boolean>(false);
+
   useEffect(() => {
+    setAllowed(hasAnalyticsConsent());
+    return subscribeConsent(c => setAllowed(c.analytics));
+  }, []);
+
+  useEffect(() => {
+    if (!allowed) return;
     // Clarity is observability, not critical-path. On slow 3G it competes
     // for bandwidth with the LCP image and adds ~600ms preconnect cost per
     // Lighthouse. Defer its bundle + init until the browser is idle so it
@@ -29,7 +41,7 @@ export default function ClarityProvider() {
         mod.default.init(CLARITY_PROJECT_ID);
       });
     });
-  }, []);
+  }, [allowed]);
 
   return null;
 }
