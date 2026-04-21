@@ -487,7 +487,10 @@
     "seatedTitle": "You're seated at this table",
     "joinedHost": "You joined {{host}}'s table",
     "tableHint": "Table {{table}} · orders go on the shared check.",
-    "sub": "Your orders go on the shared table check."
+    "sub": "Your orders go on the shared table check.",
+    "readyToPay": "Ready to check out?",
+    "unpaidAmount": "{{count}} open · {{total}} ₾",
+    "payNow": "Pay now"
   },
   "reservationWidget": {
     "title": "Reservation",
