@@ -11,6 +11,7 @@ import HeaderPrimary from '@/components/HeaderPrimary';
 import MenuSection from '@/components/MenuSection';
 import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
+import ReviewsSection from '@/components/ReviewsSection';
 import SharedTableBanner from '@/components/SharedTableBanner';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
 import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
@@ -308,6 +309,8 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
               headerRight={<CartBadge />}
               orderingEnabled={orderingEnabled}
             />
+
+            <ReviewsSection slug={slug} />
 
             <ContactInfo
               operatingHours={restaurant.operating_hours}

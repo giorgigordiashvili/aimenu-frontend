@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { localePath } from '@/i18n/routing';
 import CalendarIcon from '@/icons/Calendar';
 import CreditCardIcon from '@/icons/CreditCard';
+import EditIcon from '@/icons/Edit';
 import StarIcon from '@/icons/Star';
 import UserIcon from '@/icons/User';
 import { background, border, foreground, radiusMd, radiusSm, slate500, white } from '@/tokens';
@@ -82,11 +83,13 @@ export default function ProfileTabNav() {
 
   const reservationsHref = localePath(locale, '/profile/reservations');
   const loyaltyHref = localePath(locale, '/profile/loyalty');
+  const reviewsHref = localePath(locale, '/profile/reviews');
   const settingsHref = localePath(locale, '/profile/settings');
   const paymentHref = localePath(locale, '/profile/payment');
 
   const isReservations = pathname === reservationsHref || pathname.startsWith(reservationsHref);
   const isLoyalty = pathname === loyaltyHref || pathname.startsWith(loyaltyHref);
+  const isReviews = pathname === reviewsHref || pathname.startsWith(reviewsHref);
   const isSettings = pathname === settingsHref || pathname.startsWith(settingsHref);
   const isPayment = pathname === paymentHref || pathname.startsWith(paymentHref);
 
@@ -101,6 +104,11 @@ export default function ProfileTabNav() {
         <TabItem href={loyaltyHref} data-active={isLoyalty ? 'true' : undefined}>
           <StarIcon />
           {t.profile.tabs.loyalty}
+        </TabItem>
+
+        <TabItem href={reviewsHref} data-active={isReviews ? 'true' : undefined}>
+          <EditIcon />
+          {t.profile.tabs.reviews}
         </TabItem>
 
         <TabItem href={settingsHref} data-active={isSettings ? 'true' : undefined}>
