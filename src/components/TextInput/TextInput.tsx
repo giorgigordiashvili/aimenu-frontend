@@ -3,6 +3,7 @@
 import { styled } from '@pigment-css/react';
 import { useState, useRef } from 'react';
 
+import FieldError from '@/components/FieldError';
 import { slate50, slate200, slate400 } from '@/tokens';
 
 const Text = styled('p')({
@@ -16,14 +17,6 @@ const Text = styled('p')({
   '@media (max-width: 768px)': {
     fontSize: '12px',
   },
-});
-
-const ErrorText = styled('p')({
-  fontSize: '12px',
-  fontFamily: 'Inter',
-  lineHeight: '14px',
-  marginTop: '6px',
-  color: '#E7000B',
 });
 
 const InputWrapper = styled('div')({
@@ -166,6 +159,12 @@ function TextInput({
   // callers that don't wire their own validation.
   const showError = isError || !!errorMessage;
 
+  // A functional right-slot icon (password-eye, date picker, etc.) occupies
+  // the primary right slot; push the error badge further left when both
+  // are visible.
+  const hasRightIcon = Boolean(isPassword || isLocation || isDate || isTime);
+  const errorSlot: 'primary' | 'secondary' = hasRightIcon ? 'secondary' : 'primary';
+
   return (
     <>
       {label && <Text>{label}</Text>}
@@ -195,7 +194,13 @@ function TextInput({
               LeftIcon || (!LeftIcon && Icon && !isPassword && !isLocation && !isDate && !isTime)
                 ? '36px'
                 : undefined,
-            paddingRight: isPassword || isLocation || isDate || isTime ? '40px' : undefined,
+            // Room for functional right icon (40px) and/or the error badge.
+            // Both visible = 68px, error only = 40px, icon only = 40px.
+            paddingRight: showError && hasRightIcon
+              ? '68px'
+              : hasRightIcon || showError
+                ? '40px'
+                : undefined,
           }}
           onBlur={e => {
             setIsError(!e.currentTarget.checkValidity());
@@ -230,9 +235,9 @@ function TextInput({
             <Icon open={!showPassword} />
           </RightIconButton>
         )}
-      </InputWrapper>
 
-      {showError && errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+        {showError && errorMessage && <FieldError message={errorMessage} slot={errorSlot} />}
+      </InputWrapper>
     </>
   );
 }

@@ -3,6 +3,7 @@
 import { styled } from '@pigment-css/react';
 import { useState } from 'react';
 
+import FieldError from '@/components/FieldError';
 import { slate50, slate200, slate400 } from '@/tokens';
 
 const Text = styled('p')({
@@ -15,12 +16,8 @@ const Text = styled('p')({
   margin: '0 0 8px 0',
 });
 
-const ErrorText = styled('p')({
-  fontSize: '12px',
-  fontFamily: 'Inter',
-  lineHeight: '14px',
-  marginTop: '6px',
-  color: '#E7000B',
+const Wrapper = styled('div')({
+  position: 'relative',
 });
 
 const StyledTextArea = styled('textarea')({
@@ -101,18 +98,24 @@ function TextArea({
     <>
       {label && <Text>{label}</Text>}
 
-      <StyledTextArea
-        {...props}
-        data-error={showError ? 'true' : undefined}
-        data-variant={variant}
-        aria-invalid={showError}
-        onBlur={e => {
-          setIsError(!e.currentTarget.checkValidity());
-          externalOnBlur?.(e);
-        }}
-      />
+      <Wrapper>
+        <StyledTextArea
+          {...props}
+          data-error={showError ? 'true' : undefined}
+          data-variant={variant}
+          aria-invalid={showError}
+          onBlur={e => {
+            setIsError(!e.currentTarget.checkValidity());
+            externalOnBlur?.(e);
+          }}
+          style={{
+            paddingRight: showError ? '40px' : undefined,
+            ...((props as React.TextareaHTMLAttributes<HTMLTextAreaElement>).style ?? {}),
+          }}
+        />
 
-      {showError && errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+        {showError && errorMessage && <FieldError message={errorMessage} slot='topRight' />}
+      </Wrapper>
     </>
   );
 }
