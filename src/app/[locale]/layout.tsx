@@ -6,6 +6,7 @@ import { Inter, Noto_Sans_Georgian } from 'next/font/google';
 import { notFound } from 'next/navigation';
 
 import ClarityProvider from '@/components/ClarityProvider';
+import CookieConsent from '@/components/CookieConsent';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import { LocaleProvider } from '@/context/LocaleContext';
@@ -135,7 +136,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <AuthProvider>
           <LocaleProvider locale={locale as Locale}>
             <TableProvider>
-              <CartProvider>{children}</CartProvider>
+              <CartProvider>
+                {children}
+                <CookieConsent />
+              </CartProvider>
             </TableProvider>
           </LocaleProvider>
         </AuthProvider>
