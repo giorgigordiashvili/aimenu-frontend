@@ -1,7 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { EligibleOrder, Review } from '@/api/reviews';
 import MainButton from '@/components/MainButton/MainButton';
@@ -168,9 +168,11 @@ export default function ReviewsSection({ slug }: Props) {
   const { orders: pendingOrders, mutate: mutatePending } = usePendingReviews();
 
   // Keep a cumulative list as the user paginates. mutateList() refreshes
-  // just the current page, so we reset the cumulative list when page === 1
-  // and append otherwise.
-  useMemo(() => {
+  // just the current page, so we reset when page === 1 and append otherwise.
+  // IMPORTANT: setState must run in useEffect, not in render/useMemo, or
+  // React raises "Cannot update during render" and the whole restaurant
+  // page goes to the error boundary.
+  useEffect(() => {
     if (page === 1) {
       setAll(results);
     } else if (results.length) {
