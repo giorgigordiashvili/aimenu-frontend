@@ -535,6 +535,12 @@
     "orderingDisabledToast": "Ordering is disabled at this restaurant.",
     "inviteClosed": "This restaurant is menu-only — ordering is closed."
   },
+  "errorPage": {
+    "title": "Something went wrong",
+    "message": "We hit an unexpected error. Please try again.",
+    "retry": "Try again",
+    "goHome": "Back home"
+  },
   "cookieConsent": {
     "aria": "Cookie preferences",
     "body": "We use cookies to keep you signed in, remember your cart, and (with your permission) measure how the site is used.",
