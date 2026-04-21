@@ -43,15 +43,17 @@ const nextConfig: NextConfig = {
   // against the un-prefixed paths is enough.
   async redirects() {
     return [
-      // Old listing routes collapse into the new homepage.
-      { source: '/restaurants-search', destination: '/', permanent: true },
-      { source: '/restaurants', destination: '/', permanent: true },
+      // Old search URL collapsed into the new /restaurants route.
+      { source: '/restaurants-search', destination: '/restaurants', permanent: true },
       // Detail page moved from plural to singular.
       { source: '/restaurants/:slug', destination: '/restaurant/:slug', permanent: true },
       { source: '/restaurants/:slug/book', destination: '/restaurant/:slug/book', permanent: true },
       // Localised variants.
-      { source: '/:locale(en|ru)/restaurants-search', destination: '/:locale/', permanent: true },
-      { source: '/:locale(en|ru)/restaurants', destination: '/:locale/', permanent: true },
+      {
+        source: '/:locale(en|ru)/restaurants-search',
+        destination: '/:locale/restaurants',
+        permanent: true,
+      },
       {
         source: '/:locale(en|ru)/restaurants/:slug',
         destination: '/:locale/restaurant/:slug',
