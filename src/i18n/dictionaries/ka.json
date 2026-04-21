@@ -677,7 +677,14 @@
     "resultsCountZero": "შედეგი ვერ მოიძებნა",
     "clearFilters": "ფილტრების გასუფთავება",
     "clearSearch": "გასუფთავება",
-    "cityLabel": "ქალაქი"
+    "cityLabel": "ქალაქი",
+    "submit": "ძიება",
+    "sortLabel": "დალაგება",
+    "sortTopRated": "საუკეთესო",
+    "sortNewest": "ახალი",
+    "sortAz": "ანბანი ა–ჰ",
+    "noResultsTitle": "რესტორანი ვერ მოიძებნა",
+    "noResultsHint": "სცადე სხვა საკვანძო სიტყვა ან გაასუფთავე ფილტრები."
   },
   "footer": {
     "navigation": "ნავიგაცია",

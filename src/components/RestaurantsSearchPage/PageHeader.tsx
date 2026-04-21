@@ -3,83 +3,119 @@
 import { styled } from '@pigment-css/react';
 
 import SearchIcon from '@/icons/Search';
-import { border, foreground, muted, rose600, slate100, slate400, slate50, white } from '@/tokens';
+import {
+  border,
+  foreground,
+  muted,
+  rose600,
+  rose700,
+  slate100,
+  slate400,
+  white,
+} from '@/tokens';
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 
+// Hero-style backdrop with a soft pink→neutral gradient so the page has
+// a clear visual anchor instead of opening on flat slate. The colours
+// mirror the brand palette without competing with the card grid below.
 const HeaderSection = styled('section')({
-  background: slate50,
-  padding: '20px 0 4px',
+  position: 'relative',
+  padding: '32px 16px 28px',
+  background:
+    'linear-gradient(180deg, #FFE4EC 0%, #FEF2F4 35%, #F8FAFC 100%)',
+  overflow: 'hidden',
   '@media (min-width: 768px)': {
-    padding: '32px 0 4px',
+    padding: '56px 24px 44px',
+  },
+});
+
+// Decorative blur behind the title — purely cosmetic, stays behind content.
+const BlurCircle = styled('div')({
+  position: 'absolute',
+  width: '320px',
+  height: '320px',
+  borderRadius: '50%',
+  background: 'rgba(236, 0, 63, 0.18)',
+  filter: 'blur(80px)',
+  top: '-120px',
+  right: '-80px',
+  pointerEvents: 'none',
+  '@media (max-width: 768px)': {
+    width: '220px',
+    height: '220px',
+    top: '-80px',
+    right: '-60px',
   },
 });
 
 const HeaderInner = styled('div')({
-  maxWidth: '1120px',
+  position: 'relative',
+  maxWidth: '960px',
   margin: '0 auto',
   display: 'flex',
   flexDirection: 'column',
-  gap: '16px',
+  alignItems: 'center',
+  textAlign: 'center',
+  gap: '12px',
 });
 
-const TitleRow = styled('div')({
-  display: 'flex',
-  alignItems: 'baseline',
-  justifyContent: 'space-between',
-  gap: '16px',
-  flexWrap: 'wrap',
-});
-
-const TitleBlock = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
+const ResultPill = styled('span')({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  padding: '4px 12px',
+  borderRadius: '100px',
+  background: 'rgba(236, 0, 63, 0.1)',
+  color: rose600,
+  fontSize: '12px',
+  fontWeight: 600,
+  letterSpacing: '0.02em',
+  textTransform: 'uppercase',
 });
 
 const Title = styled('h1')({
-  fontSize: '24px',
-  fontWeight: 700,
+  fontSize: '30px',
+  fontWeight: 800,
   color: foreground,
   margin: 0,
-  lineHeight: '1.2',
+  lineHeight: 1.1,
+  letterSpacing: '-0.02em',
   '@media (min-width: 768px)': {
-    fontSize: '32px',
+    fontSize: '44px',
   },
 });
 
 const Subtitle = styled('p')({
-  fontSize: '14px',
+  fontSize: '15px',
   color: muted,
-  margin: '4px 0 0',
+  margin: 0,
+  maxWidth: '560px',
+  lineHeight: 1.5,
   '@media (min-width: 768px)': {
-    fontSize: '16px',
+    fontSize: '17px',
   },
 });
 
-const ResultCount = styled('span')({
-  fontSize: '13px',
-  color: muted,
-  fontWeight: 500,
-  lineHeight: 1,
-  flexShrink: 0,
-});
-
-// The search bar is the primary control on this page, so it lives right in
-// the hero. Full width, tall (52px) to match finger-friendly targets on
-// mobile. On ≥1024 it caps at ~560px so the hero doesn't feel stretched.
+// The search bar is the primary control on this page. Integrated submit
+// button replaces the "hit Enter to search" blind interaction.
 const SearchBox = styled('div')({
+  marginTop: '8px',
+  width: '100%',
+  maxWidth: '640px',
   display: 'flex',
   alignItems: 'center',
-  gap: '10px',
-  height: '52px',
-  padding: '0 14px',
+  gap: '8px',
+  height: '56px',
+  padding: '0 4px 0 16px',
   border: `1px solid ${border}`,
-  borderRadius: '16px',
+  borderRadius: '100px',
   background: white,
+  boxShadow: '0 2px 8px -4px rgba(15, 23, 43, 0.08)',
   transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
   '&:focus-within': {
     borderColor: rose600,
-    boxShadow: `0 0 0 3px ${slate100}`,
+    boxShadow: '0 0 0 4px rgba(236, 0, 63, 0.12)',
   },
 });
 
@@ -101,21 +137,60 @@ const SearchInput = styled('input')({
   fontFamily: 'inherit',
   // iOS Safari kicks off a zoom-to-input if font-size < 16px.
   minWidth: 0,
+  '&::placeholder': {
+    color: slate400,
+  },
 });
 
 const ClearButton = styled('button')({
   appearance: 'none',
   border: 'none',
   background: 'transparent',
-  padding: '6px 10px',
-  borderRadius: '8px',
+  padding: '0',
+  width: '28px',
+  height: '28px',
+  borderRadius: '50%',
   cursor: 'pointer',
   color: muted,
-  fontSize: '13px',
-  fontWeight: 500,
+  fontSize: '14px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
   '&:hover': {
     background: slate100,
     color: foreground,
+  },
+});
+
+const SubmitButton = styled('button')({
+  appearance: 'none',
+  border: 'none',
+  height: '48px',
+  padding: '0 22px',
+  borderRadius: '100px',
+  background: rose600,
+  color: white,
+  fontSize: '14px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  transition: 'background 0.15s ease, transform 0.1s ease',
+  flexShrink: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  '&:hover': {
+    background: rose700,
+  },
+  '&:active': {
+    transform: 'scale(0.98)',
+  },
+  '&:focus-visible': {
+    outline: `2px solid ${rose700}`,
+    outlineOffset: '2px',
+  },
+  '@media (max-width: 520px)': {
+    padding: '0 14px',
   },
 });
 
@@ -124,7 +199,7 @@ const ClearButton = styled('button')({
 interface PageHeaderProps {
   title: string;
   subtitle: string;
-  /** Total matched restaurants — shown next to the title. */
+  /** Total matched restaurants — shown above the title as a chip. */
   resultCount?: number;
   /** Copy template with "{count}" placeholder. */
   resultCountTemplate?: string;
@@ -135,6 +210,7 @@ interface PageHeaderProps {
   onSearchSubmit: () => void;
   searchPlaceholder?: string;
   clearLabel?: string;
+  submitLabel?: string;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -150,6 +226,7 @@ export default function PageHeader({
   onSearchSubmit,
   searchPlaceholder = 'ძიება...',
   clearLabel = 'Clear',
+  submitLabel = 'Search',
 }: PageHeaderProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') onSearchSubmit();
@@ -164,14 +241,11 @@ export default function PageHeader({
 
   return (
     <HeaderSection>
+      <BlurCircle aria-hidden='true' />
       <HeaderInner>
-        <TitleRow>
-          <TitleBlock>
-            <Title>{title}</Title>
-            <Subtitle>{subtitle}</Subtitle>
-          </TitleBlock>
-          {countLabel && <ResultCount>{countLabel}</ResultCount>}
-        </TitleRow>
+        {countLabel && <ResultPill>{countLabel}</ResultPill>}
+        <Title>{title}</Title>
+        <Subtitle>{subtitle}</Subtitle>
 
         <SearchBox>
           <IconWrap aria-hidden='true'>
@@ -197,6 +271,9 @@ export default function PageHeader({
               ✕
             </ClearButton>
           )}
+          <SubmitButton type='button' onClick={onSearchSubmit} aria-label={submitLabel}>
+            {submitLabel}
+          </SubmitButton>
         </SearchBox>
       </HeaderInner>
     </HeaderSection>

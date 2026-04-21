@@ -40,29 +40,29 @@ const MainContent = styled('main')({
   flex: 1,
 });
 
-// Unified filter row: city dropdown on one side, "Clear filters" link on
-// the other. Category chips live in a separate row below. Consolidating
-// everything into two tidy rows instead of three reduces visual noise.
+// Unified filter row: city + sort pills on the left, "Clear filters"
+// chip on the right. Category chips live in a separate row below.
 const FilterRow = styled('div')({
   maxWidth: '1120px',
-  margin: '12px auto 0',
+  margin: '20px auto 0',
   display: 'flex',
   alignItems: 'center',
-  gap: '12px',
+  gap: '10px',
   flexWrap: 'wrap',
 });
 
-const CitySelectWrap = styled('label')({
+// Shared pill styling for the city + sort dropdowns.
+const FilterPill = styled('label')({
   display: 'inline-flex',
   alignItems: 'center',
-  gap: '8px',
+  gap: '6px',
   height: '40px',
-  padding: '0 6px 0 14px',
+  padding: '0 14px',
   border: `1px solid ${border}`,
   borderRadius: '100px',
   background: white,
   cursor: 'pointer',
-  transition: 'border-color 0.15s ease',
+  transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
   '&:hover': {
     borderColor: slate200,
   },
@@ -72,21 +72,19 @@ const CitySelectWrap = styled('label')({
   },
 });
 
-const CitySelectLabel = styled('span')({
-  fontSize: '12px',
-  fontWeight: 600,
+const FilterLabel = styled('span')({
+  fontSize: '13px',
   color: muted,
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
+  fontWeight: 500,
 });
 
-const CitySelect = styled('select')({
+const FilterSelect = styled('select')({
   appearance: 'none',
   WebkitAppearance: 'none',
   MozAppearance: 'none',
   border: 'none',
   background: 'transparent',
-  padding: '0 28px 0 0',
+  padding: '0 20px 0 0',
   fontSize: '14px',
   fontWeight: 600,
   color: foreground,
@@ -94,25 +92,29 @@ const CitySelect = styled('select')({
   cursor: 'pointer',
   fontFamily: 'inherit',
   backgroundImage:
-    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2362748e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
+    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2362748e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
   backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 4px center',
-  paddingRight: '24px',
+  backgroundPosition: 'right 0 center',
 });
 
-const ClearFiltersButton = styled('button')({
+const ClearFiltersChip = styled('button')({
   appearance: 'none',
-  border: 'none',
-  background: 'transparent',
+  border: `1px solid ${rose600}`,
+  background: 'rgba(236, 0, 63, 0.08)',
   color: rose600,
   fontSize: '13px',
   fontWeight: 600,
-  padding: '8px 10px',
-  borderRadius: '8px',
+  padding: '0 14px',
+  height: '40px',
+  borderRadius: '100px',
   cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
   marginLeft: 'auto',
+  transition: 'background 0.15s ease',
   '&:hover': {
-    background: slate100,
+    background: 'rgba(236, 0, 63, 0.15)',
   },
   '&:focus-visible': {
     outline: `2px solid ${rose600}`,
@@ -155,10 +157,22 @@ const CardWrapper = styled('div')({
   },
 });
 
+// Skeleton that mirrors the real card: square image region + 3 text bars.
+// Matches the actual card shape so the loading state doesn't flash a
+// completely different silhouette to what lands in its place.
 const SkeletonCard = styled('div')({
   width: '100%',
-  height: '280px',
+  border: `1px solid ${border}`,
   borderRadius: '14px',
+  background: white,
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const SkeletonImage = styled('div')({
+  width: '100%',
+  aspectRatio: '1 / 1',
   background: `linear-gradient(90deg, ${slate100} 0%, ${slate200} 50%, ${slate100} 100%)`,
   backgroundSize: '200% 100%',
   animation: 'shimmer 1.4s infinite',
@@ -168,12 +182,74 @@ const SkeletonCard = styled('div')({
   },
 });
 
+const SkeletonTextArea = styled('div')({
+  padding: '12px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
+
+const SkeletonBar = styled('div')({
+  height: '12px',
+  borderRadius: '6px',
+  background: `linear-gradient(90deg, ${slate100} 0%, ${slate200} 50%, ${slate100} 100%)`,
+  backgroundSize: '200% 100%',
+  animation: 'shimmer 1.4s infinite',
+});
+
 const EmptyState = styled('div')({
   gridColumn: '1 / -1',
   textAlign: 'center',
-  padding: '64px 20px',
+  padding: '80px 24px',
   color: muted,
-  fontSize: '15px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '10px',
+});
+
+const EmptyIcon = styled('div')({
+  width: '64px',
+  height: '64px',
+  borderRadius: '50%',
+  background: 'rgba(236, 0, 63, 0.08)',
+  color: rose600,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '28px',
+  marginBottom: '4px',
+});
+
+const EmptyTitle = styled('p')({
+  fontSize: '18px',
+  fontWeight: 600,
+  color: foreground,
+  margin: 0,
+});
+
+const EmptyHint = styled('p')({
+  fontSize: '14px',
+  color: muted,
+  margin: 0,
+  maxWidth: '420px',
+  lineHeight: 1.5,
+});
+
+const EmptyCta = styled('button')({
+  marginTop: '12px',
+  appearance: 'none',
+  border: 'none',
+  background: rose600,
+  color: white,
+  fontSize: '14px',
+  fontWeight: 600,
+  padding: '10px 18px',
+  borderRadius: '100px',
+  cursor: 'pointer',
+  '&:hover': {
+    background: '#BE123C',
+  },
 });
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -240,6 +316,7 @@ export default function RestaurantsSearchPage() {
   const categoryParam = searchParams.get('category') ?? null;
   const pageParam = parseInt(searchParams.get('page') ?? '1', 10);
   const searchParam = searchParams.get('search') ?? '';
+  const sortParam = searchParams.get('sort') ?? '-average_rating';
 
   // Local search input state
   const [searchInput, setSearchInput] = useState(searchParam);
@@ -315,7 +392,7 @@ export default function RestaurantsSearchPage() {
           ...(searchParam ? { search: searchParam } : {}),
           page: pageParam,
           page_size: PAGE_SIZE,
-          ordering: '-average_rating',
+          ordering: sortParam,
         },
       })
       .then(response => {
@@ -332,7 +409,7 @@ export default function RestaurantsSearchPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [cityParam, categoryParam, searchParam, pageParam]);
+  }, [cityParam, categoryParam, searchParam, pageParam, sortParam]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasActiveFilters = useMemo(
@@ -343,20 +420,29 @@ export default function RestaurantsSearchPage() {
   // ── URL helpers ────────────────────────────────────────────────────────────
 
   const buildParams = useCallback(
-    (overrides: { city?: string; category?: string | null; page?: number; search?: string }) => {
+    (overrides: {
+      city?: string;
+      category?: string | null;
+      page?: number;
+      search?: string;
+      sort?: string;
+    }) => {
       const params = new URLSearchParams();
       const city = 'city' in overrides ? overrides.city : cityParam;
       const category = 'category' in overrides ? overrides.category : categoryParam;
       const page = overrides.page ?? 1;
       const search = 'search' in overrides ? overrides.search : searchParam;
+      const sort = 'sort' in overrides ? overrides.sort : sortParam;
 
       if (city) params.set('city', city);
       if (category) params.set('category', category);
       if (search) params.set('search', search);
+      // Omit the sort param when it's the default so URLs stay clean.
+      if (sort && sort !== '-average_rating') params.set('sort', sort);
       params.set('page', String(page));
       return params.toString();
     },
-    [cityParam, categoryParam, searchParam]
+    [cityParam, categoryParam, searchParam, sortParam]
   );
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -377,6 +463,14 @@ export default function RestaurantsSearchPage() {
   const handleCityChange = useCallback(
     (city: string) => {
       const qs = buildParams({ city, page: 1 });
+      router.push(`${localePath(locale, '/restaurants')}?${qs}`);
+    },
+    [buildParams, locale, router]
+  );
+
+  const handleSortChange = useCallback(
+    (sort: string) => {
+      const qs = buildParams({ sort, page: 1 });
       router.push(`${localePath(locale, '/restaurants')}?${qs}`);
     },
     [buildParams, locale, router]
@@ -428,25 +522,27 @@ export default function RestaurantsSearchPage() {
     <PageWrapper>
       <HeaderPrimary />
 
+      {/* Hero sits full-bleed so its gradient backdrop reaches the edges. */}
+      <PageHeader
+        title={t.restaurantsSearch.title}
+        subtitle={t.restaurantsSearch.subtitle}
+        resultCount={loading ? undefined : totalCount}
+        resultCountTemplate={t.restaurantsSearch.resultsCount}
+        resultCountZeroLabel={t.restaurantsSearch.resultsCountZero}
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+        searchPlaceholder={t.restaurantsSearch.search}
+        clearLabel={t.restaurantsSearch.clearSearch}
+        submitLabel={t.restaurantsSearch.submit}
+      />
+
       <ContentWrapper>
         <MainContent>
-          <PageHeader
-            title={t.restaurantsSearch.title}
-            subtitle={t.restaurantsSearch.subtitle}
-            resultCount={loading ? undefined : totalCount}
-            resultCountTemplate={t.restaurantsSearch.resultsCount}
-            resultCountZeroLabel={t.restaurantsSearch.resultsCountZero}
-            searchValue={searchInput}
-            onSearchChange={setSearchInput}
-            onSearchSubmit={handleSearchSubmit}
-            searchPlaceholder={t.restaurantsSearch.search}
-            clearLabel={t.restaurantsSearch.clearSearch}
-          />
-
           <FilterRow>
-            <CitySelectWrap>
-              <CitySelectLabel>{t.restaurantsSearch.cityLabel}</CitySelectLabel>
-              <CitySelect
+            <FilterPill>
+              <FilterLabel>{t.restaurantsSearch.cityLabel}</FilterLabel>
+              <FilterSelect
                 value={cityParam}
                 onChange={e => handleCityChange(e.target.value)}
                 aria-label={t.restaurantsSearch.cityLabel}
@@ -459,13 +555,26 @@ export default function RestaurantsSearchPage() {
                       city.slug}
                   </option>
                 ))}
-              </CitySelect>
-            </CitySelectWrap>
+              </FilterSelect>
+            </FilterPill>
+
+            <FilterPill>
+              <FilterLabel>{t.restaurantsSearch.sortLabel}</FilterLabel>
+              <FilterSelect
+                value={sortParam}
+                onChange={e => handleSortChange(e.target.value)}
+                aria-label={t.restaurantsSearch.sortLabel}
+              >
+                <option value='-average_rating'>{t.restaurantsSearch.sortTopRated}</option>
+                <option value='-created_at'>{t.restaurantsSearch.sortNewest}</option>
+                <option value='name'>{t.restaurantsSearch.sortAz}</option>
+              </FilterSelect>
+            </FilterPill>
 
             {hasActiveFilters && (
-              <ClearFiltersButton type='button' onClick={handleClearFilters}>
+              <ClearFiltersChip type='button' onClick={handleClearFilters}>
                 {t.restaurantsSearch.clearFilters} ✕
-              </ClearFiltersButton>
+              </ClearFiltersChip>
             )}
           </FilterRow>
 
@@ -481,9 +590,29 @@ export default function RestaurantsSearchPage() {
           <GridSection>
             <Grid>
               {loading ? (
-                Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={i} />)
+                Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                  <SkeletonCard key={i}>
+                    <SkeletonImage />
+                    <SkeletonTextArea>
+                      <SkeletonBar style={{ width: '70%' }} />
+                      <SkeletonBar style={{ width: '45%', height: '10px' }} />
+                      <SkeletonBar style={{ width: '55%', height: '10px' }} />
+                    </SkeletonTextArea>
+                  </SkeletonCard>
+                ))
               ) : restaurants.length === 0 ? (
-                <EmptyState>{t.restaurantsSearch.noResults}</EmptyState>
+                <EmptyState>
+                  <EmptyIcon aria-hidden='true'>🔍</EmptyIcon>
+                  <EmptyTitle>
+                    {t.restaurantsSearch.noResultsTitle ?? t.restaurantsSearch.noResults}
+                  </EmptyTitle>
+                  <EmptyHint>{t.restaurantsSearch.noResultsHint ?? ''}</EmptyHint>
+                  {hasActiveFilters && (
+                    <EmptyCta type='button' onClick={handleClearFilters}>
+                      {t.restaurantsSearch.clearFilters}
+                    </EmptyCta>
+                  )}
+                </EmptyState>
               ) : (
                 restaurants.map(restaurant => {
                   const categoryName = restaurant.category

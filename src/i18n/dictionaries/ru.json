@@ -677,7 +677,14 @@
     "resultsCountZero": "Ничего не найдено",
     "clearFilters": "Сбросить фильтры",
     "clearSearch": "Очистить",
-    "cityLabel": "Город"
+    "cityLabel": "Город",
+    "submit": "Найти",
+    "sortLabel": "Сортировка",
+    "sortTopRated": "По рейтингу",
+    "sortNewest": "Новые",
+    "sortAz": "По алфавиту",
+    "noResultsTitle": "Ничего не найдено",
+    "noResultsHint": "Попробуйте другое слово или сбросьте фильтры."
   },
   "footer": {
     "navigation": "Навигация",

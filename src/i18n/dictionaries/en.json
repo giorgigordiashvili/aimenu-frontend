@@ -677,7 +677,14 @@
     "resultsCountZero": "No results",
     "clearFilters": "Clear filters",
     "clearSearch": "Clear",
-    "cityLabel": "City"
+    "cityLabel": "City",
+    "submit": "Search",
+    "sortLabel": "Sort",
+    "sortTopRated": "Top rated",
+    "sortNewest": "Newest",
+    "sortAz": "Name A–Z",
+    "noResultsTitle": "No restaurants match your search",
+    "noResultsHint": "Try a different keyword or clear the filters to see everything."
   },
   "footer": {
     "navigation": "Navigation",
