@@ -26,15 +26,30 @@ import {
 // Hero-style backdrop with a soft pink→neutral gradient so the page has
 // a clear visual anchor instead of opening on flat slate. The colours
 // mirror the brand palette without competing with the card grid below.
+//
+// Intentionally NOT `overflow: hidden` — the search suggestions popover
+// below the input extends past the section's bottom edge, and clipping
+// it here would hide the dropdown. The blur decoration has its own
+// clipped wrapper (BlurClip) to keep the paint within the section.
 const HeaderSection = styled('section')({
   position: 'relative',
   padding: '32px 16px 28px',
   background:
     'linear-gradient(180deg, #FFE4EC 0%, #FEF2F4 35%, #F8FAFC 100%)',
-  overflow: 'hidden',
   '@media (min-width: 768px)': {
     padding: '56px 24px 44px',
   },
+});
+
+// Invisible clip layer so the BlurCircle's negative-offset position can
+// visually escape the viewport edges without forcing `overflow: hidden`
+// on HeaderSection itself (which would clip the popover).
+const BlurClip = styled('div')({
+  position: 'absolute',
+  inset: 0,
+  overflow: 'hidden',
+  pointerEvents: 'none',
+  zIndex: 0,
 });
 
 // Decorative blur behind the title — purely cosmetic, stays behind content.
@@ -47,7 +62,6 @@ const BlurCircle = styled('div')({
   filter: 'blur(80px)',
   top: '-120px',
   right: '-80px',
-  pointerEvents: 'none',
   '@media (max-width: 768px)': {
     width: '220px',
     height: '220px',
@@ -404,7 +418,9 @@ export default function PageHeader({
 
   return (
     <HeaderSection>
-      <BlurCircle aria-hidden='true' />
+      <BlurClip aria-hidden='true'>
+        <BlurCircle />
+      </BlurClip>
       <HeaderInner>
         {countLabel && <ResultPill>{countLabel}</ResultPill>}
         <Title>{title}</Title>
