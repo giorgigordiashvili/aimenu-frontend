@@ -4,7 +4,7 @@ import { styled } from '@pigment-css/react';
 import type { Dispatch, SetStateAction } from 'react';
 import useSWR from 'swr';
 
-import axios from '@/api/axios';
+import { restaurantsCategoriesList } from '@/api/generated';
 import type { RestaurantCategory } from '@/api/generated/interfaces';
 import TextInput from '@/components/TextInput/TextInput';
 import { Locale } from '@/i18n/config';
@@ -155,19 +155,6 @@ interface StepRestaurantProps {
   locale: Locale;
 }
 
-// Until the API client is regenerated post-backend-deploy, hit the endpoint
-// directly. The shape matches RestaurantCategorySerializer (id, slug,
-// translations). Swap to the generated `restaurantsCategoriesList` helper
-// once it lands.
-async function fetchCategories(): Promise<RestaurantCategory[]> {
-  const res = await axios.get('/api/v1/restaurants/categories/');
-  const body = res.data;
-  if (Array.isArray(body)) return body;
-  if (Array.isArray(body?.results)) return body.results;
-  if (Array.isArray(body?.data)) return body.data;
-  return [];
-}
-
 export default function StepRestaurant({
   data,
   setData,
@@ -179,8 +166,8 @@ export default function StepRestaurant({
   locale,
 }: StepRestaurantProps) {
   const { data: categories } = useSWR<RestaurantCategory[]>(
-    '/api/v1/restaurants/categories/',
-    fetchCategories,
+    'restaurants-categories',
+    () => restaurantsCategoriesList(),
     { revalidateOnFocus: false }
   );
 

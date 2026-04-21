@@ -182,6 +182,7 @@ export interface MenuCategory {
   id: string;
   translations: string;
   image?: string;
+  image_blurhash: string;
   display_order?: number;
   is_active?: boolean;
   items_count: string;
@@ -207,6 +208,7 @@ export interface MenuItem {
   category: MenuCategoryList;
   price: string;
   image?: string;
+  image_blurhash: string;
   is_available?: boolean;
   is_featured?: boolean;
   display_order?: number;
@@ -1103,6 +1105,7 @@ export interface RestaurantCategory {
   slug: string;
   icon?: string;
   image?: string;
+  image_blurhash: string;
 }
 
 export interface RestaurantCreate {
@@ -1153,7 +1156,9 @@ export interface RestaurantDetail {
   latitude?: string;
   longitude?: string;
   logo?: string;
+  logo_blurhash?: string;
   cover_image?: string;
+  cover_image_blurhash?: string;
   primary_color?: string;
   secondary_color?: string;
   default_currency?: DefaultCurrencyEnum;
@@ -1190,6 +1195,7 @@ export interface RestaurantList {
   slug: string;
   description?: string;
   logo?: string;
+  logo_blurhash?: string;
   city?: string;
   city_obj: string;
   category: RestaurantCategory;
@@ -1418,6 +1424,7 @@ export interface TableSessionDetail {
   guests: TableSessionGuest[];
   restaurant_name: string;
   restaurant_slug: string;
+  orders_summary: string;
 }
 
 export interface TableSessionGuest {

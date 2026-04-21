@@ -98,6 +98,8 @@ import type {
   ReservationCreate,
   PaginatedRestaurantListList,
   RestaurantDetail,
+  Amenity,
+  RestaurantCategory,
   RestaurantCreateRequest,
   RestaurantCreate,
   TableSessionDetail,
@@ -1740,6 +1742,38 @@ export async function restaurantsMenuItemsRetrieve(
 ): Promise<MenuItem> {
   const response = await axios.get(
     `/api/v1/restaurants/${slug}/menu/items/${id}/`,
+  );
+  return response.data;
+}
+
+export async function restaurantsAmenitiesList(
+  ordering?: string,
+  search?: string,
+): Promise<Amenity[]> {
+  const response = await axios.get(
+    `/api/v1/restaurants/amenities/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function restaurantsCategoriesList(
+  ordering?: string,
+  search?: string,
+): Promise<RestaurantCategory[]> {
+  const response = await axios.get(
+    `/api/v1/restaurants/categories/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
   );
   return response.data;
 }
