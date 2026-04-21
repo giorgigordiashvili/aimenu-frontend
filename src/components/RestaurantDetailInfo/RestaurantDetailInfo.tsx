@@ -228,16 +228,21 @@ export default function RestaurantDetailInfo({
             size='extra_small'
             icon={props => <HeartOutline variant={isFavorite ? 'filled' : 'outlined'} {...props} />}
             onClick={handleFavoriteToggle}
+            aria-label={t.restaurantDetail.favoriteToggle}
           />
-          <MainButton variant='ghost' size='extra_small' icon={Share} />
+          <MainButton
+            variant='ghost'
+            size='extra_small'
+            icon={Share}
+            aria-label={t.restaurantDetail.share}
+          />
           <MainButton
             variant='ghost'
             size='extra_small'
             icon={Gallery}
+            aria-label={t.restaurantDetail.openGallery}
             onClick={() =>
-              window.dispatchEvent(
-                new CustomEvent('photo-gallery:open', { detail: { index: 0 } })
-              )
+              window.dispatchEvent(new CustomEvent('photo-gallery:open', { detail: { index: 0 } }))
             }
           />
         </MobileRightSection>
@@ -265,16 +270,21 @@ export default function RestaurantDetailInfo({
             size='extra_small'
             icon={props => <HeartOutline variant={isFavorite ? 'filled' : 'outlined'} {...props} />}
             onClick={handleFavoriteToggle}
+            aria-label={t.restaurantDetail.favoriteToggle}
           />
-          <MainButton variant='ghost' size='extra_small' icon={Share} />
+          <MainButton
+            variant='ghost'
+            size='extra_small'
+            icon={Share}
+            aria-label={t.restaurantDetail.share}
+          />
           <MainButton
             variant='ghost'
             size='extra_small'
             icon={Gallery}
+            aria-label={t.restaurantDetail.openGallery}
             onClick={() =>
-              window.dispatchEvent(
-                new CustomEvent('photo-gallery:open', { detail: { index: 0 } })
-              )
+              window.dispatchEvent(new CustomEvent('photo-gallery:open', { detail: { index: 0 } }))
             }
           />
         </DesktopActions>

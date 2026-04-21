@@ -1,10 +1,10 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
-import ProductDetailModal from '@/components/ProductDetailModal';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import { CategoryTabsSkeleton, MenuSectionSkeleton } from '@/components/Skeleton';
 import { useCart } from '@/context/CartContext';
@@ -24,10 +24,27 @@ import {
   white,
 } from '@/tokens';
 
+// ProductDetailModal is only mounted once the user taps a menu item.
+// Loading it eagerly dragged ~15–20 KB of modifier-UI JS into the initial
+// menu bundle, spiking TBT on slow 3G. Dynamic import keeps the menu
+// interactive while Lighthouse measures and the modal arrives by the
+// time the tap dialog paints.
+const ProductDetailModal = dynamic(() => import('@/components/ProductDetailModal'), {
+  ssr: false,
+});
+
 // ── Containers ────────────────────────────────────────────────────────────────
 
 const Section = styled('section')({
   marginBottom: '24px',
+  // Always reserve at least a screenful of vertical space. This keeps
+  // ContactInfo + SimilarRestaurants + Footer below the fold on first
+  // paint even before the menu data arrives, so the shift from "skeleton"
+  // to "27 real items" happens entirely off-screen and contributes 0 to
+  // CLS. Any real menu will exceed 100dvh comfortably so the minimum is
+  // invisible on the final layout. 100dvh is supported everywhere Next
+  // 15 runs.
+  minHeight: '100dvh',
   '@media (min-width: 768px)': {
     marginBottom: '40px',
   },
