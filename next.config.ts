@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
     // (~23–27 KB). Lighthouse image-delivery audit flagged ~90 KiB of
     // oversized menu thumbnails at baseline.
     imageSizes: [16, 32, 48, 64, 96, 128, 160, 256],
+    // Default is 60s which makes /_next/image re-fetch from DO Spaces
+    // on every browser revisit. Menu item + restaurant hero URLs change
+    // when owners upload a new photo (new filename in Spaces), so we can
+    // safely cache the optimized variants for a year. Next emits the
+    // matching browser Cache-Control so repeat visits go cache-first.
+    minimumCacheTTL: 31536000,
   },
   compress: true,
   async headers() {
