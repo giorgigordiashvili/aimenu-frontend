@@ -54,13 +54,13 @@ const Card = styled('div')<CardProps>({
 const ImageContainer = styled('div')({
   position: 'relative',
   width: '78px',
-  height: '76px',
+  aspectRatio: '1 / 1',
   borderRadius: '8px',
   overflow: 'hidden',
   flexShrink: 0,
   '@media (min-width: 768px)': {
     width: '100%',
-    height: '160px',
+    aspectRatio: '1 / 1',
     borderRadius: 0,
   },
 });
