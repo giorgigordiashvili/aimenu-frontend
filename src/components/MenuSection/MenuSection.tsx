@@ -324,7 +324,7 @@ export default function MenuSection({
 }: MenuSectionProps) {
   const t = getDictionary(locale);
   const { products, categories, isLoading } = useMenuData(slug, locale);
-  const { items: cartItems, getTotalQuantityByMenuItemId, updateQuantity } = useCart();
+  const { items: cartItems, getTotalQuantityByMenuItemId, updateQuantity, addItem } = useCart();
 
   // `activeCategoryId` tracks which category's section is currently in the
   // viewport so the chip highlights. Category chips no longer filter the
@@ -390,6 +390,27 @@ export default function MenuSection({
     const chip = tabRefs.current[activeCategoryId];
     if (chip) chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }, [activeCategoryId]);
+
+  // Quick-add from the card's "+" button. For items with no required modifier
+  // group we add straight to cart so the user doesn't have to bounce through
+  // the details modal. Items that *do* require a choice still open the modal,
+  // because we can't guess a selection on their behalf.
+  const quickAdd = (product: MenuProduct, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const hasRequired = product.modifierGroups?.some(g => g.required);
+    if (hasRequired) {
+      openModal(product);
+      return;
+    }
+    addItem({
+      id: product.id,
+      menuItemId: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      modifiers: [],
+    });
+  };
 
   // Opens the modal; if the product is already in cart, pre-load its modifier selection.
   const openModal = (product: MenuProduct, e?: React.MouseEvent) => {
@@ -508,7 +529,7 @@ export default function MenuSection({
                       </QtyBtn>
                       <QtyCount>{getTotalQuantityByMenuItemId(product.id)}</QtyCount>
                       <QtyBtnPlus
-                        onClick={e => openModal(product, e)}
+                        onClick={e => quickAdd(product, e)}
                         aria-label={t.restaurant.addToCart}
                       >
                         +
@@ -516,7 +537,7 @@ export default function MenuSection({
                     </QuantityControl>
                   ) : (
                     <AddButton
-                      onClick={e => openModal(product, e)}
+                      onClick={e => quickAdd(product, e)}
                       aria-label={t.restaurant.addToCart}
                     >
                       +
