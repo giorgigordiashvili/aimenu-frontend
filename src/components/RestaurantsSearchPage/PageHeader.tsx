@@ -1,7 +1,13 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 
+import axiosInstance from '@/api/axios';
+import type { RestaurantList } from '@/api/generated/interfaces';
+import { useLocale } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import SearchIcon from '@/icons/Search';
 import {
   border,
@@ -10,6 +16,7 @@ import {
   rose600,
   rose700,
   slate100,
+  slate200,
   slate400,
   white,
 } from '@/tokens';
@@ -97,12 +104,17 @@ const Subtitle = styled('p')({
   },
 });
 
-// The search bar is the primary control on this page. Integrated submit
-// button replaces the "hit Enter to search" blind interaction.
-const SearchBox = styled('div')({
-  marginTop: '8px',
+// Wrapper establishes a positioning context for the absolutely-positioned
+// suggestions dropdown below the search bar.
+const SearchWrap = styled('div')({
+  position: 'relative',
   width: '100%',
   maxWidth: '640px',
+  marginTop: '8px',
+});
+
+const SearchBox = styled('div')({
+  width: '100%',
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
@@ -139,6 +151,16 @@ const SearchInput = styled('input')({
   minWidth: 0,
   '&::placeholder': {
     color: slate400,
+  },
+  // Hide the native WebKit "×" on type="search" — we render our own,
+  // and stacking them looked like two X buttons side by side.
+  '&::-webkit-search-cancel-button': {
+    appearance: 'none',
+    WebkitAppearance: 'none',
+  },
+  '&::-webkit-search-decoration': {
+    appearance: 'none',
+    WebkitAppearance: 'none',
   },
 });
 
@@ -194,6 +216,82 @@ const SubmitButton = styled('button')({
   },
 });
 
+// ── Suggestions dropdown ─────────────────────────────────────────────────────
+
+const SuggestionsPopover = styled('div')({
+  position: 'absolute',
+  top: 'calc(100% + 8px)',
+  left: 0,
+  right: 0,
+  background: white,
+  border: `1px solid ${slate200}`,
+  borderRadius: '16px',
+  boxShadow: '0 14px 32px -12px rgba(15, 23, 43, 0.18)',
+  padding: '6px',
+  zIndex: 20,
+  maxHeight: '420px',
+  overflowY: 'auto',
+  textAlign: 'left',
+});
+
+const SuggestionLink = styled(Link)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '10px 12px',
+  borderRadius: '10px',
+  textDecoration: 'none',
+  color: foreground,
+  transition: 'background 0.1s ease',
+  '&:hover, &:focus-visible': {
+    background: slate100,
+    outline: 'none',
+  },
+});
+
+const SuggestionThumb = styled('div')({
+  width: '40px',
+  height: '40px',
+  borderRadius: '10px',
+  background: slate100,
+  overflow: 'hidden',
+  flexShrink: 0,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  position: 'relative',
+});
+
+const SuggestionMeta = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  minWidth: 0,
+  flex: 1,
+});
+
+const SuggestionName = styled('span')({
+  fontSize: '14px',
+  fontWeight: 600,
+  color: foreground,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+});
+
+const SuggestionSub = styled('span')({
+  fontSize: '12px',
+  color: muted,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+});
+
+const SuggestionEmpty = styled('div')({
+  padding: '16px 12px',
+  fontSize: '13px',
+  color: muted,
+  textAlign: 'center',
+});
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface PageHeaderProps {
@@ -215,6 +313,10 @@ interface PageHeaderProps {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+const MIN_QUERY = 2;
+const SUGGESTION_LIMIT = 6;
+const DEBOUNCE_MS = 180;
+
 export default function PageHeader({
   title,
   subtitle,
@@ -228,8 +330,21 @@ export default function PageHeader({
   clearLabel = 'Clear',
   submitLabel = 'Search',
 }: PageHeaderProps) {
+  const { locale } = useLocale();
+  const [suggestions, setSuggestions] = useState<RestaurantList[]>([]);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const debounceRef = useRef<number | null>(null);
+  const requestIdRef = useRef(0);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') onSearchSubmit();
+    if (e.key === 'Enter') {
+      setPopoverOpen(false);
+      onSearchSubmit();
+    } else if (e.key === 'Escape') {
+      setPopoverOpen(false);
+    }
   };
 
   const countLabel = (() => {
@@ -239,6 +354,54 @@ export default function PageHeader({
     return null;
   })();
 
+  // Debounced typeahead. Fire once the user pauses typing; ignore queries
+  // shorter than MIN_QUERY so a single-letter press doesn't thrash the API.
+  useEffect(() => {
+    const q = searchValue.trim();
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+
+    if (q.length < MIN_QUERY) {
+      setSuggestions([]);
+      return;
+    }
+
+    debounceRef.current = window.setTimeout(async () => {
+      const reqId = ++requestIdRef.current;
+      try {
+        const res = await axiosInstance.get('/api/v1/restaurants/', {
+          params: { search: q, page: 1, page_size: SUGGESTION_LIMIT },
+        });
+        // Ignore late responses from superseded requests.
+        if (reqId !== requestIdRef.current) return;
+        const data = res.data;
+        const results: RestaurantList[] = Array.isArray(data) ? data : (data?.results ?? []);
+        setSuggestions(results);
+      } catch {
+        if (reqId !== requestIdRef.current) return;
+        setSuggestions([]);
+      }
+    }, DEBOUNCE_MS);
+
+    return () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    };
+  }, [searchValue]);
+
+  // Close the popover when the user clicks outside the search wrap. The
+  // focus-based close (onBlur) alone isn't enough because moving from
+  // input → suggestion link counts as a blur and would nuke the click.
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (!wrapRef.current) return;
+      if (!wrapRef.current.contains(e.target as Node)) setPopoverOpen(false);
+    }
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, []);
+
+  const showPopover =
+    popoverOpen && inputFocused && searchValue.trim().length >= MIN_QUERY;
+
   return (
     <HeaderSection>
       <BlurCircle aria-hidden='true' />
@@ -247,34 +410,86 @@ export default function PageHeader({
         <Title>{title}</Title>
         <Subtitle>{subtitle}</Subtitle>
 
-        <SearchBox>
-          <IconWrap aria-hidden='true'>
-            <SearchIcon width={18} height={18} />
-          </IconWrap>
-          <SearchInput
-            type='search'
-            value={searchValue}
-            onChange={e => onSearchChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={searchPlaceholder}
-            aria-label={searchPlaceholder}
-          />
-          {searchValue && (
-            <ClearButton
+        <SearchWrap ref={wrapRef}>
+          <SearchBox>
+            <IconWrap aria-hidden='true'>
+              <SearchIcon width={18} height={18} />
+            </IconWrap>
+            <SearchInput
+              type='search'
+              value={searchValue}
+              onChange={e => {
+                onSearchChange(e.target.value);
+                setPopoverOpen(true);
+              }}
+              onKeyDown={handleKeyDown}
+              onFocus={() => {
+                setInputFocused(true);
+                setPopoverOpen(true);
+              }}
+              onBlur={() => setInputFocused(false)}
+              placeholder={searchPlaceholder}
+              aria-label={searchPlaceholder}
+              aria-autocomplete='list'
+              aria-expanded={showPopover}
+            />
+            {searchValue && (
+              <ClearButton
+                type='button'
+                onClick={() => {
+                  onSearchChange('');
+                  setPopoverOpen(false);
+                  onSearchSubmit();
+                }}
+                aria-label={clearLabel}
+              >
+                ✕
+              </ClearButton>
+            )}
+            <SubmitButton
               type='button'
               onClick={() => {
-                onSearchChange('');
+                setPopoverOpen(false);
                 onSearchSubmit();
               }}
-              aria-label={clearLabel}
+              aria-label={submitLabel}
             >
-              ✕
-            </ClearButton>
+              {submitLabel}
+            </SubmitButton>
+          </SearchBox>
+
+          {showPopover && (
+            <SuggestionsPopover role='listbox'>
+              {suggestions.length === 0 ? (
+                <SuggestionEmpty>—</SuggestionEmpty>
+              ) : (
+                suggestions.map(r => (
+                  <SuggestionLink
+                    key={r.id}
+                    href={localePath(locale, `/restaurant/${r.slug}`)}
+                    role='option'
+                    // Nav happens via <Link>; closing the popover here
+                    // avoids a flash of stale results behind the route.
+                    onClick={() => setPopoverOpen(false)}
+                    // Prevent blur-close before navigation fires.
+                    onMouseDown={e => e.preventDefault()}
+                  >
+                    <SuggestionThumb
+                      style={
+                        r.logo ? { backgroundImage: `url(${r.logo})` } : undefined
+                      }
+                      aria-hidden='true'
+                    />
+                    <SuggestionMeta>
+                      <SuggestionName>{r.name}</SuggestionName>
+                      {r.city && <SuggestionSub>{r.city}</SuggestionSub>}
+                    </SuggestionMeta>
+                  </SuggestionLink>
+                ))
+              )}
+            </SuggestionsPopover>
           )}
-          <SubmitButton type='button' onClick={onSearchSubmit} aria-label={submitLabel}>
-            {submitLabel}
-          </SubmitButton>
-        </SearchBox>
+        </SearchWrap>
       </HeaderInner>
     </HeaderSection>
   );
