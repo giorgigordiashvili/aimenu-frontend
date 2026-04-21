@@ -77,7 +77,7 @@ const ContentTop = styled('div')({
   justifyContent: 'space-between',
   zIndex: 1,
   width: '100%',
-  height: '160px',
+  aspectRatio: '1 / 1',
   padding: '8px',
   overflow: 'hidden',
 });
