@@ -68,7 +68,10 @@ const ImageContainer = styled('div')({
 const StyledImage = styled(Image)({
   width: '100%',
   height: '100%',
-  objectFit: 'cover',
+  // contain so the whole dish is visible — the blurhash/thumbnail backdrop
+  // (also blurred + upscaled) fills the letterbox so the hero doesn't look
+  // empty on photos that aren't 4:3.
+  objectFit: 'contain',
   borderBottomLeftRadius: '8px',
   borderBottomRightRadius: '8px',
   '@media (min-width: 768px)': {
