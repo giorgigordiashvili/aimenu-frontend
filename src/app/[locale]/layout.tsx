@@ -73,7 +73,10 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
         { url: '/favicon.ico' },
         { url: '/logo.png', type: 'image/png' },
       ],
-      apple: '/apple-touch-icon.png',
+      // No dedicated 180x180 apple-touch-icon yet — reuse logo.png so iOS
+      // home-screen install shows a brand mark instead of a screenshot.
+      apple: [{ url: '/logo.png', sizes: '512x512', type: 'image/png' }],
+      shortcut: '/logo.png',
     },
     alternates: {
       canonical: localeUrl(loc, '/'),
