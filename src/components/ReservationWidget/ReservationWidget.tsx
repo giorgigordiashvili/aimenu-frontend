@@ -236,11 +236,21 @@ const OrderItemPrice = styled('span')({
 interface ReservationWidgetProps {
   slug: string;
   locale: string;
+  /**
+   * Master ordering switch. When false, the QR dine-in order card is
+   * suppressed — the widget falls through to the reservation/booking
+   * form regardless of whether the user is seated.
+   */
+  orderingEnabled?: boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function ReservationWidget({ slug, locale }: ReservationWidgetProps) {
+export default function ReservationWidget({
+  slug,
+  locale,
+  orderingEnabled = true,
+}: ReservationWidgetProps) {
   const router = useRouter();
   const t = useTranslations();
   const { locale: ctxLocale } = useLocale();
@@ -250,9 +260,12 @@ export default function ReservationWidget({ slug, locale }: ReservationWidgetPro
   // Order-mode whenever the user is at a table for this restaurant — either
   // via ?table=<code> in the URL (fresh QR scan) or via a validated
   // TableSession from a prior scan / invite-join (persisted in TableContext).
+  // Suppressed entirely when the restaurant is in menu-only mode; the widget
+  // then falls through to its reservation-booking branch regardless of QR.
   const hasTableSession =
-    !!searchParams.get('table') ||
-    (!!tableData?.isValidated && !!tableData.sessionId && tableData.restaurantSlug === slug);
+    orderingEnabled &&
+    (!!searchParams.get('table') ||
+      (!!tableData?.isValidated && !!tableData.sessionId && tableData.restaurantSlug === slug));
   const hasTableParam = hasTableSession;
   const cartTotal = getTotalPrice();
   const [depositAmount, setDepositAmount] = useState(10.0);

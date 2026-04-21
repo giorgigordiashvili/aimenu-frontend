@@ -167,9 +167,18 @@ const SheetBody = styled('div')({
 interface Props {
   slug: string;
   locale: string;
+  /** Master ordering switch from the restaurant. */
+  orderingEnabled?: boolean;
+  /** Whether the restaurant accepts reservations. */
+  reservationsEnabled?: boolean;
 }
 
-export default function MobileReservationSheet({ slug, locale }: Props) {
+export default function MobileReservationSheet({
+  slug,
+  locale,
+  orderingEnabled = true,
+  reservationsEnabled = true,
+}: Props) {
   const t = useTranslations();
   const { getTotalPrice, getTotalItems } = useCart();
   const { tableData } = useTable();
@@ -183,8 +192,14 @@ export default function MobileReservationSheet({ slug, locale }: Props) {
   // a TableSession has been validated for this restaurant. No need to
   // re-read the `?table=` query string here since TableContext already
   // persists it.
+  // Treat the user as seated only when ordering is actually allowed —
+  // otherwise the bar has nothing to offer in menu-only mode and should
+  // just fall through to reservation mode (or hide entirely).
   const hasTable =
-    !!tableData?.isValidated && !!tableData.sessionId && tableData.restaurantSlug === slug;
+    orderingEnabled &&
+    !!tableData?.isValidated &&
+    !!tableData.sessionId &&
+    tableData.restaurantSlug === slug;
 
   useEffect(() => {
     reservationsSettingsRetrieve()
@@ -240,6 +255,12 @@ export default function MobileReservationSheet({ slug, locale }: Props) {
   const ariaLabel = hasTable
     ? t.reservationWidget.mobileOrderStickyAria
     : t.reservationWidget.mobileStickyAria;
+
+  // Hide the whole bar when the restaurant is fully menu-only (no
+  // reservations, no ordering). Nothing meaningful to show.
+  if (!orderingEnabled && !reservationsEnabled) {
+    return null;
+  }
 
   return (
     <MobileOnly>
