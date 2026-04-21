@@ -84,8 +84,18 @@ type TextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   variant?: 'default' | 'outlined';
 };
 
-function TextArea({ label, errorMessage, variant = 'default', ...props }: TextAreaProps) {
+function TextArea({
+  label,
+  errorMessage,
+  variant = 'default',
+  onBlur: externalOnBlur,
+  ...props
+}: TextAreaProps) {
   const [isError, setIsError] = useState(false);
+
+  // Caller-supplied errorMessage is authoritative (covers react-hook-form
+  // / zod submit-click errors where the textarea was never blurred).
+  const showError = isError || !!errorMessage;
 
   return (
     <>
@@ -93,15 +103,16 @@ function TextArea({ label, errorMessage, variant = 'default', ...props }: TextAr
 
       <StyledTextArea
         {...props}
-        data-error={isError ? 'true' : undefined}
+        data-error={showError ? 'true' : undefined}
         data-variant={variant}
-        aria-invalid={isError}
+        aria-invalid={showError}
         onBlur={e => {
           setIsError(!e.currentTarget.checkValidity());
+          externalOnBlur?.(e);
         }}
       />
 
-      {isError && errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+      {showError && errorMessage && <ErrorText>{errorMessage}</ErrorText>}
     </>
   );
 }

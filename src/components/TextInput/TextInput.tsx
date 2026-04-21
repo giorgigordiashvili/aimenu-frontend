@@ -148,6 +148,7 @@ function TextInput({
   leftIcon: LeftIcon,
   onIconClick,
   variant = 'default',
+  onBlur: externalOnBlur,
   ...props
 }: TextInputProps) {
   const [isError, setIsError] = useState(false);
@@ -158,6 +159,12 @@ function TextInput({
   const isLocation = type === 'location';
   const isDate = type === 'date';
   const isTime = type === 'time';
+
+  // Caller-supplied errorMessage is authoritative (covers react-hook-form
+  // / zod submit-click errors where the field was never blurred). Internal
+  // isError still tracks native HTML-constraint failures on blur for
+  // callers that don't wire their own validation.
+  const showError = isError || !!errorMessage;
 
   return (
     <>
@@ -180,9 +187,9 @@ function TextInput({
           {...props}
           ref={inputRef}
           type={isPassword && showPassword ? 'text' : type}
-          data-error={isError ? 'true' : undefined}
+          data-error={showError ? 'true' : undefined}
           data-variant={variant}
-          aria-invalid={isError}
+          aria-invalid={showError}
           style={{
             paddingLeft:
               LeftIcon || (!LeftIcon && Icon && !isPassword && !isLocation && !isDate && !isTime)
@@ -192,6 +199,9 @@ function TextInput({
           }}
           onBlur={e => {
             setIsError(!e.currentTarget.checkValidity());
+            // Forward to the caller's onBlur (e.g. RHF Controller.onBlur)
+            // so it can mark the field as touched.
+            externalOnBlur?.(e);
           }}
         />
 
@@ -222,7 +232,7 @@ function TextInput({
         )}
       </InputWrapper>
 
-      {isError && errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+      {showError && errorMessage && <ErrorText>{errorMessage}</ErrorText>}
     </>
   );
 }
