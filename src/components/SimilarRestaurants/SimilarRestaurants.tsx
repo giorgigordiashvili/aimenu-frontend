@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import { restaurantsList } from '@/api/generated/api';
 import type { RestaurantList } from '@/api/generated/interfaces';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
-import { SimilarRestaurantsSkeleton } from '@/components/Skeleton';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
@@ -77,9 +76,14 @@ export default function SimilarRestaurants({
 }: SimilarRestaurantsProps) {
   const t = getDictionary(locale);
   const router = useRouter();
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const [restaurants, setRestaurants] = useState<RestaurantList[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Slot is an always-rendered empty sentinel used purely as the
+  // IntersectionObserver anchor so the fetch can be deferred until the
+  // user is near it — without reserving any vertical space in the
+  // document. This is what keeps CLS at ~0: before we know whether the
+  // section will have content we commit zero layout, and once we do
+  // know we render the final height in a single paint.
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const [restaurants, setRestaurants] = useState<RestaurantList[] | null>(null);
   // Defer the network request until the user scrolls the section near the
   // viewport. Keeps the restaurant-detail page feeling like it loads top-
   // to-bottom rather than every below-the-fold fetch firing at hydration.
@@ -133,8 +137,7 @@ export default function SimilarRestaurants({
         setRestaurants(filtered);
       } catch {
         // silently fail - similar restaurants are non-critical
-      } finally {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) setRestaurants([]);
       }
     }
     fetchRestaurants();
@@ -143,16 +146,15 @@ export default function SimilarRestaurants({
     };
   }, [shouldFetch, cuisineType, currentSlug]);
 
-  if (isLoading) {
-    return (
-      <Section ref={sectionRef}>
-        <SectionTitle>{t.restaurant.similar}</SectionTitle>
-        <SimilarRestaurantsSkeleton count={3} />
-      </Section>
-    );
+  // Before we know whether there are similar restaurants, render a
+  // zero-height observer anchor — NOT a visible skeleton. Showing a
+  // fat skeleton and then collapsing to `null` when the list is empty
+  // was the page's single biggest CLS contributor (0.47 of total CLS
+  // on slow 3G). This trades a brief skeleton for a stable layout;
+  // the section only paints once real data has arrived.
+  if (restaurants === null || restaurants.length === 0) {
+    return <div ref={sectionRef} aria-hidden='true' />;
   }
-
-  if (restaurants.length === 0) return null;
 
   return (
     <Section>

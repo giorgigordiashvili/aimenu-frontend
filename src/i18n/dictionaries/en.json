@@ -193,7 +193,10 @@
     "website": "Website",
     "reviews": "Reviews",
     "failedToLoad": "Failed to load restaurant details",
-    "notFound": "Restaurant not found"
+    "notFound": "Restaurant not found",
+    "favoriteToggle": "Toggle favorite",
+    "share": "Share",
+    "openGallery": "Open photo gallery"
   },
   "booking": {
     "title": "Complete Booking",

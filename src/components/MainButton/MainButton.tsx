@@ -26,6 +26,12 @@ type Props = {
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   onClick?: () => void;
+  /**
+   * Accessible name — required when the button has only an icon (no
+   * `title`). Lighthouse flagged the Favorite/Share/Gallery icon
+   * buttons on the restaurant detail page as missing accessible names.
+   */
+  'aria-label'?: string;
 };
 
 type IconComponent = React.ComponentType;
@@ -174,6 +180,7 @@ function MainButton({
   disabled,
   type = 'button',
   onClick,
+  'aria-label': ariaLabel,
 }: Props) {
   const iconEl = Icon ? (
     <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -188,6 +195,7 @@ function MainButton({
       type={type}
       disabled={disabled}
       onClick={onClick}
+      aria-label={ariaLabel}
       style={{
         ...(Icon
           ? { display: 'flex', alignItems: 'center', gap: iconGap, justifyContent: 'center' }

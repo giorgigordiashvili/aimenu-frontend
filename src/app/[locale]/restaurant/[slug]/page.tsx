@@ -8,8 +8,6 @@ import ContactInfo from '@/components/ContactInfo';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MenuSection from '@/components/MenuSection';
-import MobileReservationSheet from '@/components/MobileReservationSheet';
-import PhotoGallery from '@/components/PhotoGallery';
 import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
 import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
 import SharedTableBanner from '@/components/SharedTableBanner';
@@ -18,6 +16,7 @@ import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { getTranslation } from '@/utils/translations';
 
+import BelowFold from './BelowFold';
 import TableValidator from './TableValidator';
 
 // This page is intentionally a Server Component. Previously it was
@@ -47,6 +46,13 @@ const Main = styled('main')({
   // Leave room on mobile for the fixed MobileReservationSheet bar so the
   // last bit of content isn't hidden behind it. Desktop has no sticky bar.
   paddingBottom: 'calc(88px + env(safe-area-inset-bottom))',
+  // Reserve at least a viewport's worth of vertical space so the Footer
+  // sits below the fold on first paint. Without this, the initial render
+  // (before MenuSection SWR resolves and flips from skeleton to 27 items)
+  // has the Footer high in the viewport, then shifts down by hundreds
+  // of pixels once the menu arrives. That shift was accounting for CLS
+  // 0.38 on slow 3G.
+  minHeight: '100dvh',
   '@media (min-width: 1024px)': {
     paddingBottom: '100px',
   },
@@ -84,7 +90,6 @@ const RightColumn = styled('div')({
     top: '88px',
   },
 });
-
 
 const ErrorContainer = styled('div')({
   textAlign: 'center',
@@ -163,11 +168,6 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
       <TableValidator />
 
       <Main>
-        {/* Photo Gallery — full width above columns. Hero image goes out
-            in the initial HTML so the preload scanner starts fetching
-            it ASAP on slow 3G. */}
-        <PhotoGallery images={images} blurhashes={blurhashes} restaurantName={restaurant.name} />
-
         <ContentLayout>
           <LeftColumn>
             <SharedTableBanner slug={slug} />
@@ -213,24 +213,25 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
 
           {showWidget && (
             <RightColumn>
-              <ReservationWidget
-                slug={slug}
-                locale={locale}
-                orderingEnabled={orderingEnabled}
-              />
+              <ReservationWidget slug={slug} locale={locale} orderingEnabled={orderingEnabled} />
             </RightColumn>
           )}
         </ContentLayout>
       </Main>
 
-      {showMobileSheet && (
-        <MobileReservationSheet
-          slug={slug}
-          locale={locale}
-          orderingEnabled={orderingEnabled}
-          reservationsEnabled={showWidget}
-        />
-      )}
+      {/* Below-the-fold / event-driven: lightbox (PhotoGallery listens for
+          a window event to open) + the mobile sticky reservation bar.
+          Lazy-loaded to keep the critical path small. */}
+      <BelowFold
+        slug={slug}
+        locale={locale}
+        images={images}
+        blurhashes={blurhashes}
+        restaurantName={restaurant.name}
+        showMobileSheet={showMobileSheet}
+        orderingEnabled={orderingEnabled}
+        reservationsEnabled={showWidget}
+      />
 
       <Footer locale={locale} />
     </Page>
