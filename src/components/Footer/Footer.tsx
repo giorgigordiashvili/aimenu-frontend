@@ -1,7 +1,7 @@
 import { styled } from '@pigment-css/react';
 import Image from 'next/image';
 
-import { CONTACT_EMAIL, CONTACT_PHONE } from '@/config/contact';
+import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY } from '@/config/contact';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
@@ -183,7 +183,7 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
           <ColumnTitle>{t.footer.contact}</ColumnTitle>
           <div>
             <ContactItem>{CONTACT_EMAIL}</ContactItem>
-            <ContactItem>{CONTACT_PHONE}</ContactItem>
+            <ContactItem>{CONTACT_PHONE_DISPLAY}</ContactItem>
           </div>
         </Column>
       </Grid>

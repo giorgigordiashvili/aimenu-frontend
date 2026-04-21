@@ -233,6 +233,13 @@ Examples:
 4. **Request review** - Get at least one code review before merging
 5. **Ensure CI passes** - All checks must be green
 
+**Claude Code working preference:** once the user has approved a change
+(asked for it directly, said "merge it", or similar), push straight to
+`main` instead of branch → PR → merge. The branch/PR dance exists for
+review, and when the user has already signed off there's no review
+gained. Reserve branches for large or risky changes that the user
+explicitly wants to inspect before shipping.
+
 ### Pre-Push Checklist
 
 Before pushing code, verify:

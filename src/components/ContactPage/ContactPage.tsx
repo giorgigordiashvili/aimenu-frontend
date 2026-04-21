@@ -1,14 +1,19 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { styled } from '@pigment-css/react';
 import Image from 'next/image';
 import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
+import axios from '@/api/axios';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextArea from '@/components/TextArea/TextArea';
 import TextInput from '@/components/TextInput/TextInput';
+import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '@/config/contact';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import Email from '@/icons/Email';
 import Location from '@/icons/Location';
@@ -77,7 +82,24 @@ const LeftCol = styled('div')({
   gap: 16,
 });
 
-const InfoCard = styled('div')({
+const InfoCard = styled('a')({
+  background: 'white',
+  borderRadius: 16,
+  boxShadow: shadowCard,
+  padding: 24,
+  display: 'flex',
+  gap: 16,
+  alignItems: 'flex-start',
+  textDecoration: 'none',
+  color: 'inherit',
+  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+  '&:hover': {
+    transform: 'translateY(-1px)',
+    boxShadow: '0 10px 20px -8px rgba(0,0,0,0.15), 0 4px 8px -4px rgba(0,0,0,0.08)',
+  },
+});
+
+const InfoCardStatic = styled('div')({
   background: 'white',
   borderRadius: 16,
   boxShadow: shadowCard,
@@ -151,6 +173,7 @@ const CardValueBlue = styled('p')({
   fontWeight: 600,
   color: blue600,
   margin: 0,
+  wordBreak: 'break-all',
 });
 
 const CardValueAddress = styled('p')({
@@ -218,26 +241,110 @@ const SuccessText = styled('p')({
   margin: 0,
 });
 
+const ErrorBanner = styled('div')({
+  background: 'rgba(220, 38, 38, 0.08)',
+  color: '#B91C1C',
+  padding: '12px 16px',
+  borderRadius: 10,
+  fontSize: 14,
+  marginBottom: 16,
+});
+
+// The honeypot — positioned absolutely off-screen and visually hidden from
+// humans; only bots filling every field trip it. We pass its value through
+// to the backend, which silent-drops submissions where it's non-empty.
+const Honeypot = styled('div')({
+  position: 'absolute',
+  left: '-10000px',
+  top: 'auto',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+});
+
 // ── Component ─────────────────────────────────────────────────────────────────
+
+// Zod schema with the i18n error keys embedded as message payload. The form
+// component converts those keys into the user's locale before rendering.
+const contactSchema = z.object({
+  firstName: z.string().trim().min(1, { message: 'firstNameRequired' }),
+  lastName: z.string().trim(),
+  email: z.string().trim().email({ message: 'invalidEmail' }),
+  phone: z.string().trim(),
+  topic: z.string().trim(),
+  message: z
+    .string()
+    .trim()
+    .min(10, { message: 'messageTooShort' })
+    .max(5000, { message: 'messageTooLong' }),
+  website: z.string(),
+});
+
+type ContactFormValues = z.infer<typeof contactSchema>;
+
+type ContactErrorMessages = {
+  firstNameRequired: string;
+  invalidEmail: string;
+  messageTooShort: string;
+  messageTooLong: string;
+  network: string;
+  rateLimited: string;
+};
+
+function resolveError(key: string | undefined, errors: ContactErrorMessages): string | undefined {
+  if (!key) return undefined;
+  return (errors as Record<string, string>)[key] ?? key;
+}
 
 export default function ContactPage() {
   const { locale } = useLocale();
   const t = useTranslations();
+  const err = t.contact.errors as ContactErrorMessages;
 
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    topic: '',
-    message: '',
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ContactFormValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      topic: '',
+      message: '',
+      website: '',
+    },
+    mode: 'onBlur',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Contact form:', form);
-    setSubmitted(true);
-  };
+  async function onSubmit(values: ContactFormValues) {
+    setApiError(null);
+    try {
+      await axios.post('/api/v1/contact/', {
+        first_name: values.firstName,
+        last_name: values.lastName,
+        email: values.email,
+        phone: values.phone,
+        topic: values.topic,
+        message: values.message,
+        website: values.website, // honeypot — always empty for real users
+      });
+      setSubmitted(true);
+    } catch (e: unknown) {
+      const ax = e as { response?: { status?: number } };
+      if (ax?.response?.status === 429) {
+        setApiError(err.rateLimited);
+      } else {
+        setApiError(err.network);
+      }
+    }
+  }
 
   return (
     <PageWrapper>
@@ -251,32 +358,32 @@ export default function ContactPage() {
       <BodySection>
         {/* Left col */}
         <LeftCol>
-          {/* Phone card */}
-          <InfoCard>
+          {/* Phone card — anchor so tapping it triggers dialler on mobile */}
+          <InfoCard href={`tel:${CONTACT_PHONE_TEL}`}>
             <IconBoxPhone>
               <Phone width={20} height={20} style={{ color: redBrand }} />
             </IconBoxPhone>
             <CardTextCol>
               <CardTitle>{t.contact.phoneTitle}</CardTitle>
               <CardSubtitle>{t.contact.phoneSubtitle}</CardSubtitle>
-              <CardValueRed>+995 32 2 12 34 56</CardValueRed>
+              <CardValueRed>{CONTACT_PHONE_DISPLAY}</CardValueRed>
             </CardTextCol>
           </InfoCard>
 
-          {/* Email card */}
-          <InfoCard>
+          {/* Email card — mailto: so desktop mail client opens */}
+          <InfoCard href={`mailto:${CONTACT_EMAIL}`}>
             <IconBoxEmail>
               <Email width={20} height={20} style={{ color: blue600 }} />
             </IconBoxEmail>
             <CardTextCol>
               <CardTitle>{t.contact.emailTitle}</CardTitle>
               <CardSubtitle>{t.contact.emailSubtitle}</CardSubtitle>
-              <CardValueBlue>support@aimenu.ge</CardValueBlue>
+              <CardValueBlue>{CONTACT_EMAIL}</CardValueBlue>
             </CardTextCol>
           </InfoCard>
 
           {/* Location card */}
-          <InfoCard>
+          <InfoCardStatic>
             <IconBoxLocation>
               <Location width={20} height={20} style={{ color: emerald600 }} />
             </IconBoxLocation>
@@ -285,7 +392,7 @@ export default function ContactPage() {
               <CardSubtitle>{t.contact.locationSubtitle}</CardSubtitle>
               <CardValueAddress>{t.contact.address}</CardValueAddress>
             </CardTextCol>
-          </InfoCard>
+          </InfoCardStatic>
 
           {/* Photo */}
           <ContactPhoto>
@@ -309,74 +416,147 @@ export default function ContactPage() {
               <SuccessText>{t.contact.successMessage}</SuccessText>
             </SuccessWrapper>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              {apiError && <ErrorBanner role='alert'>{apiError}</ErrorBanner>}
+
               <FormRow>
                 <FieldWrapper>
-                  <TextInput
-                    variant='outlined'
-                    label={t.contact.firstName}
-                    placeholder={t.contact.firstNamePlaceholder}
-                    value={form.firstName}
-                    onChange={e => setForm({ ...form, firstName: e.target.value })}
+                  <Controller
+                    name='firstName'
+                    control={control}
+                    render={({ field }) => (
+                      <TextInput
+                        variant='outlined'
+                        label={t.contact.firstName}
+                        placeholder={t.contact.firstNamePlaceholder}
+                        autoComplete='given-name'
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        errorMessage={resolveError(errors.firstName?.message, err)}
+                      />
+                    )}
                   />
                 </FieldWrapper>
                 <FieldWrapper>
-                  <TextInput
-                    variant='outlined'
-                    label={t.contact.lastName}
-                    placeholder={t.contact.lastNamePlaceholder}
-                    value={form.lastName}
-                    onChange={e => setForm({ ...form, lastName: e.target.value })}
+                  <Controller
+                    name='lastName'
+                    control={control}
+                    render={({ field }) => (
+                      <TextInput
+                        variant='outlined'
+                        label={t.contact.lastName}
+                        placeholder={t.contact.lastNamePlaceholder}
+                        autoComplete='family-name'
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
                   />
                 </FieldWrapper>
               </FormRow>
 
               <FormField>
                 <FieldWrapper>
-                  <TextInput
-                    variant='outlined'
-                    label={t.contact.email}
-                    placeholder={t.contact.emailPlaceholder}
-                    type='email'
-                    value={form.email}
-                    onChange={e => setForm({ ...form, email: e.target.value })}
+                  <Controller
+                    name='email'
+                    control={control}
+                    render={({ field }) => (
+                      <TextInput
+                        variant='outlined'
+                        label={t.contact.email}
+                        placeholder={t.contact.emailPlaceholder}
+                        type='email'
+                        autoComplete='email'
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        errorMessage={resolveError(errors.email?.message, err)}
+                      />
+                    )}
                   />
                 </FieldWrapper>
               </FormField>
 
               <FormField>
                 <FieldWrapper>
-                  <TextInput
-                    variant='outlined'
-                    label={t.contact.topic}
-                    placeholder={t.contact.topicPlaceholder}
-                    value={form.topic}
-                    onChange={e => setForm({ ...form, topic: e.target.value })}
+                  <Controller
+                    name='phone'
+                    control={control}
+                    render={({ field }) => (
+                      <TextInput
+                        variant='outlined'
+                        label={t.contact.phone}
+                        placeholder={t.contact.phonePlaceholder}
+                        type='tel'
+                        autoComplete='tel'
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
                   />
                 </FieldWrapper>
               </FormField>
 
               <FormField>
                 <FieldWrapper>
-                  <TextArea
-                    variant='outlined'
-                    label={t.contact.message}
-                    placeholder={t.contact.messagePlaceholder}
-                    value={form.message}
-                    onChange={e => setForm({ ...form, message: e.target.value })}
-                    rows={6}
+                  <Controller
+                    name='topic'
+                    control={control}
+                    render={({ field }) => (
+                      <TextInput
+                        variant='outlined'
+                        label={t.contact.topic}
+                        placeholder={t.contact.topicPlaceholder}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
                   />
                 </FieldWrapper>
               </FormField>
+
+              <FormField>
+                <FieldWrapper>
+                  <Controller
+                    name='message'
+                    control={control}
+                    render={({ field }) => (
+                      <TextArea
+                        variant='outlined'
+                        label={t.contact.message}
+                        placeholder={t.contact.messagePlaceholder}
+                        rows={6}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        errorMessage={resolveError(errors.message?.message, err)}
+                      />
+                    )}
+                  />
+                </FieldWrapper>
+              </FormField>
+
+              {/* Honeypot — hidden from humans, autofilled by spam bots */}
+              <Honeypot aria-hidden='true'>
+                <label>
+                  Website
+                  <input tabIndex={-1} autoComplete='off' {...register('website')} />
+                </label>
+              </Honeypot>
 
               <MainButton
                 type='submit'
                 variant='slate_cta'
-                title={t.contact.send}
+                title={isSubmitting ? t.contact.sending : t.contact.send}
                 icon={Send}
                 iconPosition='left'
                 size='large'
                 fullWidth
+                disabled={isSubmitting}
               />
             </form>
           )}

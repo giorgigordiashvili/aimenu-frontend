@@ -747,7 +747,18 @@
     "lastNamePlaceholder": "თქვენი გვარი",
     "emailPlaceholder": "თქვენი ელ-ფოსტა",
     "topicPlaceholder": "შეტყობინების თემა",
-    "messagePlaceholder": "დაწერეთ შეტყობინება..."
+    "messagePlaceholder": "დაწერეთ შეტყობინება...",
+    "phone": "ტელეფონი (არასავალდებულო)",
+    "phonePlaceholder": "+995 5XX XX XX XX",
+    "sending": "იგზავნება…",
+    "errors": {
+      "firstNameRequired": "შეიყვანე სახელი",
+      "invalidEmail": "შეიყვანე სწორი ელფოსტა",
+      "messageTooShort": "შეტყობინება უნდა იყოს მინიმუმ 10 სიმბოლო",
+      "messageTooLong": "შეტყობინება უნდა იყოს მაქსიმუმ 5000 სიმბოლო",
+      "network": "რაღაც შეცდა. სცადე თავიდან.",
+      "rateLimited": "ძალიან ბევრი მოთხოვნა. სცადე ცოტა ხანში."
+    }
   },
   "notFound": {
     "title": "გვერდი ვერ მოიძებნა",

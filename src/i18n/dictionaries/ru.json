@@ -747,7 +747,18 @@
     "lastNamePlaceholder": "Ваша фамилия",
     "emailPlaceholder": "Ваш email",
     "topicPlaceholder": "Тема сообщения",
-    "messagePlaceholder": "Напишите сообщение..."
+    "messagePlaceholder": "Напишите сообщение...",
+    "phone": "Телефон (необязательно)",
+    "phonePlaceholder": "+995 5XX XX XX XX",
+    "sending": "Отправка…",
+    "errors": {
+      "firstNameRequired": "Укажите имя",
+      "invalidEmail": "Укажите корректный email",
+      "messageTooShort": "Сообщение должно быть не менее 10 символов",
+      "messageTooLong": "Сообщение должно быть не более 5000 символов",
+      "network": "Что-то пошло не так. Попробуйте ещё раз.",
+      "rateLimited": "Слишком много запросов. Попробуйте позже."
+    }
   },
   "notFound": {
     "title": "Страница не найдена",

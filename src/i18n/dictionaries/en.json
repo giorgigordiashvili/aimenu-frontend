@@ -746,8 +746,19 @@
     "firstNamePlaceholder": "Your first name",
     "lastNamePlaceholder": "Your last name",
     "emailPlaceholder": "Your email address",
+    "phone": "Phone (optional)",
+    "phonePlaceholder": "+995 5XX XX XX XX",
     "topicPlaceholder": "Subject of your message",
-    "messagePlaceholder": "Write your message..."
+    "messagePlaceholder": "Write your message...",
+    "sending": "Sending…",
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "invalidEmail": "Please enter a valid email",
+      "messageTooShort": "Message must be at least 10 characters",
+      "messageTooLong": "Message must be at most 5000 characters",
+      "network": "Something went wrong. Please try again.",
+      "rateLimited": "Too many submissions. Please try again later."
+    }
   },
   "notFound": {
     "title": "Page Not Found",
