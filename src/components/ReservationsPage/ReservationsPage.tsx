@@ -4,7 +4,6 @@ import { styled } from '@pigment-css/react';
 import { useCallback, useState } from 'react';
 
 import { reservationsMyCancelCreate } from '@/api/generated';
-import PlatformStatusCard from '@/components/PlatformStatusCard';
 import ReservationCard, { ReservationCardSkeleton } from '@/components/ReservationCard';
 import ReservationDetailModal from '@/components/ReservationDetailModal';
 import ReservationsSidebar from '@/components/ReservationsSidebar';
@@ -254,8 +253,6 @@ export default function ReservationsPage() {
       <PageInner>
         <ContentLayout>
           <MainColumn>
-            <PlatformStatusCard />
-
             {/* Active Reservations */}
             <Section>
               <SectionHeader>
