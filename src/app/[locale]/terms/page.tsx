@@ -26,9 +26,12 @@ export default async function TermsRoute({ params }: Props) {
   const { locale: rawLocale } = await params;
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
   const t = getDictionary(locale);
-  const copy = (t as unknown as {
-    legal?: Record<string, string>;
-  }).legal ?? {};
+  const copy =
+    (
+      t as unknown as {
+        legal?: Record<string, string>;
+      }
+    ).legal ?? {};
   const sections: Array<{ h: string; p: string }> = [
     { h: copy.termsServiceHeading ?? 'Service', p: copy.termsServiceBody ?? '' },
     { h: copy.termsAccountHeading ?? 'Accounts', p: copy.termsAccountBody ?? '' },

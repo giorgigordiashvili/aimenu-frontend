@@ -34,8 +34,7 @@ const BlurBackdrop = styled('div')({
   filter: 'blur(6px)',
   transform: 'scale(1.05)',
   zIndex: 0,
-  background:
-    'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
+  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
   backgroundRepeat: 'repeat-x',
   // Fallback animation only runs while the solid gradient is visible; once
   // an inline background-image (blurhash) overrides the gradient the

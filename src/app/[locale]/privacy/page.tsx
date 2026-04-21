@@ -26,9 +26,12 @@ export default async function PrivacyRoute({ params }: Props) {
   const { locale: rawLocale } = await params;
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
   const t = getDictionary(locale);
-  const copy = (t as unknown as {
-    legal?: Record<string, string>;
-  }).legal ?? {};
+  const copy =
+    (
+      t as unknown as {
+        legal?: Record<string, string>;
+      }
+    ).legal ?? {};
   // Localised body. Strings live in i18n so future legal review can edit
   // them without touching code. Markdown-style paragraphs split on \n\n.
   const sections: Array<{ h: string; p: string }> = [

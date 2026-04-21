@@ -162,6 +162,11 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
           <ColumnTitle>{t.footer.help}</ColumnTitle>
           <LinksList>
             <li>
+              <NavLink href={localePath(locale, '/restaurant-signup')}>
+                {t.footer.forRestaurants}
+              </NavLink>
+            </li>
+            <li>
               <NavLink href={localePath(locale, '/faq')}>{t.footer.faq}</NavLink>
             </li>
             <li>
