@@ -48,18 +48,6 @@ const Main = styled('main')({
   // Leave room on mobile for the fixed MobileReservationSheet bar so the
   // last bit of content isn't hidden behind it. Desktop has no sticky bar.
   paddingBottom: 'calc(88px + env(safe-area-inset-bottom))',
-  // Reserve at least a viewport's worth of vertical space so the Footer
-  // sits below the fold on first paint. Without this, the initial render
-  // (before MenuSection SWR resolves and flips from skeleton to 27 items)
-  // has the Footer high in the viewport, then shifts down by hundreds
-  // of pixels once the menu arrives. That shift was accounting for CLS
-  // 0.38 on slow 3G.
-  //
-  // Using 100svh (small viewport) not 100dvh (dynamic). dvh re-computes
-  // on mobile whenever the URL bar shows/hides, which combined with the
-  // sticky category-tabs row caused a "can scroll down but not up"
-  // glitch. svh is pinned to the smallest layout and stays constant.
-  minHeight: '100svh',
   '@media (min-width: 1024px)': {
     paddingBottom: '100px',
   },

@@ -37,18 +37,6 @@ const ProductDetailModal = dynamic(() => import('@/components/ProductDetailModal
 
 const Section = styled('section')({
   marginBottom: '24px',
-  // Always reserve at least a screenful of vertical space. This keeps
-  // ContactInfo + SimilarRestaurants + Footer below the fold on first
-  // paint even before the menu data arrives, so the shift from
-  // "skeleton" to "27 real items" happens entirely off-screen and
-  // contributes 0 to CLS.
-  //
-  // 100svh (small viewport) is pinned to the layout with the browser
-  // URL bar visible — it does NOT grow when the URL bar hides. dvh
-  // (what was here originally) recomputes every frame during the URL
-  // bar transition, which combined with the sticky tab row above
-  // produced a "can scroll down but not back up" glitch on iOS.
-  minHeight: '100svh',
   '@media (min-width: 768px)': {
     marginBottom: '40px',
   },
