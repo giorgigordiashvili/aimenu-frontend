@@ -2,11 +2,13 @@
 
 import { styled } from '@pigment-css/react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import ChefHat from '@/icons/ChefHat';
 import ClockIcon from '@/icons/Clock';
 import LocationIcon from '@/icons/Location';
@@ -348,6 +350,7 @@ const stats = [
 export default function AboutPage() {
   const { locale } = useLocale();
   const t = useTranslations();
+  const router = useRouter();
 
   const features = [
     { icon: StarOutline, title: t.about.feature1Title, desc: t.about.feature1Desc },
@@ -438,8 +441,20 @@ export default function AboutPage() {
           <CtaTitle>{t.about.ctaTitle}</CtaTitle>
           <CtaSubtitle>{t.about.ctaSubtitle}</CtaSubtitle>
           <CtaButtons>
-            <MainButton size='large' variant='rose_cta' rounded title={t.about.ctaBookButton} />
-            <MainButton size='large' variant='outline' rounded title={t.about.ctaPartnerButton} />
+            <MainButton
+              size='large'
+              variant='rose_cta'
+              rounded
+              title={t.about.ctaBookButton}
+              onClick={() => router.push(localePath(locale, '/restaurants'))}
+            />
+            <MainButton
+              size='large'
+              variant='outline'
+              rounded
+              title={t.about.ctaPartnerButton}
+              onClick={() => router.push(localePath(locale, '/restaurant-signup'))}
+            />
           </CtaButtons>
         </CtaInner>
       </CtaSection>
