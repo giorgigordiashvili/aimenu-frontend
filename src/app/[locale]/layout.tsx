@@ -11,7 +11,9 @@ import { CartProvider } from '@/context/CartContext';
 import { LocaleProvider } from '@/context/LocaleContext';
 import { TableProvider } from '@/context/TableContext';
 import { locales, Locale, isValidLocale } from '@/i18n/config';
+import { getDictionary } from '@/i18n/getDictionary';
 import '@/lib/axiosInterceptor';
+import { languageAlternates, localeUrl, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,15 +29,73 @@ const notoSansGeorgian = Noto_Sans_Georgian({
   variable: '--font-noto-georgian',
 });
 
-export const metadata: Metadata = {
-  title: 'AiMenu - Restaurant Menu',
-  description: 'Digital menu for restaurants',
-};
-
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  // Lines up the mobile browser chrome with the hero's dark background
+  // + the rose accent we use on CTAs.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f172b' },
+  ],
 };
+
+// Per-locale root metadata. Page-level `generateMetadata` further
+// specialises title/description/OG images per route.
+export async function generateMetadata({ params }: LocaleLayoutProps): Promise<Metadata> {
+  const { locale } = await params;
+  const loc: Locale = isValidLocale(locale) ? locale : 'ka';
+  const t = getDictionary(loc);
+  const siteDescription =
+    (t as unknown as { seo?: { siteDescription?: string } }).seo?.siteDescription ??
+    'Discover and book Georgia\u2019s best restaurants. Browse menus, reserve a table, order from your phone.';
+  const titleDefault =
+    (t as unknown as { seo?: { siteTitle?: string } }).seo?.siteTitle ??
+    'aimenu.ge \u2014 restaurants, menus, reservations';
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: titleDefault,
+      template: `%s \u2014 ${SITE_NAME}`,
+    },
+    description: siteDescription,
+    applicationName: SITE_NAME,
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+    manifest: '/manifest.webmanifest',
+    icons: {
+      icon: [
+        { url: '/favicon.ico' },
+        { url: '/logo.png', type: 'image/png' },
+      ],
+      apple: '/apple-touch-icon.png',
+    },
+    alternates: {
+      canonical: localeUrl(loc, '/'),
+      languages: languageAlternates('/'),
+    },
+    openGraph: {
+      type: 'website',
+      siteName: SITE_NAME,
+      locale: loc,
+      url: localeUrl(loc, '/'),
+      title: titleDefault,
+      description: siteDescription,
+      images: [{ url: '/og-default.png', width: 1200, height: 630, alt: SITE_NAME }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: titleDefault,
+      description: siteDescription,
+      images: ['/og-default.png'],
+    },
+    robots: { index: true, follow: true },
+  };
+}
 
 export function generateStaticParams() {
   return locales.map(locale => ({ locale }));
