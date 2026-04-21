@@ -1,7 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
@@ -154,7 +154,15 @@ export default function SettleTablePage({ locale }: Props) {
   const t = getDictionary(locale);
   const copy = (t as unknown as { settleTable: Record<string, string> }).settleTable;
   const router = useRouter();
-  const { tableData } = useTable();
+  const { tableData, setTableData } = useTable();
+  const searchParams = useSearchParams();
+  // Deep-link support: the POS can hand out `/table/settle?session=<id>`
+  // QR codes so anyone (the diner, their friend, a relative paying
+  // remotely) can settle the bill from a phone that never scanned the
+  // original table QR. We fall back to TableContext for the traditional
+  // scan-then-settle flow.
+  const sessionParam = searchParams?.get('session') ?? null;
+  const activeSessionId = sessionParam ?? tableData?.sessionId ?? null;
 
   const [session, setSession] = useState<SessionDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -164,23 +172,33 @@ export default function SettleTablePage({ locale }: Props) {
   const [customTip, setCustomTip] = useState('');
 
   useEffect(() => {
-    if (!tableData?.sessionId) {
+    if (!activeSessionId) {
       setErrorMsg(copy.missingSession);
       setLoading(false);
       return;
     }
     axiosInstance
       .get<SessionDetail | { data: SessionDetail }>(
-        `/api/v1/tables/sessions/${tableData.sessionId}/`
+        `/api/v1/tables/sessions/${activeSessionId}/`
       )
       .then(res => {
         const body = res.data as SessionDetail | { data: SessionDetail };
         const data = (body as { data?: SessionDetail }).data ?? (body as SessionDetail);
         setSession(data);
+        // If we arrived via ?session= and no TableContext was set, seed it
+        // so the BOG return flow (/payments/return) can look up the session.
+        if (sessionParam && !tableData?.sessionId && data?.restaurant_slug) {
+          setTableData({
+            code: '',
+            sessionId: data.id,
+            restaurantSlug: data.restaurant_slug,
+            isValidated: true,
+          });
+        }
       })
       .catch(() => setErrorMsg(copy.missingSession))
       .finally(() => setLoading(false));
-  }, [tableData?.sessionId, copy.missingSession]);
+  }, [activeSessionId, sessionParam, tableData?.sessionId, setTableData, copy.missingSession]);
 
   const summary = session?.orders_summary;
   const unpaidTotal = summary ? parseFloat(summary.unpaid_total) : 0;
@@ -197,7 +215,11 @@ export default function SettleTablePage({ locale }: Props) {
   const grandTotal = Math.round((unpaidTotal + tipAmount) * 100) / 100;
 
   const handlePay = useCallback(async () => {
-    if (!session || !tableData?.sessionId || !tableData?.restaurantSlug) return;
+    // Prefer the live session object so a deep-linked visitor (who may
+    // not have TableContext primed yet) still hits the pay button.
+    const sid = session?.id ?? tableData?.sessionId;
+    const slug = session?.restaurant_slug ?? tableData?.restaurantSlug;
+    if (!sid || !slug) return;
     setSubmitting(true);
     setErrorMsg(null);
     try {
@@ -207,8 +229,8 @@ export default function SettleTablePage({ locale }: Props) {
       )}?flow=session_settle`;
       const { redirect_url } = await initiateSessionSettle({
         session_payload: {
-          restaurant_slug: tableData.restaurantSlug,
-          session_id: tableData.sessionId,
+          restaurant_slug: slug,
+          session_id: sid,
           tip_amount: tipAmount || 0,
         },
         return_url: returnUrl,
