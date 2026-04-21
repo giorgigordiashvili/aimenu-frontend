@@ -22,6 +22,8 @@ export async function generateMetadata({ params }: LoginPageProps): Promise<Meta
   return {
     title: `${t.login.title} | AiMenu`,
     description: t.login.subtitle,
+    // Auth surface — keep out of the search index.
+    robots: { index: false, follow: false },
   };
 }
 
