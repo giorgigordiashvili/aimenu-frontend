@@ -5,6 +5,16 @@ import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { buildMetadata, localeUrl, SITE_NAME } from '@/lib/seo';
 
+// Disable Next's full-route prerender cache for the homepage. We hit a
+// production bug where the root URL (rewritten from `/` → `/ka` by the
+// locale middleware) served its cached RSC payload to plain browser
+// requests — content-type: text/x-component — because an RSC prefetch
+// had seeded the cache entry and DO's edge cache didn't vary on the
+// `RSC` header. Forcing dynamic on this one route means `/` is computed
+// fresh per request (still cheap — the page body is client-rendered
+// anyway) and always emits HTML to browsers.
+export const dynamic = 'force-dynamic';
+
 interface HomeProps {
   params: Promise<{ locale: string }>;
 }
