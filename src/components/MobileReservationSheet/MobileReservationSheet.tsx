@@ -8,15 +8,7 @@ import ReservationWidget from '@/components/ReservationWidget/ReservationWidget'
 import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
 import { useTable } from '@/context/TableContext';
-import {
-  background,
-  border,
-  foreground,
-  muted,
-  rose600,
-  slate100,
-  white,
-} from '@/tokens';
+import { background, border, foreground, muted, rose600, slate100, white } from '@/tokens';
 
 // Mobile-only. Shows a fixed bottom bar with the current sum (cart total
 // when the user is at a table, deposit otherwise) + a CTA that opens the

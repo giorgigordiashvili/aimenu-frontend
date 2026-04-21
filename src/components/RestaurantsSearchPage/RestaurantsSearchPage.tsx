@@ -14,16 +14,7 @@ import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/Restaurant
 import { useAuth } from '@/context/AuthContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { localePath } from '@/i18n/routing';
-import {
-  border,
-  foreground,
-  muted,
-  rose600,
-  slate100,
-  slate200,
-  slate50,
-  white,
-} from '@/tokens';
+import { border, foreground, muted, rose600, slate100, slate200, slate50, white } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
 
 import PageHeader from './PageHeader';
@@ -223,10 +214,7 @@ function collectCategories(list: RestaurantList[], locale: string): Category[] {
   const byId = new Map<string | number, Category>();
   for (const r of list) {
     if (!r.category) continue;
-    const parsed = parseTranslations(r.category.translations) as Record<
-      string,
-      { name?: string }
-    >;
+    const parsed = parseTranslations(r.category.translations) as Record<string, { name?: string }>;
     const name =
       parsed[locale]?.name ?? parsed['ka']?.name ?? parsed['en']?.name ?? r.category.slug;
     byId.set(r.category.id, {
@@ -308,9 +296,7 @@ export default function RestaurantsSearchPage() {
       .get('/api/v1/restaurants/', { params: { page: 1, page_size: 100 } })
       .then(response => {
         const data = response.data;
-        const results: RestaurantList[] = Array.isArray(data)
-          ? data
-          : (data?.results ?? []);
+        const results: RestaurantList[] = Array.isArray(data) ? data : (data?.results ?? []);
         setCategories(collectCategories(results, locale));
       })
       .catch(() => {
@@ -521,9 +507,7 @@ export default function RestaurantsSearchPage() {
                         variant='default'
                         restaurantTitle={restaurant.name}
                         imageSrc={restaurant.logo || '/RestaurantCardImage.jpg'}
-                        imageBlurhash={
-                          (restaurant as { logo_blurhash?: string }).logo_blurhash
-                        }
+                        imageBlurhash={(restaurant as { logo_blurhash?: string }).logo_blurhash}
                         locationText={restaurant.city}
                         rating={parseFloat(restaurant.average_rating || '0')}
                         filterText={categoryName}

@@ -3,16 +3,7 @@
 import { styled } from '@pigment-css/react';
 
 import SearchIcon from '@/icons/Search';
-import {
-  border,
-  foreground,
-  muted,
-  rose600,
-  slate100,
-  slate400,
-  slate50,
-  white,
-} from '@/tokens';
+import { border, foreground, muted, rose600, slate100, slate400, slate50, white } from '@/tokens';
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 

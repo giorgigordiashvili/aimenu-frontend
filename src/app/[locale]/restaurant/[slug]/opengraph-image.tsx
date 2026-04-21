@@ -22,10 +22,7 @@ interface RestaurantSummary {
   average_rating?: string | null;
 }
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? 'https://admin.aimenu.ge').replace(
-  /\/$/,
-  ''
-);
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? 'https://admin.aimenu.ge').replace(/\/$/, '');
 
 async function loadRestaurant(slug: string): Promise<RestaurantSummary | null> {
   try {
@@ -49,77 +46,74 @@ export default async function Image({ params }: Props) {
   const bg = r?.cover_image || r?.logo || null;
 
   return new ImageResponse(
-    (
-      <div
-        style={{
-          height: '100%',
-          width: '100%',
-          display: 'flex',
-          position: 'relative',
-          background: '#0f172b',
-        }}
-      >
-        {bg && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={bg}
-            alt=''
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
-          />
-        )}
-        <div
+    <div
+      style={{
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        position: 'relative',
+        background: '#0f172b',
+      }}
+    >
+      {bg && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={bg}
+          alt=''
           style={{
             position: 'absolute',
-            inset: 0,
-            background:
-              'linear-gradient(180deg, rgba(15,23,43,0.35) 0%, rgba(15,23,43,0.92) 100%)',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
           }}
         />
+      )}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(15,23,43,0.35) 0%, rgba(15,23,43,0.92) 100%)',
+        }}
+      />
+      <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '64px 80px',
+          color: '#fff',
+          width: '100%',
+        }}
+      >
+        <div style={{ fontSize: 22, opacity: 0.7, marginBottom: 12 }}>aimenu.ge</div>
         <div
           style={{
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            padding: '64px 80px',
-            color: '#fff',
-            width: '100%',
+            fontSize: 80,
+            fontWeight: 800,
+            lineHeight: 1.05,
+            letterSpacing: '-2px',
+            margin: 0,
           }}
         >
-          <div style={{ fontSize: 22, opacity: 0.7, marginBottom: 12 }}>aimenu.ge</div>
-          <div
-            style={{
-              fontSize: 80,
-              fontWeight: 800,
-              lineHeight: 1.05,
-              letterSpacing: '-2px',
-              margin: 0,
-            }}
-          >
-            {name}
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              gap: 16,
-              marginTop: 20,
-              fontSize: 28,
-              opacity: 0.9,
-            }}
-          >
-            {city ? <span>{city}</span> : null}
-            {rating ? <span>★ {rating}</span> : null}
-          </div>
+          {name}
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            gap: 16,
+            marginTop: 20,
+            fontSize: 28,
+            opacity: 0.9,
+          }}
+        >
+          {city ? <span>{city}</span> : null}
+          {rating ? <span>★ {rating}</span> : null}
         </div>
       </div>
-    ),
+    </div>,
     size
   );
 }

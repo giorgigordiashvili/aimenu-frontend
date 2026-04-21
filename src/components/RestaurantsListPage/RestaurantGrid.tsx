@@ -187,9 +187,7 @@ export default function RestaurantGrid({
                   variant='default'
                   restaurantTitle={restaurant.name}
                   imageSrc={restaurant.logo || '/RestaurantCardImage.jpg'}
-                  imageBlurhash={
-                    (restaurant as { logo_blurhash?: string }).logo_blurhash
-                  }
+                  imageBlurhash={(restaurant as { logo_blurhash?: string }).logo_blurhash}
                   locationText={restaurant.city}
                   rating={parseFloat(restaurant.average_rating || '0')}
                   filterText={categoryName}

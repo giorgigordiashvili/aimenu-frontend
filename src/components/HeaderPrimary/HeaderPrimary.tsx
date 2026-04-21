@@ -157,6 +157,21 @@ const LoginButton = styled(Link)({
   '&:hover': { background: slate150 },
 });
 
+const ForRestaurantsLink = styled(Link)({
+  padding: '7px 14px',
+  fontSize: '14px',
+  fontWeight: 500,
+  color: foreground,
+  textDecoration: 'none',
+  borderRadius: '8px',
+  transition: 'background 0.15s, color 0.15s',
+  whiteSpace: 'nowrap',
+  '&:hover': {
+    background: slate100,
+    color: primary,
+  },
+});
+
 const RegisterButton = styled(Link)({
   padding: '7px 14px',
   border: 'none',
@@ -524,6 +539,9 @@ export default function HeaderPrimary() {
         <RightGroup>
           {/* Desktop auth controls */}
           <DesktopControls>
+            <ForRestaurantsLink href={localePath(locale, '/restaurant-signup')}>
+              {t.header.forRestaurants}
+            </ForRestaurantsLink>
             <LanguageSwitcherPrimary currentLocale={locale} />
 
             {isAuthenticated ? (

@@ -6,9 +6,14 @@ import { languageAlternates, localeUrl } from '@/lib/seo';
 
 // Static URLs that exist for every locale. Path is locale-agnostic; the
 // alternates block emits the per-locale URLs.
-const STATIC_PATHS: Array<{ path: string; changeFrequency: 'daily' | 'weekly' | 'monthly'; priority: number }> = [
+const STATIC_PATHS: Array<{
+  path: string;
+  changeFrequency: 'daily' | 'weekly' | 'monthly';
+  priority: number;
+}> = [
   { path: '/', changeFrequency: 'daily', priority: 1 },
   { path: '/restaurants', changeFrequency: 'daily', priority: 0.9 },
+  { path: '/restaurant-signup', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
   { path: '/contact', changeFrequency: 'monthly', priority: 0.4 },
   { path: '/privacy', changeFrequency: 'monthly', priority: 0.2 },
@@ -25,13 +30,15 @@ const STATIC_PATHS: Array<{ path: string; changeFrequency: 'daily' | 'weekly' | 
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const entries: MetadataRoute.Sitemap = STATIC_PATHS.map(({ path, changeFrequency, priority }) => ({
-    url: localeUrl(defaultLocale, path),
-    lastModified: now,
-    changeFrequency,
-    priority,
-    alternates: { languages: languageAlternates(path) },
-  }));
+  const entries: MetadataRoute.Sitemap = STATIC_PATHS.map(
+    ({ path, changeFrequency, priority }) => ({
+      url: localeUrl(defaultLocale, path),
+      lastModified: now,
+      changeFrequency,
+      priority,
+      alternates: { languages: languageAlternates(path) },
+    })
+  );
 
   try {
     // Pull a generous page so we cover all live restaurants — there are

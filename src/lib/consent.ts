@@ -78,9 +78,7 @@ export function setConsent(next: { analytics: boolean; marketing: boolean }): vo
   const oneYear = 60 * 60 * 24 * 365;
   document.cookie = `${CONSENT_COOKIE_NAME}=${encodeURIComponent(
     JSON.stringify({ a: state.analytics ? 1 : 0, m: state.marketing ? 1 : 0 })
-  )}; Max-Age=${oneYear}; Path=/; SameSite=Lax${
-    location.protocol === 'https:' ? '; Secure' : ''
-  }`;
+  )}; Max-Age=${oneYear}; Path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
   listeners.forEach(l => l(state));
 }
 

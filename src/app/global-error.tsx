@@ -17,8 +17,7 @@ export default function GlobalError({ error, reset }: Props) {
       <body
         style={{
           margin: 0,
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           background: '#f8fafc',
           color: '#0f172b',
           minHeight: '100vh',

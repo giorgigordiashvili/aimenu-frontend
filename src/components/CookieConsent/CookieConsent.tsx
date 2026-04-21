@@ -6,12 +6,7 @@ import { useEffect, useId, useState } from 'react';
 
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { localePath } from '@/i18n/routing';
-import {
-  acceptAll,
-  hasDecided,
-  rejectOptional,
-  setConsent,
-} from '@/lib/consent';
+import { acceptAll, hasDecided, rejectOptional, setConsent } from '@/lib/consent';
 import { border, foreground, muted, rose600, slate100, slate900, white } from '@/tokens';
 
 // GDPR-style cookie banner. Stays put until the user makes a choice;
@@ -186,8 +181,7 @@ export default function CookieConsent() {
       <Wrapper role='dialog' aria-live='polite' aria-label={copy.aria}>
         <Card>
           <Body>
-            {copy.body}{' '}
-            <Inline href={privacyHref}>{copy.learnMore}</Inline>
+            {copy.body} <Inline href={privacyHref}>{copy.learnMore}</Inline>
           </Body>
           <ButtonRow>
             <SecondaryBtn type='button' onClick={() => setOpenManage(true)}>
