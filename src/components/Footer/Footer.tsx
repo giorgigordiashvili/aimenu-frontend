@@ -149,7 +149,7 @@ export default function Footer({ locale = 'ka' }: FooterProps) {
               <NavLink href={localePath(locale)}>{t.footer.home}</NavLink>
             </li>
             <li>
-              <NavLink href={localePath(locale, '/restaurants')}>{t.footer.restaurants}</NavLink>
+              <NavLink href={localePath(locale, '/')}>{t.footer.restaurants}</NavLink>
             </li>
             <li>
               <NavLink href={localePath(locale, '/blog')}>{t.footer.blog}</NavLink>

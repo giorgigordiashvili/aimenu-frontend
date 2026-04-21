@@ -1,326 +1,215 @@
-'use client';
+import { styled } from '@pigment-css/react';
 
-import { styled, keyframes } from '@pigment-css/react';
-import { useParams, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-
-import {
-  restaurantsRetrieve,
-  restaurantsMenuCategoriesList,
-  tablesValidateRetrieve,
-} from '@/api/generated/api';
-import type { RestaurantDetail, MenuCategory } from '@/api/generated/interfaces';
-import {
-  Header,
-  BackButton,
-  SearchBar,
-  CategoryList,
-  RestaurantInfo,
-  TableIndicator,
-  CategoryListSkeleton,
-} from '@/components';
+import { restaurantsRetrieve } from '@/api/generated/api';
+import type { RestaurantDetail } from '@/api/generated/interfaces';
+import { ReservationWidget } from '@/components';
+import CartBadge from '@/components/CartBadge';
+import ContactInfo from '@/components/ContactInfo';
+import Footer from '@/components/Footer';
+import HeaderPrimary from '@/components/HeaderPrimary';
+import MenuSection from '@/components/MenuSection';
+import MobileReservationSheet from '@/components/MobileReservationSheet';
+import PhotoGallery from '@/components/PhotoGallery';
 import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
-import { useLocale, useTranslations } from '@/context/LocaleContext';
-import { useTable } from '@/context/TableContext';
+import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
+import SharedTableBanner from '@/components/SharedTableBanner';
+import SimilarRestaurants from '@/components/SimilarRestaurants';
+import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
+import { getDictionary } from '@/i18n/getDictionary';
 import { getTranslation } from '@/utils/translations';
 
-const shimmer = keyframes({
-  '0%': { backgroundPosition: '-200% 0' },
-  '100%': { backgroundPosition: '200% 0' },
-});
+import TableValidator from './TableValidator';
+
+// This page is intentionally a Server Component. Previously it was
+// `'use client'` and kicked off `restaurantsRetrieve(slug)` only after
+// React hydration, which meant the hero image on slow 3G was discovered
+// roughly 3–5 seconds after TTFB (script-initiated fetch). Lighthouse
+// reported LCP ≈ 13 s on simulated slow 3G.
+//
+// By fetching server-side we ship the restaurant name + hero image
+// `<img srcset>` in the initial HTML response, so the browser's preload
+// scanner starts the image download before any JS is parsed.
+//
+// Interactivity on this page is isolated to:
+//   - `TableValidator`: processes ?table=<code> side effects
+//   - `PhotoGallery`: lightbox overlay
+//   - `ReservationWidget`, `MenuSection`, banners: cart/table context
+// Those are still client components; they SSR through the server tree
+// just fine.
 
 const Page = styled('div')({
   minHeight: '100vh',
-  background: '#f8fafc',
+  background: '#ffffff',
 });
 
 const Main = styled('main')({
-  padding: '10px 20px 40px',
+  padding: '20px',
+  // Leave room on mobile for the fixed MobileReservationSheet bar so the
+  // last bit of content isn't hidden behind it. Desktop has no sticky bar.
+  paddingBottom: 'calc(88px + env(safe-area-inset-bottom))',
+  '@media (min-width: 1024px)': {
+    paddingBottom: '100px',
+  },
   '@media (min-width: 768px)': {
-    padding: '24px 80px 100px',
+    padding: '32px 80px 100px',
     maxWidth: '1280px',
     margin: '0 auto',
   },
 });
 
-const TitleSection = styled('div')({
+const ContentLayout = styled('div')({
   display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-  marginBottom: '20px',
-  '@media (min-width: 768px)': {
-    marginBottom: '32px',
+  flexDirection: 'column',
+  '@media (min-width: 1024px)': {
+    flexDirection: 'row',
+    gap: '32px',
+    alignItems: 'flex-start',
   },
 });
 
-const PageTitle = styled('h1')({
+const LeftColumn = styled('div')({
   flex: 1,
-  fontSize: '14px',
-  fontWeight: 600,
-  color: '#0f172a',
-  textAlign: 'center',
-  marginRight: '44px',
-  margin: 0,
-  '@media (min-width: 768px)': {
-    fontSize: '24px',
-    fontWeight: 700,
-    marginRight: 0,
-    textAlign: 'left',
-    flex: 'none',
+  minWidth: 0,
+});
+
+const RightColumn = styled('div')({
+  display: 'none',
+  '@media (min-width: 1024px)': {
+    display: 'block',
+    width: '380px',
+    flexShrink: 0,
+    position: 'sticky',
+    // 64px sticky header height + 24px breathing room — otherwise the widget
+    // scrolls under the Header.
+    top: '88px',
   },
 });
 
-const SearchSection = styled('div')({
-  margin: '20px 0',
-  '@media (min-width: 768px)': {
-    margin: '32px 0',
-    maxWidth: '400px',
-  },
-});
 
-const CategoriesSection = styled('div')({
-  marginTop: '8px',
-  '@media (min-width: 768px)': {
-    marginTop: '24px',
-  },
-});
-
-const ErrorState = styled('div')({
+const ErrorContainer = styled('div')({
   textAlign: 'center',
   padding: '40px 20px',
-  color: '#ec003f',
-  fontSize: '14px',
+  minHeight: '400px',
 });
 
-// Skeleton styles
-const RestaurantInfoSkeleton = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '16px',
-  padding: '16px',
-  background: '#ffffff',
-  borderRadius: '16px',
-  marginBottom: '16px',
-  '@media (min-width: 768px)': {
-    gap: '24px',
-    padding: '24px',
-  },
+const ErrorText = styled('p')({
+  fontSize: '16px',
+  color: '#EC003F',
+  marginBottom: '20px',
 });
 
-const LogoSkeleton = styled('div')({
-  width: '64px',
-  height: '64px',
-  borderRadius: '12px',
-  flexShrink: 0,
-  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
-  backgroundSize: '200% 100%',
-  animation: `${shimmer} 1.5s infinite`,
-  '@media (min-width: 768px)': {
-    width: '120px',
-    height: '120px',
-    borderRadius: '16px',
-  },
-});
+interface PageProps {
+  params: Promise<{ locale: string; slug: string }>;
+}
 
-const InfoSkeleton = styled('div')({
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-});
+export default async function RestaurantDetailPage({ params }: PageProps) {
+  const { locale: rawLocale, slug } = await params;
+  const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
+  const t = getDictionary(locale);
 
-const NameSkeleton = styled('div')({
-  height: '24px',
-  width: '60%',
-  borderRadius: '4px',
-  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
-  backgroundSize: '200% 100%',
-  animation: `${shimmer} 1.5s infinite`,
-  '@media (min-width: 768px)': {
-    height: '32px',
-  },
-});
-
-const DescSkeleton = styled('div')({
-  height: '16px',
-  width: '80%',
-  borderRadius: '4px',
-  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
-  backgroundSize: '200% 100%',
-  animation: `${shimmer} 1.5s infinite`,
-  '@media (min-width: 768px)': {
-    height: '20px',
-  },
-});
-
-const SearchSkeleton = styled('div')({
-  height: '48px',
-  width: '100%',
-  borderRadius: '12px',
-  background: 'linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%)',
-  backgroundSize: '200% 100%',
-  animation: `${shimmer} 1.5s infinite`,
-});
-
-const CategoriesList = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-});
-
-export default function RestaurantDetailPage() {
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const slug = params.slug as string;
-  const tableCode = searchParams.get('table');
-
-  const { locale } = useLocale();
-  const t = useTranslations();
-  const { tableData, setTableData, setTableCode: storeTableCode } = useTable();
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
-  const [categories, setCategories] = useState<MenuCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Handle table code from QR scan
-  useEffect(() => {
-    async function handleTableCode() {
-      if (tableCode && (!tableData || tableData.code !== tableCode)) {
-        try {
-          const validationResult = await tablesValidateRetrieve(tableCode);
-          setTableData({
-            code: tableCode,
-            tableNumber: validationResult.table_number,
-            tableName: validationResult.table_name,
-            restaurantSlug: validationResult.restaurant_slug,
-            sessionId: validationResult.session_id,
-            isValidated: true,
-          });
-        } catch (err) {
-          console.error('Failed to validate table code:', err);
-          // Store the code anyway but mark as not validated
-          storeTableCode(tableCode);
-        }
-      }
+  let restaurant: RestaurantDetail | null = null;
+  let loadError: string | null = null;
+  try {
+    restaurant = await restaurantsRetrieve(slug);
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[RestaurantDetail SSR]', err);
     }
+    loadError = t.restaurantDetail.failedToLoad;
+  }
 
-    if (tableCode) {
-      handleTableCode();
-    }
-  }, [tableCode, tableData, setTableData, storeTableCode]);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const [restaurantData, categoriesData] = await Promise.all([
-          restaurantsRetrieve(slug),
-          restaurantsMenuCategoriesList(slug),
-        ]);
-        setRestaurant(restaurantData);
-        setCategories(categoriesData.results);
-        setError(null);
-      } catch (err) {
-        console.error('Failed to fetch restaurant data:', err);
-        setError(t.restaurant.failedToLoad);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (slug) {
-      fetchData();
-    }
-  }, [slug, t.restaurant.failedToLoad]);
-
-  const formattedCategories = categories.map(cat => ({
-    id: cat.id,
-    name: getTranslation(cat.translations, 'name', locale),
-    image: cat.image,
-  }));
-
-  const filteredCategories = formattedCategories.filter(category =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  if (loading) {
+  if (loadError || !restaurant) {
     return (
       <Page>
-        <Header />
+        <HeaderPrimary />
         <Main>
-          <TitleSection>
-            <BackButton />
-            <PageTitle>{t.restaurant.menu}</PageTitle>
-          </TitleSection>
-
-          <RestaurantInfoSkeleton>
-            <LogoSkeleton />
-            <InfoSkeleton>
-              <NameSkeleton />
-              <DescSkeleton />
-            </InfoSkeleton>
-          </RestaurantInfoSkeleton>
-
-          <SearchSection>
-            <SearchSkeleton />
-          </SearchSection>
-
-          <CategoriesSection>
-            <CategoriesList>
-              <CategoryListSkeleton count={6} />
-            </CategoriesList>
-          </CategoriesSection>
+          <ErrorContainer>
+            <ErrorText>{loadError || t.restaurantDetail.notFound}</ErrorText>
+          </ErrorContainer>
         </Main>
       </Page>
     );
   }
 
-  if (error || !restaurant) {
-    return (
-      <Page>
-        <Header />
-        <Main>
-          <ErrorState>{error || t.restaurant.notFound}</ErrorState>
-        </Main>
-      </Page>
-    );
-  }
+  const images = [restaurant.cover_image, restaurant.logo].filter(Boolean) as string[];
+  // Parallel array of blurhash strings for PhotoGallery — order matches
+  // `images` above. Silent fallback when a field isn't populated yet.
+  const r = restaurant as unknown as { cover_image_blurhash?: string; logo_blurhash?: string };
+  const blurhashes = [
+    restaurant.cover_image ? r.cover_image_blurhash : undefined,
+    restaurant.logo ? r.logo_blurhash : undefined,
+  ].filter((_, i) => (i === 0 ? !!restaurant.cover_image : !!restaurant.logo));
+  const categoryName = restaurant.category
+    ? getTranslation(restaurant.category.translations, 'name', locale)
+    : undefined;
+
+  // Widget is always shown when the restaurant accepts reservations. Its
+  // internals switch to "order only" (QR dine-in) when the URL has ?table=
+  // — handled inside ReservationWidget itself.
+  const showWidget = restaurant.accepts_reservations === true;
 
   return (
     <Page>
-      <Header />
+      <HeaderPrimary />
+
+      {/* ?table=<code> side-effect validator — no UI, no perf cost */}
+      <TableValidator />
 
       <Main>
-        <TitleSection>
-          <BackButton />
-          <PageTitle>{t.restaurant.menu}</PageTitle>
-        </TitleSection>
+        {/* Photo Gallery — full width above columns. Hero image goes out
+            in the initial HTML so the preload scanner starts fetching
+            it ASAP on slow 3G. */}
+        <PhotoGallery images={images} blurhashes={blurhashes} restaurantName={restaurant.name} />
 
-        <RestaurantCartScopeBanner slug={slug} />
+        <ContentLayout>
+          <LeftColumn>
+            <SharedTableBanner slug={slug} />
+            <RestaurantCartScopeBanner slug={slug} />
 
-        <RestaurantInfo
-          name={restaurant.name}
-          description={`${restaurant.city || ''} • ${restaurant.description || ''}`}
-          logo={restaurant.logo}
-          rating={parseFloat(restaurant.average_rating || '0')}
-        />
+            <RestaurantDetailInfo
+              name={restaurant.name}
+              description={restaurant.description}
+              city={restaurant.city}
+              averageRating={restaurant.average_rating}
+              totalReviews={restaurant.total_reviews}
+              categoryName={categoryName}
+              amenities={restaurant.amenities}
+              locale={locale}
+            />
 
-        <SearchSection>
-          <SearchBar
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder={t.restaurant.searchPlaceholder}
-          />
-        </SearchSection>
+            {/* Mobile reservation is now a sticky bottom bar + bottom
+                sheet; see MobileReservationSheet. The old inline widget
+                was removed to give the menu more vertical space. */}
 
-        <CategoriesSection>
-          <CategoryList categories={filteredCategories} restaurantSlug={slug} locale={locale} />
-        </CategoriesSection>
+            <MenuSection slug={slug} locale={locale} headerRight={<CartBadge />} />
+
+            <ContactInfo
+              operatingHours={restaurant.operating_hours}
+              phone={restaurant.phone}
+              website={restaurant.website}
+              email={restaurant.email}
+              isOpenNow={restaurant.is_open_now}
+              locale={locale}
+            />
+
+            <SimilarRestaurants
+              cuisineType={restaurant.category?.slug ?? ''}
+              currentSlug={slug}
+              locale={locale}
+            />
+          </LeftColumn>
+
+          {showWidget && (
+            <RightColumn>
+              <ReservationWidget slug={slug} locale={locale} />
+            </RightColumn>
+          )}
+        </ContentLayout>
       </Main>
 
-      <TableIndicator />
+      {showWidget && <MobileReservationSheet slug={slug} locale={locale} />}
+
+      <Footer locale={locale} />
     </Page>
   );
 }

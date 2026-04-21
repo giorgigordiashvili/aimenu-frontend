@@ -196,7 +196,7 @@ export default function InviteJoinPage({ locale, inviteCode }: Props) {
             /* sessionStorage full / blocked */
           }
         }
-        router.push(localePath(locale, `/restaurants/${info.restaurant_slug}`));
+        router.push(localePath(locale, `/restaurant/${info.restaurant_slug}`));
       } else {
         router.push(localePath(locale));
       }

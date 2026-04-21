@@ -411,7 +411,7 @@ export default function FavoritesPage({ locale }: FavoritesPageProps) {
                       locationText={fav.restaurant_city}
                       filterText={fav.restaurant_cuisine_type || undefined}
                       priceLevel='₾₾'
-                      href={localePath(locale, `/restaurants/${fav.restaurant_slug}`)}
+                      href={localePath(locale, `/restaurant/${fav.restaurant_slug}`)}
                       detailsLabel={t.restaurantsList.details}
                       showDetailsButton={true}
                       showBookButton={false}
