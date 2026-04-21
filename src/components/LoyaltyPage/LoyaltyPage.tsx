@@ -3,6 +3,7 @@
 import { styled } from '@pigment-css/react';
 import { useState } from 'react';
 
+import { LoyaltyListSkeleton } from '@/components/Skeleton';
 import { useTranslations } from '@/context/LocaleContext';
 import { useLoyaltyCounters, type LoyaltyCounterRow } from '@/hooks/useLoyalty';
 import { background, border, foreground, muted, radiusMd, white } from '@/tokens';
@@ -73,7 +74,9 @@ export default function LoyaltyPage() {
           <Subtitle>{t.loyalty.subtitle}</Subtitle>
         </Header>
 
-        {isLoading ? null : counters.length === 0 ? (
+        {isLoading ? (
+          <LoyaltyListSkeleton count={3} />
+        ) : counters.length === 0 ? (
           <Empty>{t.loyalty.empty}</Empty>
         ) : (
           <Grid>

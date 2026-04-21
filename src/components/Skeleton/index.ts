@@ -12,4 +12,9 @@ export {
   MenuGroupSkeleton,
   MenuSectionSkeleton,
   SimilarRestaurantsSkeleton,
+  LoyaltyCardSkeleton,
+  LoyaltyListSkeleton,
+  SavedCardItemSkeleton,
+  SavedCardListSkeleton,
+  PersonalInfoFormSkeleton,
 } from './Skeleton';

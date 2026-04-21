@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { usersMePartialUpdate, usersMeRetrieve } from '@/api/generated/api';
 import MainButton from '@/components/MainButton/MainButton';
+import { PersonalInfoFormSkeleton } from '@/components/Skeleton';
 import TextInput from '@/components/TextInput/TextInput';
 import ToastNotification from '@/components/ToastNotification';
 import { useAuth } from '@/context/AuthContext';
@@ -61,6 +62,10 @@ export default function PersonalInfoForm() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
+  // `hydrated` becomes true once we have SOME data to display — either the
+  // AuthContext user seeded the form, or the /users/me fetch resolved.
+  // Prevents flashing empty inputs on a cold load.
+  const [hydrated, setHydrated] = useState(false);
 
   // Seed from auth context immediately
   useEffect(() => {
@@ -69,6 +74,7 @@ export default function PersonalInfoForm() {
     setLastName(authUser.last_name ?? '');
     setEmail(authUser.email ?? '');
     setPhone(authUser.phone_number ?? '');
+    setHydrated(true);
   }, [authUser]);
 
   // Fetch fresh from API to overwrite with latest data
@@ -80,7 +86,8 @@ export default function PersonalInfoForm() {
         if (user.email) setEmail(user.email);
         if (user.phone_number) setPhone(user.phone_number);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setHydrated(true));
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -99,6 +106,16 @@ export default function PersonalInfoForm() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (!hydrated) {
+    return (
+      <>
+        <SectionTitle>{t.profile.settingsTitle}</SectionTitle>
+        <SectionSubtitle>{t.profile.settingsSubtitle}</SectionSubtitle>
+        <PersonalInfoFormSkeleton />
+      </>
+    );
   }
 
   return (

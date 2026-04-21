@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { paymentsMethodsDestroy, paymentsMethodsList } from '@/api/generated/api';
 import type { PaymentMethod } from '@/api/generated/interfaces';
 import { initiateAddCard } from '@/api/payments/bog';
+import { SavedCardListSkeleton } from '@/components/Skeleton';
 import ToastNotification from '@/components/ToastNotification';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { useToast } from '@/hooks/useToast';
@@ -18,7 +19,6 @@ import {
   radiusMd,
   slate100,
   slate50,
-  slate500,
   slate900,
   white,
 } from '@/tokens';
@@ -75,14 +75,6 @@ const CardList = styled('div')({
 const EmptyState = styled('p')({
   fontSize: '14px',
   color: muted,
-  textAlign: 'center',
-  padding: '24px 0',
-  margin: 0,
-});
-
-const LoadingState = styled('p')({
-  fontSize: '14px',
-  color: slate500,
   textAlign: 'center',
   padding: '24px 0',
   margin: 0,
@@ -250,7 +242,7 @@ export default function ProfilePaymentPage() {
 
         <CardList>
           {loading ? (
-            <LoadingState>{t.common.loading}</LoadingState>
+            <SavedCardListSkeleton count={2} />
           ) : cards.length === 0 ? (
             <EmptyState>{t.payment.noCards}</EmptyState>
           ) : (

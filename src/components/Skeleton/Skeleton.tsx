@@ -477,3 +477,195 @@ export function SimilarRestaurantsSkeleton({ count = 3 }: { count?: number }) {
     </SimilarRow>
   );
 }
+
+// ── Profile tab skeletons ────────────────────────────────────────────────────
+
+const LoyaltyGrid = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+  gap: '16px',
+});
+
+const LoyaltyCardShell = styled('div')({
+  background: '#ffffff',
+  border: '1px solid #e2e8f0',
+  borderRadius: '14px',
+  padding: '20px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '14px',
+});
+
+const LoyaltyHead = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+});
+
+const LoyaltyLogo = styled(SkeletonBase)({
+  width: '44px',
+  height: '44px',
+  borderRadius: '10px',
+  flexShrink: 0,
+});
+
+const LoyaltyNameBlock = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+  flex: 1,
+});
+
+const LoyaltyDotsRow = styled('div')({
+  display: 'flex',
+  gap: '8px',
+  padding: '4px 2px',
+});
+
+const LoyaltyDotStub = styled(SkeletonBase)({
+  width: '22px',
+  height: '22px',
+  borderRadius: '11px',
+});
+
+const LoyaltyClaimStub = styled(SkeletonBase)({
+  height: '44px',
+  borderRadius: '10px',
+});
+
+export function LoyaltyCardSkeleton() {
+  return (
+    <LoyaltyCardShell>
+      <LoyaltyHead>
+        <LoyaltyLogo />
+        <LoyaltyNameBlock>
+          <SkeletonBase style={{ height: '10px', width: '40%' }} />
+          <SkeletonBase style={{ height: '16px', width: '70%' }} />
+        </LoyaltyNameBlock>
+      </LoyaltyHead>
+      <SkeletonBase style={{ height: '13px', width: '80%' }} />
+      <SkeletonBase style={{ height: '13px', width: '65%' }} />
+      <LoyaltyDotsRow>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <LoyaltyDotStub key={i} />
+        ))}
+      </LoyaltyDotsRow>
+      <LoyaltyClaimStub />
+    </LoyaltyCardShell>
+  );
+}
+
+export function LoyaltyListSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <LoyaltyGrid>
+      {Array.from({ length: count }).map((_, i) => (
+        <LoyaltyCardSkeleton key={i} />
+      ))}
+    </LoyaltyGrid>
+  );
+}
+
+const SavedCardShell = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '14px 16px',
+  background: '#ffffff',
+  border: '1px solid #e2e8f0',
+  borderRadius: '14px',
+});
+
+const SavedBrand = styled(SkeletonBase)({
+  width: '48px',
+  height: '32px',
+  borderRadius: '8px',
+  flexShrink: 0,
+});
+
+const SavedInfo = styled('div')({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+});
+
+const SavedDelete = styled(SkeletonBase)({
+  width: '32px',
+  height: '32px',
+  borderRadius: '50%',
+  flexShrink: 0,
+});
+
+export function SavedCardItemSkeleton() {
+  return (
+    <SavedCardShell>
+      <SavedBrand />
+      <SavedInfo>
+        <SkeletonBase style={{ height: '15px', width: '60%' }} />
+        <SkeletonBase style={{ height: '12px', width: '30%' }} />
+      </SavedInfo>
+      <SavedDelete />
+    </SavedCardShell>
+  );
+}
+
+export function SavedCardListSkeleton({ count = 2 }: { count?: number }) {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <SavedCardItemSkeleton key={i} />
+      ))}
+    </>
+  );
+}
+
+const SettingsFieldGrid = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '16px',
+  marginTop: '16px',
+  '@media (max-width: 640px)': {
+    gridTemplateColumns: '1fr',
+  },
+});
+
+const SettingsField = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
+
+const SettingsInputStub = styled(SkeletonBase)({
+  height: '40px',
+  borderRadius: '8px',
+});
+
+const SettingsLabelStub = styled(SkeletonBase)({
+  height: '12px',
+  width: '40%',
+});
+
+export function PersonalInfoFormSkeleton() {
+  return (
+    <>
+      <SkeletonBase style={{ height: '16px', width: '30%', marginBottom: '16px' }} />
+      <SettingsFieldGrid>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <SettingsField key={i}>
+            <SettingsLabelStub />
+            <SettingsInputStub />
+          </SettingsField>
+        ))}
+      </SettingsFieldGrid>
+      <SkeletonBase
+        style={{
+          height: '40px',
+          width: '140px',
+          borderRadius: '8px',
+          marginLeft: 'auto',
+          marginTop: '24px',
+        }}
+      />
+    </>
+  );
+}
