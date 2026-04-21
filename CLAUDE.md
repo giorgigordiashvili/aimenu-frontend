@@ -419,6 +419,19 @@ OUTPUT_DIR=./src/api/generated
 4. `cd ~/Telos/aimenu-pos && npm run generate:api`
 5. Both `src/api/generated/*` checked in.
 
+**Always regenerate when a backend PR lands.** Don't leave the frontend
+on a hand-written axios stub and the generated client drifting behind —
+this is the single biggest source of "why does this endpoint not exist
+in TypeScript" surprises. The workflow is:
+
+1. Merge the backend PR, wait for DO `ACTIVE`.
+2. `npm run generate:api` immediately — commit the regenerated
+   `src/api/generated/*` even if no frontend code needs it yet.
+3. Swap any temporary hand-written axios calls to the typed helper in
+   the same commit or the next one.
+
+Skipping step 2 makes every follow-up PR re-discover the drift.
+
 **Gotcha:** if a DRF APIView uses `request.data` without an explicit
 `@extend_schema(request=<Serializer>)`, the generator emits a no-arg function
 (e.g. `dashboardLoyaltyRedeemConfirmCreate(): Promise<any>`). Add a

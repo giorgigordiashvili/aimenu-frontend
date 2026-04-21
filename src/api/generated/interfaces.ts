@@ -58,6 +58,25 @@ export interface ChangePasswordRequest {
   new_password_confirm: string;
 }
 
+export interface ContactMessageCreate {
+  first_name: string;
+  last_name?: string;
+  email: string;
+  phone?: string;
+  topic?: string;
+  message: string;
+}
+
+export interface ContactMessageCreateRequest {
+  first_name: string;
+  last_name?: string;
+  email: string;
+  phone?: string;
+  topic?: string;
+  message: string;
+  website?: string;
+}
+
 export interface CustomTokenObtainPairRequest {
   email: string;
   password: string;

@@ -18,6 +18,8 @@ import type {
   UserRegistration,
   TokenRefreshRequest,
   TokenRefresh,
+  ContactMessageCreateRequest,
+  ContactMessageCreate,
   PaginatedLoyaltyProgramList,
   LoyaltyProgramWriteRequest,
   LoyaltyProgramWrite,
@@ -182,6 +184,13 @@ export async function authTokenRefreshCreate(
   data: TokenRefreshRequest,
 ): Promise<TokenRefresh> {
   const response = await axios.post(`/api/v1/auth/token/refresh/`, data);
+  return response.data;
+}
+
+export async function contactCreate(
+  data: ContactMessageCreateRequest,
+): Promise<ContactMessageCreate> {
+  const response = await axios.post(`/api/v1/contact/`, data);
   return response.data;
 }
 

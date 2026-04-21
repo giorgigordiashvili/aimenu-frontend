@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import axios from '@/api/axios';
+import { contactCreate } from '@/api/generated';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
@@ -326,7 +326,7 @@ export default function ContactPage() {
   async function onSubmit(values: ContactFormValues) {
     setApiError(null);
     try {
-      await axios.post('/api/v1/contact/', {
+      await contactCreate({
         first_name: values.firstName,
         last_name: values.lastName,
         email: values.email,
