@@ -95,7 +95,6 @@ const FilterRatingGroup = styled('div')({
 
 const ContentBottom = styled('div')({
   padding: '12px',
-  marginTop: '24px',
 });
 
 const ContentGroup = styled('div')({
