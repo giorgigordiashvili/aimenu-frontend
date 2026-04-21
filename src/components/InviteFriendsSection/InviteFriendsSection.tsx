@@ -12,6 +12,7 @@ import { localePath } from '@/i18n/routing';
 import CheckmarkIcon from '@/icons/Checkmark';
 import CopyIcon from '@/icons/Copy';
 import InviteArrow from '@/icons/InviteArrow';
+import ShareIcon from '@/icons/Share';
 import {
   background,
   border,
@@ -187,6 +188,30 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
     }
   }, [locale, sessionId, t.orderReview.inviteLinkNoSession, t.orderReview.invitationFailed]);
 
+  const handleShareLink = useCallback(async () => {
+    if (!generatedLink || typeof window === 'undefined') return;
+    const shareData = { title: t.orderReview.inviteLink, url: generatedLink };
+    const nav = navigator as Navigator & {
+      share?: (data: ShareData) => Promise<void>;
+      canShare?: (data: ShareData) => boolean;
+    };
+    if (nav.share && (!nav.canShare || nav.canShare(shareData))) {
+      try {
+        await nav.share(shareData);
+        return;
+      } catch {
+        return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(generatedLink);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      // Best-effort only.
+    }
+  }, [generatedLink, t.orderReview.inviteLink]);
+
   const handleCopyLink = useCallback(async () => {
     if (!generatedLink) return;
     try {
@@ -263,8 +288,16 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
           <CopyButton
             onClick={handleCopyLink}
             title={linkCopied ? t.orderReview.linkCopied : undefined}
+            aria-label={t.orderReview.linkCopied}
           >
             {linkCopied ? <CheckmarkIcon /> : <CopyIcon />}
+          </CopyButton>
+          <CopyButton
+            onClick={handleShareLink}
+            title={t.orderReview.inviteLink}
+            aria-label={t.orderReview.inviteLink}
+          >
+            <ShareIcon />
           </CopyButton>
         </GeneratedLinkRow>
         <InfoMessage>

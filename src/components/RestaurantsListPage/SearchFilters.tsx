@@ -458,8 +458,7 @@ export default function SearchFilters({ value, onChange, onSearch }: SearchFilte
   // Trigger-field keyboard handler. Enter/Space or ArrowDown opens the
   // corresponding popover (mobile modal). Escape closes any open popover.
   const makeTriggerKeyDown =
-    (w: 'city' | 'cal' | 'time' | 'guests') =>
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
+    (w: 'city' | 'cal' | 'time' | 'guests') => (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
         e.preventDefault();
         if (isMobile) {

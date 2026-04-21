@@ -178,9 +178,7 @@ export default function SettleTablePage({ locale }: Props) {
       return;
     }
     axiosInstance
-      .get<SessionDetail | { data: SessionDetail }>(
-        `/api/v1/tables/sessions/${activeSessionId}/`
-      )
+      .get<SessionDetail | { data: SessionDetail }>(`/api/v1/tables/sessions/${activeSessionId}/`)
       .then(res => {
         const body = res.data as SessionDetail | { data: SessionDetail };
         const data = (body as { data?: SessionDetail }).data ?? (body as SessionDetail);

@@ -215,6 +215,37 @@ export default function RestaurantDetailInfo({
     setIsFavorite(!isFavorite);
   };
 
+  // Native mobile share sheet when available (Web Share API — iOS
+  // Safari, Chrome Android, most mobile browsers). Falls back to
+  // clipboard on desktop.
+  const handleShare = async () => {
+    if (typeof window === 'undefined') return;
+    const url = window.location.href;
+    const shareData = {
+      title: name,
+      text: description ? description.slice(0, 160) : name,
+      url,
+    };
+    const nav = navigator as Navigator & {
+      share?: (data: ShareData) => Promise<void>;
+      canShare?: (data: ShareData) => boolean;
+    };
+    if (nav.share && (!nav.canShare || nav.canShare(shareData))) {
+      try {
+        await nav.share(shareData);
+        return;
+      } catch {
+        // User dismissed the share sheet — silently ignore.
+        return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Best-effort only.
+    }
+  };
+
   return (
     <Container>
       {/* Mobile: Rating + reviews (the action icons moved down into
@@ -260,6 +291,7 @@ export default function RestaurantDetailInfo({
             size='extra_small'
             icon={Share}
             aria-label={t.restaurantDetail.share}
+            onClick={handleShare}
           />
           <MainButton
             variant='ghost'
@@ -310,6 +342,7 @@ export default function RestaurantDetailInfo({
             size='extra_small'
             icon={Share}
             aria-label={t.restaurantDetail.share}
+            onClick={handleShare}
           />
           <MainButton
             variant='ghost'

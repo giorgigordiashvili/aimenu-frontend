@@ -114,29 +114,73 @@ interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
 
-// Generated per-restaurant. We deliberately don't call restaurantsRetrieve
-// here because Pigment CSS's build-time sandbox can't evaluate the axios
-// transport (Node http2 import). For richer per-restaurant titles a
-// dedicated /restaurant/[slug]/opengraph-image route + a Server Component
-// that hits the API is the right place — this metadata path stays static
-// so the build is reliable.
+// Generated per-restaurant at request time. We hit the public REST
+// endpoint directly with fetch() (avoids the axios client's
+// browser-only interceptors) to pull the real name / description /
+// logo / cover so social-share previews on Facebook, WhatsApp,
+// iMessage, Twitter/X, LinkedIn etc. render the restaurant's own
+// branding instead of a slug-derived guess.
+const OG_API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? 'https://admin.aimenu.ge').replace(
+  /\/$/,
+  ''
+);
+
+interface OgRestaurant {
+  name?: string;
+  description?: string | null;
+  city?: string | null;
+  logo?: string | null;
+  cover_image?: string | null;
+}
+
+async function loadRestaurantForMetadata(slug: string): Promise<OgRestaurant | null> {
+  try {
+    const res = await fetch(`${OG_API_BASE}/api/v1/restaurants/${slug}/`, {
+      // Match the OG-image route's revalidate window so both surfaces
+      // refetch together.
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as OgRestaurant;
+  } catch {
+    return null;
+  }
+}
+
+function truncateSocial(s: string, max: number): string {
+  const trimmed = s.trim();
+  if (trimmed.length <= max) return trimmed;
+  return trimmed.slice(0, max - 1).trimEnd() + '…';
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale: rawLocale, slug } = await params;
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
   const t = getDictionary(locale);
   const seo = (t as unknown as { seo?: Record<string, string> }).seo ?? {};
-  // Slug → title-cased best guess for the visible name. The API-correct
-  // name still lands inside the page itself (h1 + JSON-LD).
-  const guessName = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-  const title = (seo.restaurantTitle ?? '{name}').replace('{name}', guessName);
-  const description = (seo.restaurantDescription ?? '{name}.')
-    .replace('{name}', guessName)
-    .replace('{city}', '');
+
+  const r = await loadRestaurantForMetadata(slug);
+  // Title-cased slug fallback when the API is unreachable.
+  const fallbackName = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const name = r?.name || fallbackName;
+  const city = r?.city || '';
+
+  const title = (seo.restaurantTitle ?? '{name}').replace('{name}', name);
+  const description = r?.description
+    ? truncateSocial(r.description, 180)
+    : (seo.restaurantDescription ?? '{name}.').replace('{name}', name).replace('{city}', city);
+
   return buildMetadata({
     locale,
     path: `/restaurant/${slug}`,
     title,
     description,
+    // Intentionally not passing `image` — Next's file-based convention
+    // picks up opengraph-image.tsx next to this file and produces a
+    // proper 1200×630 branded card. Supplying the raw cover/logo URL
+    // would risk a cropped square preview on Twitter's
+    // summary_large_image. (The JSON-LD in the page body still
+    // exposes cover_image + logo for schema.org consumers.)
     ogType: 'restaurant',
   });
 }

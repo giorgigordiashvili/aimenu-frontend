@@ -9,6 +9,7 @@ import { tablesSessionsJoinRetrieve } from '@/api/generated/api';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
+import { useAuth } from '@/context/AuthContext';
 import { useTable } from '@/context/TableContext';
 import type { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
@@ -122,6 +123,7 @@ export default function InviteJoinPage({ locale, inviteCode }: Props) {
   const t = getDictionary(locale);
   const router = useRouter();
   const { setTableData } = useTable();
+  const { user, isAuthenticated } = useAuth();
 
   const [info, setInfo] = useState<JoinInfo | null>(null);
   const [fetching, setFetching] = useState(true);
@@ -132,6 +134,17 @@ export default function InviteJoinPage({ locale, inviteCode }: Props) {
   const [contactError, setContactError] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
+
+  // Auto-fill from the signed-in user's profile. Preferred order for contact:
+  // phone (matches how bookings are made), falling back to email.
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    const display =
+      user.full_name?.trim() || `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
+    if (display && !name) setName(display);
+    const contactValue = user.phone_number?.trim() || user.email?.trim() || '';
+    if (contactValue && !contact) setContact(contactValue);
+  }, [isAuthenticated, user, name, contact]);
 
   useEffect(() => {
     let cancelled = false;
@@ -280,26 +293,30 @@ export default function InviteJoinPage({ locale, inviteCode }: Props) {
             )}
           </div>
 
-          <TextInput
-            label=''
-            leftIcon={PeopleIcon}
-            placeholder={t.inviteJoin.namePlaceholder}
-            value={name}
-            onChange={e => setName(e.target.value)}
-            variant='outlined'
-          />
-          <TextInput
-            label=''
-            leftIcon={EmailIcon}
-            placeholder={t.inviteJoin.contactPlaceholder}
-            value={contact}
-            onChange={e => {
-              setContact(e.target.value);
-              if (contactError) setContactError(null);
-            }}
-            errorMessage={contactError || undefined}
-            variant='outlined'
-          />
+          {!isAuthenticated && (
+            <>
+              <TextInput
+                label=''
+                leftIcon={PeopleIcon}
+                placeholder={t.inviteJoin.namePlaceholder}
+                value={name}
+                onChange={e => setName(e.target.value)}
+                variant='outlined'
+              />
+              <TextInput
+                label=''
+                leftIcon={EmailIcon}
+                placeholder={t.inviteJoin.contactPlaceholder}
+                value={contact}
+                onChange={e => {
+                  setContact(e.target.value);
+                  if (contactError) setContactError(null);
+                }}
+                errorMessage={contactError || undefined}
+                variant='outlined'
+              />
+            </>
+          )}
 
           {joinError && <ErrorBox>{joinError}</ErrorBox>}
 

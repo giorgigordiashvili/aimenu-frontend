@@ -34,8 +34,7 @@ import {
 const HeaderSection = styled('section')({
   position: 'relative',
   padding: '32px 16px 28px',
-  background:
-    'linear-gradient(180deg, #FFE4EC 0%, #FEF2F4 35%, #F8FAFC 100%)',
+  background: 'linear-gradient(180deg, #FFE4EC 0%, #FEF2F4 35%, #F8FAFC 100%)',
   '@media (min-width: 768px)': {
     padding: '56px 24px 44px',
   },
@@ -413,8 +412,7 @@ export default function PageHeader({
     return () => document.removeEventListener('mousedown', onDocClick);
   }, []);
 
-  const showPopover =
-    popoverOpen && inputFocused && searchValue.trim().length >= MIN_QUERY;
+  const showPopover = popoverOpen && inputFocused && searchValue.trim().length >= MIN_QUERY;
 
   return (
     <HeaderSection>
@@ -491,9 +489,7 @@ export default function PageHeader({
                     onMouseDown={e => e.preventDefault()}
                   >
                     <SuggestionThumb
-                      style={
-                        r.logo ? { backgroundImage: `url(${r.logo})` } : undefined
-                      }
+                      style={r.logo ? { backgroundImage: `url(${r.logo})` } : undefined}
                       aria-hidden='true'
                     />
                     <SuggestionMeta>

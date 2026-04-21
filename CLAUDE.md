@@ -233,12 +233,11 @@ Examples:
 4. **Request review** - Get at least one code review before merging
 5. **Ensure CI passes** - All checks must be green
 
-**Claude Code working preference:** once the user has approved a change
-(asked for it directly, said "merge it", or similar), push straight to
-`main` instead of branch → PR → merge. The branch/PR dance exists for
-review, and when the user has already signed off there's no review
-gained. Reserve branches for large or risky changes that the user
-explicitly wants to inspect before shipping.
+**Claude Code working preference:** once the user has approved a change (asked
+for it directly, said "merge it", or similar), push straight to `main` instead
+of branch → PR → merge. The branch/PR dance exists for review, and when the user
+has already signed off there's no review gained. Reserve branches for large or
+risky changes that the user explicitly wants to inspect before shipping.
 
 ### Pre-Push Checklist
 
@@ -419,16 +418,16 @@ OUTPUT_DIR=./src/api/generated
 4. `cd ~/Telos/aimenu-pos && npm run generate:api`
 5. Both `src/api/generated/*` checked in.
 
-**Always regenerate when a backend PR lands.** Don't leave the frontend
-on a hand-written axios stub and the generated client drifting behind —
-this is the single biggest source of "why does this endpoint not exist
-in TypeScript" surprises. The workflow is:
+**Always regenerate when a backend PR lands.** Don't leave the frontend on a
+hand-written axios stub and the generated client drifting behind — this is the
+single biggest source of "why does this endpoint not exist in TypeScript"
+surprises. The workflow is:
 
 1. Merge the backend PR, wait for DO `ACTIVE`.
 2. `npm run generate:api` immediately — commit the regenerated
    `src/api/generated/*` even if no frontend code needs it yet.
-3. Swap any temporary hand-written axios calls to the typed helper in
-   the same commit or the next one.
+3. Swap any temporary hand-written axios calls to the typed helper in the same
+   commit or the next one.
 
 Skipping step 2 makes every follow-up PR re-discover the drift.
 

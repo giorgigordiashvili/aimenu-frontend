@@ -196,11 +196,8 @@ function TextInput({
                 : undefined,
             // Room for functional right icon (40px) and/or the error badge.
             // Both visible = 68px, error only = 40px, icon only = 40px.
-            paddingRight: showError && hasRightIcon
-              ? '68px'
-              : hasRightIcon || showError
-                ? '40px'
-                : undefined,
+            paddingRight:
+              showError && hasRightIcon ? '68px' : hasRightIcon || showError ? '40px' : undefined,
           }}
           onBlur={e => {
             setIsError(!e.currentTarget.checkValidity());

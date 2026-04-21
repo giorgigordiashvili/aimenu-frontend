@@ -21,8 +21,7 @@ export const DropdownList = styled('div')({
   backgroundColor: white,
   border: `1px solid ${slate200}`,
   borderRadius: '14px',
-  boxShadow:
-    '0 20px 40px -16px rgba(15, 23, 43, 0.2), 0 4px 12px -6px rgba(15, 23, 43, 0.08)',
+  boxShadow: '0 20px 40px -16px rgba(15, 23, 43, 0.2), 0 4px 12px -6px rgba(15, 23, 43, 0.08)',
   maxHeight: '260px',
   overflowY: 'auto',
   padding: '4px',

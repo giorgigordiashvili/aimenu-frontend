@@ -540,19 +540,17 @@ export default function RestaurantsSearchPage() {
 
   // Search endpoint returns everything in one shot (no pagination); hide
   // the pager in that mode.
-  const totalPages = hasReservationContext
-    ? 1
-    : Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const totalPages = hasReservationContext ? 1 : Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasActiveFilters = useMemo(
     () =>
       Boolean(
         cityParam ||
-          categoryParam ||
-          searchParam ||
-          dateParam ||
-          timeParam ||
-          guestsParam ||
-          loyaltyOnly
+        categoryParam ||
+        searchParam ||
+        dateParam ||
+        timeParam ||
+        guestsParam ||
+        loyaltyOnly
       ),
     [cityParam, categoryParam, searchParam, dateParam, timeParam, guestsParam, loyaltyOnly]
   );
@@ -594,7 +592,16 @@ export default function RestaurantsSearchPage() {
       params.set('page', String(page));
       return params.toString();
     },
-    [cityParam, categoryParam, searchParam, sortParam, dateParam, timeParam, guestsParam, loyaltyOnly]
+    [
+      cityParam,
+      categoryParam,
+      searchParam,
+      sortParam,
+      dateParam,
+      timeParam,
+      guestsParam,
+      loyaltyOnly,
+    ]
   );
 
   // ── Handlers ───────────────────────────────────────────────────────────────

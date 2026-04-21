@@ -4,72 +4,58 @@ import { styled } from '@pigment-css/react';
 
 import { useTranslations } from '@/context/LocaleContext';
 import { usePlatformLoyalty } from '@/hooks/usePlatformLoyalty';
-import {
-  border,
-  foreground,
-  muted,
-  primary,
-  radiusMd,
-  rose50,
-  slate100,
-  slate200,
-  white,
-} from '@/tokens';
-
-// Platform-wide tier status card. Shown at the top of /profile/loyalty.
-// Mirrors the mockup: big tier name, current points + next-tier target,
-// progress bar, CTA copy nudging toward the next reward.
+import RestaurantUtensils from '@/icons/RestaurantUtensils';
+import { border, foreground, muted, primary, radiusMd, slate100, slate200, white } from '@/tokens';
 
 const Card = styled('div')({
-  background: `linear-gradient(145deg, ${rose50} 0%, ${white} 100%)`,
+  backgroundColor: white,
   border: `1px solid ${border}`,
   borderRadius: radiusMd,
-  padding: '24px',
+  padding: '16px',
   display: 'flex',
   flexDirection: 'column',
-  gap: '16px',
+  gap: '14px',
 });
 
-const StatusLabel = styled('span')({
-  fontSize: '12px',
-  fontWeight: 600,
-  color: muted,
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-});
-
-const TierName = styled('h2')({
-  fontSize: '28px',
-  fontWeight: 800,
-  color: foreground,
-  margin: 0,
-  lineHeight: 1.15,
-  letterSpacing: '-0.01em',
-});
-
-const PointsRow = styled('div')({
+const TierName = styled('h3')({
   display: 'flex',
-  alignItems: 'baseline',
-  justifyContent: 'space-between',
-  gap: '12px',
-  flexWrap: 'wrap',
-});
-
-const PointsBig = styled('span')({
-  fontSize: '24px',
+  alignItems: 'center',
+  gap: '8px',
+  margin: 0,
+  fontSize: '18px',
   fontWeight: 700,
   color: foreground,
+  lineHeight: 1.2,
+  '& svg': {
+    color: primary,
+    flexShrink: 0,
+  },
 });
 
-const PointsSub = styled('span')({
-  fontSize: '14px',
+const StatusLabel = styled('p')({
+  margin: '4px 0 0',
+  fontSize: '12px',
+  color: muted,
+  lineHeight: 1.3,
+});
+
+const ProgressBlock = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
+
+const ProgressLabels = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  fontSize: '12px',
   fontWeight: 500,
   color: muted,
 });
 
 const ProgressTrack = styled('div')({
   position: 'relative',
-  height: '10px',
+  height: '6px',
   borderRadius: '999px',
   background: slate200,
   overflow: 'hidden',
@@ -86,21 +72,10 @@ const ProgressFill = styled('div')({
 });
 
 const Teaser = styled('p')({
-  fontSize: '14px',
-  color: foreground,
-  margin: 0,
-  lineHeight: 1.5,
-  '& b': {
-    color: primary,
-    fontWeight: 700,
-  },
-});
-
-const SignInPrompt = styled('p')({
-  fontSize: '14px',
+  fontSize: '13px',
   color: muted,
   margin: 0,
-  lineHeight: 1.5,
+  lineHeight: 1.4,
 });
 
 const SkeletonBlock = styled('div')({
@@ -128,22 +103,24 @@ export default function PlatformStatusCard() {
   if (isLoading) {
     return (
       <Card aria-busy='true'>
-        <SkeletonBlock style={{ height: '14px', width: '30%' }} />
-        <SkeletonBlock style={{ height: '32px', width: '40%' }} />
-        <SkeletonBlock style={{ height: '10px', width: '100%' }} />
-        <SkeletonBlock style={{ height: '14px', width: '70%' }} />
+        <SkeletonBlock style={{ height: '22px', width: '40%' }} />
+        <SkeletonBlock style={{ height: '6px', width: '100%' }} />
+        <SkeletonBlock style={{ height: '14px', width: '80%' }} />
       </Card>
     );
   }
 
-  // Anonymous user: invite to sign in. The /status/ endpoint is auth-only
-  // so null here means "not signed in OR first-time visitor with no data".
   if (!status) {
     return (
       <Card>
-        <StatusLabel>{copy.yourStatus}</StatusLabel>
-        <TierName>{copy.tiers.gourmand}</TierName>
-        <SignInPrompt>{copy.signInPrompt}</SignInPrompt>
+        <div>
+          <TierName>
+            <RestaurantUtensils />
+            {copy.tiers.gourmand}
+          </TierName>
+          <StatusLabel>{copy.yourStatus}</StatusLabel>
+        </div>
+        <Teaser>{copy.signInPrompt}</Teaser>
       </Card>
     );
   }
@@ -154,7 +131,6 @@ export default function PlatformStatusCard() {
   const pointsToNext = parseFloat(status.points_to_next);
   const tierName = current?.name ?? copy.tiers.gourmand;
 
-  // Progress within the current band: (points - current.min) / (next.min - current.min).
   const progressPct = (() => {
     if (!next) return 100;
     const floor = current?.min_points ?? 0;
@@ -167,35 +143,40 @@ export default function PlatformStatusCard() {
     ? interpolate(copy.nextTeaser, {
         points: Math.ceil(pointsToNext),
         discount: next.discount_percent,
-      })
-    : interpolate(copy.topTierMessage, { discount: current?.discount_percent ?? 0 });
+      }).replace(/<\/?b>/g, '')
+    : interpolate(copy.topTierMessage, { discount: current?.discount_percent ?? 0 }).replace(
+        /<\/?b>/g,
+        ''
+      );
 
   return (
     <Card>
-      <StatusLabel>{copy.yourStatus}</StatusLabel>
-      <TierName>{tierName}</TierName>
+      <div>
+        <TierName>
+          <RestaurantUtensils />
+          {tierName}
+        </TierName>
+        <StatusLabel>{copy.yourStatus}</StatusLabel>
+      </div>
 
-      <PointsRow>
-        <PointsBig>
-          {points.toLocaleString()} {copy.pointsLabel}
-        </PointsBig>
-        {next && (
-          <PointsSub>
-            {interpolate(copy.toNextLabel, { target: next.min_points })}
-          </PointsSub>
-        )}
-      </PointsRow>
+      <ProgressBlock>
+        <ProgressLabels>
+          <span>
+            {points.toLocaleString()} {copy.pointsLabel}
+          </span>
+          {next && <span>{interpolate(copy.toNextLabel, { target: next.min_points })}</span>}
+        </ProgressLabels>
+        <ProgressTrack
+          role='progressbar'
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progressPct)}
+        >
+          <ProgressFill style={{ width: `${progressPct}%` }} />
+        </ProgressTrack>
+      </ProgressBlock>
 
-      <ProgressTrack
-        role='progressbar'
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={Math.round(progressPct)}
-      >
-        <ProgressFill style={{ width: `${progressPct}%` }} />
-      </ProgressTrack>
-
-      <Teaser dangerouslySetInnerHTML={{ __html: teaser }} />
+      <Teaser>{teaser}</Teaser>
     </Card>
   );
 }

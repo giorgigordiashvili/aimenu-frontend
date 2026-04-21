@@ -90,8 +90,7 @@ export function useListboxKeys<T>({
     tabIndex: -1,
     role: 'listbox' as const,
     onKeyDown,
-    'aria-activedescendant':
-      activeIndex >= 0 ? `${optionIdPrefix}-${activeIndex}` : undefined,
+    'aria-activedescendant': activeIndex >= 0 ? `${optionIdPrefix}-${activeIndex}` : undefined,
   };
 
   const getOptionProps = (index: number) => ({
