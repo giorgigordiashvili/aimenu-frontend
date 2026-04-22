@@ -297,6 +297,7 @@ export default function BookingForm({
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [reservationId, setReservationId] = useState<string | null>(null);
+  const [confirmationCode, setConfirmationCode] = useState<string | null>(null);
   const [isCardFormValid, setIsCardFormValid] = useState(false);
 
   // Derived step: API outcomes take priority over local navigation state, which
@@ -461,11 +462,18 @@ export default function BookingForm({
 
     try {
       if (process.env.NEXT_PUBLIC_BYPASS_PAYMENT === 'true') {
-        const result = await axiosInstance.post<{ id?: string }>('/api/v1/reservations/create/', {
+        const result = await axiosInstance.post<{
+          id?: string;
+          confirmation_code?: string;
+          reservation?: { id?: string; confirmation_code?: string };
+        }>('/api/v1/reservations/create/', {
           ...reservationBody,
           ...(slug ? { restaurant_slug: slug } : {}),
         });
-        const id = result.data.id ?? null;
+        const body = result.data;
+        const id = body.id ?? body.reservation?.id ?? null;
+        const code = body.confirmation_code ?? body.reservation?.confirmation_code ?? null;
+        if (code) setConfirmationCode(code);
         setReservationId(id); // step derives to 'success'
         return;
       }
@@ -652,6 +660,7 @@ export default function BookingForm({
           <OverlayContent>
             <BookingSuccessPanel
               reservationId={reservationId}
+              confirmationCode={confirmationCode}
               onGoHome={() => router.push(localePath(locale))}
               onMyReservations={() => router.push(localePath(locale, '/reservations'))}
             />

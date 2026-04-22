@@ -2,7 +2,7 @@
 
 import { styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import MainButton from '@/components/MainButton/MainButton';
 import { blurhashToDataUrl } from '@/components/ProgressiveImage';
@@ -51,7 +51,7 @@ const Image = styled('img')({
   objectFit: 'cover',
   objectPosition: 'center',
   zIndex: -1,
-  transition: 'transform 0.3s ease, opacity 0.3s ease',
+  transition: 'opacity 0.3s ease',
 });
 
 // Absolutely-positioned inline BlurHash placeholder that paints instantly
@@ -95,21 +95,26 @@ const FilterRatingGroup = styled('div')({
 
 const ContentBottom = styled('div')({
   padding: '12px',
+  display: 'flex',
+  flexDirection: 'column',
+  flex: 1,
 });
 
+// Full-height flex column so two cards in the same grid row end up the
+// same size — the grid cell stretches to the tallest sibling and this
+// card now fills it (buttons stay pinned to the bottom, spacer above).
 const ContentGroup = styled('div')({
   border: `1px solid ${border}`,
   borderRadius: radiusMd,
   width: '264px',
-  height: 'fit-content',
+  height: '100%',
   cursor: 'pointer',
   backgroundColor: white,
   overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
   '&:hover': {
     boxShadow: shadowCard,
-  },
-  '&:hover img': {
-    transform: 'scale(1.1)',
   },
   '@media (max-width: 768px)': {
     width: '100%',
@@ -122,34 +127,40 @@ const BottomGroup = styled('div')({
   alignItems: 'center',
 });
 
+// Typography / spacing were originally tuned for the single-column
+// mobile layout. The grid now ships two cards per row at narrow widths,
+// so we keep the compact defaults on mobile too and only bump back up
+// on tablet+ where a card is wide enough to carry bigger copy.
 const RestaurantTitle = styled('span')({
   fontFamily: 'Inter',
-  fontSize: '14px',
-  fontWeight: '400',
-  lineHeight: '20px',
+  fontSize: '12px',
+  fontWeight: 600,
+  lineHeight: '16px',
   color: foreground,
-  '@media (max-width: 768px)': {
-    width: '100%',
-    fontSize: '18px',
-    fontWeight: '700',
-    lineHeight: '28px',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  '@media (min-width: 768px)': {
+    fontSize: '14px',
+    lineHeight: '20px',
   },
 });
 
 const LocationContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  gap: '4px',
+  gap: '3px',
   color: muted,
   fontFamily: 'Inter',
   fontSize: '10px',
-  fontWeight: '400',
-  lineHeight: '15px',
-  paddingTop: '12px',
-  '@media (max-width: 768px)': {
-    fontSize: '14px',
-    fontWeight: '400',
-    lineHeight: '20px',
+  fontWeight: 400,
+  lineHeight: '14px',
+  paddingTop: '6px',
+  '@media (min-width: 768px)': {
+    fontSize: '12px',
+    lineHeight: '16px',
+    paddingTop: '10px',
+    gap: '4px',
   },
 });
 
@@ -163,36 +174,41 @@ const LocationIconWrapper = styled('span')({
     width: '100%',
     height: '100%',
   },
-  '@media (max-width: 768px)': {
-    width: '16px',
-    height: '16px',
-  },
 });
 
 const ButtonGroup = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
-  marginTop: '24px',
+  marginTop: 'auto',
+  paddingTop: '12px',
 });
 
-// Rose-accent pill that marks a restaurant as a platform-loyalty
-// partner. Rendered on top of the hero image so it's visible without
-// opening the card.
+// Rose pill marking a platform-loyalty partner. Compact typography so
+// the label "ლოიალურობა" fits inside a 160px mobile card without
+// wrapping; full hint copy still rides on the native `title` tooltip.
 const LoyaltyBadge = styled('div')({
   display: 'inline-flex',
   alignItems: 'center',
-  gap: '4px',
-  padding: '2px 8px',
-  height: '22px',
-  borderRadius: '100px',
+  gap: '3px',
+  padding: '2px 6px',
+  height: '18px',
+  borderRadius: '999px',
   background: 'rgba(236, 0, 63, 0.92)',
   color: '#ffffff',
-  fontSize: '11px',
+  fontSize: '8px',
   fontWeight: 700,
   letterSpacing: '0.02em',
   textTransform: 'uppercase',
   boxShadow: '0 2px 6px rgba(236, 0, 63, 0.35)',
+  whiteSpace: 'nowrap',
+  flexShrink: 0,
+  cursor: 'help',
+  '@media (min-width: 768px)': {
+    fontSize: '10px',
+    padding: '2px 8px',
+    height: '20px',
+  },
 });
 
 interface DefaultVariantProps extends Omit<
@@ -228,6 +244,7 @@ export default function DefaultVariant({
   amenities,
   showLoyaltyBadge = false,
   loyaltyBadgeLabel = 'Loyalty',
+  loyaltyBadgeHint,
 }: DefaultVariantProps) {
   const router = useRouter();
   const blurhashDataURL = useMemo(() => blurhashToDataUrl(imageBlurhash), [imageBlurhash]);
@@ -241,6 +258,26 @@ export default function DefaultVariant({
     if (href) router.push(href);
   };
 
+  // Warm the target route's chunk + data on first hover / focus so the
+  // navigation that follows (card click, Details, Book) is essentially
+  // instantaneous. Guarded by a ref so we don't re-prefetch on every
+  // mousemove — next/router does its own dedupe, but a local check
+  // keeps noise out of the tab's network panel too.
+  const prefetchedRef = useRef(false);
+  const handlePrefetch = () => {
+    if (!href || prefetchedRef.current) return;
+    prefetchedRef.current = true;
+    try {
+      router.prefetch(href);
+      // Book route likely to be the next click after Details — prewarm
+      // it too; /book is a separate chunk.
+      router.prefetch(`${href}/book`);
+    } catch {
+      // Prefetch is advisory; swallow errors so an unreachable endpoint
+      // never breaks hover UX.
+    }
+  };
+
   const stopAndDetails = () => {
     if (href) router.push(href);
   };
@@ -252,7 +289,7 @@ export default function DefaultVariant({
   };
 
   return (
-    <ContentGroup onClick={handleCardClick}>
+    <ContentGroup onClick={handleCardClick} onMouseEnter={handlePrefetch} onFocus={handlePrefetch}>
       <ContentTop>
         {blurhashDataURL && <BlurBackdrop style={{ backgroundImage: `url(${blurhashDataURL})` }} />}
         <Image
@@ -264,12 +301,19 @@ export default function DefaultVariant({
           }}
         />
         <FavoriteGroup>
-          {showFavoriteYellow && (
+          {showLoyaltyBadge ? (
+            <LoyaltyBadge
+              title={loyaltyBadgeHint ?? loyaltyBadgeLabel}
+              aria-label={loyaltyBadgeHint ?? loyaltyBadgeLabel}
+            >
+              ★ {loyaltyBadgeLabel}
+            </LoyaltyBadge>
+          ) : showFavoriteYellow ? (
             <FavoriteYellow>
               <Star color={foreground} size={12} />
               {favoriteLabel}
             </FavoriteYellow>
-          )}
+          ) : null}
           <FavoriteButton
             onClick={e => {
               e.stopPropagation();
@@ -285,19 +329,20 @@ export default function DefaultVariant({
           </FavoriteButton>
         </FavoriteGroup>
         <FilterRatingGroup>
-          {showLoyaltyBadge && (
-            <LoyaltyBadge title={loyaltyBadgeLabel}>★ {loyaltyBadgeLabel}</LoyaltyBadge>
-          )}
-          {showFilterText && filterText && (
-            <MainButton variant='secondary' title={filterText} size='extra_small' />
-          )}
-          {showRating && (
+          {showRating ? (
             <MainButton
               variant='secondary'
               title={String(rating)}
               size='extra_small'
               icon={() => <Star color={yellow500} size={10} />}
             />
+          ) : (
+            <span />
+          )}
+          {showFilterText && filterText ? (
+            <MainButton variant='secondary' title={filterText} size='extra_small' />
+          ) : (
+            <span />
           )}
         </FilterRatingGroup>
       </ContentTop>

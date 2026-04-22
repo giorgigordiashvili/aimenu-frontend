@@ -86,6 +86,19 @@ export const CalDayName = styled('span')({
   lineHeight: '16px',
 });
 
+// Placeholder cell that renders blank but keeps the grid row's height
+// identical to a real day cell. Used for leading blanks (start-of-month
+// padding) and for trailing blanks when the month doesn't fill 6 weeks —
+// otherwise a row made of empty `<span />`s collapses to 0px and the
+// calendar jumps between 5- and 6-row months.
+export const CalEmptyCell = styled('span')({
+  display: 'block',
+  padding: '6px 0',
+  fontSize: '13px',
+  lineHeight: '18px',
+  visibility: 'hidden',
+});
+
 export const CalDayCell = styled('button')<{
   isToday?: boolean;
   isSelected?: boolean;
@@ -202,40 +215,57 @@ SearchCalendarPickerProps) {
         </CalNavBtn>
       </CalMonthNav>
 
-      <CalGrid>
-        {dayNamesShort.map((d, i) => (
-          <CalDayName key={i}>{d}</CalDayName>
-        ))}
+      {(() => {
+        const leadingBlanks = getFirstDayOfMonth(viewYear, viewMonth);
+        const daysInMonth = getDaysInMonth(viewYear, viewMonth);
+        // Pad to a full 6-week grid (42 cells) regardless of month length
+        // so the calendar height never jumps when the user navigates
+        // between e.g. a 28-day February and a 31-day May.
+        const totalCells = 42;
+        const trailingBlanks = totalCells - leadingBlanks - daysInMonth;
+        return (
+          <CalGrid>
+            {dayNamesShort.map((d, i) => (
+              <CalDayName key={i}>{d}</CalDayName>
+            ))}
 
-        {Array.from({ length: getFirstDayOfMonth(viewYear, viewMonth) }).map((_, i) => (
-          <span key={`empty-${i}`} />
-        ))}
+            {Array.from({ length: leadingBlanks }).map((_, i) => (
+              <CalEmptyCell key={`empty-${i}`}>&nbsp;</CalEmptyCell>
+            ))}
 
-        {Array.from({ length: getDaysInMonth(viewYear, viewMonth) }).map((_, i) => {
-          const day = i + 1;
-          const now = new Date();
-          const isToday =
-            day === now.getDate() && viewMonth === now.getMonth() && viewYear === now.getFullYear();
-          const isSelected = selectedDate
-            ? day === selectedDate.getDate() &&
-              viewMonth === selectedDate.getMonth() &&
-              viewYear === selectedDate.getFullYear()
-            : false;
-          const disabled = isDayDisabled(day);
-          return (
-            <CalDayCell
-              key={day}
-              type='button'
-              isToday={isToday && !isSelected}
-              isSelected={isSelected}
-              isDisabled={disabled}
-              onClick={() => onSelectDay(day)}
-            >
-              {day}
-            </CalDayCell>
-          );
-        })}
-      </CalGrid>
+            {Array.from({ length: daysInMonth }).map((_, i) => {
+              const day = i + 1;
+              const now = new Date();
+              const isToday =
+                day === now.getDate() &&
+                viewMonth === now.getMonth() &&
+                viewYear === now.getFullYear();
+              const isSelected = selectedDate
+                ? day === selectedDate.getDate() &&
+                  viewMonth === selectedDate.getMonth() &&
+                  viewYear === selectedDate.getFullYear()
+                : false;
+              const disabled = isDayDisabled(day);
+              return (
+                <CalDayCell
+                  key={day}
+                  type='button'
+                  isToday={isToday && !isSelected}
+                  isSelected={isSelected}
+                  isDisabled={disabled}
+                  onClick={() => onSelectDay(day)}
+                >
+                  {day}
+                </CalDayCell>
+              );
+            })}
+
+            {Array.from({ length: Math.max(0, trailingBlanks) }).map((_, i) => (
+              <CalEmptyCell key={`trail-${i}`}>&nbsp;</CalEmptyCell>
+            ))}
+          </CalGrid>
+        );
+      })()}
     </>
   );
 

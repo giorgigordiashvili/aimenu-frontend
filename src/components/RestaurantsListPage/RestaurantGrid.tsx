@@ -1,12 +1,13 @@
 'use client';
 
-import { styled } from '@pigment-css/react';
+import { keyframes, styled } from '@pigment-css/react';
 import { useRouter } from 'next/navigation';
 
 import type { RestaurantList } from '@/api/generated/interfaces';
 import MainButton from '@/components/MainButton/MainButton';
 import RestaurantCardPrimary from '@/components/RestaurantCardPrimary/RestaurantCardPrimary';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { useInView } from '@/hooks/useInView';
 import { localePath } from '@/i18n/routing';
 import { foreground, muted, rose700 } from '@/tokens';
 import { getTranslation } from '@/utils/translations';
@@ -56,23 +57,49 @@ const SectionSubtitle = styled('p')({
 
 const Grid = styled('div')({
   display: 'grid',
-  gridTemplateColumns: '1fr',
-  gap: '20px',
+  // minmax(0, 1fr) — not plain 1fr — so columns stay equal even when one
+  // card's content has a larger min-width (e.g. the loyalty pill + cuisine
+  // tag + rating row competing for space on the hero). Plain 1fr is
+  // `minmax(auto, 1fr)` which lets the wider card's column grow.
+  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+  gap: '12px',
   '@media (min-width: 640px)': {
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    gap: '20px',
   },
   '@media (min-width: 1024px)': {
-    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
   },
   '@media (min-width: 1280px)': {
-    gridTemplateColumns: 'repeat(4, 1fr)',
+    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
   },
+});
+
+// Matches the hero's fade+slide so the grid feels like it belongs to
+// the same entrance. Each card uses an inline `animationDelay` below to
+// stagger — the first card starts on the hero's trailing edge, later
+// cards follow at 50ms intervals (capped so the last visible card
+// always lands well before the user could scroll).
+const cardFadeIn = keyframes({
+  from: { opacity: 0, transform: 'translateY(10px)' },
+  to: { opacity: 1, transform: 'translateY(0)' },
 });
 
 const CardWrapper = styled('div')({
   // Makes DefaultVariant full-width inside the grid cell
   '& > div': {
     width: '100%',
+  },
+  opacity: 0,
+  transform: 'translateY(10px)',
+  willChange: 'opacity, transform',
+  '&[data-in-view="true"]': {
+    animation: `${cardFadeIn} 420ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards`,
+  },
+  '@media (prefers-reduced-motion: reduce)': {
+    opacity: 1,
+    transform: 'none',
+    '&[data-in-view="true"]': { animation: 'none' },
   },
 });
 
@@ -104,6 +131,22 @@ const ErrorState = styled('div')({
   color: rose700,
   fontSize: '15px',
 });
+
+// Per-card wrapper that flips `data-in-view` the moment the card crosses
+// into the viewport. Extracted to a small component because hooks can't
+// be called inside the restaurants.map() iteration.
+function AnimatedCard({ children, delayMs }: { children: React.ReactNode; delayMs: number }) {
+  const [ref, inView] = useInView<HTMLDivElement>();
+  return (
+    <CardWrapper
+      ref={ref}
+      data-in-view={inView ? 'true' : undefined}
+      style={{ animationDelay: `${delayMs}ms` }}
+    >
+      {children}
+    </CardWrapper>
+  );
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -164,7 +207,7 @@ export default function RestaurantGrid({
         ) : restaurants.length === 0 ? (
           <EmptyState>{t.restaurantsList.noResults}</EmptyState>
         ) : (
-          restaurants.map(restaurant => {
+          restaurants.map((restaurant, index) => {
             const categoryName = restaurant.category
               ? getTranslation(
                   parseTranslations(restaurant.category.translations),
@@ -182,7 +225,14 @@ export default function RestaurantGrid({
               (favoritedIds.has(String(restaurant.id)) || favoritedIds.has(restaurant.id));
 
             return (
-              <CardWrapper key={restaurant.id}>
+              <AnimatedCard
+                key={restaurant.id}
+                // Column-count-agnostic row stagger: cards in the same
+                // visible "row" come in together, the next row follows
+                // slightly after. Kept within a single viewport-worth
+                // (≤300ms) so anything already in view finishes fast.
+                delayMs={Math.min(index % 4, 3) * 60}
+              >
                 <RestaurantCardPrimary
                   variant='default'
                   restaurantTitle={restaurant.name}
@@ -210,8 +260,9 @@ export default function RestaurantGrid({
                       .accepts_platform_loyalty === true
                   }
                   loyaltyBadgeLabel={t.platformLoyalty.badgeLabel}
+                  loyaltyBadgeHint={t.platformLoyalty.badgeHint}
                 />
-              </CardWrapper>
+              </AnimatedCard>
             );
           })
         )}

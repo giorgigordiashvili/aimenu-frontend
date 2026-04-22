@@ -450,6 +450,24 @@
     "settleCtaBody": "{count} შეკვეთა, სულ {total} ₾ გელოდება.",
     "settleCtaButton": "მაგიდაზე გადახდა"
   },
+  "reservationInvite": {
+    "title": "ჯავშნის მოწვევა",
+    "metaTitle": "ჯავშანში მოწვევა",
+    "metaDescription": "{host} გიწვევთ ჯავშანში {restaurant}-ში",
+    "subtitle": "{host} გიზიარებთ ჯავშანს {restaurant}-ში",
+    "restaurant": "რესტორანი",
+    "city": "ქალაქი",
+    "date": "თარიღი",
+    "time": "დრო",
+    "partySize": "სტუმრები",
+    "host": "მასპინძელი",
+    "someone": "მასპინძელი",
+    "viewRestaurant": "რესტორანის ნახვა",
+    "back": "დაბრუნება",
+    "expired": "მოწვევა აღარ მოქმედებს.",
+    "shareCta": "მოწვევის ბმულის გაზიარება",
+    "copied": "ბმული დაკოპირდა"
+  },
   "inviteJoin": {
     "title": "მიუერთდით მაგიდას",
     "subtitle": "დააფიქსირეთ თქვენი მონაცემები და შეუერთდით სხვებთან ერთად.",
@@ -653,6 +671,7 @@
     "topTierMessage": "უმაღლეს საფეხურზე ხართ — <b>{{discount}}% ფასდაქლება</b> ყველა რესტორანში.",
     "signInPrompt": "გაიარეთ ავტორიზაცია, რომ ქულების დაგროვება დაიწყოთ და ფასდაქლებები მიიღოთ.",
     "badgeLabel": "ლოიალურობა",
+    "badgeHint": "პლატფორმის ლოიალურობა — ქულები და ფასდაქლებები",
     "filterLabel": "ლოიალურობის პარტნიორები",
     "discountLineLabel": "{{tier}} {{discount}}% ფასდაქლება",
     "tiers": {

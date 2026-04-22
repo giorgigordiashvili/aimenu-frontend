@@ -31,12 +31,23 @@ export const FavoriteButton = styled('button')({
   justifyContent: 'center',
   backgroundColor: whiteTranslucent,
   marginLeft: 'auto',
+  transition: 'background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease',
   '&:hover': {
     backgroundColor: white,
+    // Faint red halo + slight lift so the affordance reads clearly. When
+    // the button is already filled (isFavorited) the icon colour stays
+    // the brand red; on an unfavourited state the icon tints red on
+    // hover too so the click target telegraphs the destructive action.
+    color: '#EC003F',
+    boxShadow: '0 4px 12px rgba(236, 0, 63, 0.25)',
+    transform: 'scale(1.08)',
   },
-  '@media (max-width: 768px)': {
-    width: '44px',
-    height: '44px',
+  '&:hover svg': {
+    color: '#EC003F',
+    stroke: '#EC003F',
+  },
+  '&:active': {
+    transform: 'scale(0.96)',
   },
 });
 
@@ -83,4 +94,7 @@ export interface RestaurantCardProps {
   showLoyaltyBadge?: boolean;
   /** Localised label rendered next to the badge icon. */
   loyaltyBadgeLabel?: string;
+  /** Extra sentence shown in the hover tooltip so users understand what
+   *  the star badge stands for. */
+  loyaltyBadgeHint?: string;
 }

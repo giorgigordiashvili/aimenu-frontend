@@ -111,8 +111,16 @@ const DefaultButton = styled('button')<{
       style: {
         backgroundColor: '#EC003F',
         color: '#ffffff',
+        transition: 'background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease',
         '&:hover': {
-          backgroundColor: '#BE123C',
+          backgroundColor: '#C6082F',
+          transform: 'translateY(-1px)',
+          boxShadow: '0 8px 20px rgba(236, 0, 63, 0.28)',
+        },
+        '&:active': {
+          transform: 'translateY(0)',
+          backgroundColor: '#A60427',
+          boxShadow: '0 2px 6px rgba(236, 0, 63, 0.24)',
         },
       },
     },
@@ -121,8 +129,20 @@ const DefaultButton = styled('button')<{
       style: {
         backgroundColor: '#0F172B',
         color: '#ffffff',
+        transition: 'background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease',
         '&:hover': {
-          backgroundColor: '#1E293B',
+          // Brighter indigo-slate on hover so the button reads as
+          // responsive even against a dark card footer. The subtle lift
+          // + soft shadow mirrors the rose CTA so primary/secondary
+          // actions share a consistent motion language.
+          backgroundColor: '#1F2A44',
+          transform: 'translateY(-1px)',
+          boxShadow: '0 8px 20px rgba(15, 23, 43, 0.28)',
+        },
+        '&:active': {
+          transform: 'translateY(0)',
+          backgroundColor: '#0A1020',
+          boxShadow: '0 2px 6px rgba(15, 23, 43, 0.24)',
         },
       },
     },

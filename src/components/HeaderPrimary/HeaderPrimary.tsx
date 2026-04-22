@@ -3,8 +3,8 @@
 import { styled } from '@pigment-css/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
 import { useAuth } from '@/context/AuthContext';
@@ -448,10 +448,29 @@ export default function HeaderPrimary() {
   const t = useTranslations();
   const { user, isAuthenticated, logout } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Prefetch handler shared by every header link. Dedupes per-href via a
+  // ref set so hovering the same item ten times still only warms the
+  // chunk once. Next's router.prefetch is idempotent but the set keeps
+  // the tab's network panel clean and short-circuits before the call.
+  const prefetchedRef = useRef<Set<string>>(new Set());
+  const prefetchHref = useCallback(
+    (href: string) => {
+      if (!href || prefetchedRef.current.has(href)) return;
+      prefetchedRef.current.add(href);
+      try {
+        router.prefetch(href);
+      } catch {
+        // Advisory only — never block hover UX on a failed prefetch.
+      }
+    },
+    [router]
+  );
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -515,6 +534,8 @@ export default function HeaderPrimary() {
               key={link.href}
               href={link.href}
               data-active={pathname === link.href ? 'true' : undefined}
+              onMouseEnter={() => prefetchHref(link.href)}
+              onFocus={() => prefetchHref(link.href)}
             >
               {link.label}
             </NavLink>
@@ -547,6 +568,8 @@ export default function HeaderPrimary() {
                     <DropdownItem
                       href={localePath(locale, '/profile')}
                       onClick={() => setUserMenuOpen(false)}
+                      onMouseEnter={() => prefetchHref(localePath(locale, '/profile'))}
+                      onFocus={() => prefetchHref(localePath(locale, '/profile'))}
                     >
                       <IconWrap>
                         <UserIcon width={24} height={24} />
@@ -556,6 +579,8 @@ export default function HeaderPrimary() {
                     <DropdownItem
                       href={localePath(locale, '/favorites')}
                       onClick={() => setUserMenuOpen(false)}
+                      onMouseEnter={() => prefetchHref(localePath(locale, '/favorites'))}
+                      onFocus={() => prefetchHref(localePath(locale, '/favorites'))}
                     >
                       <IconWrap>
                         <HeartOutlineIcon variant='outlined' width={24} height={24} />
@@ -565,6 +590,8 @@ export default function HeaderPrimary() {
                     <DropdownItem
                       href={localePath(locale, '/profile/reservations')}
                       onClick={() => setUserMenuOpen(false)}
+                      onMouseEnter={() => prefetchHref(localePath(locale, '/profile/reservations'))}
+                      onFocus={() => prefetchHref(localePath(locale, '/profile/reservations'))}
                     >
                       <IconWrap>
                         <HistoryIcon width={24} height={24} />
@@ -582,8 +609,18 @@ export default function HeaderPrimary() {
               </DropdownWrap>
             ) : (
               <>
-                <LoginButton href={localePath(locale, '/login')}>{t.header.login}</LoginButton>
-                <RegisterButton href={localePath(locale, '/register')}>
+                <LoginButton
+                  href={localePath(locale, '/login')}
+                  onMouseEnter={() => prefetchHref(localePath(locale, '/login'))}
+                  onFocus={() => prefetchHref(localePath(locale, '/login'))}
+                >
+                  {t.header.login}
+                </LoginButton>
+                <RegisterButton
+                  href={localePath(locale, '/register')}
+                  onMouseEnter={() => prefetchHref(localePath(locale, '/register'))}
+                  onFocus={() => prefetchHref(localePath(locale, '/register'))}
+                >
                   {t.header.register}
                 </RegisterButton>
               </>
@@ -631,6 +668,8 @@ export default function HeaderPrimary() {
                 href={link.href}
                 data-active={pathname === link.href ? 'true' : undefined}
                 onClick={() => setDrawerOpen(false)}
+                onMouseEnter={() => prefetchHref(link.href)}
+                onFocus={() => prefetchHref(link.href)}
               >
                 {link.label}
               </DrawerNavItem>
@@ -661,6 +700,8 @@ export default function HeaderPrimary() {
                 <DrawerMenuNavItem
                   href={localePath(locale, '/profile')}
                   onClick={() => setDrawerOpen(false)}
+                  onMouseEnter={() => prefetchHref(localePath(locale, '/profile'))}
+                  onFocus={() => prefetchHref(localePath(locale, '/profile'))}
                 >
                   <IconWrap>
                     <UserIcon width={24} height={24} />
@@ -670,6 +711,8 @@ export default function HeaderPrimary() {
                 <DrawerMenuNavItem
                   href={localePath(locale, '/favorites')}
                   onClick={() => setDrawerOpen(false)}
+                  onMouseEnter={() => prefetchHref(localePath(locale, '/favorites'))}
+                  onFocus={() => prefetchHref(localePath(locale, '/favorites'))}
                 >
                   <IconWrap>
                     <HeartOutlineIcon variant='outlined' width={24} height={24} />
@@ -679,6 +722,8 @@ export default function HeaderPrimary() {
                 <DrawerMenuNavItem
                   href={localePath(locale, '/profile/reservations')}
                   onClick={() => setDrawerOpen(false)}
+                  onMouseEnter={() => prefetchHref(localePath(locale, '/profile/reservations'))}
+                  onFocus={() => prefetchHref(localePath(locale, '/profile/reservations'))}
                 >
                   <IconWrap>
                     <HistoryIcon width={24} height={24} />
@@ -697,12 +742,16 @@ export default function HeaderPrimary() {
                 <DrawerLoginBtn
                   href={localePath(locale, '/login')}
                   onClick={() => setDrawerOpen(false)}
+                  onMouseEnter={() => prefetchHref(localePath(locale, '/login'))}
+                  onFocus={() => prefetchHref(localePath(locale, '/login'))}
                 >
                   {t.header.login}
                 </DrawerLoginBtn>
                 <DrawerRegisterBtn
                   href={localePath(locale, '/register')}
                   onClick={() => setDrawerOpen(false)}
+                  onMouseEnter={() => prefetchHref(localePath(locale, '/register'))}
+                  onFocus={() => prefetchHref(localePath(locale, '/register'))}
                 >
                   {t.header.register}
                 </DrawerRegisterBtn>

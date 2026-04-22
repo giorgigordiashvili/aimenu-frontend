@@ -1,20 +1,41 @@
 'use client';
 
-import { styled } from '@pigment-css/react';
+import { keyframes, styled } from '@pigment-css/react';
 import Image from 'next/image';
 
 import { useTranslations } from '@/context/LocaleContext';
+import { useInView } from '@/hooks/useInView';
 import { rose500, slate200, slate900, white } from '@/tokens';
 
 import SearchFilters, { SearchFiltersValue } from './SearchFilters';
 
 // ── Styled ────────────────────────────────────────────────────────────────────
 
+// Subtle fade + 8px slide so the landing feels "alive" on refresh
+// without being distracting. Triggered by the `data-in-view` attribute
+// that the IntersectionObserver hook flips on. `prefers-reduced-motion`
+// users skip the animation entirely.
+const heroFadeIn = keyframes({
+  from: { opacity: 0, transform: 'translateY(8px)' },
+  to: { opacity: 1, transform: 'translateY(0)' },
+});
+
 const Hero = styled('section')({
   position: 'relative',
   // zIndex: 2 ensures the section's stacking context is above the restaurant
   // grid that follows it, so overflowing dropdowns render on top correctly.
   zIndex: 2,
+  opacity: 0,
+  transform: 'translateY(8px)',
+  willChange: 'opacity, transform',
+  '&[data-in-view="true"]': {
+    animation: `${heroFadeIn} 450ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards`,
+  },
+  '@media (prefers-reduced-motion: reduce)': {
+    opacity: 1,
+    transform: 'none',
+    '&[data-in-view="true"]': { animation: 'none' },
+  },
   // Dark placeholder fills the hero before the image paints, so there's no
   // flash of bright background during load.
   background: slate900,
@@ -122,9 +143,10 @@ interface HeroSectionProps {
 
 export default function HeroSection({ filters, onFiltersChange, onSearch }: HeroSectionProps) {
   const t = useTranslations();
+  const [heroRef, heroInView] = useInView<HTMLElement>();
 
   return (
-    <Hero>
+    <Hero ref={heroRef} data-in-view={heroInView ? 'true' : undefined}>
       <BackgroundWrap>
         <Image
           src='/demo/RestaurantCardImage.jpg'

@@ -3,15 +3,17 @@
 import { styled } from '@pigment-css/react';
 
 import MainButton from '@/components/MainButton/MainButton';
-import { useTranslations } from '@/context/LocaleContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { localePath } from '@/i18n/routing';
 import InvitePeopleIcon from '@/icons/InvitePeople';
 import SuccessIcon from '@/icons/Success';
 import { foreground, rose600, rose700, slate100, slate50, slate500, slate950 } from '@/tokens';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type Props = {
   reservationId?: string | null;
+  /** Confirmation code returned by the reservation create endpoint —
+   *  used to build the invite-friends link. */
+  confirmationCode?: string | null;
   onGoHome: () => void;
   onMyReservations: () => void;
 };
@@ -122,10 +124,20 @@ const InviteIconWrap = styled('span')({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function BookingSuccessPanel({ reservationId, onGoHome, onMyReservations }: Props) {
+export default function BookingSuccessPanel({
+  reservationId,
+  confirmationCode,
+  onGoHome,
+  onMyReservations,
+}: Props) {
   const t = useTranslations();
+  const { locale } = useLocale();
 
   const code = reservationId ? `#${reservationId.slice(0, 7).toUpperCase()}` : null;
+  const inviteUrl =
+    confirmationCode && typeof window !== 'undefined'
+      ? `${window.location.origin}${localePath(locale, `/reservation-invite/${confirmationCode}`)}`
+      : null;
 
   return (
     <Container>
@@ -147,10 +159,19 @@ export default function BookingSuccessPanel({ reservationId, onGoHome, onMyReser
         <InviteButton
           type='button'
           onClick={() => {
-            if (navigator.share) {
-              navigator.share({ title: t.booking.successTitle, text: code ?? '' }).catch(() => {});
+            // Prefer the full invite URL when we have a confirmation
+            // code; falls back to sharing the short code alone for mock
+            // mode / legacy paths where the code hasn't propagated.
+            const shareUrl = inviteUrl ?? '';
+            const shareText = shareUrl || code || '';
+            if (navigator.share && shareUrl) {
+              navigator
+                .share({ title: t.booking.successTitle, text: shareText, url: shareUrl })
+                .catch(() => {});
+            } else if (navigator.share) {
+              navigator.share({ title: t.booking.successTitle, text: shareText }).catch(() => {});
             } else {
-              navigator.clipboard.writeText(code ?? '').catch(() => {});
+              navigator.clipboard.writeText(shareUrl || shareText).catch(() => {});
             }
           }}
         >

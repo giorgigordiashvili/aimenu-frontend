@@ -1,7 +1,6 @@
 import { styled } from '@pigment-css/react';
 import type { Metadata } from 'next';
 
-import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
 import { ReservationWidget } from '@/components';
 import CartBadge from '@/components/CartBadge';
@@ -142,6 +141,25 @@ function truncateSocial(s: string, max: number): string {
   return trimmed.slice(0, max - 1).trimEnd() + '…';
 }
 
+// Full-detail fetch for the default export. We deliberately skip the
+// axios-backed generated client here because its transitive `http2`
+// import crashes Pigment CSS's build-time sandbox when it tries to
+// evaluate this module to extract styled components. Same JSON, same
+// shape — just via plain fetch.
+async function loadRestaurantDetail(slug: string): Promise<RestaurantDetail | null> {
+  try {
+    const res = await fetch(`${OG_API_BASE}/api/v1/restaurants/${slug}/`, {
+      // Server Component revalidate — keeps the detail page snappy on
+      // repeat visits without getting stale for more than a minute.
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as RestaurantDetail;
+  } catch {
+    return null;
+  }
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale: rawLocale, slug } = await params;
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
@@ -179,16 +197,8 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
   const t = getDictionary(locale);
 
-  let restaurant: RestaurantDetail | null = null;
-  let loadError: string | null = null;
-  try {
-    restaurant = await restaurantsRetrieve(slug);
-  } catch (err) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('[RestaurantDetail SSR]', err);
-    }
-    loadError = t.restaurantDetail.failedToLoad;
-  }
+  const restaurant = await loadRestaurantDetail(slug);
+  const loadError = restaurant ? null : t.restaurantDetail.failedToLoad;
 
   if (loadError || !restaurant) {
     return (

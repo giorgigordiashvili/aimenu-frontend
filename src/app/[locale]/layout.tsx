@@ -4,9 +4,11 @@ import '../globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter, Noto_Sans_Georgian } from 'next/font/google';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import ClarityProvider from '@/components/ClarityProvider';
 import CookieConsent from '@/components/CookieConsent';
+import TopProgressBar from '@/components/TopProgressBar';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import { LocaleProvider } from '@/context/LocaleContext';
@@ -136,6 +138,14 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       </head>
       <body>
         <ClarityProvider />
+
+        {/* Thin rose progress bar at the very top during every client
+            navigation. Wrapped in <Suspense> because it reads
+            useSearchParams(), which Next requires be inside a boundary
+            at the root layout level. */}
+        <Suspense fallback={null}>
+          <TopProgressBar />
+        </Suspense>
 
         <AuthProvider>
           <LocaleProvider locale={locale as Locale}>

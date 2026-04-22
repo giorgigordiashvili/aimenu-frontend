@@ -6,7 +6,16 @@ import PendingReviewsSection from '@/components/PendingReviewsSection';
 import ReviewCard from '@/components/ReviewCard';
 import { useTranslations } from '@/context/LocaleContext';
 import { useMyReviews } from '@/hooks/useReviews';
-import { background, border, foreground, muted, radiusMd, slate100, slate200, white } from '@/tokens';
+import {
+  background,
+  border,
+  foreground,
+  muted,
+  radiusMd,
+  slate100,
+  slate200,
+  white,
+} from '@/tokens';
 
 const Root = styled('div')({
   backgroundColor: background,

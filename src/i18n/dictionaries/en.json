@@ -450,6 +450,24 @@
     "settleCtaBody": "{count} order(s) totalling {total} ₾ are waiting on you.",
     "settleCtaButton": "Pay for the table"
   },
+  "reservationInvite": {
+    "title": "Reservation invite",
+    "metaTitle": "You're invited",
+    "metaDescription": "{host} invites you to join them at {restaurant}",
+    "subtitle": "{host} is sharing a reservation at {restaurant}",
+    "restaurant": "Restaurant",
+    "city": "City",
+    "date": "Date",
+    "time": "Time",
+    "partySize": "Guests",
+    "host": "Host",
+    "someone": "Someone",
+    "viewRestaurant": "See the restaurant",
+    "back": "Back",
+    "expired": "This invite is no longer valid.",
+    "shareCta": "Share invite link",
+    "copied": "Link copied"
+  },
   "inviteJoin": {
     "title": "Join the table",
     "subtitle": "Confirm your name and contact to join the shared session.",
@@ -653,6 +671,7 @@
     "topTierMessage": "You're at the top — <b>{{discount}}% off</b> at every participating restaurant.",
     "signInPrompt": "Sign in to start collecting points and unlock cross-restaurant discounts.",
     "badgeLabel": "Loyalty",
+    "badgeHint": "Platform loyalty — earn points & discounts here",
     "filterLabel": "Loyalty partners",
     "discountLineLabel": "{{tier}} {{discount}}% discount",
     "tiers": {

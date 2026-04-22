@@ -2,12 +2,14 @@
 
 import { styled, keyframes } from '@pigment-css/react';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import BookingOrderSummary, { type OrderItem } from '@/components/BookingOrderSummary';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import MainButton from '@/components/MainButton/MainButton';
-import { useTranslations } from '@/context/LocaleContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { MOCK_MODE, useReservationDetail } from '@/hooks/useReservations';
+import { localePath } from '@/i18n/routing';
 import CalendarIcon from '@/icons/Calendar';
 import CloseIcon from '@/icons/Close';
 import DeleteIcon from '@/icons/Delete';
@@ -71,11 +73,14 @@ const DepositValue = styled('span')({
 
 // ─── Generated styled components ─────────────────────────────────────────────
 
+// Header sticks at z-index 200; the modal is portaled to document.body
+// (below) to escape any parent stacking context on /profile/reservations
+// and bumped above the header so nothing peeks through.
 const Overlay = styled('div')({
   position: 'fixed',
   inset: 0,
   backgroundColor: 'rgba(0,0,0,0.5)',
-  zIndex: 200,
+  zIndex: 2000,
   display: 'flex',
   alignItems: 'flex-end',
   justifyContent: 'center',
@@ -346,16 +351,31 @@ export default function ReservationDetailModal({
   restaurantRating,
 }: ReservationDetailModalProps) {
   const t = useTranslations();
+  const { locale } = useLocale();
   const { reservation, isLoading } = useReservationDetail(reservationId);
   const [showCancel, setShowCancel] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const [inviteCopied, setInviteCopied] = useState(false);
 
   useEffect(() => {
     if (!reservationId) {
       setShowCancel(false);
       setCancelError(null);
     }
+  }, [reservationId]);
+
+  // Lock background scroll while the modal is open so the reservations
+  // list behind the overlay doesn't scroll when the user scrolls inside
+  // the sheet. Mirrors the MobileSelectModal lock-in-portal pattern.
+  useEffect(() => {
+    if (!reservationId || typeof document === 'undefined') return;
+    const body = document.body;
+    const previous = body.style.overflow;
+    body.style.overflow = 'hidden';
+    return () => {
+      body.style.overflow = previous;
+    };
   }, [reservationId]);
 
   if (!reservationId) return null;
@@ -410,7 +430,9 @@ export default function ReservationDetailModal({
     }
   };
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <Overlay onClick={onClose}>
       <ModalContainer onClick={e => e.stopPropagation()}>
         {/* ── Detail sheet ───────────────────────────────────── */}
@@ -477,15 +499,65 @@ export default function ReservationDetailModal({
                 </DepositOnlyRow>
               ) : null}
 
-              {/* ── Cancel button (hidden while cancel card is open) ── */}
-              {reservation.can_cancel && !showCancel && (
-                <Footer>
-                  <MainButton
-                    title={t.reservations.cancelReservation}
-                    variant='green_cta'
-                    fullWidth
-                    onClick={() => setShowCancel(true)}
-                  />
+              {/* ── Invite + cancel buttons (hidden while cancel card is open) ── */}
+              {!showCancel && (
+                <Footer style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {(() => {
+                    // Reservation serializer exposes confirmation_code but the
+                    // generated TS interface trails; read through a runtime
+                    // shape so we don't have to regenerate just for this.
+                    const code = (reservation as unknown as { confirmation_code?: string })
+                      .confirmation_code;
+                    if (!code) return null;
+                    const inviteUrl =
+                      typeof window !== 'undefined'
+                        ? `${window.location.origin}${localePath(locale, `/reservation-invite/${code}`)}`
+                        : '';
+                    const share = async () => {
+                      if (!inviteUrl) return;
+                      const nav = navigator as Navigator & {
+                        share?: (d: ShareData) => Promise<void>;
+                        canShare?: (d: ShareData) => boolean;
+                      };
+                      const data: ShareData = {
+                        title: t.reservationInvite.title,
+                        url: inviteUrl,
+                      };
+                      if (nav.share && (!nav.canShare || nav.canShare(data))) {
+                        try {
+                          await nav.share(data);
+                          return;
+                        } catch {
+                          return;
+                        }
+                      }
+                      try {
+                        await navigator.clipboard.writeText(inviteUrl);
+                        setInviteCopied(true);
+                        setTimeout(() => setInviteCopied(false), 2000);
+                      } catch {
+                        /* best effort */
+                      }
+                    };
+                    return (
+                      <MainButton
+                        title={
+                          inviteCopied ? t.reservationInvite.copied : t.reservationInvite.shareCta
+                        }
+                        variant='rose_cta'
+                        fullWidth
+                        onClick={share}
+                      />
+                    );
+                  })()}
+                  {reservation.can_cancel && (
+                    <MainButton
+                      title={t.reservations.cancelReservation}
+                      variant='green_cta'
+                      fullWidth
+                      onClick={() => setShowCancel(true)}
+                    />
+                  )}
                 </Footer>
               )}
             </>
@@ -528,6 +600,7 @@ export default function ReservationDetailModal({
           </CloseButton>
         )}
       </ModalContainer>
-    </Overlay>
+    </Overlay>,
+    document.body
   );
 }

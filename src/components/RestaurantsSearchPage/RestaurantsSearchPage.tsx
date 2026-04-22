@@ -894,6 +894,7 @@ export default function RestaurantsSearchPage() {
                             .accepts_platform_loyalty === true
                         }
                         loyaltyBadgeLabel={t.platformLoyalty.badgeLabel}
+                        loyaltyBadgeHint={t.platformLoyalty.badgeHint}
                       />
                     </CardWrapper>
                   );
