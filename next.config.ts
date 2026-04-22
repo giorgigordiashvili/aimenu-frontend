@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
         hostname: 'restaurant-media.fra1.digitaloceanspaces.com',
         pathname: '/**',
       },
+      {
+        // CDN endpoint — backend now emits image URLs through this host
+        // after MINIO_EXTERNAL_ENDPOINT was switched to the CDN alias.
+        protocol: 'https',
+        hostname: 'restaurant-media.fra1.cdn.digitaloceanspaces.com',
+        pathname: '/**',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [320, 420, 640, 750, 828],
