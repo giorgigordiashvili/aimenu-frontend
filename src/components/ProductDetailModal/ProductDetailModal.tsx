@@ -479,15 +479,30 @@ export default function ProductDetailModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, product.id]);
 
-  // Prevent body scroll when modal is open
+  // Prevent body scroll when modal is open — including iOS Safari.
+  // Plain `overflow: hidden` on <body> doesn't stop touch-scroll on
+  // iOS, so we also pin the body to its current scroll position with
+  // `position: fixed` and restore everything on close.
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (!isOpen) return;
+    const scrollY = window.scrollY;
+    const { body } = document;
+    const prev = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+    };
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.width = '100%';
     return () => {
-      document.body.style.overflow = '';
+      body.style.overflow = prev.overflow;
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.width = prev.width;
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen]);
 
