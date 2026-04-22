@@ -85,7 +85,9 @@ interface Props {
   locale: Locale;
   title: string;
   updated: string;
-  draftNote: string;
+  // Optional — when present, shows the "draft, not legal advice" banner
+  // above the body. Pages that ship the final text omit this.
+  draftNote?: string;
   children: React.ReactNode;
 }
 
@@ -96,7 +98,7 @@ export default function LegalPage({ locale, title, updated, draftNote, children 
       <Main>
         <Title>{title}</Title>
         <Updated>{updated}</Updated>
-        <DraftBanner role='note'>{draftNote}</DraftBanner>
+        {draftNote ? <DraftBanner role='note'>{draftNote}</DraftBanner> : null}
         <Body>{children}</Body>
       </Main>
       <Footer locale={locale} />

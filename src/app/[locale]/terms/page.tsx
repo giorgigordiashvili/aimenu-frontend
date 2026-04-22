@@ -33,11 +33,15 @@ export default async function TermsRoute({ params }: Props) {
       }
     ).legal ?? {};
   const sections: Array<{ h: string; p: string }> = [
+    { h: copy.termsGeneralHeading ?? 'General terms', p: copy.termsGeneralBody ?? '' },
     { h: copy.termsServiceHeading ?? 'Service', p: copy.termsServiceBody ?? '' },
-    { h: copy.termsAccountHeading ?? 'Accounts', p: copy.termsAccountBody ?? '' },
+    { h: copy.termsAccountHeading ?? 'User obligations', p: copy.termsAccountBody ?? '' },
     { h: copy.termsOrdersHeading ?? 'Orders & payments', p: copy.termsOrdersBody ?? '' },
     { h: copy.termsRefundsHeading ?? 'Cancellations & refunds', p: copy.termsRefundsBody ?? '' },
+    { h: copy.termsExtraHeading ?? 'Additional terms', p: copy.termsExtraBody ?? '' },
     { h: copy.termsLiabilityHeading ?? 'Liability', p: copy.termsLiabilityBody ?? '' },
+    { h: copy.termsDataHeading ?? 'Personal data', p: copy.termsDataBody ?? '' },
+    { h: copy.termsLawHeading ?? 'Governing law', p: copy.termsLawBody ?? '' },
     { h: copy.termsContactHeading ?? 'Contact', p: copy.termsContactBody ?? '' },
   ];
 
@@ -46,7 +50,6 @@ export default async function TermsRoute({ params }: Props) {
       locale={locale}
       title={copy.termsTitle ?? 'Terms of service'}
       updated={copy.lastUpdated ?? 'Last updated: today'}
-      draftNote={copy.draftNotice ?? 'Draft — for review by counsel.'}
     >
       <p>{copy.termsIntro ?? ''}</p>
       {sections.map((s, i) => (
