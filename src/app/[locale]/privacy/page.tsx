@@ -35,10 +35,17 @@ export default async function PrivacyRoute({ params }: Props) {
   // Localised body. Strings live in i18n so future legal review can edit
   // them without touching code. Markdown-style paragraphs split on \n\n.
   const sections: Array<{ h: string; p: string }> = [
+    { h: copy.privacyWhoHeading ?? 'Who we are', p: copy.privacyWhoBody ?? '' },
     { h: copy.privacyDataHeading ?? 'What we collect', p: copy.privacyDataBody ?? '' },
     { h: copy.privacyUseHeading ?? 'How we use it', p: copy.privacyUseBody ?? '' },
+    { h: copy.privacyLegalHeading ?? 'Legal basis', p: copy.privacyLegalBody ?? '' },
     { h: copy.privacyShareHeading ?? 'Sharing', p: copy.privacyShareBody ?? '' },
+    { h: copy.privacyCookiesHeading ?? 'Cookies', p: copy.privacyCookiesBody ?? '' },
+    { h: copy.privacyRetentionHeading ?? 'Retention', p: copy.privacyRetentionBody ?? '' },
+    { h: copy.privacySecurityHeading ?? 'Security', p: copy.privacySecurityBody ?? '' },
     { h: copy.privacyRightsHeading ?? 'Your rights', p: copy.privacyRightsBody ?? '' },
+    { h: copy.privacyThirdPartyHeading ?? 'Third-party links', p: copy.privacyThirdPartyBody ?? '' },
+    { h: copy.privacyChangesHeading ?? 'Changes', p: copy.privacyChangesBody ?? '' },
     { h: copy.privacyContactHeading ?? 'Contact', p: copy.privacyContactBody ?? '' },
   ];
 
@@ -47,7 +54,6 @@ export default async function PrivacyRoute({ params }: Props) {
       locale={locale}
       title={copy.privacyTitle ?? 'Privacy policy'}
       updated={copy.lastUpdated ?? 'Last updated: today'}
-      draftNote={copy.draftNotice ?? 'Draft — for review by counsel.'}
     >
       <p>{copy.privacyIntro ?? ''}</p>
       {sections.map((s, i) => (
