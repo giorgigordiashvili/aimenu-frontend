@@ -96,6 +96,8 @@ import type {
   FavoriteRestaurantCreate,
   PaginatedOrderList,
   PaginatedPaymentMethodList,
+  PaginatedWalletTransactionList,
+  ReferredUser,
   ReservationCreateRequest,
   ReservationCreate,
   PaginatedRestaurantListList,
@@ -104,6 +106,15 @@ import type {
   RestaurantCategory,
   RestaurantCreateRequest,
   RestaurantCreate,
+  ReviewCreateRequest,
+  ReviewCreate,
+  Review,
+  ReviewMedia,
+  ReviewReportCreateRequest,
+  PaginatedEligibleOrderList,
+  PaginatedReviewList,
+  RestaurantList,
+  ReviewStats,
   TableSessionDetail,
   PaginatedTableSessionGuestList,
   User,
@@ -1541,6 +1552,25 @@ export async function paymentsBogWebhookCreate(): Promise<any> {
   return response.data;
 }
 
+export async function paymentsFlittInitiateCreate(): Promise<any> {
+  const response = await axios.post(`/api/v1/payments/flitt/initiate/`);
+  return response.data;
+}
+
+export async function paymentsFlittStatusRetrieve(
+  flittOrderId: string,
+): Promise<any> {
+  const response = await axios.get(
+    `/api/v1/payments/flitt/status/${flittOrderId}/`,
+  );
+  return response.data;
+}
+
+export async function paymentsFlittWebhookCreate(): Promise<any> {
+  const response = await axios.post(`/api/v1/payments/flitt/webhook/`);
+  return response.data;
+}
+
 export async function paymentsHistoryList(
   ordering?: string,
   page?: number,
@@ -1601,6 +1631,36 @@ export async function readyRetrieve(): Promise<any> {
   return response.data;
 }
 
+export async function referralsHistoryList(
+  ordering?: string,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+): Promise<PaginatedWalletTransactionList> {
+  const response = await axios.get(
+    `/api/v1/referrals/history/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        page ? 'page=' + encodeURIComponent(page) : null,
+        pageSize ? 'page_size=' + encodeURIComponent(pageSize) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function referralsMeRetrieve(): Promise<any> {
+  const response = await axios.get(`/api/v1/referrals/me/`);
+  return response.data;
+}
+
+export async function referralsReferredList(): Promise<ReferredUser[]> {
+  const response = await axios.get(`/api/v1/referrals/referred/`);
+  return response.data;
+}
+
 export async function reservationsAvailabilityRetrieve(): Promise<any> {
   const response = await axios.get(`/api/v1/reservations/availability/`);
   return response.data;
@@ -1615,6 +1675,11 @@ export async function reservationsCreateCreate(
   data: ReservationCreateRequest,
 ): Promise<ReservationCreate> {
   const response = await axios.post(`/api/v1/reservations/create/`, data);
+  return response.data;
+}
+
+export async function reservationsInviteRetrieve(code: string): Promise<any> {
+  const response = await axios.get(`/api/v1/reservations/invite/${code}/`);
   return response.data;
 }
 
@@ -1661,6 +1726,7 @@ export async function reservationsSettingsRetrieve(): Promise<any> {
 }
 
 export async function restaurantsList(
+  acceptsPlatformLoyalty?: boolean,
   acceptsRemoteOrders?: boolean,
   acceptsReservations?: boolean,
   acceptsTakeaway?: boolean,
@@ -1676,6 +1742,10 @@ export async function restaurantsList(
   const response = await axios.get(
     `/api/v1/restaurants/${(() => {
       const parts = [
+        acceptsPlatformLoyalty
+          ? 'accepts_platform_loyalty=' +
+            encodeURIComponent(acceptsPlatformLoyalty)
+          : null,
         acceptsRemoteOrders
           ? 'accepts_remote_orders=' + encodeURIComponent(acceptsRemoteOrders)
           : null,
@@ -1832,6 +1902,129 @@ export async function restaurantsSearchRetrieve(
       return parts.length > 0 ? '?' + parts.join('&') : '';
     })()}`,
   );
+  return response.data;
+}
+
+export async function reviewsCreate(
+  data: ReviewCreateRequest,
+): Promise<ReviewCreate> {
+  const response = await axios.post(`/api/v1/reviews/`, data);
+  return response.data;
+}
+
+export async function reviewsRetrieve(id: string): Promise<Review> {
+  const response = await axios.get(`/api/v1/reviews/${id}/`);
+  return response.data;
+}
+
+export async function reviewsUpdate(id: string): Promise<Review> {
+  const response = await axios.put(`/api/v1/reviews/${id}/`);
+  return response.data;
+}
+
+export async function reviewsPartialUpdate(id: string): Promise<Review> {
+  const response = await axios.patch(`/api/v1/reviews/${id}/`);
+  return response.data;
+}
+
+export async function reviewsDestroy(id: string): Promise<any> {
+  const response = await axios.delete(`/api/v1/reviews/${id}/`);
+  return response.data;
+}
+
+export async function reviewsMediaCreate(
+  reviewId: string,
+): Promise<ReviewMedia> {
+  const response = await axios.post(`/api/v1/reviews/${reviewId}/media/`);
+  return response.data;
+}
+
+export async function reviewsMediaDestroy(
+  mediaId: string,
+  reviewId: string,
+): Promise<any> {
+  const response = await axios.delete(
+    `/api/v1/reviews/${reviewId}/media/${mediaId}/`,
+  );
+  return response.data;
+}
+
+export async function reviewsReportCreate(
+  reviewId: string,
+  data: ReviewReportCreateRequest,
+): Promise<Record<string, any>> {
+  const response = await axios.post(
+    `/api/v1/reviews/${reviewId}/report/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function reviewsEligibleOrdersList(
+  ordering?: string,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+): Promise<PaginatedEligibleOrderList> {
+  const response = await axios.get(
+    `/api/v1/reviews/eligible-orders/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        page ? 'page=' + encodeURIComponent(page) : null,
+        pageSize ? 'page_size=' + encodeURIComponent(pageSize) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function reviewsMineList(
+  ordering?: string,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+): Promise<PaginatedReviewList> {
+  const response = await axios.get(
+    `/api/v1/reviews/mine/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        page ? 'page=' + encodeURIComponent(page) : null,
+        pageSize ? 'page_size=' + encodeURIComponent(pageSize) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function reviewsRestaurantList(
+  slug: string,
+  ordering?: string,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+): Promise<PaginatedReviewList> {
+  const response = await axios.get(
+    `/api/v1/reviews/restaurant/${slug}/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        page ? 'page=' + encodeURIComponent(page) : null,
+        pageSize ? 'page_size=' + encodeURIComponent(pageSize) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function reviewsRestaurantStatsRetrieve(
+  slug: string,
+): Promise<ReviewStats> {
+  const response = await axios.get(`/api/v1/reviews/restaurant/${slug}/stats/`);
   return response.data;
 }
 

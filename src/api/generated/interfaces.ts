@@ -94,6 +94,19 @@ export interface DefaultLanguageEnum {
   [key: string]: any;
 }
 
+export interface EligibleOrder {
+  id: string;
+  order_number: string;
+  restaurant: string;
+  restaurant_slug: string;
+  restaurant_name: string;
+  restaurant_logo: string;
+  total: string;
+  status: Status3f5enum;
+  completed_at: string;
+  created_at: string;
+}
+
 export interface FavoriteMenuItem {
   id: string;
   menu_item: string;
@@ -132,6 +145,10 @@ export interface FavoriteRestaurantCreate {
 
 export interface FavoriteRestaurantCreateRequest {
   restaurant: string;
+}
+
+export interface Kind34bEnum {
+  [key: string]: any;
 }
 
 export interface KitchenOrder {
@@ -489,6 +506,13 @@ export interface PaginatedAuditLogListList {
   results: AuditLogList[];
 }
 
+export interface PaginatedEligibleOrderList {
+  count: number;
+  next?: string;
+  previous?: string;
+  results: EligibleOrder[];
+}
+
 export interface PaginatedFavoriteMenuItemList {
   count: number;
   next?: string;
@@ -601,6 +625,13 @@ export interface PaginatedRestaurantListList {
   results: RestaurantList[];
 }
 
+export interface PaginatedReviewList {
+  count: number;
+  next?: string;
+  previous?: string;
+  results: Review[];
+}
+
 export interface PaginatedStaffInvitationList {
   count: number;
   next?: string;
@@ -655,6 +686,13 @@ export interface PaginatedTableSessionList {
   next?: string;
   previous?: string;
   results: TableSession[];
+}
+
+export interface PaginatedWalletTransactionList {
+  count: number;
+  next?: string;
+  previous?: string;
+  results: WalletTransaction[];
 }
 
 export interface PasswordResetConfirm {
@@ -870,6 +908,14 @@ export interface PreferredLanguageEnum {
 
 export interface PreparationStationEnum {
   [key: string]: any;
+}
+
+export interface ReferredUser {
+  id: string;
+  email: string;
+  full_name: string;
+  joined_at: string;
+  total_earned: string;
 }
 
 export interface Refund {
@@ -1188,6 +1234,8 @@ export interface RestaurantDetail {
   accepts_remote_orders?: boolean;
   accepts_reservations?: boolean;
   accepts_takeaway?: boolean;
+  accepts_bog_payments?: boolean;
+  accepts_flitt_payments?: boolean;
   average_rating: string;
   total_reviews: number;
   total_orders: number;
@@ -1224,6 +1272,77 @@ export interface RestaurantList {
   is_open_now: string;
   accepts_remote_orders?: boolean;
   accepts_reservations?: boolean;
+  accepts_platform_loyalty?: boolean;
+  accepts_bog_payments?: boolean;
+  accepts_flitt_payments?: boolean;
+}
+
+export interface Review {
+  id: string;
+  restaurant_id: string;
+  restaurant_slug: string;
+  order_number: string;
+  user_id: string;
+  user_name: string;
+  user_avatar: string;
+  rating: number;
+  title: string;
+  body: string;
+  media: ReviewMedia[];
+  is_hidden: boolean;
+  edited_at: string;
+  edit_locks_at: string;
+  is_editable: boolean;
+  is_mine: boolean;
+  can_report: boolean;
+  open_reports: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReviewCreate {
+  order: string;
+  rating: number;
+  title?: string;
+  body?: string;
+}
+
+export interface ReviewCreateRequest {
+  order: string;
+  rating: number;
+  title?: string;
+  body?: string;
+}
+
+export interface ReviewMedia {
+  id: string;
+  kind: Kind34bEnum;
+  file_url: string;
+  blurhash: string;
+  duration_s: number;
+  position: number;
+  created_at: string;
+}
+
+export interface ReviewMediaUploadRequest {
+  kind: Kind34bEnum;
+  file: string;
+  duration_s?: number;
+}
+
+export interface ReviewReportCreateReasonEnum {
+  [key: string]: any;
+}
+
+export interface ReviewReportCreateRequest {
+  reason: ReviewReportCreateReasonEnum;
+  notes?: string;
+}
+
+export interface ReviewStats {
+  average: number;
+  total: number;
+  distribution: Record<string, any>;
 }
 
 export interface SelectionTypeEnum {
@@ -1530,6 +1649,7 @@ export interface UserRegistrationRequest {
   last_name?: string;
   phone_number?: string;
   preferred_language?: PreferredLanguageEnum;
+  referral_code?: string;
 }
 
 export interface UserUpdate {
@@ -1548,6 +1668,23 @@ export interface UserUpdateRequest {
   avatar?: string;
   preferred_language?: PreferredLanguageEnum;
   profile?: UserProfileRequest;
+}
+
+export interface WalletTransaction {
+  id: string;
+  kind: WalletTransactionKindEnum;
+  amount: string;
+  balance_after: string;
+  source_order: string;
+  source_order_number: string;
+  referred_user: string;
+  referred_user_email: string;
+  notes: string;
+  created_at: string;
+}
+
+export interface WalletTransactionKindEnum {
+  [key: string]: any;
 }
 
 export interface MenuItemBrief {

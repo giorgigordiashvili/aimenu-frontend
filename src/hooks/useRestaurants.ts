@@ -11,6 +11,7 @@ interface UseRestaurantsOptions {
 
 const fetchRestaurants = async (search?: string): Promise<RestaurantList[]> => {
   const response = await restaurantsList(
+    undefined, // acceptsPlatformLoyalty
     undefined, // acceptsRemoteOrders
     undefined, // acceptsReservations
     undefined, // acceptsTakeaway

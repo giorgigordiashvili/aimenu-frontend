@@ -43,17 +43,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     // Pull a generous page so we cover all live restaurants — there are
     // currently ~3, this scales to a few hundred without paginating.
+    // Signature: (acceptsPlatformLoyalty, acceptsRemoteOrders, acceptsReservations,
+    // acceptsTakeaway, city, country, minRating, name, ordering, page, pageSize, search)
     const data = await restaurantsList(
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      1,
-      500
+      undefined, // acceptsPlatformLoyalty
+      undefined, // acceptsRemoteOrders
+      undefined, // acceptsReservations
+      undefined, // acceptsTakeaway
+      undefined, // city
+      undefined, // country
+      undefined, // minRating
+      undefined, // name
+      undefined, // ordering
+      1, // page
+      500 // pageSize
     );
     for (const r of data.results ?? []) {
       const path = `/restaurant/${r.slug}`;

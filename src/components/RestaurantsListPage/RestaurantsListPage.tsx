@@ -60,6 +60,7 @@ export default function RestaurantsListPage() {
       setError(null);
       try {
         const data = await restaurantsList(
+          undefined, // acceptsPlatformLoyalty
           undefined, // acceptsRemoteOrders
           undefined, // acceptsReservations
           undefined, // acceptsTakeaway

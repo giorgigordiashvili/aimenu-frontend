@@ -339,10 +339,6 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
-      // Backend's UserRegistrationSerializer accepts an optional `referral_code`
-      // (write-only, validated server-side). The generated client doesn't
-      // expose it yet, so we cast the body — once the next regenerate runs
-      // it'll be in the typed shape and the `as` can come off.
       await authRegisterCreate({
         email: email.trim(),
         password,
@@ -350,7 +346,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         ...(referralCode.trim() ? { referral_code: referralCode.trim().toUpperCase() } : {}),
-      } as Parameters<typeof authRegisterCreate>[0]);
+      });
 
       router.push(localePath(locale, '/login'));
     } catch (err: unknown) {

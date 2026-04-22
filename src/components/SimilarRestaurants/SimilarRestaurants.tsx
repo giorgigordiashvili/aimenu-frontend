@@ -119,16 +119,17 @@ export default function SimilarRestaurants({
       try {
         // Pass pageSize=20 to reduce over-fetching; filter client-side for category/exclude
         const data = await restaurantsList(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          1,
-          20
+          undefined, // acceptsPlatformLoyalty
+          undefined, // acceptsRemoteOrders
+          undefined, // acceptsReservations
+          undefined, // acceptsTakeaway
+          undefined, // city
+          undefined, // country
+          undefined, // minRating
+          undefined, // name
+          undefined, // ordering
+          1, // page
+          20 // pageSize
         );
         if (cancelled) return;
         const filtered = data.results
