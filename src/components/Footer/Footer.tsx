@@ -10,10 +10,14 @@ import { slate400, white, slate900 } from '@/tokens';
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const FooterWrapper = styled('footer')({
+  // On mobile the BottomTabBar replaces the footer's nav role and
+  // legal links move into the Account tab, so hide the footer entirely
+  // to reclaim the vertical space.
+  display: 'none',
   background: slate900,
   color: white,
-  padding: '48px 20px 24px',
   '@media (min-width: 768px)': {
+    display: 'block',
     padding: '64px 80px 32px',
   },
 });
