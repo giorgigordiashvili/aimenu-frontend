@@ -12,6 +12,7 @@ import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
 import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { useLocale } from '@/context/LocaleContext';
+import { useSocialAuth } from '@/hooks/useSocialAuth';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
@@ -296,6 +297,11 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { google: onGoogle, facebook: onFacebook } = useSocialAuth({
+    referralCode,
+    onError: message => setApiError(message),
+  });
+
   // Prefill referral code from `?ref=...` so a click on a shared link lands
   // the customer on this page with the field already filled — they only need
   // to submit, no copy-paste step.
@@ -534,20 +540,46 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
           {/* Desktop: show text */}
           <DesktopSocialRow>
             <SocialButtonWrapper>
-              <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
+              <MainButton
+                variant='outline'
+                fullWidth
+                title='Google'
+                icon={GoogleIcon}
+                onClick={() => onGoogle()}
+              />
             </SocialButtonWrapper>
             <SocialButtonWrapper>
-              <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
+              <MainButton
+                variant='outline'
+                fullWidth
+                title='Facebook'
+                icon={FacebookIcon}
+                onClick={onFacebook}
+              />
             </SocialButtonWrapper>
           </DesktopSocialRow>
 
           {/* Mobile: icon only */}
           <MobileSocialRow>
             <SocialButtonWrapper>
-              <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
+              <MainButton
+                variant='outline'
+                fullWidth
+                title=''
+                icon={GoogleIcon}
+                onClick={() => onGoogle()}
+                aria-label='Google'
+              />
             </SocialButtonWrapper>
             <SocialButtonWrapper>
-              <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
+              <MainButton
+                variant='outline'
+                fullWidth
+                title=''
+                icon={FacebookIcon}
+                onClick={onFacebook}
+                aria-label='Facebook'
+              />
             </SocialButtonWrapper>
           </MobileSocialRow>
 

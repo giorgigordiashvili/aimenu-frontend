@@ -13,6 +13,7 @@ import MainButton from '@/components/MainButton/MainButton';
 import TextInput from '@/components/TextInput/TextInput';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useSocialAuth } from '@/hooks/useSocialAuth';
 import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
 import EmailIcon from '@/icons/Email';
@@ -68,6 +69,10 @@ export default function LoginForm({ locale }: LoginFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { google: onGoogle, facebook: onFacebook } = useSocialAuth({
+    onError: message => setApiError(message),
+  });
 
   function validate(): boolean {
     const next: FormErrors = {};
@@ -199,20 +204,46 @@ export default function LoginForm({ locale }: LoginFormProps) {
           {/* Desktop: show text */}
           <DesktopSocialRow>
             <SocialButtonWrapper>
-              <MainButton variant='outline' fullWidth title='Google' icon={GoogleIcon} />
+              <MainButton
+                variant='outline'
+                fullWidth
+                title='Google'
+                icon={GoogleIcon}
+                onClick={() => onGoogle()}
+              />
             </SocialButtonWrapper>
             <SocialButtonWrapper>
-              <MainButton variant='outline' fullWidth title='Facebook' icon={FacebookIcon} />
+              <MainButton
+                variant='outline'
+                fullWidth
+                title='Facebook'
+                icon={FacebookIcon}
+                onClick={onFacebook}
+              />
             </SocialButtonWrapper>
           </DesktopSocialRow>
 
           {/* Mobile: icon only */}
           <MobileSocialRow>
             <SocialButtonWrapper>
-              <MainButton variant='outline' fullWidth title='' icon={GoogleIcon} />
+              <MainButton
+                variant='outline'
+                fullWidth
+                title=''
+                icon={GoogleIcon}
+                onClick={() => onGoogle()}
+                aria-label='Google'
+              />
             </SocialButtonWrapper>
             <SocialButtonWrapper>
-              <MainButton variant='outline' fullWidth title='' icon={FacebookIcon} />
+              <MainButton
+                variant='outline'
+                fullWidth
+                title=''
+                icon={FacebookIcon}
+                onClick={onFacebook}
+                aria-label='Facebook'
+              />
             </SocialButtonWrapper>
           </MobileSocialRow>
 

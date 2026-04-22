@@ -6,6 +6,7 @@ import { Inter, Noto_Sans_Georgian } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
+import AuthScripts from '@/components/AuthScripts';
 import ClarityProvider from '@/components/ClarityProvider';
 import CookieConsent from '@/components/CookieConsent';
 import TopProgressBar from '@/components/TopProgressBar';
@@ -148,14 +149,19 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         </Suspense>
 
         <AuthProvider>
-          <LocaleProvider locale={locale as Locale}>
-            <TableProvider>
-              <CartProvider>
-                {children}
-                <CookieConsent />
-              </CartProvider>
-            </TableProvider>
-          </LocaleProvider>
+          <AuthScripts
+            googleClientId={process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID}
+            facebookAppId={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID}
+          >
+            <LocaleProvider locale={locale as Locale}>
+              <TableProvider>
+                <CartProvider>
+                  {children}
+                  <CookieConsent />
+                </CartProvider>
+              </TableProvider>
+            </LocaleProvider>
+          </AuthScripts>
         </AuthProvider>
       </body>
     </html>
