@@ -9,7 +9,10 @@ import { localePath } from '@/i18n/routing';
 
 const CartButtonStyled = styled('button')({
   position: 'fixed',
-  bottom: '20px',
+  // Mobile: sit above the fixed BottomTabBar (~56px + safe area) with a
+  // 12px breathing gap. Desktop (≥768px): the bottom nav is hidden, so
+  // revert to the original 20px offset.
+  bottom: 'calc(56px + env(safe-area-inset-bottom, 0px) + 12px)',
   left: '20px',
   right: '20px',
   height: '52px',
@@ -25,6 +28,9 @@ const CartButtonStyled = styled('button')({
   transition: 'transform 0.1s ease, box-shadow 0.1s ease',
   border: 'none',
   cursor: 'pointer',
+  '@media (min-width: 768px)': {
+    bottom: '20px',
+  },
   '&:hover': {
     transform: 'translateY(-2px)',
     boxShadow: '0 6px 24px rgba(236, 0, 63, 0.4)',

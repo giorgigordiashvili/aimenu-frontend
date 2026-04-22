@@ -44,7 +44,10 @@ export default async function PrivacyRoute({ params }: Props) {
     { h: copy.privacyRetentionHeading ?? 'Retention', p: copy.privacyRetentionBody ?? '' },
     { h: copy.privacySecurityHeading ?? 'Security', p: copy.privacySecurityBody ?? '' },
     { h: copy.privacyRightsHeading ?? 'Your rights', p: copy.privacyRightsBody ?? '' },
-    { h: copy.privacyThirdPartyHeading ?? 'Third-party links', p: copy.privacyThirdPartyBody ?? '' },
+    {
+      h: copy.privacyThirdPartyHeading ?? 'Third-party links',
+      p: copy.privacyThirdPartyBody ?? '',
+    },
     { h: copy.privacyChangesHeading ?? 'Changes', p: copy.privacyChangesBody ?? '' },
     { h: copy.privacyContactHeading ?? 'Contact', p: copy.privacyContactBody ?? '' },
   ];

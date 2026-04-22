@@ -575,6 +575,12 @@
     "contact": "Контакт",
     "forRestaurants": "Для ресторанов"
   },
+  "bottomNav": {
+    "home": "Главная",
+    "favorites": "Избранное",
+    "cart": "Корзина",
+    "profile": "Профиль"
+  },
   "profile": {
     "settingsTitle": "Личная информация",
     "settingsSubtitle": "Обновите ваши контактные данные",

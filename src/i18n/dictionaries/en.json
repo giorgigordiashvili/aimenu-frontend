@@ -575,6 +575,12 @@
     "contact": "Contact",
     "forRestaurants": "For restaurants"
   },
+  "bottomNav": {
+    "home": "Home",
+    "favorites": "Favorites",
+    "cart": "Cart",
+    "profile": "Profile"
+  },
   "profile": {
     "settingsTitle": "Personal Information",
     "settingsSubtitle": "Update your contact details",

@@ -575,6 +575,12 @@
     "contact": "კონტაქტი",
     "forRestaurants": "რესტორნებისთვის"
   },
+  "bottomNav": {
+    "home": "მთავარი",
+    "favorites": "ფავორიტები",
+    "cart": "კალათა",
+    "profile": "პროფილი"
+  },
   "profile": {
     "settingsTitle": "პირადი ინფორმაცია",
     "settingsSubtitle": "განაახლეთ თქვენი საკონტაქტო მონაცემები",

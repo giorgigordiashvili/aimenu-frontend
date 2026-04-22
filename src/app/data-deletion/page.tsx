@@ -56,10 +56,7 @@ export default async function DataDeletionStatusPage({ searchParams }: Props) {
         <p style={{ fontSize: 15, lineHeight: '24px', margin: '0 0 16px', color: '#475569' }}>
           Your Facebook sign-in connection has been removed. If you also want to delete your
           aimenu.ge account (orders, reservations, profile), email{' '}
-          <a
-            href='mailto:info@telos.ge'
-            style={{ color: '#0F172B', textDecoration: 'underline' }}
-          >
+          <a href='mailto:info@telos.ge' style={{ color: '#0F172B', textDecoration: 'underline' }}>
             info@telos.ge
           </a>{' '}
           and we&apos;ll process the full deletion within 30 days.

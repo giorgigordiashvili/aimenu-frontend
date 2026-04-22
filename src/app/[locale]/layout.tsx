@@ -7,6 +7,8 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
 import AuthScripts from '@/components/AuthScripts';
+import BottomTabBar from '@/components/BottomTabBar';
+import MobileNavSpacer from '@/components/BottomTabBar/MobileNavSpacer';
 import ClarityProvider from '@/components/ClarityProvider';
 import CookieConsent from '@/components/CookieConsent';
 import TopProgressBar from '@/components/TopProgressBar';
@@ -156,7 +158,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             <LocaleProvider locale={locale as Locale}>
               <TableProvider>
                 <CartProvider>
-                  {children}
+                  <MobileNavSpacer>{children}</MobileNavSpacer>
+                  <BottomTabBar />
                   <CookieConsent />
                 </CartProvider>
               </TableProvider>

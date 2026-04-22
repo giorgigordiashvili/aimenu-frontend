@@ -1,11 +1,9 @@
 import * as React from 'react';
 
-import { iconStroke } from '@/tokens';
-
-const OrderIcon = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
+const OrderIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none' {...props}>
     <g
-      stroke={iconStroke}
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.333}
