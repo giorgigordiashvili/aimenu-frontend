@@ -22,6 +22,17 @@ const ShellWrapper = styled('div')({
   minHeight: '100vh',
 });
 
+// When rendering the /profile hub on MOBILE we want no tab nav above it
+// (the hub is the nav). Desktop keeps the tab nav visible so a redirect
+// from /profile → /profile/reservations doesn't flicker.
+const TabNavSlot = styled('div')({
+  '&[data-hide-mobile="true"]': {
+    '@media (max-width: 767px)': {
+      display: 'none',
+    },
+  },
+});
+
 interface ProfileShellProps {
   locale: Locale;
   children: React.ReactNode;
@@ -84,21 +95,19 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
   return (
     <ShellWrapper>
       <HeaderPrimary />
-      {!isHub && (
-        <>
-          <ProfileHeader
-            displayName={displayName}
-            displayEmail={displayEmail}
-            displayPhone={displayPhone}
-            displayLocation={displayLocation}
-            initials={initials}
-            avatar={displayUser.avatar}
-            logout={logout}
-            onHome={() => router.push(localePath(locale))}
-          />
-          <ProfileTabNav />
-        </>
-      )}
+      <ProfileHeader
+        displayName={displayName}
+        displayEmail={displayEmail}
+        displayPhone={displayPhone}
+        displayLocation={displayLocation}
+        initials={initials}
+        avatar={displayUser.avatar}
+        logout={logout}
+        onHome={() => router.push(localePath(locale))}
+      />
+      <TabNavSlot data-hide-mobile={isHub ? 'true' : undefined}>
+        <ProfileTabNav />
+      </TabNavSlot>
       <main>{isHub ? children : <ProfileTabSlide>{children}</ProfileTabSlide>}</main>
       <Footer locale={locale} />
     </ShellWrapper>

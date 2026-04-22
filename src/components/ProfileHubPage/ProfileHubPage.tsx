@@ -39,8 +39,11 @@ const Wrapper = styled('div')({
   maxWidth: '720px',
   margin: '0 auto',
   padding: '20px 16px 32px',
+  // Desktop keeps the legacy tabbed experience — /profile client-redirects
+  // to /profile/reservations in the useEffect below. Hide the hub markup
+  // on desktop so users never flash-see the mobile layout.
   '@media (min-width: 768px)': {
-    padding: '32px 24px 48px',
+    display: 'none',
   },
 });
 
@@ -187,6 +190,16 @@ export default function ProfileHubPage({ locale }: Props) {
       .then(setUser)
       .catch(() => {});
   }, [authUser]);
+
+  // Desktop users keep the legacy tabbed /profile/reservations experience —
+  // /profile exists as the hub only on mobile. Redirect on mount so desktop
+  // lands where the horizontal tab row lives.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(min-width: 768px)').matches) {
+      router.replace(localePath(locale, '/profile/reservations'));
+    }
+  }, [router, locale]);
 
   if (isLoading || !authUser) return null;
 

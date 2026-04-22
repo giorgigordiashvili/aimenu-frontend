@@ -25,10 +25,14 @@ import {
 // ─── Styled ────────────────────────────────────────────────────────────────────
 
 const HeaderRoot = styled('div')({
+  // Hidden on mobile — the bottom nav + profile hub provide all the
+  // identity/navigation surface needed. Shown on desktop where the
+  // large user card reads as a landmark above the tab row.
+  display: 'none',
   backgroundColor: white,
   borderBottom: `1px solid ${border}`,
-  padding: '24px 16px',
   '@media (min-width: 768px)': {
+    display: 'block',
     padding: '32px 24px',
   },
 });

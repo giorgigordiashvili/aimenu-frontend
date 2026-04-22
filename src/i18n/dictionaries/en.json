@@ -578,8 +578,12 @@
   "bottomNav": {
     "home": "Home",
     "search": "Search",
-    "bookings": "Bookings",
-    "account": "Account"
+    "scan": "Scan",
+    "profile": "Profile"
+  },
+  "scan": {
+    "title": "Scan a QR code",
+    "subtitle": "Point your phone's camera at a restaurant's QR code to open its menu instantly. A full in-app scanner is coming soon."
   },
   "profile": {
     "settingsTitle": "Personal Information",

@@ -8,8 +8,8 @@ import { useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { localePath, stripLocale } from '@/i18n/routing';
-import CalendarIcon from '@/icons/Calendar';
 import HouseIcon from '@/icons/House';
+import ScanIcon from '@/icons/Scan';
 import SearchIcon from '@/icons/Search';
 import UserIcon from '@/icons/User';
 import { border, foreground, slate500, white } from '@/tokens';
@@ -105,11 +105,8 @@ export default function BottomTabBar() {
     p => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`)
   );
 
-  const accountHref = isAuthenticated
+  const profileHref = isAuthenticated
     ? localePath(locale, '/profile')
-    : localePath(locale, '/login');
-  const bookingsHref = isAuthenticated
-    ? localePath(locale, '/profile/reservations')
     : localePath(locale, '/login');
 
   const tabs = useMemo(
@@ -139,30 +136,24 @@ export default function BottomTabBar() {
         ),
       },
       {
-        id: 'bookings',
-        href: bookingsHref,
-        label: t.bottomNav.bookings,
-        match: (p: string) =>
-          p === '/profile/reservations' ||
-          p.startsWith('/profile/reservations/') ||
-          p.startsWith('/orders') ||
-          p.startsWith('/order-review'),
+        id: 'scan',
+        href: localePath(locale, '/scan'),
+        label: t.bottomNav.scan,
+        match: (p: string) => p === '/scan' || p.startsWith('/scan/'),
         icon: (
           <IconWrap>
-            <CalendarIcon width={22} height={22} />
+            <ScanIcon width={22} height={22} />
           </IconWrap>
         ),
       },
       {
-        id: 'account',
-        href: accountHref,
-        label: t.bottomNav.account,
-        // Anything under /profile that isn't Bookings, plus standalone
-        // Favorites, lives under Account.
-        match: (p: string) => {
-          if (p.startsWith('/profile/reservations')) return false;
-          return p.startsWith('/profile') || p === '/favorites' || p.startsWith('/favorites/');
-        },
+        id: 'profile',
+        href: profileHref,
+        // Anything under /profile (including /profile/reservations), plus
+        // standalone /favorites, reads as the Profile mode.
+        label: t.bottomNav.profile,
+        match: (p: string) =>
+          p.startsWith('/profile') || p === '/favorites' || p.startsWith('/favorites/'),
         icon: (
           <IconWrap>
             <UserIcon width={22} height={22} />
@@ -170,7 +161,7 @@ export default function BottomTabBar() {
         ),
       },
     ],
-    [locale, accountHref, bookingsHref, t.bottomNav]
+    [locale, profileHref, t.bottomNav]
   );
 
   if (hidden) return null;
