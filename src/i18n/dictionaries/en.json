@@ -577,9 +577,9 @@
   },
   "bottomNav": {
     "home": "Home",
-    "favorites": "Favorites",
-    "cart": "Cart",
-    "profile": "Profile"
+    "search": "Search",
+    "bookings": "Bookings",
+    "account": "Account"
   },
   "profile": {
     "settingsTitle": "Personal Information",
@@ -607,7 +607,8 @@
       "reviews": "Reviews",
       "profile": "Profile",
       "payment": "Payment",
-      "referral": "Referral"
+      "referral": "Referral",
+      "favorites": "Favorites"
     }
   },
   "reviews": {

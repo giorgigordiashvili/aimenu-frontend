@@ -1,6 +1,6 @@
 import * as React from 'react';
-const CalendarIcon = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none'>
+const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width={16} height={16} fill='none' {...props}>
     <path
       stroke='currentColor'
       strokeLinecap='round'

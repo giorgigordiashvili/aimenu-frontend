@@ -12,6 +12,7 @@ import CheckmarkIcon from '@/icons/Checkmark';
 import ChevronDownIcon from '@/icons/ChevronDown';
 import CreditCardIcon from '@/icons/CreditCard';
 import EditIcon from '@/icons/Edit';
+import HeartOutlineIcon from '@/icons/HeartOutline';
 import PeopleIcon from '@/icons/People';
 import StarIcon from '@/icons/Star';
 import UserIcon from '@/icons/User';
@@ -207,6 +208,12 @@ export default function ProfileTabNav() {
         href: localePath(locale, '/profile/reviews'),
         label: t.profile.tabs.reviews,
         icon: <EditIcon />,
+      },
+      {
+        id: 'favorites',
+        href: localePath(locale, '/favorites'),
+        label: t.profile.tabs.favorites,
+        icon: <HeartOutlineIcon width={16} height={14} />,
       },
       {
         id: 'settings',

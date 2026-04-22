@@ -6,14 +6,13 @@ import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 
 import { useAuth } from '@/context/AuthContext';
-import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { localePath, stripLocale } from '@/i18n/routing';
-import HeartIcon from '@/icons/Heart';
+import CalendarIcon from '@/icons/Calendar';
 import HouseIcon from '@/icons/House';
-import OrderIcon from '@/icons/Order';
+import SearchIcon from '@/icons/Search';
 import UserIcon from '@/icons/User';
-import { border, foreground, rose600, slate500, white } from '@/tokens';
+import { border, foreground, slate500, white } from '@/tokens';
 
 // Routes where the bottom nav should not render (auth + legal + standalone
 // flows). Compared via stripLocale so this works across /ka, /en, /ru.
@@ -93,40 +92,12 @@ const Label = styled('span')({
   letterSpacing: '-0.1px',
 });
 
-const CartIconWrap = styled('span')({
-  position: 'relative',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '22px',
-  height: '22px',
-  color: 'inherit',
-});
-
-const CartBadge = styled('span')({
-  position: 'absolute',
-  top: '-4px',
-  right: '-8px',
-  minWidth: '16px',
-  height: '16px',
-  padding: '0 4px',
-  borderRadius: '999px',
-  background: rose600,
-  color: white,
-  fontSize: '10px',
-  fontWeight: 700,
-  lineHeight: '16px',
-  textAlign: 'center',
-  boxShadow: `0 0 0 2px ${white}`,
-});
-
 // ─── Component ─────────────────────────────────────────────────────────────────
 
 export default function BottomTabBar() {
   const t = useTranslations();
   const { locale } = useLocale();
   const { isAuthenticated } = useAuth();
-  const { getTotalItems } = useCart();
   const pathname = usePathname();
 
   const { pathWithoutLocale } = stripLocale(pathname);
@@ -134,9 +105,10 @@ export default function BottomTabBar() {
     p => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`)
   );
 
-  const totalItems = getTotalItems();
-
-  const profileHref = isAuthenticated
+  const accountHref = isAuthenticated
+    ? localePath(locale, '/profile/settings')
+    : localePath(locale, '/login');
+  const bookingsHref = isAuthenticated
     ? localePath(locale, '/profile/reservations')
     : localePath(locale, '/login');
 
@@ -146,7 +118,7 @@ export default function BottomTabBar() {
         id: 'home',
         href: localePath(locale, '/'),
         label: t.bottomNav.home,
-        match: (p: string) => p === '/' || p === '/restaurants' || p.startsWith('/restaurant'),
+        match: (p: string) => p === '/',
         icon: (
           <IconWrap>
             <HouseIcon width={22} height={22} />
@@ -154,33 +126,43 @@ export default function BottomTabBar() {
         ),
       },
       {
-        id: 'favorites',
-        href: localePath(locale, '/favorites'),
-        label: t.bottomNav.favorites,
-        match: (p: string) => p.startsWith('/favorites'),
+        id: 'search',
+        href: localePath(locale, '/restaurants'),
+        label: t.bottomNav.search,
+        // Discovery + restaurant detail pages both belong to Search, since
+        // that's how users reach a restaurant page.
+        match: (p: string) => p.startsWith('/restaurants') || p.startsWith('/restaurant/'),
         icon: (
           <IconWrap>
-            <HeartIcon width={22} height={22} />
+            <SearchIcon width={22} height={22} />
           </IconWrap>
         ),
       },
       {
-        id: 'cart',
-        href: localePath(locale, '/order-review'),
-        label: t.bottomNav.cart,
-        match: (p: string) => p.startsWith('/order-review') || p.startsWith('/orders'),
+        id: 'bookings',
+        href: bookingsHref,
+        label: t.bottomNav.bookings,
+        match: (p: string) =>
+          p === '/profile/reservations' ||
+          p.startsWith('/profile/reservations/') ||
+          p.startsWith('/orders') ||
+          p.startsWith('/order-review'),
         icon: (
-          <CartIconWrap>
-            <OrderIcon width={22} height={22} />
-            {totalItems > 0 && <CartBadge>{totalItems > 99 ? '99+' : totalItems}</CartBadge>}
-          </CartIconWrap>
+          <IconWrap>
+            <CalendarIcon width={22} height={22} />
+          </IconWrap>
         ),
       },
       {
-        id: 'profile',
-        href: profileHref,
-        label: t.bottomNav.profile,
-        match: (p: string) => p.startsWith('/profile'),
+        id: 'account',
+        href: accountHref,
+        label: t.bottomNav.account,
+        // Anything under /profile that isn't Bookings, plus standalone
+        // Favorites, lives under Account.
+        match: (p: string) => {
+          if (p.startsWith('/profile/reservations')) return false;
+          return p.startsWith('/profile') || p === '/favorites' || p.startsWith('/favorites/');
+        },
         icon: (
           <IconWrap>
             <UserIcon width={22} height={22} />
@@ -188,7 +170,7 @@ export default function BottomTabBar() {
         ),
       },
     ],
-    [locale, profileHref, t.bottomNav, totalItems]
+    [locale, accountHref, bookingsHref, t.bottomNav]
   );
 
   if (hidden) return null;

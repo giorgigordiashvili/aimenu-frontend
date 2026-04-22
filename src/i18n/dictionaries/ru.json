@@ -577,9 +577,9 @@
   },
   "bottomNav": {
     "home": "Главная",
-    "favorites": "Избранное",
-    "cart": "Корзина",
-    "profile": "Профиль"
+    "search": "Поиск",
+    "bookings": "Бронирования",
+    "account": "Аккаунт"
   },
   "profile": {
     "settingsTitle": "Личная информация",
@@ -607,7 +607,8 @@
       "reviews": "Отзывы",
       "profile": "Профиль",
       "payment": "Оплата",
-      "referral": "Рефералы"
+      "referral": "Рефералы",
+      "favorites": "Избранное"
     }
   },
   "reviews": {
