@@ -220,15 +220,20 @@ const GridSection = styled('div')({
 
 const Grid = styled('div')({
   display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
+  // minmax(0, 1fr) so cards in the same row stay the same width even
+  // when one has more content (loyalty pill + cuisine + rating) than
+  // its sibling. Plain 1fr resolves to minmax(auto, 1fr) and lets the
+  // wider card squeeze the other.
+  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
   gap: 24,
   '@media (max-width: 1024px)': {
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     gap: 16,
   },
   '@media (max-width: 640px)': {
-    gridTemplateColumns: '1fr',
-    gap: 16,
+    // Two cards per row on phones to match the homepage grid.
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    gap: 12,
   },
   marginTop: 16,
 });

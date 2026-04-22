@@ -382,6 +382,7 @@
     "remove": "Remove",
     "edit": "Edit",
     "paymentMethod": "Payment Option",
+    "payQuestion": "Who's paying?",
     "iWillPay": "I'll pay",
     "iWillPayDescription": "You pay for everyone",
     "everyonePays": "Everyone pays separately",

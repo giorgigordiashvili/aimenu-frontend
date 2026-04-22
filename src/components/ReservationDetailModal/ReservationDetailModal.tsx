@@ -123,8 +123,11 @@ const CloseButton = styled('button')({
 const Sheet = styled('div')({
   width: '100%',
   backgroundColor: background,
-  borderRadius: '16px 16px 0 0',
-  height: '70vh',
+  // Full viewport on mobile so the detail + invite + cancel buttons all
+  // fit without the user having to scroll inside a 70vh sheet. Desktop
+  // stays auto-height capped at 95vh since it's a centred card.
+  height: '100dvh',
+  borderRadius: 0,
   overflowY: 'auto',
   boxShadow: shadowMd,
   '@media (min-width: 768px)': {

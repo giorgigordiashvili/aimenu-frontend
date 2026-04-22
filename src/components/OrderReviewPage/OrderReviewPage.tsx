@@ -490,7 +490,13 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
 
         {/* Invite Link Section — covered guests can't invite from a tab they
             don't own; only the host / solo customer sees it. */}
-        {!isCoveredGuest && <InviteFriendsSection locale={locale} paymentMethod={paymentMethod} />}
+        {!isCoveredGuest && (
+          <InviteFriendsSection
+            locale={locale}
+            paymentMethod={paymentMethod}
+            onPaymentMethodChange={setPaymentMethod}
+          />
+        )}
 
         {/* Guest Add Section */}
         <GuestAddSection guests={guests} onChange={setGuests} />

@@ -134,6 +134,9 @@ const BurgerButton = styled('button')({
   height: '40px',
   border: 'none',
   background: 'transparent',
+  // MenuIcon uses currentColor; inherit the foreground slate instead of
+  // the browser's default button blue.
+  color: foreground,
   cursor: 'pointer',
   borderRadius: '8px',
   '&:hover': { background: slate100 },

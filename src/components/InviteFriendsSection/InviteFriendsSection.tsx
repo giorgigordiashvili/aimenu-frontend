@@ -29,6 +29,9 @@ import {
 interface InviteFriendsSectionProps {
   locale: Locale;
   paymentMethod: 'iWillPay' | 'everyonePays';
+  /** Optional callback so the inline toggle in this section can update
+   *  the host's chosen payment method instead of just displaying it. */
+  onPaymentMethodChange?: (next: 'iWillPay' | 'everyonePays') => void;
 }
 
 // ─── Styled components ────────────────────────────────────────────────────────
@@ -121,6 +124,46 @@ const CopyButton = styled('button')({
   },
 });
 
+// Pill-style "who's paying" toggle rendered before the create button so
+// the host confirms the choice explicitly for each invite — cheap way
+// to stop a guest from opening the link and wondering who's paying.
+const PayGroup = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+  marginTop: '16px',
+});
+
+const PayLabel = styled('span')({
+  fontSize: '13px',
+  fontWeight: 600,
+  color: foreground,
+});
+
+const PayOptions = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '8px',
+});
+
+const PayOption = styled('button')({
+  border: `1px solid ${border}`,
+  background: white,
+  borderRadius: '10px',
+  padding: '10px 12px',
+  fontSize: '13px',
+  fontWeight: 500,
+  color: foreground,
+  cursor: 'pointer',
+  transition: 'border-color 0.15s ease, background-color 0.15s ease',
+  textAlign: 'left',
+  '&[data-selected="true"]': {
+    borderColor: foreground,
+    background: slate50,
+    fontWeight: 700,
+  },
+});
+
 const InfoMessage = styled('div')({
   display: 'flex',
   alignItems: 'flex-start',
@@ -149,7 +192,11 @@ interface InviteCreateResponse {
   expires_at?: string;
 }
 
-export default function InviteFriendsSection({ locale, paymentMethod }: InviteFriendsSectionProps) {
+export default function InviteFriendsSection({
+  locale,
+  paymentMethod,
+  onPaymentMethodChange,
+}: InviteFriendsSectionProps) {
   const t = useTranslations();
   const { tableData } = useTable();
   const sessionId = tableData?.sessionId;
@@ -241,6 +288,28 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
     }
   }, [generatedLink]);
 
+  const payPicker = onPaymentMethodChange ? (
+    <PayGroup>
+      <PayLabel>{t.orderReview.payQuestion}</PayLabel>
+      <PayOptions>
+        <PayOption
+          type='button'
+          data-selected={paymentMethod === 'iWillPay' ? 'true' : undefined}
+          onClick={() => onPaymentMethodChange('iWillPay')}
+        >
+          {t.orderReview.iWillPay}
+        </PayOption>
+        <PayOption
+          type='button'
+          data-selected={paymentMethod === 'everyonePays' ? 'true' : undefined}
+          onClick={() => onPaymentMethodChange('everyonePays')}
+        >
+          {t.orderReview.everyonePays}
+        </PayOption>
+      </PayOptions>
+    </PayGroup>
+  ) : null;
+
   // Before link is created - show create button
   if (!generatedLink) {
     return (
@@ -259,6 +328,7 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
             disabled={isCreatingLink}
           />
         </InviteLinkHeader>
+        {payPicker}
       </InviteLinkCard>
     );
   }
@@ -281,6 +351,7 @@ export default function InviteFriendsSection({ locale, paymentMethod }: InviteFr
         />
       </InviteLinkHeader>
       <GeneratedLinkContent>
+        {payPicker}
         <GeneratedLinkRow>
           <LinkInputWrapper>
             <LinkInput type='text' value={generatedLink} readOnly />

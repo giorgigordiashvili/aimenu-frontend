@@ -382,6 +382,7 @@
     "remove": "Удалить",
     "edit": "Изменить",
     "paymentMethod": "Вариант оплаты",
+    "payQuestion": "Кто платит?",
     "iWillPay": "Я заплачу",
     "iWillPayDescription": "Вы платите за всех",
     "everyonePays": "Каждый платит сам",
