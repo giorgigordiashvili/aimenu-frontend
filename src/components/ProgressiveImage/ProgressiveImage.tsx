@@ -106,9 +106,7 @@ export default function ProgressiveImage({ blurhash, alt, style, ...rest }: Prop
     <Image
       ref={imgRef}
       alt={alt}
-      {...(typeof blurDataURL === 'string'
-        ? { placeholder: 'blur' as const, blurDataURL }
-        : {})}
+      {...(typeof blurDataURL === 'string' ? { placeholder: 'blur' as const, blurDataURL } : {})}
       onLoad={() => setLoaded(true)}
       onError={() => setLoaded(true)}
       style={{

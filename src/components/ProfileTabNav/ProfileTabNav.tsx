@@ -9,6 +9,7 @@ import { localePath } from '@/i18n/routing';
 import CalendarIcon from '@/icons/Calendar';
 import CreditCardIcon from '@/icons/CreditCard';
 import EditIcon from '@/icons/Edit';
+import PeopleIcon from '@/icons/People';
 import StarIcon from '@/icons/Star';
 import UserIcon from '@/icons/User';
 import { background, border, foreground, radiusMd, radiusSm, slate500, white } from '@/tokens';
@@ -86,12 +87,14 @@ export default function ProfileTabNav() {
   const reviewsHref = localePath(locale, '/profile/reviews');
   const settingsHref = localePath(locale, '/profile/settings');
   const paymentHref = localePath(locale, '/profile/payment');
+  const referralHref = localePath(locale, '/profile/referral');
 
   const isReservations = pathname === reservationsHref || pathname.startsWith(reservationsHref);
   const isLoyalty = pathname === loyaltyHref || pathname.startsWith(loyaltyHref);
   const isReviews = pathname === reviewsHref || pathname.startsWith(reviewsHref);
   const isSettings = pathname === settingsHref || pathname.startsWith(settingsHref);
   const isPayment = pathname === paymentHref || pathname.startsWith(paymentHref);
+  const isReferral = pathname === referralHref || pathname.startsWith(referralHref);
 
   return (
     <TabNavRoot>
@@ -119,6 +122,11 @@ export default function ProfileTabNav() {
         <TabItem href={paymentHref} data-active={isPayment ? 'true' : undefined}>
           <CreditCardIcon />
           {t.profile.tabs.payment}
+        </TabItem>
+
+        <TabItem href={referralHref} data-active={isReferral ? 'true' : undefined}>
+          <PeopleIcon />
+          {t.profile.tabs.referral}
         </TabItem>
       </TabNavInner>
     </TabNavRoot>

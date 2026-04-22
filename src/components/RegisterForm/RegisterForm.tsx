@@ -3,8 +3,8 @@
 import { styled } from '@pigment-css/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { authRegisterCreate } from '@/api/generated';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
@@ -269,6 +269,7 @@ interface FormErrors {
   email?: string;
   password?: string;
   repeatPassword?: string;
+  referralCode?: string;
 }
 
 interface RegisterFormProps {
@@ -279,6 +280,7 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ locale }: RegisterFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { locale: currentLocale } = useLocale();
   const t = getDictionary(locale);
 
@@ -288,10 +290,19 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [referralCode, setReferralCode] = useState('');
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Prefill referral code from `?ref=...` so a click on a shared link lands
+  // the customer on this page with the field already filled — they only need
+  // to submit, no copy-paste step.
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if (ref) setReferralCode(ref.toUpperCase());
+  }, [searchParams]);
 
   function validate(): boolean {
     const next: FormErrors = {};
@@ -328,19 +339,27 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
+      // Backend's UserRegistrationSerializer accepts an optional `referral_code`
+      // (write-only, validated server-side). The generated client doesn't
+      // expose it yet, so we cast the body — once the next regenerate runs
+      // it'll be in the typed shape and the `as` can come off.
       await authRegisterCreate({
         email: email.trim(),
         password,
         password_confirm: repeatPassword,
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-      });
+        ...(referralCode.trim() ? { referral_code: referralCode.trim().toUpperCase() } : {}),
+      } as Parameters<typeof authRegisterCreate>[0]);
 
       router.push(localePath(locale, '/login'));
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: Record<string, string[]> } };
       const data = axiosErr?.response?.data;
-      if (data) {
+      if (data?.referral_code) {
+        setErrors(prev => ({ ...prev, referralCode: String(data.referral_code[0]) }));
+        setApiError(null);
+      } else if (data) {
         const firstError = Object.values(data).flat()[0];
         setApiError(String(firstError));
       } else {
@@ -482,6 +501,25 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                     setErrors(prev => ({ ...prev, repeatPassword: undefined }));
                 }}
               />
+            </Field>
+
+            <Field>
+              <TextInput
+                variant='outlined'
+                label={t.referral.signupCodeLabel}
+                placeholder='XXXXXXXX'
+                id='register-referral-code'
+                type='text'
+                autoComplete='off'
+                value={referralCode}
+                errorMessage={errors.referralCode}
+                onChange={e => {
+                  setReferralCode(e.target.value.toUpperCase());
+                  if (errors.referralCode)
+                    setErrors(prev => ({ ...prev, referralCode: undefined }));
+                }}
+              />
+              <PasswordHint>{t.referral.signupCodeHelp}</PasswordHint>
             </Field>
 
             <ResponsiveButton>

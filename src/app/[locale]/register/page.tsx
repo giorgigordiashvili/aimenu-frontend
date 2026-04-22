@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import RegisterForm from '@/components/RegisterForm';
 import { Locale, isValidLocale } from '@/i18n/config';
@@ -32,5 +33,12 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
     notFound();
   }
 
-  return <RegisterForm locale={locale as Locale} />;
+  // RegisterForm reads `?ref=` via useSearchParams; Next requires a Suspense
+  // boundary around any client component that does that on a statically-rendered
+  // page, otherwise the export bails with a CSR-bailout error.
+  return (
+    <Suspense>
+      <RegisterForm locale={locale as Locale} />
+    </Suspense>
+  );
 }

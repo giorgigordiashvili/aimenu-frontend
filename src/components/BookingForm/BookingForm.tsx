@@ -19,6 +19,7 @@ import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel'
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import MainButton from '@/components/MainButton/MainButton';
 import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
+import WalletApplySection from '@/components/WalletApplySection';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
@@ -302,6 +303,9 @@ export default function BookingForm({
   const [confirmationCode, setConfirmationCode] = useState<string | null>(null);
   const [isCardFormValid, setIsCardFormValid] = useState(false);
   const [provider, setProvider] = useState<PaymentProvider>('bog');
+  // Wallet only ever applies to the pre-order portion of the basket — backend
+  // refuses to discount the deposit so the cap here is the cart subtotal.
+  const [walletAmount, setWalletAmount] = useState<number>(0);
   const [providerFlags, setProviderFlags] = useState<{
     bog: boolean;
     flitt: boolean;
@@ -526,6 +530,8 @@ export default function BookingForm({
           ...reservationBody,
           restaurant_slug: slug,
           items: itemsForPayload.length > 0 ? itemsForPayload : undefined,
+          // Wallet only matters when there's a pre-order to apply it against.
+          wallet_amount: itemsForPayload.length > 0 && walletAmount > 0 ? walletAmount : undefined,
         },
         return_url: returnUrl,
       };
@@ -656,9 +662,16 @@ export default function BookingForm({
               bogAvailable={providerFlags.bog}
               flittAvailable={providerFlags.flitt}
             />
+            {cartItems.length > 0 ? (
+              <WalletApplySection
+                maxApplicable={cartTotal}
+                value={walletAmount}
+                onChange={setWalletAmount}
+              />
+            ) : null}
             <BookingPaymentForm
               depositAmount={depositAmount}
-              grandTotal={cartTotal + depositAmount}
+              grandTotal={cartTotal + depositAmount - walletAmount}
               savedCard={null}
               isLoading={isPaymentLoading}
               error={paymentError}
@@ -673,7 +686,7 @@ export default function BookingForm({
               title={
                 isPaymentLoading
                   ? t.common.loading
-                  : `${t.booking.pay} ${(cartTotal + depositAmount).toFixed(2)} ₾`
+                  : `${t.booking.pay} ${(cartTotal + depositAmount - walletAmount).toFixed(2)} ₾`
               }
               size='large'
               fullWidth

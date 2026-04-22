@@ -600,7 +600,8 @@
       "loyalty": "Лояльность",
       "reviews": "Отзывы",
       "profile": "Профиль",
-      "payment": "Оплата"
+      "payment": "Оплата",
+      "referral": "Рефералы"
     }
   },
   "reviews": {
@@ -933,5 +934,49 @@
     "deleteError": "Не удалось удалить карту",
     "addCardComingSoon": "Скоро появится",
     "addCardFailed": "Не удалось начать добавление карты. Попробуйте снова."
+  },
+  "referral": {
+    "tabLabel": "Рефералы",
+    "pageTitle": "Рефералы и кошелёк",
+    "pageLead": "Приглашайте друзей — вы получаете часть с каждого их заказа.",
+    "balanceLabel": "Баланс кошелька",
+    "totalEarnedLabel": "Всего заработано",
+    "totalSpentLabel": "Всего потрачено",
+    "effectivePercentLabel": "Ваша ставка",
+    "effectivePercentValue": "{percent}% с каждого заказа",
+    "referralCodeLabel": "Ваш код",
+    "referralLinkLabel": "Ваша ссылка",
+    "copyLink": "Скопировать ссылку",
+    "copyCode": "Скопировать код",
+    "copied": "Скопировано",
+    "share": "Поделиться",
+    "shareTitle": "Присоединяйся к aimenu.ge",
+    "shareText": "Используй мой код {code} при регистрации.",
+    "howItWorksTitle": "Как это работает",
+    "howItWorks1": "Поделитесь ссылкой с друзьями",
+    "howItWorks2": "Они зарегистрируются по коду",
+    "howItWorks3": "Вы получаете {percent}% с каждого их заказа",
+    "recentActivityTitle": "История кошелька",
+    "referredUsersTitle": "Приглашённые пользователи",
+    "emptyActivity": "Транзакций пока нет",
+    "emptyReferred": "Пока никого не пригласили — поделитесь ссылкой!",
+    "joinedAt": "Присоединился",
+    "earnedFrom": "Заработано",
+    "txKind": {
+      "referral_credit": "Реферальный бонус",
+      "order_spend": "Применено к заказу",
+      "refund_credit": "Возврат средств",
+      "referral_clawback": "Реферал отменён",
+      "manual_adjustment": "Ручная корректировка"
+    },
+    "walletCheckoutTitle": "Оплата кошельком",
+    "walletCheckoutHint": "Используйте баланс — остаток оплатит карта.",
+    "walletAvailable": "Доступно {amount} ₾",
+    "walletApplyLabel": "Сумма к списанию (₾)",
+    "walletApplyAll": "Использовать весь баланс",
+    "walletDisabled": "Кошелёк пуст",
+    "signupCodeLabel": "Реферальный код (необязательно)",
+    "signupCodeHelp": "Если у вас есть код приглашения — введите здесь.",
+    "signupCodeInvalid": "Такой код не найден"
   }
 }

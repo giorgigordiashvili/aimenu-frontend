@@ -28,7 +28,10 @@ function unwrap<T>(body: BackendEnvelope<T> | T | undefined): T {
 }
 
 export interface InitiateOrderPaymentBody {
-  order_payload: CreateOrderRequest;
+  // CreateOrderRequest doesn't expose wallet_amount — backend's
+  // OrderPayloadSerializer accepts it as an optional decimal string. We pass
+  // it through as a sibling field rather than retyping the order payload.
+  order_payload: CreateOrderRequest & { wallet_amount?: number };
   return_url: string;
 }
 
@@ -49,6 +52,11 @@ export interface ReservationPaymentPayload {
   party_size: number;
   special_requests?: string;
   deposit_amount_override?: number;
+  /**
+   * Wallet credit to apply against the pre-order portion. Backend clamps to
+   * min(balance, pre_order subtotal − discount); deposit is never discounted.
+   */
+  wallet_amount?: number;
   /**
    * Optional pre-order: food the guest wants prepared for arrival. Backend
    * creates a sibling Order and charges deposit + order total in one BOG

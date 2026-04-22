@@ -600,7 +600,8 @@
       "loyalty": "Loyalty",
       "reviews": "Reviews",
       "profile": "Profile",
-      "payment": "Payment"
+      "payment": "Payment",
+      "referral": "Referral"
     }
   },
   "reviews": {
@@ -933,5 +934,49 @@
     "deleteError": "Failed to delete card",
     "addCardComingSoon": "Coming soon",
     "addCardFailed": "Couldn't start the add-card flow. Please try again."
+  },
+  "referral": {
+    "tabLabel": "Referral",
+    "pageTitle": "Referrals & wallet",
+    "pageLead": "Invite friends — you earn from every order they place.",
+    "balanceLabel": "Wallet balance",
+    "totalEarnedLabel": "Total earned",
+    "totalSpentLabel": "Total spent",
+    "effectivePercentLabel": "Your rate",
+    "effectivePercentValue": "{percent}% on every order",
+    "referralCodeLabel": "Your code",
+    "referralLinkLabel": "Your link",
+    "copyLink": "Copy link",
+    "copyCode": "Copy code",
+    "copied": "Copied",
+    "share": "Share",
+    "shareTitle": "Join me on aimenu.ge",
+    "shareText": "Use my code {code} when you sign up.",
+    "howItWorksTitle": "How it works",
+    "howItWorks1": "Share your link with friends",
+    "howItWorks2": "They sign up with the code",
+    "howItWorks3": "You earn {percent}% of every order they place",
+    "recentActivityTitle": "Wallet history",
+    "referredUsersTitle": "Referred users",
+    "emptyActivity": "No transactions yet",
+    "emptyReferred": "No referrals yet — share your link!",
+    "joinedAt": "Joined",
+    "earnedFrom": "Earned",
+    "txKind": {
+      "referral_credit": "Referral bonus",
+      "order_spend": "Applied to order",
+      "refund_credit": "Refunded",
+      "referral_clawback": "Referral reversed",
+      "manual_adjustment": "Manual adjustment"
+    },
+    "walletCheckoutTitle": "Pay with wallet",
+    "walletCheckoutHint": "Use part of your balance — your card covers the rest.",
+    "walletAvailable": "{amount} ₾ available",
+    "walletApplyLabel": "Amount to apply (₾)",
+    "walletApplyAll": "Apply full balance",
+    "walletDisabled": "Your wallet is empty",
+    "signupCodeLabel": "Referral code (optional)",
+    "signupCodeHelp": "Got an invite code? Enter it here.",
+    "signupCodeInvalid": "Unknown referral code"
   }
 }

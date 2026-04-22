@@ -600,7 +600,8 @@
       "loyalty": "ლოიალურობა",
       "reviews": "შეფასებები",
       "profile": "პროფილი",
-      "payment": "გადახდა"
+      "payment": "გადახდა",
+      "referral": "რეფერალი"
     }
   },
   "reviews": {
@@ -933,5 +934,49 @@
     "deleteError": "ბარათის წაშლა ვერ მოხერხდა",
     "addCardComingSoon": "მალე დაემატება",
     "addCardFailed": "ბარათის დამატება ვერ მოხერხდა. სცადეთ თავიდან."
+  },
+  "referral": {
+    "tabLabel": "რეფერალი",
+    "pageTitle": "რეფერალი და საფულე",
+    "pageLead": "მოიწვიე მეგობრები — მათი ყოველი შეკვეთიდან საფულეში თანხა დაგერიცხება.",
+    "balanceLabel": "საფულის ბალანსი",
+    "totalEarnedLabel": "მთლიანი მოგება",
+    "totalSpentLabel": "მთლიანი დახარჯული",
+    "effectivePercentLabel": "მიმდინარე განაკვეთი",
+    "effectivePercentValue": "{percent}% ყოველ შეკვეთაზე",
+    "referralCodeLabel": "შენი კოდი",
+    "referralLinkLabel": "შენი ბმული",
+    "copyLink": "ბმულის კოპირება",
+    "copyCode": "კოდის კოპირება",
+    "copied": "კოპირებულია",
+    "share": "გაზიარება",
+    "shareTitle": "შემოგვიერთდი aimenu.ge-ზე",
+    "shareText": "გამოიყენე ჩემი კოდი {code} რეგისტრაციისას.",
+    "howItWorksTitle": "როგორ მუშაობს",
+    "howItWorks1": "გააზიარე ბმული მეგობრებთან",
+    "howItWorks2": "ისინი დარეგისტრირდებიან კოდით",
+    "howItWorks3": "მათი ყოველი შეკვეთიდან {percent}% შენს საფულეში გადმოვა",
+    "recentActivityTitle": "საფულის ისტორია",
+    "referredUsersTitle": "მოწვეული მომხმარებლები",
+    "emptyActivity": "ჯერ ტრანზაქცია არ გაქვს",
+    "emptyReferred": "ჯერ ვინმე არ მიგიწვევია — გააზიარე ბმული!",
+    "joinedAt": "დარეგისტრირდა",
+    "earnedFrom": "მოგებული",
+    "txKind": {
+      "referral_credit": "რეფერალის ბონუსი",
+      "order_spend": "შეკვეთაზე გამოყენება",
+      "refund_credit": "თანხის დაბრუნება",
+      "referral_clawback": "რეფერალის ანულირება",
+      "manual_adjustment": "ხელით კორექტირება"
+    },
+    "walletCheckoutTitle": "გადახდა საფულიდან",
+    "walletCheckoutHint": "გამოიყენე ბალანსიდან თანხა — დანარჩენი ბარათით გადაიხდება.",
+    "walletAvailable": "ხელმისაწვდომია {amount} ₾",
+    "walletApplyLabel": "გამოყენებული თანხა (₾)",
+    "walletApplyAll": "მთლიანი ბალანსის გამოყენება",
+    "walletDisabled": "საფულე ცარიელია",
+    "signupCodeLabel": "რეფერალის კოდი (არასავალდებულო)",
+    "signupCodeHelp": "თუ გყავს მოწვევის კოდი — შეიყვანე აქ.",
+    "signupCodeInvalid": "ასეთი კოდი ვერ მოიძებნა"
   }
 }

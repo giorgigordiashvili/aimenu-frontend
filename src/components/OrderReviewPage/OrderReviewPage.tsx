@@ -18,6 +18,7 @@ import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
 import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
 import TipSelector from '@/components/TipSelector';
+import WalletApplySection from '@/components/WalletApplySection';
 import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
 import { useTable } from '@/context/TableContext';
@@ -207,6 +208,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   // when both are on, the customer picks via PaymentProviderPicker.
   const [provider, setProvider] = useState<PaymentProvider>('bog');
   const [tipAmount, setTipAmount] = useState<number>(0);
+  const [walletAmount, setWalletAmount] = useState<number>(0);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [session, setSession] = useState<TableSessionDetail | null>(null);
@@ -395,6 +397,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       const bogPayload = {
         ...payload,
         tip_amount: tipAmount || 0,
+        wallet_amount: walletAmount || 0,
         items: items.map(item => ({
           menu_item_id: item.menuItemId,
           quantity: item.quantity,
@@ -433,6 +436,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     t.orderReview.orderFailed,
     tableData,
     tipAmount,
+    walletAmount,
   ]);
 
   // Empty cart state
@@ -523,6 +527,23 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
             )}
             value={tipAmount}
             onChange={setTipAmount}
+          />
+        )}
+
+        {/* Wallet credit — backend re-clamps to spendable, but we cap the input
+            at the visible subtotal so users can't try to pay tip+tax with
+            credit (UI surprise — backend would silently drop it). */}
+        {!isCoveredGuest && (
+          <WalletApplySection
+            maxApplicable={items.reduce(
+              (sum, item) =>
+                sum +
+                (item.price + (item.modifiers ?? []).reduce((s, m) => s + m.price, 0)) *
+                  item.quantity,
+              0
+            )}
+            value={walletAmount}
+            onChange={setWalletAmount}
           />
         )}
 
