@@ -53,6 +53,7 @@ export default function ProgressiveImage({ blurhash, alt, style, ...rest }: Prop
   // own image pipeline handles the placeholder (solid background) until
   // the idle callback lands.
   const [blurDataURL, setBlurDataURL] = useState<string | false | null>(blurhash ? null : false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -72,38 +73,48 @@ export default function ProgressiveImage({ blurhash, alt, style, ...rest }: Prop
     };
   }, [blurhash]);
 
+  // Catch cached images. Browsers don't re-fire `load` on an <img> whose
+  // `complete` is already true, so if next/image mounted the real image
+  // before our blurhash finished decoding, the onLoad handler attached
+  // below would never fire and the blur would stay until BLUR_TIMEOUT_MS.
+  // Poll `complete` once per render until it flips.
+  useEffect(() => {
+    if (loaded) return;
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  });
+
   // Safety net: if the real image never fires `load` (CDN 404, CORS, cold
   // connection that silently stalls, preload race where the event was
   // dropped), clear the blur anyway so we don't look frozen forever.
   useEffect(() => {
-    if (!blurDataURL || loaded) return;
+    if (loaded) return;
     timerRef.current = window.setTimeout(() => setLoaded(true), BLUR_TIMEOUT_MS);
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
     };
-  }, [blurDataURL, loaded]);
+  }, [loaded]);
 
-  if (!blurDataURL) {
-    return <Image alt={alt} style={style} {...rest} />;
-  }
+  const blurActive = typeof blurDataURL === 'string' && !loaded;
 
+  // Always render a single tree so `onLoad` stays attached across the
+  // blurhash-decoding transition. Pass `placeholder` + `blurDataURL`
+  // only once decoded; the CSS filter handles the fade.
   return (
     <Image
+      ref={imgRef}
       alt={alt}
-      placeholder='blur'
-      blurDataURL={blurDataURL}
-      // `onLoad` is the modern event; fires reliably on both fresh loads
-      // and cached responses. (The deprecated `onLoadingComplete` has
-      // skipped in some Next 15 cache-hit paths.)
+      {...(typeof blurDataURL === 'string'
+        ? { placeholder: 'blur' as const, blurDataURL }
+        : {})}
       onLoad={() => setLoaded(true)}
-      // Image failed to download — stop pretending it's loading and
-      // show whatever fallback the parent supplied. Without this the
-      // blur filter would persist indefinitely.
       onError={() => setLoaded(true)}
       style={{
         ...style,
         transition: 'filter 350ms ease',
-        filter: loaded ? 'none' : 'blur(8px)',
+        filter: blurActive ? 'blur(8px)' : 'none',
       }}
       {...rest}
     />
