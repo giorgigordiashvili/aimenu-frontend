@@ -229,10 +229,12 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   // internals switch to "order only" (QR dine-in) when the URL has ?table=
   // — handled inside ReservationWidget itself.
   const showWidget = restaurant.accepts_reservations === true;
-  // Master ordering switch. When false, the customer can browse the menu
-  // but every order surface is suppressed (cart, checkout, QR dine-in).
-  // Defaults to true if the flag is missing from the API response.
-  const orderingEnabled = restaurant.accepts_remote_orders !== false;
+  // Master ordering switch. When NOT explicitly true, the customer can
+  // browse the menu but every order surface is suppressed (cart,
+  // checkout, QR dine-in). Previously this defaulted to `true` when the
+  // field was missing, which surfaced the sticky deposit/cart sheet on
+  // restaurants that had everything disabled.
+  const orderingEnabled = restaurant.accepts_remote_orders === true;
   // The mobile sticky bar / bottom sheet only makes sense when at least
   // one of the two flows (reservation OR ordering) is active.
   const showMobileSheet = showWidget || orderingEnabled;
