@@ -451,6 +451,15 @@
     "settleCtaBody": "{count} შეკვეთა, სულ {total} ₾ გელოდება.",
     "settleCtaButton": "მაგიდაზე გადახდა"
   },
+  "payments": {
+    "providerPicker": {
+      "title": "აირჩიე გადახდის სისტემა",
+      "bogLabel": "Bank of Georgia",
+      "bogDescription": "ბარათით გადახდა BOG-ის მეშვეობით.",
+      "flittLabel": "Flitt",
+      "flittDescription": "ბარათით გადახდა Flitt-ის მეშვეობით."
+    }
+  },
   "reservationInvite": {
     "title": "ჯავშნის მოწვევა",
     "metaTitle": "ჯავშანში მოწვევა",

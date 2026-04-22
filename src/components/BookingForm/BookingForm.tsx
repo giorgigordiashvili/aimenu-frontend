@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import axiosInstance from '@/api/axios';
 import { initiateReservationPayment } from '@/api/payments/bog';
+import { initiateReservationFlitt } from '@/api/payments/flitt';
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
 import BookingDateTimeSection from '@/components/BookingDateTimeSection/BookingDateTimeSection';
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
@@ -17,6 +18,7 @@ import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRes
 import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel';
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import MainButton from '@/components/MainButton/MainButton';
+import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
@@ -299,6 +301,11 @@ export default function BookingForm({
   const [reservationId, setReservationId] = useState<string | null>(null);
   const [confirmationCode, setConfirmationCode] = useState<string | null>(null);
   const [isCardFormValid, setIsCardFormValid] = useState(false);
+  const [provider, setProvider] = useState<PaymentProvider>('bog');
+  const [providerFlags, setProviderFlags] = useState<{
+    bog: boolean;
+    flitt: boolean;
+  }>({ bog: false, flitt: false });
 
   // Derived step: API outcomes take priority over local navigation state, which
   // prevents the three competing useEffects that previously caused flickering on retry.
@@ -420,6 +427,25 @@ export default function BookingForm({
       .catch(() => {});
   }, [slug]);
 
+  // Fetch the restaurant's payment-provider flags so the picker knows
+  // which buttons to render. Silent on failure — we just fall through
+  // to BOG as the default.
+  useEffect(() => {
+    if (!slug) return;
+    axiosInstance
+      .get<{ accepts_bog_payments?: boolean; accepts_flitt_payments?: boolean }>(
+        `/api/v1/restaurants/${slug}/`
+      )
+      .then(res => {
+        const bog = res.data?.accepts_bog_payments === true;
+        const flitt = res.data?.accepts_flitt_payments === true;
+        setProviderFlags({ bog, flitt });
+        if (!bog && flitt) setProvider('flitt');
+        else setProvider('bog');
+      })
+      .catch(() => {});
+  }, [slug]);
+
   // Fetch available time slots when date changes
   useEffect(() => {
     if (!selectedDate || !slug) return;
@@ -495,15 +521,19 @@ export default function BookingForm({
         modifier_ids: (item.modifiers ?? []).map(m => m.id),
         special_instructions: item.specialInstructions || undefined,
       }));
-      const { redirect_url } = await initiateReservationPayment({
+      const initiateBody = {
         reservation_payload: {
           ...reservationBody,
           restaurant_slug: slug,
           items: itemsForPayload.length > 0 ? itemsForPayload : undefined,
         },
         return_url: returnUrl,
-      });
-      window.location.assign(redirect_url);
+      };
+      const result =
+        provider === 'flitt'
+          ? await initiateReservationFlitt(initiateBody)
+          : await initiateReservationPayment(initiateBody);
+      window.location.assign(result.redirect_url);
     } catch (err: unknown) {
       if (process.env.NODE_ENV !== 'production') {
         console.error('[BookingForm] handlePay error:', err);
@@ -620,6 +650,12 @@ export default function BookingForm({
           </OverlayHeader>
 
           <OverlayContent>
+            <PaymentProviderPicker
+              value={provider}
+              onChange={setProvider}
+              bogAvailable={providerFlags.bog}
+              flittAvailable={providerFlags.flitt}
+            />
             <BookingPaymentForm
               depositAmount={depositAmount}
               grandTotal={cartTotal + depositAmount}

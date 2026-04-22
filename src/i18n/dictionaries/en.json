@@ -451,6 +451,15 @@
     "settleCtaBody": "{count} order(s) totalling {total} ₾ are waiting on you.",
     "settleCtaButton": "Pay for the table"
   },
+  "payments": {
+    "providerPicker": {
+      "title": "Choose payment provider",
+      "bogLabel": "Bank of Georgia",
+      "bogDescription": "Pay by card via BOG.",
+      "flittLabel": "Flitt",
+      "flittDescription": "Pay by card via Flitt."
+    }
+  },
   "reservationInvite": {
     "title": "Reservation invite",
     "metaTitle": "You're invited",

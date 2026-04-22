@@ -451,6 +451,15 @@
     "settleCtaBody": "{count} заказ(ов) на сумму {total} ₾ ожидают оплаты.",
     "settleCtaButton": "Оплатить стол"
   },
+  "payments": {
+    "providerPicker": {
+      "title": "Выберите платёжного провайдера",
+      "bogLabel": "Bank of Georgia",
+      "bogDescription": "Оплата картой через BOG.",
+      "flittLabel": "Flitt",
+      "flittDescription": "Оплата картой через Flitt."
+    }
+  },
   "reservationInvite": {
     "title": "Приглашение на бронь",
     "metaTitle": "Вас приглашают",

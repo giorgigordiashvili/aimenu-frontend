@@ -10,11 +10,13 @@ import type { RestaurantDetail, TableSessionDetail } from '@/api/generated/inter
 import { submitOrder } from '@/api/order';
 import type { CreateOrderRequest, OrderItemPayload } from '@/api/order-payload';
 import { initiateOrderPayment } from '@/api/payments/bog';
+import { initiateOrderFlitt } from '@/api/payments/flitt';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
 import GuestAddSection, { type Guest } from '@/components/GuestAddSection/GuestAddSection';
 import InviteFriendsSection from '@/components/InviteFriendsSection';
 import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
+import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
 import TipSelector from '@/components/TipSelector';
 import { useCart } from '@/context/CartContext';
 import { useTranslations } from '@/context/LocaleContext';
@@ -200,6 +202,10 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const { toast, showToast } = useToast();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('iWillPay');
+  // Card acquirer selection — separate from paymentMethod (which is about who
+  // pays). Default falls back to whichever provider the restaurant exposes;
+  // when both are on, the customer picks via PaymentProviderPicker.
+  const [provider, setProvider] = useState<PaymentProvider>('bog');
   const [tipAmount, setTipAmount] = useState<number>(0);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
@@ -224,6 +230,19 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
               ?.orderingDisabledToast ?? 'Ordering is disabled at this restaurant.'
           );
           router.replace(localePath(locale, `/restaurant/${restaurantSlug}`));
+        }
+        // Seed the acquirer default from the restaurant's flags. If both
+        // are configured the customer picks; the default choice here is
+        // the one that was "more true" alphabetically (bog wins ties) —
+        // arbitrary but deterministic.
+        const flags = (data ?? {}) as {
+          accepts_bog_payments?: boolean;
+          accepts_flitt_payments?: boolean;
+        };
+        if (!flags.accepts_bog_payments && flags.accepts_flitt_payments) {
+          setProvider('flitt');
+        } else {
+          setProvider('bog');
         }
       })
       .catch(() => {
@@ -383,11 +402,15 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
           modifier_ids: (item.modifiers ?? []).map(m => m.id),
         })),
       };
-      const { redirect_url } = await initiateOrderPayment({
+      const initiateBody = {
         order_payload: bogPayload as unknown as CreateOrderRequest,
         return_url: returnUrl,
-      });
-      window.location.assign(redirect_url);
+      };
+      const result =
+        provider === 'flitt'
+          ? await initiateOrderFlitt(initiateBody)
+          : await initiateOrderPayment(initiateBody);
+      window.location.assign(result.redirect_url);
     } catch (err) {
       if (process.env.NODE_ENV !== 'production') console.error('[submitOrder]', err);
       showToast(t.orderReview.orderFailed);
@@ -401,6 +424,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     items,
     locale,
     paymentMethod,
+    provider,
     restaurantSlug,
     router,
     session?.payment_mode,
@@ -469,7 +493,21 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
               'Your host is covering this order. Tap submit to send it to the kitchen.'}
           </CoveredGuestNotice>
         ) : (
-          <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+          <>
+            <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+            <PaymentProviderPicker
+              value={provider}
+              onChange={setProvider}
+              bogAvailable={
+                (restaurant as { accepts_bog_payments?: boolean } | null)?.accepts_bog_payments ===
+                true
+              }
+              flittAvailable={
+                (restaurant as { accepts_flitt_payments?: boolean } | null)
+                  ?.accepts_flitt_payments === true
+              }
+            />
+          </>
         )}
 
         {/* Tip — only for people actually paying right now (host / solo);

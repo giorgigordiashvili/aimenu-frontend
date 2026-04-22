@@ -11,6 +11,13 @@ import {
   type BogStatus,
   type BogStatusResponse,
 } from '@/api/payments/bog';
+import {
+  FLITT_SUCCESS_STATUSES,
+  FLITT_TERMINAL_STATUSES,
+  fetchFlittStatus,
+  type FlittStatus,
+  type FlittStatusResponse,
+} from '@/api/payments/flitt';
 import Footer from '@/components/Footer';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MainButton from '@/components/MainButton/MainButton';
@@ -100,19 +107,21 @@ export default function PaymentReturnPage({ locale }: Props) {
   const flow = parseFlow(searchParams.get('flow'));
   const ref = searchParams.get('ref') || '';
   const returnStatus = searchParams.get('status') || 'ok';
+  const provider: 'bog' | 'flitt' = searchParams.get('provider') === 'flitt' ? 'flitt' : 'bog';
 
   const [outcome, setOutcome] = useState<'pending' | 'success' | 'fail'>(
     returnStatus === 'fail' ? 'fail' : 'pending'
   );
-  const [status, setStatus] = useState<BogStatusResponse | null>(null);
+  const [status, setStatus] = useState<BogStatusResponse | FlittStatusResponse | null>(null);
   const attemptsRef = useRef(0);
 
   const navigateOnSuccess = useCallback(
-    (response: BogStatusResponse) => {
+    (response: BogStatusResponse | FlittStatusResponse) => {
+      const orderNumber = (response as { order_number?: string | null }).order_number;
       if (flow === 'order') {
         clearCart();
-        if (response.order_number) {
-          router.replace(localePath(locale, `/orders/${response.order_number}`));
+        if (orderNumber) {
+          router.replace(localePath(locale, `/orders/${orderNumber}`));
         } else {
           router.replace(localePath(locale));
         }
@@ -134,9 +143,24 @@ export default function PaymentReturnPage({ locale }: Props) {
       setOutcome('fail');
       return;
     }
+
+    // Provider-aware status fetcher — keeps the polling loop agnostic.
+    const fetchStatus = () => (provider === 'flitt' ? fetchFlittStatus(ref) : fetchBogStatus(ref));
+
+    const isSuccess = (s: string) =>
+      provider === 'flitt'
+        ? FLITT_SUCCESS_STATUSES.has(s as FlittStatus)
+        : BOG_SUCCESS_STATUSES.has(s as BogStatus);
+    const isTerminal = (s: string) =>
+      provider === 'flitt'
+        ? FLITT_TERMINAL_STATUSES.has(s as FlittStatus)
+        : BOG_TERMINAL_STATUSES.has(s as BogStatus);
+    const isFailure = (s: string) =>
+      provider === 'flitt' ? s === 'declined' || s === 'expired' : s === 'rejected';
+
     if (returnStatus === 'fail') {
       // Still try to fetch details for the reason text.
-      fetchBogStatus(ref)
+      fetchStatus()
         .then(setStatus)
         .catch(() => undefined);
       return;
@@ -147,21 +171,20 @@ export default function PaymentReturnPage({ locale }: Props) {
 
     const poll = async () => {
       try {
-        const res = await fetchBogStatus(ref);
+        const res = await fetchStatus();
         if (cancelled) return;
         setStatus(res);
 
-        if (BOG_SUCCESS_STATUSES.has(res.status as BogStatus)) {
+        if (isSuccess(res.status)) {
           setOutcome('success');
           navigateOnSuccess(res);
           return;
         }
-        if (res.status === 'rejected') {
+        if (isFailure(res.status)) {
           setOutcome('fail');
           return;
         }
-        if (BOG_TERMINAL_STATUSES.has(res.status as BogStatus)) {
-          // refunded etc. — treat as "done" without a specific landing.
+        if (isTerminal(res.status)) {
           setOutcome('success');
           navigateOnSuccess(res);
           return;
@@ -184,7 +207,7 @@ export default function PaymentReturnPage({ locale }: Props) {
       cancelled = true;
       if (timer) clearTimeout(timer);
     };
-  }, [ref, returnStatus, navigateOnSuccess]);
+  }, [ref, returnStatus, provider, navigateOnSuccess]);
 
   const successTitle = (() => {
     if (flow === 'order') return t.paymentReturn.successOrder;
@@ -249,7 +272,8 @@ export default function PaymentReturnPage({ locale }: Props) {
               <Body>
                 {t.paymentReturn.failBody.replace(
                   '{reason}',
-                  status?.code_description || t.paymentReturn.unknownFail
+                  (status as BogStatusResponse | null)?.code_description ||
+                    t.paymentReturn.unknownFail
                 )}
               </Body>
               {backButton}
