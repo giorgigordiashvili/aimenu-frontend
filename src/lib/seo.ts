@@ -78,15 +78,29 @@ export function buildMetadata({
   const canonical = localeUrl(locale, path);
   const images = image ? [{ url: image }] : undefined;
 
+  // Always suffix the visible <title> with "— aimenu.ge" so the brand name
+  // is present on every page's <title> tag. Google's OAuth consent-screen
+  // checker rejects the app when the configured app name isn't found on
+  // the homepage, and it reads <title> first. Skip the suffix if the
+  // caller already put the brand in the title.
+  const titleWithBrand = title
+    ? title.toLowerCase().includes(SITE_NAME.toLowerCase())
+      ? title
+      : `${title} — ${SITE_NAME}`
+    : undefined;
+
   return {
-    title,
+    title: titleWithBrand,
     description,
+    // Mirror the title into openGraph + twitter below so all surfaces
+    // agree. Set this before the spread of openGraph so it overrides the
+    // previous `title: title` that didn't include the suffix.
     alternates: {
       canonical,
       languages: languageAlternates(path),
     },
     openGraph: {
-      title,
+      title: titleWithBrand,
       description,
       url: canonical,
       siteName,
@@ -98,7 +112,7 @@ export function buildMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: titleWithBrand,
       description,
       images: image ? [image] : undefined,
     },
