@@ -1,9 +1,11 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import Link from 'next/link';
 
-import { useTranslations } from '@/context/LocaleContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { usePlatformLoyalty } from '@/hooks/usePlatformLoyalty';
+import { localePath } from '@/i18n/routing';
 import RestaurantUtensils from '@/icons/RestaurantUtensils';
 import { border, foreground, muted, primary, radiusMd, slate100, slate200, white } from '@/tokens';
 
@@ -78,6 +80,15 @@ const Teaser = styled('p')({
   lineHeight: 1.4,
 });
 
+const LearnMore = styled(Link)({
+  fontSize: '12px',
+  fontWeight: 600,
+  color: primary,
+  textDecoration: 'none',
+  alignSelf: 'flex-start',
+  '&:hover': { textDecoration: 'underline' },
+});
+
 const SkeletonBlock = styled('div')({
   background: `linear-gradient(90deg, ${slate100} 0%, ${slate200} 50%, ${slate100} 100%)`,
   backgroundSize: '200% 100%',
@@ -97,8 +108,10 @@ function interpolate(template: string, values: Record<string, string | number>):
 
 export default function PlatformStatusCard() {
   const t = useTranslations();
+  const { locale } = useLocale();
   const copy = t.platformLoyalty;
   const { status, isLoading } = usePlatformLoyalty();
+  const rulesHref = localePath(locale, '/loyalty');
 
   if (isLoading) {
     return (
@@ -121,6 +134,7 @@ export default function PlatformStatusCard() {
           <StatusLabel>{copy.yourStatus}</StatusLabel>
         </div>
         <Teaser>{copy.signInPrompt}</Teaser>
+        <LearnMore href={rulesHref}>{copy.learnMore}</LearnMore>
       </Card>
     );
   }
@@ -177,6 +191,7 @@ export default function PlatformStatusCard() {
       </ProgressBlock>
 
       <Teaser>{teaser}</Teaser>
+      <LearnMore href={rulesHref}>{copy.learnMore}</LearnMore>
     </Card>
   );
 }

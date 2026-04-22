@@ -664,6 +664,45 @@
       "not_found": "Program not found."
     }
   },
+  "loyaltyRules": {
+    "metaTitle": "Loyalty program",
+    "metaDescription": "How the aimenu.ge loyalty program works — points, tiers, and discounts across every partner restaurant.",
+    "tag": "Loyalty program",
+    "title": "Eat more, save more.",
+    "lead": "Every paid order on aimenu.ge earns points. The more you build up, the bigger the discount you carry into every participating restaurant.",
+    "howItWorksTitle": "How it works",
+    "step1Title": "Order",
+    "step1Body": "Any paid order — QR dine-in or pre-order — earns you 1 point plus 10% of the order total.",
+    "step2Title": "Level up",
+    "step2Body": "Cross a threshold and you move up a tier. Points don't expire instantly — there's a rolling 12-month window.",
+    "step3Title": "Get the discount",
+    "step3Body": "Your tier's discount is applied automatically at checkout at every participating restaurant.",
+    "tiersTitle": "The tiers",
+    "tiersIntro": "Four tiers, each with its own discount. Counting starts on your very first order.",
+    "tiers": {
+      "gourmandRange": "0 – 199 points",
+      "silverRange": "200 – 499 points",
+      "goldRange": "500 – 1,499 points",
+      "platinumRange": "1,500+ points"
+    },
+    "tiersNote": "Tier transitions happen automatically. The discount is applied at the bottom of every order.",
+    "earningTitle": "How points are earned",
+    "earningIntro": "Every paid order gives you two kinds of points at once:",
+    "earningRule1": "1 point per order — credit for showing up.",
+    "earningRule2": "Plus 10% of the order total as bonus points — a 25 ₾ order = 2.5 points.",
+    "earningRule3": "Points are valid for 12 months — consistent ordering protects your tier.",
+    "earningNote": "Anonymous / phone-only orders don't earn points — sign in to make sure every visit counts.",
+    "restaurantOptInTitle": "Restaurant participation",
+    "restaurantOptInBody": "The program is opt-in. Restaurants that join credit points to their guests and honour the tier discount.",
+    "restaurantOptInNote": "Look for the star badge on restaurant cards — that marks a participating venue.",
+    "fineprintTitle": "The fine print",
+    "fineprint1": "Points can't be transferred between accounts or converted to cash.",
+    "fineprint2": "The discount is applied to the cart subtotal before taxes and fees.",
+    "fineprint3": "If an order is cancelled, the corresponding points are reversed.",
+    "fineprint4": "Tier thresholds and discount rates may be adjusted — your profile always reflects the current rules.",
+    "ctaPrimary": "My status",
+    "ctaSecondary": "Participating restaurants"
+  },
   "platformLoyalty": {
     "yourStatus": "Your status",
     "pointsLabel": "points",
@@ -673,6 +712,7 @@
     "signInPrompt": "Sign in to start collecting points and unlock cross-restaurant discounts.",
     "badgeLabel": "Loyalty",
     "badgeHint": "Platform loyalty — earn points & discounts here",
+    "learnMore": "How it works →",
     "filterLabel": "Loyalty partners",
     "discountLineLabel": "{{tier}} {{discount}}% discount",
     "tiers": {
