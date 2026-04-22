@@ -1,7 +1,7 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { usersMeRetrieve } from '@/api/generated/api';
@@ -14,7 +14,7 @@ import ProfileTabSlide from '@/components/ProfileTabSlide';
 import { useAuth } from '@/context/AuthContext';
 import { MOCK_MODE, MOCK_PROFILE } from '@/hooks/useReservations';
 import { Locale } from '@/i18n/config';
-import { localePath } from '@/i18n/routing';
+import { localePath, stripLocale } from '@/i18n/routing';
 import { slate50 } from '@/tokens';
 
 const ShellWrapper = styled('div')({
@@ -30,6 +30,13 @@ interface ProfileShellProps {
 export default function ProfileShell({ locale, children }: ProfileShellProps) {
   const { user: authUser, isLoading: authLoading, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+
+  // The hub page at /profile renders its own avatar card + navigation, so
+  // hide the shell's ProfileHeader + ProfileTabNav (and the slide animation)
+  // on that route. Sub-routes like /profile/reservations keep the full shell.
+  const { pathWithoutLocale } = stripLocale(pathname);
+  const isHub = pathWithoutLocale === '/profile';
 
   // Fresh user data — starts from auth context, gets overwritten by API response
   const [user, setUser] = useState<User | null>(null);
@@ -77,20 +84,22 @@ export default function ProfileShell({ locale, children }: ProfileShellProps) {
   return (
     <ShellWrapper>
       <HeaderPrimary />
-      <ProfileHeader
-        displayName={displayName}
-        displayEmail={displayEmail}
-        displayPhone={displayPhone}
-        displayLocation={displayLocation}
-        initials={initials}
-        avatar={displayUser.avatar}
-        logout={logout}
-        onHome={() => router.push(localePath(locale))}
-      />
-      <ProfileTabNav />
-      <main>
-        <ProfileTabSlide>{children}</ProfileTabSlide>
-      </main>
+      {!isHub && (
+        <>
+          <ProfileHeader
+            displayName={displayName}
+            displayEmail={displayEmail}
+            displayPhone={displayPhone}
+            displayLocation={displayLocation}
+            initials={initials}
+            avatar={displayUser.avatar}
+            logout={logout}
+            onHome={() => router.push(localePath(locale))}
+          />
+          <ProfileTabNav />
+        </>
+      )}
+      <main>{isHub ? children : <ProfileTabSlide>{children}</ProfileTabSlide>}</main>
       <Footer locale={locale} />
     </ShellWrapper>
   );

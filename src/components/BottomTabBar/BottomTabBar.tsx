@@ -106,7 +106,7 @@ export default function BottomTabBar() {
   );
 
   const accountHref = isAuthenticated
-    ? localePath(locale, '/profile/settings')
+    ? localePath(locale, '/profile')
     : localePath(locale, '/login');
   const bookingsHref = isAuthenticated
     ? localePath(locale, '/profile/reservations')
