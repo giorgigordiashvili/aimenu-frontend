@@ -11,6 +11,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { localePath } from '@/i18n/routing';
 import CloseIcon from '@/icons/Close';
+import HeartOutlineIcon from '@/icons/HeartOutline';
+import HistoryIcon from '@/icons/History';
 import LogoutIcon from '@/icons/Logout';
 import MenuIcon from '@/icons/Menu';
 import UserIcon from '@/icons/User';
@@ -219,6 +221,19 @@ const DropdownMenu = styled('div')({
   boxShadow: shadowMd,
   overflow: 'hidden',
   zIndex: 300,
+});
+
+const DropdownItem = styled(Link)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+  padding: '11px 16px',
+  fontSize: '14px',
+  fontWeight: 400,
+  color: foreground,
+  textDecoration: 'none',
+  transition: 'background 0.1s',
+  '&:hover': { background: slate100 },
 });
 
 const LogoutItem = styled('button')({
@@ -539,6 +554,39 @@ export default function HeaderPrimary() {
 
                 {userMenuOpen && (
                   <DropdownMenu>
+                    <DropdownItem
+                      href={localePath(locale, '/profile')}
+                      onClick={() => setUserMenuOpen(false)}
+                      onMouseEnter={() => prefetchHref(localePath(locale, '/profile'))}
+                      onFocus={() => prefetchHref(localePath(locale, '/profile'))}
+                    >
+                      <IconWrap>
+                        <UserIcon width={24} height={24} />
+                      </IconWrap>
+                      {t.header.profile}
+                    </DropdownItem>
+                    <DropdownItem
+                      href={localePath(locale, '/favorites')}
+                      onClick={() => setUserMenuOpen(false)}
+                      onMouseEnter={() => prefetchHref(localePath(locale, '/favorites'))}
+                      onFocus={() => prefetchHref(localePath(locale, '/favorites'))}
+                    >
+                      <IconWrap>
+                        <HeartOutlineIcon variant='outlined' width={24} height={24} />
+                      </IconWrap>
+                      {t.header.favorites}
+                    </DropdownItem>
+                    <DropdownItem
+                      href={localePath(locale, '/profile/reservations')}
+                      onClick={() => setUserMenuOpen(false)}
+                      onMouseEnter={() => prefetchHref(localePath(locale, '/profile/reservations'))}
+                      onFocus={() => prefetchHref(localePath(locale, '/profile/reservations'))}
+                    >
+                      <IconWrap>
+                        <HistoryIcon width={24} height={24} />
+                      </IconWrap>
+                      {t.header.myBookings}
+                    </DropdownItem>
                     <LogoutItem onClick={handleLogout}>
                       <IconWrap>
                         <LogoutIcon width={24} height={24} />
