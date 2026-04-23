@@ -15,7 +15,7 @@ import SharedTableBanner from '@/components/SharedTableBanner';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
 import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
-import { buildMetadata, localeUrl } from '@/lib/seo';
+import { buildMetadata, localeUrl, SITE_URL } from '@/lib/seo';
 import { getTranslation } from '@/utils/translations';
 
 import BelowFold from './BelowFold';
@@ -177,17 +177,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? truncateSocial(r.description, 180)
     : (seo.restaurantDescription ?? '{name}.').replace('{name}', name).replace('{city}', city);
 
+  // Explicitly point at the file-based opengraph-image route. We used to
+  // rely on Next's automatic merge when `openGraph.images` was omitted,
+  // but buildMetadata always sets `images: undefined` which overrides the
+  // auto-detection — the live HTML ended up with NO og:image. Hard-code
+  // the canonical URL so every crawler sees the 1200×630 branded card.
+  const ogImageUrl = `${SITE_URL}/restaurant/${slug}/opengraph-image`;
+
   return buildMetadata({
     locale,
     path: `/restaurant/${slug}`,
     title,
     description,
-    // Intentionally not passing `image` — Next's file-based convention
-    // picks up opengraph-image.tsx next to this file and produces a
-    // proper 1200×630 branded card. Supplying the raw cover/logo URL
-    // would risk a cropped square preview on Twitter's
-    // summary_large_image. (The JSON-LD in the page body still
-    // exposes cover_image + logo for schema.org consumers.)
+    image: ogImageUrl,
     ogType: 'restaurant',
   });
 }

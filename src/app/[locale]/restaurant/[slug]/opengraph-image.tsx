@@ -23,6 +23,7 @@ interface RestaurantSummary {
 }
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? 'https://admin.aimenu.ge').replace(/\/$/, '');
+const SITE_ORIGIN = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aimenu.ge').replace(/\/$/, '');
 
 async function loadRestaurant(slug: string): Promise<RestaurantSummary | null> {
   try {
@@ -40,10 +41,12 @@ async function loadRestaurant(slug: string): Promise<RestaurantSummary | null> {
 export default async function Image({ params }: Props) {
   const { slug } = await params;
   const r = await loadRestaurant(slug);
-  const name = r?.name ?? slug;
+  const name = r?.name ?? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   const city = r?.city ?? '';
   const rating = r?.average_rating ? parseFloat(r.average_rating).toFixed(1) : null;
-  const bg = r?.cover_image || r?.logo || null;
+  const description = r?.description ? r.description.slice(0, 120) : '';
+  const cover = r?.cover_image || null;
+  const logo = r?.logo || null;
 
   return new ImageResponse(
     <div
@@ -53,12 +56,13 @@ export default async function Image({ params }: Props) {
         display: 'flex',
         position: 'relative',
         background: '#0f172b',
+        fontFamily: 'sans-serif',
       }}
     >
-      {bg && (
+      {cover && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={bg}
+          src={cover}
           alt=''
           style={{
             position: 'absolute',
@@ -67,50 +71,185 @@ export default async function Image({ params }: Props) {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
+            filter: 'blur(24px) brightness(0.55)',
+            transform: 'scale(1.08)',
           }}
         />
       )}
+      {/* Darker gradient on the bottom half so the text row always has contrast */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(15,23,43,0.35) 0%, rgba(15,23,43,0.92) 100%)',
+          background: 'linear-gradient(180deg, rgba(15,23,43,0.55) 0%, rgba(15,23,43,0.95) 100%)',
         }}
       />
+
+      {/* aimenu.ge badge — top-right */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 40,
+          right: 48,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          background: 'rgba(255,255,255,0.12)',
+          border: '1px solid rgba(255,255,255,0.22)',
+          borderRadius: 999,
+          padding: '10px 20px 10px 14px',
+          color: '#fff',
+          fontSize: 26,
+          fontWeight: 600,
+          letterSpacing: '-0.5px',
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`${SITE_ORIGIN}/logo.png`}
+          alt=''
+          width={32}
+          height={32}
+          style={{ borderRadius: 8 }}
+        />
+        aimenu.ge
+      </div>
+
+      {/* Main content row — logo badge + info */}
       <div
         style={{
           position: 'relative',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 48,
           padding: '64px 80px',
           color: '#fff',
           width: '100%',
+          marginTop: 'auto',
         }}
       >
-        <div style={{ fontSize: 22, opacity: 0.7, marginBottom: 12 }}>aimenu.ge</div>
+        {/* Restaurant logo badge */}
         <div
           style={{
-            fontSize: 80,
-            fontWeight: 800,
-            lineHeight: 1.05,
-            letterSpacing: '-2px',
-            margin: 0,
+            width: 220,
+            height: 220,
+            borderRadius: 999,
+            background: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            flexShrink: 0,
+            boxShadow: '0 16px 40px rgba(0,0,0,0.4)',
           }}
         >
-          {name}
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logo}
+              alt=''
+              width={220}
+              height={220}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <div
+              style={{
+                fontSize: 88,
+                fontWeight: 800,
+                color: '#0f172b',
+                letterSpacing: '-2px',
+              }}
+            >
+              {name.charAt(0).toUpperCase()}
+            </div>
+          )}
         </div>
+
+        {/* Text column */}
         <div
           style={{
             display: 'flex',
-            gap: 16,
-            marginTop: 20,
-            fontSize: 28,
-            opacity: 0.9,
+            flexDirection: 'column',
+            flex: 1,
+            minWidth: 0,
           }}
         >
-          {city ? <span>{city}</span> : null}
-          {rating ? <span>★ {rating}</span> : null}
+          <div
+            style={{
+              fontSize: 72,
+              fontWeight: 800,
+              lineHeight: 1.05,
+              letterSpacing: '-2px',
+              margin: 0,
+              color: '#fff',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {name}
+          </div>
+          {description && (
+            <div
+              style={{
+                fontSize: 26,
+                lineHeight: 1.35,
+                color: 'rgba(255,255,255,0.82)',
+                marginTop: 16,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {description}
+            </div>
+          )}
+          {(city || rating) && (
+            <div
+              style={{
+                display: 'flex',
+                gap: 12,
+                marginTop: 24,
+              }}
+            >
+              {city && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: 'rgba(255,255,255,0.14)',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    borderRadius: 999,
+                    padding: '8px 18px',
+                    fontSize: 24,
+                    fontWeight: 500,
+                  }}
+                >
+                  📍 {city}
+                </div>
+              )}
+              {rating && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: 'rgba(236,0,63,0.18)',
+                    border: '1px solid rgba(236,0,63,0.45)',
+                    borderRadius: 999,
+                    padding: '8px 18px',
+                    fontSize: 24,
+                    fontWeight: 600,
+                    color: '#fff',
+                  }}
+                >
+                  ★ {rating}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>,
