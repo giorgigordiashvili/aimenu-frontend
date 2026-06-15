@@ -2,12 +2,22 @@ import { withPigment } from '@pigment-css/nextjs-plugin';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Emit a self-contained server bundle (.next/standalone) so the Docker
+  // image can run `node server.js` without the full node_modules tree.
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'admin.aimenu.ge',
         pathname: '/media/**',
+      },
+      {
+        // Self-hosted MinIO behind Caddy after the Hetzner migration —
+        // backend emits image URLs through this host (MINIO_EXTERNAL_ENDPOINT).
+        protocol: 'https',
+        hostname: 'media.aimenu.ge',
+        pathname: '/**',
       },
       {
         protocol: 'https',
