@@ -30,6 +30,8 @@ export interface CreateOrderRequest {
   customer_phone?: string;
   customer_email?: string;
   customer_notes?: string;
+  /** Promotions module: a promo code typed at checkout. */
+  promo_code?: string;
   items: OrderItemPayload[];
 }
 

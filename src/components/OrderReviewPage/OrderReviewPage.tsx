@@ -17,6 +17,7 @@ import InviteFriendsSection from '@/components/InviteFriendsSection';
 import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
 import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
+import PromoCodeField from '@/components/PromoCodeField';
 import TipSelector from '@/components/TipSelector';
 import WalletApplySection from '@/components/WalletApplySection';
 import { useCart } from '@/context/CartContext';
@@ -208,6 +209,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   // when both are on, the customer picks via PaymentProviderPicker.
   const [provider, setProvider] = useState<PaymentProvider>('bog');
   const [tipAmount, setTipAmount] = useState<number>(0);
+  const [promoCode, setPromoCode] = useState<string>('');
   const [walletAmount, setWalletAmount] = useState<number>(0);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
@@ -322,6 +324,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       table: tableData?.restaurantSlug === restaurantSlug ? tableData.code : undefined,
       table_session: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
       customer_notes: notes.join(' | '),
+      promo_code: promoCode || undefined,
       items: items.map<OrderItemPayload>(item => ({
         menu_item: item.menuItemId,
         quantity: item.quantity,
@@ -339,6 +342,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       session_id: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
       customer_notes: notes.join(' | '),
       tip_amount: tipAmount || 0,
+      promo_code: promoCode || undefined,
       items: items.map(item => ({
         menu_item_id: item.menuItemId,
         quantity: item.quantity,
@@ -436,6 +440,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     t.orderReview.orderFailed,
     tableData,
     tipAmount,
+    promoCode,
     walletAmount,
   ]);
 
@@ -512,6 +517,16 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
               }
             />
           </>
+        )}
+
+        {!isCoveredGuest && restaurantSlug && (
+          <PromoCodeField
+            slug={restaurantSlug}
+            channel={tableData?.restaurantSlug === restaurantSlug ? 'qr' : 'web'}
+            items={items.map(item => ({ menu_item_id: item.menuItemId, quantity: item.quantity }))}
+            value={promoCode}
+            onChange={setPromoCode}
+          />
         )}
 
         {/* Tip — only for people actually paying right now (host / solo);

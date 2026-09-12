@@ -9,6 +9,12 @@ import { Locale, defaultLocale } from '@/i18n/config';
 import { getTranslation } from '@/utils/translations';
 
 interface FormattedProduct {
+  /** Promotions module: happy-hour price right now, if any. */
+  promoPrice?: number | null;
+  promoLabel?: string;
+  /** Schedules / '86 today': false = shown but not orderable now. */
+  availableNow: boolean;
+  availableFrom?: string;
   id: string;
   name: string;
   description: string;
@@ -95,6 +101,11 @@ const formatMenuItem = (item: MenuItem, locale: Locale): FormattedProduct => {
     name: getTranslatedField(item.translations, 'name', locale),
     description: getTranslatedField(item.translations, 'description', locale),
     price: parseFloat(item.price) || 0,
+    // The generator types SerializerMethodFields as string; coerce defensively.
+    promoPrice: item.promo_price ? parseFloat(String(item.promo_price)) || null : null,
+    promoLabel: item.promo_label ? String(item.promo_label) : '',
+    availableNow: String(item.available_now ?? 'true') !== 'false',
+    availableFrom: item.available_from ? String(item.available_from) : '',
     image: item.image,
     imageBlurhash: (item as { image_blurhash?: string }).image_blurhash,
     categoryId: item.category?.id || '',

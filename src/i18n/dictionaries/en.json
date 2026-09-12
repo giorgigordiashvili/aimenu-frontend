@@ -1057,5 +1057,18 @@
     "invalid": "This invitation link is not valid.",
     "failed": "Could not accept the invitation. Please try again.",
     "back": "Back to AiMenu"
+  },
+  "menuExtras": {
+    "promo": "Promo",
+    "notAvailableNow": "Not available right now"
+  },
+  "promo": {
+    "title": "Promo code",
+    "placeholder": "Enter code",
+    "apply": "Apply",
+    "applied": "Code applied: −{amount} ₾",
+    "appliedNoAmount": "Code applied",
+    "remove": "Remove",
+    "checking": "Checking…"
   }
 }

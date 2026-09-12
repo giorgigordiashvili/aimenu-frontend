@@ -195,6 +195,31 @@ const ItemDescription = styled('p')({
   overflow: 'hidden',
 });
 
+const OldPrice = styled('span')({
+  textDecoration: 'line-through',
+  opacity: 0.55,
+  marginRight: 6,
+  fontWeight: 400,
+});
+
+const PromoTag = styled('span')({
+  display: 'inline-block',
+  marginLeft: 8,
+  padding: '1px 8px',
+  borderRadius: 999,
+  fontSize: 11,
+  fontWeight: 600,
+  background: '#fff1e6',
+  color: '#c2410c',
+});
+
+const NotNowTag = styled('span')({
+  display: 'inline-block',
+  marginTop: 4,
+  fontSize: 12,
+  color: '#9a3412',
+});
+
 const ItemPrice = styled('p')({
   fontSize: '15px',
   fontWeight: 700,
@@ -277,6 +302,10 @@ interface MenuProduct {
   name: string;
   description: string;
   price: number;
+  promoPrice?: number | null;
+  promoLabel?: string;
+  availableNow?: boolean;
+  availableFrom?: string;
   image?: string;
   imageBlurhash?: string;
   categoryId: string;
@@ -385,6 +414,7 @@ export default function MenuSection({
   // because we can't guess a selection on their behalf.
   const quickAdd = (product: MenuProduct, e?: React.MouseEvent) => {
     e?.stopPropagation();
+    if (product.availableNow === false) return;
     const hasRequired = product.modifierGroups?.some(g => g.required);
     if (hasRequired) {
       openModal(product);
@@ -394,7 +424,7 @@ export default function MenuSection({
       id: product.id,
       menuItemId: product.id,
       name: product.name,
-      price: product.price,
+      price: product.promoPrice ?? product.price,
       image: product.image,
       modifiers: [],
     });
@@ -497,7 +527,25 @@ export default function MenuSection({
                     {product.description && (
                       <ItemDescription>{product.description}</ItemDescription>
                     )}
-                    <ItemPrice>{product.price.toFixed(2)} ₾</ItemPrice>
+                    <ItemPrice>
+                      {product.promoPrice !== null &&
+                      product.promoPrice !== undefined &&
+                      product.promoPrice < product.price ? (
+                        <>
+                          <OldPrice>{product.price.toFixed(2)} ₾</OldPrice>
+                          {product.promoPrice.toFixed(2)} ₾
+                          <PromoTag>{product.promoLabel || t.menuExtras.promo}</PromoTag>
+                        </>
+                      ) : (
+                        <>{product.price.toFixed(2)} ₾</>
+                      )}
+                    </ItemPrice>
+                    {product.availableNow === false && (
+                      <NotNowTag>
+                        {t.menuExtras.notAvailableNow}
+                        {product.availableFrom ? ` · ${product.availableFrom}` : ''}
+                      </NotNowTag>
+                    )}
                   </ItemContent>
                   {/* Menu-only mode hides both the add-to-cart button and the
                       per-item quantity stepper — the card stays tappable to
