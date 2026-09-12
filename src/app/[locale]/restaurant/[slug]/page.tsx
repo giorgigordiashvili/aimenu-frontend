@@ -13,6 +13,7 @@ import RestaurantDetailInfo from '@/components/RestaurantDetailInfo';
 import ReviewsSection from '@/components/ReviewsSection';
 import SharedTableBanner from '@/components/SharedTableBanner';
 import SimilarRestaurants from '@/components/SimilarRestaurants';
+import VenueChip from '@/components/VenueChip';
 import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { buildMetadata, localeUrl, SITE_URL } from '@/lib/seo';
@@ -226,6 +227,10 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   const categoryName = restaurant.category
     ? getTranslation(restaurant.category.translations, 'name', locale)
     : undefined;
+  // Shared venue (food hall) this restaurant belongs to; the generator
+  // flattens the nested object, so narrow it here.
+  const venue =
+    (restaurant as unknown as { venue?: { slug: string; name: string } | null }).venue ?? null;
 
   // Widget is always shown when the restaurant accepts reservations. Its
   // internals switch to "order only" (QR dine-in) when the URL has ?table=
@@ -301,6 +306,8 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
           <LeftColumn>
             <SharedTableBanner slug={slug} />
             <RestaurantCartScopeBanner slug={slug} />
+
+            {venue ? <VenueChip locale={locale} venue={venue} /> : null}
 
             <RestaurantDetailInfo
               name={restaurant.name}

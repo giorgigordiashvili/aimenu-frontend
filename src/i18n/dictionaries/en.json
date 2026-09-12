@@ -835,7 +835,9 @@
     "aboutTitle": "About aimenu.ge",
     "aboutDescription": "How aimenu.ge helps customers and restaurants in Georgia.",
     "contactTitle": "Contact aimenu.ge",
-    "contactDescription": "Get in touch with the aimenu.ge team — partnerships, support, feedback."
+    "contactDescription": "Get in touch with the aimenu.ge team — partnerships, support, feedback.",
+    "venueTitle": "{name} — restaurants and menus",
+    "venueDescription": "{name}: every restaurant in one place. Browse the menus and order from your table."
   },
   "restaurantsSearch": {
     "loading": "Loading...",
@@ -1011,5 +1013,23 @@
     "signupCodeLabel": "Referral code (optional)",
     "signupCodeHelp": "Got an invite code? Enter it here.",
     "signupCodeInvalid": "Unknown referral code"
+  },
+  "venue": {
+    "restaurants": "Restaurants",
+    "menu": "Menu",
+    "table": "Table",
+    "tableHint": "You can order from any restaurant at this table",
+    "order": "Order",
+    "viewMenu": "View menu",
+    "all": "All",
+    "orderingOff": "Ordering is temporarily unavailable",
+    "partOf": "Part of {venue}",
+    "backToVenue": "All restaurants",
+    "loadFailed": "Could not load the menu",
+    "notFound": "Venue not found",
+    "invalidTable": "This table code is invalid or no longer active",
+    "emptyMenu": "No menu yet",
+    "restaurantsCount": "{count} restaurants in one place",
+    "reviews": "reviews"
   }
 }

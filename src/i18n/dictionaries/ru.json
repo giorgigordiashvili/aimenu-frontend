@@ -835,7 +835,9 @@
     "aboutTitle": "О aimenu.ge",
     "aboutDescription": "Как aimenu.ge помогает гостям и ресторанам в Грузии.",
     "contactTitle": "Контакты aimenu.ge",
-    "contactDescription": "Свяжитесь с командой aimenu.ge — партнёрства, поддержка, отзывы."
+    "contactDescription": "Свяжитесь с командой aimenu.ge — партнёрства, поддержка, отзывы.",
+    "venueTitle": "{name} — рестораны и меню",
+    "venueDescription": "{name}: все рестораны в одном месте. Смотрите меню и заказывайте прямо со стола."
   },
   "restaurantsSearch": {
     "loading": "Загрузка...",
@@ -1011,5 +1013,23 @@
     "signupCodeLabel": "Реферальный код (необязательно)",
     "signupCodeHelp": "Если у вас есть код приглашения — введите здесь.",
     "signupCodeInvalid": "Такой код не найден"
+  },
+  "venue": {
+    "restaurants": "Рестораны",
+    "menu": "Меню",
+    "table": "Стол",
+    "tableHint": "За этим столом можно заказать в любом ресторане",
+    "order": "Заказать",
+    "viewMenu": "Смотреть меню",
+    "all": "Все",
+    "orderingOff": "Заказ временно недоступен",
+    "partOf": "Часть: {venue}",
+    "backToVenue": "Все рестораны",
+    "loadFailed": "Не удалось загрузить меню",
+    "notFound": "Место не найдено",
+    "invalidTable": "Код стола недействителен или больше не активен",
+    "emptyMenu": "Меню пока пустое",
+    "restaurantsCount": "{count} ресторанов в одном месте",
+    "reviews": "отзывов"
   }
 }
