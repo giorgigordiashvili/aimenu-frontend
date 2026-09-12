@@ -3,7 +3,8 @@
 import useSWR from 'swr';
 
 import { restaurantsMenuItemsList, restaurantsMenuCategoriesList } from '@/api/generated/api';
-import type { MenuItem, MenuCategory, ModifierGroup, Modifier } from '@/api/generated/interfaces';
+import type { MenuItem, MenuCategory, Modifier } from '@/api/generated/interfaces';
+import type { ModifierGroup } from '@/api/menu-types';
 import { Locale, defaultLocale } from '@/i18n/config';
 import { getTranslation } from '@/utils/translations';
 
