@@ -6,6 +6,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { restaurantsRetrieve } from '@/api/generated/api';
 import type { RestaurantDetail } from '@/api/generated/interfaces';
 import BookingForm from '@/components/BookingForm/BookingForm';
+import { restaurantModules } from '@/lib/modules';
 
 function BookingPageInner() {
   const router = useRouter();
@@ -16,9 +17,18 @@ function BookingPageInner() {
 
   useEffect(() => {
     if (slug) {
-      restaurantsRetrieve(slug).then(setRestaurant).catch(console.warn);
+      restaurantsRetrieve(slug)
+        .then(data => {
+          // Reservations module off: there is nothing to book here.
+          if (!restaurantModules(data).reservations) {
+            router.replace(`/restaurant/${slug}`);
+            return;
+          }
+          setRestaurant(data);
+        })
+        .catch(console.warn);
     }
-  }, [slug]);
+  }, [slug, router]);
 
   // `||` (not `??`) so empty strings from the API fall through to the demo
   // fallback — some restaurants have cover_image=""/logo="" rather than null.

@@ -20,6 +20,7 @@ import { MenuSectionSkeleton } from '@/components/Skeleton';
 import { type Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
+import { restaurantModules } from '@/lib/modules';
 import {
   readVenueTable,
   restaurantHref,
@@ -365,7 +366,8 @@ function RestaurantCard({
   t: Dict;
 }) {
   const category = r.category ? getTranslation(r.category.translations, 'name', locale) : '';
-  const rating = parseFloat(r.average_rating || '0');
+  // Reviews module off for this member: no stars on its card.
+  const rating = restaurantModules(r).reviews ? parseFloat(r.average_rating || '0') : 0;
   return (
     <Card
       style={{ ['--brand' as string]: r.primary_color || undefined }}

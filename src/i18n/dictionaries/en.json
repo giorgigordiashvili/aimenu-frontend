@@ -1032,5 +1032,30 @@
     "emptyMenu": "No menu yet",
     "restaurantsCount": "{count} restaurants in one place",
     "reviews": "reviews"
+  },
+  "staffInvite": {
+    "title": "Staff invitation",
+    "metaTitle": "Staff invitation",
+    "metaDescription": "Join a restaurant team on AiMenu.",
+    "subtitle": "{restaurant} invites you to join the team as {role}.",
+    "restaurant": "Restaurant",
+    "role": "Role",
+    "invitedBy": "Invited by",
+    "expires": "Valid until",
+    "signInHint": "Sign in or create an account with this email to accept.",
+    "loginCta": "Sign in to accept",
+    "registerCta": "Create an account",
+    "loggedInAs": "Signed in as {email}.",
+    "switchAccount": "Use another account",
+    "accept": "Accept invitation",
+    "accepting": "Accepting…",
+    "accepted": "You're now part of the team at {restaurant}.",
+    "openAdmin": "Open the restaurant admin",
+    "openPos": "Open the POS app",
+    "expired": "This invitation has expired. Ask the restaurant to send a new one.",
+    "alreadyAccepted": "This invitation was already used.",
+    "invalid": "This invitation link is not valid.",
+    "failed": "Could not accept the invitation. Please try again.",
+    "back": "Back to AiMenu"
   }
 }

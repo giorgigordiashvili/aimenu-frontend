@@ -354,7 +354,11 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
         ...(referralCode.trim() ? { referral_code: referralCode.trim().toUpperCase() } : {}),
       });
 
-      router.push(localePath(locale, '/login'));
+      // Keep a `?redirect=` (e.g. a staff invitation) alive across the login step.
+      const redirect = searchParams.get('redirect');
+      router.push(
+        localePath(locale, '/login') + (redirect ? `?redirect=${encodeURIComponent(redirect)}` : '')
+      );
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: Record<string, string[]> } };
       const data = axiosErr?.response?.data;

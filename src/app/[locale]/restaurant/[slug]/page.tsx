@@ -16,6 +16,7 @@ import SimilarRestaurants from '@/components/SimilarRestaurants';
 import VenueChip from '@/components/VenueChip';
 import { defaultLocale, isValidLocale, type Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
+import { restaurantModules } from '@/lib/modules';
 import { buildMetadata, localeUrl, SITE_URL } from '@/lib/seo';
 import { getTranslation } from '@/utils/translations';
 
@@ -235,16 +236,20 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   // Widget is always shown when the restaurant accepts reservations. Its
   // internals switch to "order only" (QR dine-in) when the URL has ?table=
   // — handled inside ReservationWidget itself.
-  const showWidget = restaurant.accepts_reservations === true;
-  // Master ordering switch. When NOT explicitly true, the customer can
-  // browse the menu but every order surface is suppressed (cart,
-  // checkout, QR dine-in). Previously this defaulted to `true` when the
-  // field was missing, which surfaced the sticky deposit/cart sheet on
-  // restaurants that had everything disabled.
-  const orderingEnabled = restaurant.accepts_remote_orders === true;
+  // Modules the restaurant switched on (Settings -> Modules in its admin).
+  const modules = restaurantModules(restaurant);
+  const showWidget = modules.reservations;
+  // Master ordering switch. When off, the customer can browse the menu but
+  // every order surface is suppressed (cart, checkout, QR dine-in).
+  const orderingEnabled = modules.ordering;
+  // Reviews module off: no section, no star rating anywhere on the page.
+  const reviewsEnabled = modules.reviews;
   // The mobile sticky bar / bottom sheet only makes sense when at least
-  // one of the two flows (reservation OR ordering) is active.
+  // one of the two flows (reservation OR ordering) is active. The desktop
+  // right column hosts both the booking widget and the QR order card, so
+  // it shows for either.
   const showMobileSheet = showWidget || orderingEnabled;
+  const showRightColumn = showWidget || orderingEnabled;
 
   // schema.org/Restaurant JSON-LD for Google's rich result. Optional fields
   // are only emitted when the API populated them so we don't ship empty
@@ -276,7 +281,7 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
     telephone: restaurant.phone || undefined,
     priceRange: '₾₾',
     aggregateRating:
-      restaurant.average_rating && parseFloat(restaurant.average_rating) > 0
+      reviewsEnabled && restaurant.average_rating && parseFloat(restaurant.average_rating) > 0
         ? {
             '@type': 'AggregateRating',
             ratingValue: restaurant.average_rating,
@@ -313,8 +318,8 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
               name={restaurant.name}
               description={restaurant.description}
               city={restaurant.city}
-              averageRating={restaurant.average_rating}
-              totalReviews={restaurant.total_reviews}
+              averageRating={reviewsEnabled ? restaurant.average_rating : undefined}
+              totalReviews={reviewsEnabled ? restaurant.total_reviews : undefined}
               categoryName={categoryName}
               amenities={restaurant.amenities}
               locale={locale}
@@ -331,7 +336,7 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
               orderingEnabled={orderingEnabled}
             />
 
-            <ReviewsSection slug={slug} />
+            {reviewsEnabled && <ReviewsSection slug={slug} />}
 
             <ContactInfo
               operatingHours={restaurant.operating_hours}
@@ -349,9 +354,14 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
             />
           </LeftColumn>
 
-          {showWidget && (
+          {showRightColumn && (
             <RightColumn>
-              <ReservationWidget slug={slug} locale={locale} orderingEnabled={orderingEnabled} />
+              <ReservationWidget
+                slug={slug}
+                locale={locale}
+                orderingEnabled={orderingEnabled}
+                reservationsEnabled={showWidget}
+              />
             </RightColumn>
           )}
         </ContentLayout>

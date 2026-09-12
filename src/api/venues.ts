@@ -27,6 +27,7 @@ export interface VenueRestaurantCard {
   total_reviews: number;
   is_open_now: boolean;
   accepts_remote_orders: boolean;
+  modules?: Partial<Record<string, boolean>>;
   primary_color: string;
   secondary_color: string;
   default_currency: 'GEL' | 'USD' | 'EUR' | string;

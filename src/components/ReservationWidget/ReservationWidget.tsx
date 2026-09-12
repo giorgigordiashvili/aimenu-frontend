@@ -242,6 +242,11 @@ interface ReservationWidgetProps {
    * form regardless of whether the user is seated.
    */
   orderingEnabled?: boolean;
+  /**
+   * Reservations module. When false the booking form is never shown; the
+   * widget only renders in QR dine-in (order) mode.
+   */
+  reservationsEnabled?: boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -250,6 +255,7 @@ export default function ReservationWidget({
   slug,
   locale,
   orderingEnabled = true,
+  reservationsEnabled = true,
 }: ReservationWidgetProps) {
   const router = useRouter();
   const t = useTranslations();
@@ -365,6 +371,9 @@ export default function ReservationWidget({
   }
 
   const guestOptions = Array.from({ length: 10 }, (_, i) => i + 1);
+
+  // Reservations off and not seated at a table: nothing to show here.
+  if (!hasTableParam && !reservationsEnabled) return null;
 
   // QR dine-in mode: user is at the restaurant, no date/time/guests needed.
   // Show a compact card with a summary of chosen items + a single Order CTA.
