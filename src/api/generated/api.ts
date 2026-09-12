@@ -22,6 +22,7 @@ import type {
   TokenRefresh,
   ContactMessageCreateRequest,
   ContactMessageCreate,
+  PaginatedFiscalDocumentList,
   PaginatedLoyaltyProgramList,
   LoyaltyProgramWriteRequest,
   LoyaltyProgramWrite,
@@ -309,6 +310,35 @@ export async function dashboardAuditExportRetrieve(): Promise<any> {
 
 export async function dashboardAuditStatsRetrieve(): Promise<any> {
   const response = await axios.get(`/api/v1/dashboard/audit/stats/`);
+  return response.data;
+}
+
+export async function dashboardFiscalDocumentsList(
+  ordering?: string,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+): Promise<PaginatedFiscalDocumentList> {
+  const response = await axios.get(
+    `/api/v1/dashboard/fiscal/documents/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        page ? 'page=' + encodeURIComponent(page) : null,
+        pageSize ? 'page_size=' + encodeURIComponent(pageSize) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function dashboardFiscalPaymentsReceiptRetrieve(
+  id: string,
+): Promise<any> {
+  const response = await axios.get(
+    `/api/v1/dashboard/fiscal/payments/${id}/receipt/`,
+  );
   return response.data;
 }
 
