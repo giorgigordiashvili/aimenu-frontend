@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import ScanPage from '@/components/ScanPage';
 import { isValidLocale } from '@/i18n/config';
@@ -19,5 +20,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
-  return <ScanPage />;
+  // ScanPage reads ?error= via useSearchParams, which needs a boundary.
+  return (
+    <Suspense fallback={null}>
+      <ScanPage />
+    </Suspense>
+  );
 }

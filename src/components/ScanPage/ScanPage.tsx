@@ -1,11 +1,12 @@
 'use client';
 
 import { styled } from '@pigment-css/react';
+import { useSearchParams } from 'next/navigation';
 
 import HeaderPrimary from '@/components/HeaderPrimary';
 import { useTranslations } from '@/context/LocaleContext';
 import ScanIcon from '@/icons/Scan';
-import { background, foreground, slate500 } from '@/tokens';
+import { background, foreground, rose600, rose50, slate500 } from '@/tokens';
 
 const Page = styled('div')({
   minHeight: '100vh',
@@ -44,6 +45,17 @@ const Title = styled('h1')({
   letterSpacing: '-0.3px',
 });
 
+const Invalid = styled('p')({
+  fontSize: '14px',
+  color: rose600,
+  background: rose50,
+  borderRadius: '8px',
+  padding: '10px 14px',
+  margin: 0,
+  maxWidth: '360px',
+  lineHeight: 1.5,
+});
+
 const Subtitle = styled('p')({
   fontSize: '14px',
   color: slate500,
@@ -54,6 +66,7 @@ const Subtitle = styled('p')({
 
 export default function ScanPage() {
   const t = useTranslations();
+  const invalid = useSearchParams().get('error') === 'invalid';
 
   return (
     <Page>
@@ -63,6 +76,7 @@ export default function ScanPage() {
           <ScanIcon width={44} height={44} />
         </IconCircle>
         <Title>{t.scan.title}</Title>
+        {invalid ? <Invalid data-testid='scan-invalid'>{t.scan.invalid}</Invalid> : null}
         <Subtitle>{t.scan.subtitle}</Subtitle>
       </Content>
     </Page>

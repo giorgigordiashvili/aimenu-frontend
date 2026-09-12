@@ -33,7 +33,13 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.includes('.') ||
-    pathname.startsWith('/favicon')
+    pathname.startsWith('/favicon') ||
+    // Non-localised routes: the QR short-link resolver (a redirect, no UI)
+    // and the Facebook data-deletion page. Without this they would be
+    // rewritten into /ka/... and swallowed by the [locale]/[...slug] 404.
+    pathname === '/q' ||
+    pathname.startsWith('/q/') ||
+    pathname.startsWith('/data-deletion')
   ) {
     return NextResponse.next();
   }
@@ -78,5 +84,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+  matcher: ['/((?!api|q/|q$|data-deletion|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 };
