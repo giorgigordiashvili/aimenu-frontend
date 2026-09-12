@@ -46,11 +46,32 @@ import type {
   PatchedModifierGroupDashboardRequest,
   PaginatedOrderListList,
   Order,
+  OrderDiscountCreateRequest,
+  OrderMoveRequest,
+  OrderSplitRequest,
   PaginatedOrderStatusHistoryList,
+  OrderItemReasonRequest,
+  OrderItemDiscountRequest,
   PaginatedKitchenOrderList,
   PaginatedPaymentListList,
   Payment,
+  PaymentRefundRequest,
+  Refund,
+  PaymentCreateRequest,
+  CashPaymentRequest,
+  ReasonOption,
+  RecordPaymentRequest,
+  RecordPaymentResponse,
   PaginatedRefundList,
+  RefundCreateRequest,
+  PaginatedCashShiftList,
+  CashShift,
+  CloseShiftRequest,
+  CashMovement,
+  CashMovementCreateRequest,
+  OpenShiftRequest,
+  SplitEvenRequest,
+  SplitEvenResponse,
   PaginatedReservationListList,
   ReservationDetail,
   ReservationUpdateRequest,
@@ -591,8 +612,39 @@ export async function dashboardOrdersRetrieve(id: string): Promise<Order> {
   return response.data;
 }
 
+export async function dashboardOrdersDiscountCreate(
+  id: string,
+  data: OrderDiscountCreateRequest,
+): Promise<Order> {
+  const response = await axios.post(
+    `/api/v1/dashboard/orders/${id}/discount/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardOrdersDiscountDestroy(
+  id: string,
+): Promise<Order> {
+  const response = await axios.delete(
+    `/api/v1/dashboard/orders/${id}/discount/`,
+  );
+  return response.data;
+}
+
 export async function dashboardOrdersItemsCreate(id: string): Promise<any> {
   const response = await axios.post(`/api/v1/dashboard/orders/${id}/items/`);
+  return response.data;
+}
+
+export async function dashboardOrdersMoveCreate(
+  id: string,
+  data: OrderMoveRequest,
+): Promise<Order> {
+  const response = await axios.post(
+    `/api/v1/dashboard/orders/${id}/move/`,
+    data,
+  );
   return response.data;
 }
 
@@ -600,6 +652,17 @@ export async function dashboardOrdersServerPartialUpdate(
   id: string,
 ): Promise<any> {
   const response = await axios.patch(`/api/v1/dashboard/orders/${id}/server/`);
+  return response.data;
+}
+
+export async function dashboardOrdersSplitCreate(
+  id: string,
+  data: OrderSplitRequest,
+): Promise<Order> {
+  const response = await axios.post(
+    `/api/v1/dashboard/orders/${id}/split/`,
+    data,
+  );
   return response.data;
 }
 
@@ -631,12 +694,58 @@ export async function dashboardOrdersHistoryList(
   return response.data;
 }
 
+export async function dashboardOrdersItemsCompCreate(
+  itemId: string,
+  orderId: string,
+  data: OrderItemReasonRequest,
+): Promise<Order> {
+  const response = await axios.post(
+    `/api/v1/dashboard/orders/${orderId}/items/${itemId}/comp/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardOrdersItemsDiscountCreate(
+  itemId: string,
+  orderId: string,
+  data: OrderItemDiscountRequest,
+): Promise<Order> {
+  const response = await axios.post(
+    `/api/v1/dashboard/orders/${orderId}/items/${itemId}/discount/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardOrdersItemsDiscountDestroy(
+  itemId: string,
+  orderId: string,
+): Promise<Order> {
+  const response = await axios.delete(
+    `/api/v1/dashboard/orders/${orderId}/items/${itemId}/discount/`,
+  );
+  return response.data;
+}
+
 export async function dashboardOrdersItemsStatusPartialUpdate(
   itemId: string,
   orderId: string,
 ): Promise<any> {
   const response = await axios.patch(
     `/api/v1/dashboard/orders/${orderId}/items/${itemId}/status/`,
+  );
+  return response.data;
+}
+
+export async function dashboardOrdersItemsVoidCreate(
+  itemId: string,
+  orderId: string,
+  data: OrderItemReasonRequest,
+): Promise<Order> {
+  const response = await axios.post(
+    `/api/v1/dashboard/orders/${orderId}/items/${itemId}/void/`,
+    data,
   );
   return response.data;
 }
@@ -696,13 +805,40 @@ export async function dashboardPaymentsRetrieve(id: string): Promise<Payment> {
   return response.data;
 }
 
-export async function dashboardPaymentsCardCreate(): Promise<any> {
-  const response = await axios.post(`/api/v1/dashboard/payments/card/`);
+export async function dashboardPaymentsRefundCreate(
+  id: string,
+  data: PaymentRefundRequest,
+): Promise<Refund> {
+  const response = await axios.post(
+    `/api/v1/dashboard/payments/${id}/refund/`,
+    data,
+  );
   return response.data;
 }
 
-export async function dashboardPaymentsCashCreate(): Promise<any> {
-  const response = await axios.post(`/api/v1/dashboard/payments/cash/`);
+export async function dashboardPaymentsCardCreate(
+  data: PaymentCreateRequest,
+): Promise<any> {
+  const response = await axios.post(`/api/v1/dashboard/payments/card/`, data);
+  return response.data;
+}
+
+export async function dashboardPaymentsCashCreate(
+  data: CashPaymentRequest,
+): Promise<any> {
+  const response = await axios.post(`/api/v1/dashboard/payments/cash/`, data);
+  return response.data;
+}
+
+export async function dashboardPaymentsReasonsList(): Promise<ReasonOption[]> {
+  const response = await axios.get(`/api/v1/dashboard/payments/reasons/`);
+  return response.data;
+}
+
+export async function dashboardPaymentsRecordCreate(
+  data: RecordPaymentRequest,
+): Promise<RecordPaymentResponse> {
+  const response = await axios.post(`/api/v1/dashboard/payments/record/`, data);
   return response.data;
 }
 
@@ -726,9 +862,104 @@ export async function dashboardPaymentsRefundsList(
   return response.data;
 }
 
-export async function dashboardPaymentsRefundsCreateCreate(): Promise<any> {
+export async function dashboardPaymentsRefundsCreateCreate(
+  data: RefundCreateRequest,
+): Promise<any> {
   const response = await axios.post(
     `/api/v1/dashboard/payments/refunds/create/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardPaymentsShiftsList(
+  ordering?: string,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+): Promise<PaginatedCashShiftList> {
+  const response = await axios.get(
+    `/api/v1/dashboard/payments/shifts/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        page ? 'page=' + encodeURIComponent(page) : null,
+        pageSize ? 'page_size=' + encodeURIComponent(pageSize) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function dashboardPaymentsShiftsRetrieve(
+  id: string,
+): Promise<CashShift> {
+  const response = await axios.get(`/api/v1/dashboard/payments/shifts/${id}/`);
+  return response.data;
+}
+
+export async function dashboardPaymentsShiftsCloseCreate(
+  id: string,
+  data: CloseShiftRequest,
+): Promise<CashShift> {
+  const response = await axios.post(
+    `/api/v1/dashboard/payments/shifts/${id}/close/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardPaymentsShiftsMovementsList(
+  id: string,
+): Promise<CashMovement[]> {
+  const response = await axios.get(
+    `/api/v1/dashboard/payments/shifts/${id}/movements/`,
+  );
+  return response.data;
+}
+
+export async function dashboardPaymentsShiftsMovementsCreate(
+  id: string,
+  data: CashMovementCreateRequest,
+): Promise<CashMovement[]> {
+  const response = await axios.post(
+    `/api/v1/dashboard/payments/shifts/${id}/movements/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardPaymentsShiftsCurrentRetrieve(): Promise<CashShift> {
+  const response = await axios.get(
+    `/api/v1/dashboard/payments/shifts/current/`,
+  );
+  return response.data;
+}
+
+export async function dashboardPaymentsShiftsCurrentXReportRetrieve(): Promise<any> {
+  const response = await axios.get(
+    `/api/v1/dashboard/payments/shifts/current/x-report/`,
+  );
+  return response.data;
+}
+
+export async function dashboardPaymentsShiftsOpenCreate(
+  data: OpenShiftRequest,
+): Promise<CashShift> {
+  const response = await axios.post(
+    `/api/v1/dashboard/payments/shifts/open/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardPaymentsSplitEvenCreate(
+  data: SplitEvenRequest,
+): Promise<SplitEvenResponse> {
+  const response = await axios.post(
+    `/api/v1/dashboard/payments/split-even/`,
+    data,
   );
   return response.data;
 }
@@ -1347,6 +1578,15 @@ export async function dashboardTablesSessionsList(
       ].filter(Boolean);
       return parts.length > 0 ? '?' + parts.join('&') : '';
     })()}`,
+  );
+  return response.data;
+}
+
+export async function dashboardTablesSessionsBillRetrieve(
+  id: string,
+): Promise<any> {
+  const response = await axios.get(
+    `/api/v1/dashboard/tables/sessions/${id}/bill/`,
   );
   return response.data;
 }
