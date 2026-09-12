@@ -16,6 +16,8 @@ import type {
   PasswordResetConfirm,
   UserRegistrationRequest,
   UserRegistration,
+  SocialLoginRequest,
+  SocialLogin,
   TokenRefreshRequest,
   TokenRefresh,
   ContactMessageCreateRequest,
@@ -36,12 +38,12 @@ import type {
   MenuItemUpdateRequest,
   MenuItemUpdate,
   PatchedMenuItemUpdateRequest,
-  PaginatedModifierGroupList,
+  PaginatedModifierGroupDashboardList,
   ModifierGroupCreateRequest,
   ModifierGroupCreate,
-  ModifierGroup,
-  ModifierGroupRequest,
-  PatchedModifierGroupRequest,
+  ModifierGroupDashboard,
+  ModifierGroupDashboardRequest,
+  PatchedModifierGroupDashboardRequest,
   PaginatedOrderListList,
   Order,
   PaginatedOrderStatusHistoryList,
@@ -88,6 +90,17 @@ import type {
   TableSection,
   PatchedTableSectionRequest,
   PaginatedTableSessionList,
+  VenueStateResponse,
+  VenueLeaveRequest,
+  VenueShareRequestCreateRequest,
+  VenueShareRequest,
+  VenueShareRequestAcceptRequest,
+  VenueSectionDashboard,
+  VenueSectionWriteRequest,
+  PatchedVenueSectionWriteRequest,
+  VenueTableDashboard,
+  VenueTableWriteRequest,
+  PatchedVenueTableWriteRequest,
   PaginatedFavoriteMenuItemList,
   FavoriteMenuItemCreateRequest,
   FavoriteMenuItemCreate,
@@ -121,6 +134,10 @@ import type {
   UserUpdateRequest,
   UserUpdate,
   PatchedUserUpdateRequest,
+  MyRestaurant,
+  VenueDetailResponse,
+  VenueMenuResponse,
+  VenueValidateResponse,
 } from './interfaces';
 
 export async function adminAuditList(
@@ -188,6 +205,20 @@ export async function authRegisterCreate(
   data: UserRegistrationRequest,
 ): Promise<UserRegistration> {
   const response = await axios.post(`/api/v1/auth/register/`, data);
+  return response.data;
+}
+
+export async function authSocialFacebookCreate(
+  data: SocialLoginRequest,
+): Promise<SocialLogin> {
+  const response = await axios.post(`/api/v1/auth/social/facebook/`, data);
+  return response.data;
+}
+
+export async function authSocialGoogleCreate(
+  data: SocialLoginRequest,
+): Promise<SocialLogin> {
+  const response = await axios.post(`/api/v1/auth/social/google/`, data);
   return response.data;
 }
 
@@ -469,7 +500,7 @@ export async function dashboardMenuModifierGroupsList(
   page?: number,
   pageSize?: number,
   search?: string,
-): Promise<PaginatedModifierGroupList> {
+): Promise<PaginatedModifierGroupDashboardList> {
   const response = await axios.get(
     `/api/v1/dashboard/menu/modifier-groups/${(() => {
       const parts = [
@@ -496,7 +527,7 @@ export async function dashboardMenuModifierGroupsCreate(
 
 export async function dashboardMenuModifierGroupsRetrieve(
   id: string,
-): Promise<ModifierGroup> {
+): Promise<ModifierGroupDashboard> {
   const response = await axios.get(
     `/api/v1/dashboard/menu/modifier-groups/${id}/`,
   );
@@ -505,8 +536,8 @@ export async function dashboardMenuModifierGroupsRetrieve(
 
 export async function dashboardMenuModifierGroupsUpdate(
   id: string,
-  data: ModifierGroupRequest,
-): Promise<ModifierGroup> {
+  data: ModifierGroupDashboardRequest,
+): Promise<ModifierGroupDashboard> {
   const response = await axios.put(
     `/api/v1/dashboard/menu/modifier-groups/${id}/`,
     data,
@@ -516,8 +547,8 @@ export async function dashboardMenuModifierGroupsUpdate(
 
 export async function dashboardMenuModifierGroupsPartialUpdate(
   id: string,
-  data: PatchedModifierGroupRequest,
-): Promise<ModifierGroup> {
+  data: PatchedModifierGroupDashboardRequest,
+): Promise<ModifierGroupDashboard> {
   const response = await axios.patch(
     `/api/v1/dashboard/menu/modifier-groups/${id}/`,
     data,
@@ -1330,6 +1361,113 @@ export async function dashboardTablesSessionsMarkCashPaidCreate(
 
 export async function dashboardTablesSessionsStartCreate(): Promise<any> {
   const response = await axios.post(`/api/v1/dashboard/tables/sessions/start/`);
+  return response.data;
+}
+
+export async function dashboardVenueRetrieve(): Promise<VenueStateResponse> {
+  const response = await axios.get(`/api/v1/dashboard/venue/`);
+  return response.data;
+}
+
+export async function dashboardVenueLeaveCreate(
+  data: VenueLeaveRequest,
+): Promise<VenueStateResponse> {
+  const response = await axios.post(`/api/v1/dashboard/venue/leave/`, data);
+  return response.data;
+}
+
+export async function dashboardVenueRequestsCreate(
+  data: VenueShareRequestCreateRequest,
+): Promise<VenueShareRequest> {
+  const response = await axios.post(`/api/v1/dashboard/venue/requests/`, data);
+  return response.data;
+}
+
+export async function dashboardVenueRequestsAcceptCreate(
+  id: string,
+  data: VenueShareRequestAcceptRequest,
+): Promise<VenueStateResponse> {
+  const response = await axios.post(
+    `/api/v1/dashboard/venue/requests/${id}/accept/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardVenueRequestsCancelCreate(
+  id: string,
+): Promise<VenueShareRequest> {
+  const response = await axios.post(
+    `/api/v1/dashboard/venue/requests/${id}/cancel/`,
+  );
+  return response.data;
+}
+
+export async function dashboardVenueRequestsDeclineCreate(
+  id: string,
+): Promise<VenueShareRequest> {
+  const response = await axios.post(
+    `/api/v1/dashboard/venue/requests/${id}/decline/`,
+  );
+  return response.data;
+}
+
+export async function dashboardVenueSectionsList(): Promise<
+  VenueSectionDashboard[]
+> {
+  const response = await axios.get(`/api/v1/dashboard/venue/sections/`);
+  return response.data;
+}
+
+export async function dashboardVenueSectionsCreate(
+  data: VenueSectionWriteRequest,
+): Promise<VenueSectionDashboard> {
+  const response = await axios.post(`/api/v1/dashboard/venue/sections/`, data);
+  return response.data;
+}
+
+export async function dashboardVenueSectionsPartialUpdate(
+  id: string,
+  data: PatchedVenueSectionWriteRequest,
+): Promise<VenueSectionDashboard> {
+  const response = await axios.patch(
+    `/api/v1/dashboard/venue/sections/${id}/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardVenueTablesList(): Promise<
+  VenueTableDashboard[]
+> {
+  const response = await axios.get(`/api/v1/dashboard/venue/tables/`);
+  return response.data;
+}
+
+export async function dashboardVenueTablesCreate(
+  data: VenueTableWriteRequest,
+): Promise<VenueTableDashboard> {
+  const response = await axios.post(`/api/v1/dashboard/venue/tables/`, data);
+  return response.data;
+}
+
+export async function dashboardVenueTablesPartialUpdate(
+  id: string,
+  data: PatchedVenueTableWriteRequest,
+): Promise<VenueTableDashboard> {
+  const response = await axios.patch(
+    `/api/v1/dashboard/venue/tables/${id}/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardVenueTablesDeactivateCreate(
+  id: string,
+): Promise<any> {
+  const response = await axios.post(
+    `/api/v1/dashboard/venue/tables/${id}/deactivate/`,
+  );
   return response.data;
 }
 
@@ -2160,5 +2298,39 @@ export async function usersMePartialUpdate(
 
 export async function usersMeDeleteDestroy(): Promise<any> {
   const response = await axios.delete(`/api/v1/users/me/delete/`);
+  return response.data;
+}
+
+export async function usersMeRestaurantsList(): Promise<MyRestaurant[]> {
+  const response = await axios.get(`/api/v1/users/me/restaurants/`);
+  return response.data;
+}
+
+export async function venuesRetrieve(
+  slug: string,
+): Promise<VenueDetailResponse> {
+  const response = await axios.get(`/api/v1/venues/${slug}/`);
+  return response.data;
+}
+
+export async function venuesMenuRetrieve(
+  slug: string,
+  restaurants?: string,
+): Promise<VenueMenuResponse> {
+  const response = await axios.get(
+    `/api/v1/venues/${slug}/menu/${restaurants ? '?restaurants=' + encodeURIComponent(restaurants) : ''}`,
+  );
+  return response.data;
+}
+
+export async function venuesValidateRetrieve(
+  code: string,
+): Promise<VenueValidateResponse> {
+  const response = await axios.get(`/api/v1/venues/validate/${code}/`);
+  return response.data;
+}
+
+export async function dataDeletionCreate(): Promise<any> {
+  const response = await axios.post(`/data-deletion/`);
   return response.data;
 }

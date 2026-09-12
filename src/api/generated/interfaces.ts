@@ -163,6 +163,10 @@ export interface KitchenOrder {
   created_at: string;
 }
 
+export interface LayoutEnum {
+  [key: string]: any;
+}
+
 export interface LoyaltyProgram {
   id: string;
   name: string;
@@ -362,20 +366,9 @@ export interface Modifier {
   display_order?: number;
 }
 
-export interface ModifierGroup {
-  id: string;
-  translations: string;
-  selection_type?: SelectionTypeEnum;
-  min_selections?: number;
-  max_selections?: number;
-  is_required?: boolean;
-  display_order?: number;
-  is_active?: boolean;
-  modifiers: Modifier[];
-}
-
 export interface ModifierGroupCreate {
   translations: string;
+  internal_name?: string;
   selection_type?: SelectionTypeEnum;
   min_selections?: number;
   max_selections?: number;
@@ -387,6 +380,7 @@ export interface ModifierGroupCreate {
 
 export interface ModifierGroupCreateRequest {
   translations: string;
+  internal_name?: string;
   selection_type?: SelectionTypeEnum;
   min_selections?: number;
   max_selections?: number;
@@ -396,7 +390,8 @@ export interface ModifierGroupCreateRequest {
   modifiers?: ModifierRequest[];
 }
 
-export interface ModifierGroupRequest {
+export interface ModifierGroupDashboard {
+  id: string;
   translations: string;
   selection_type?: SelectionTypeEnum;
   min_selections?: number;
@@ -404,6 +399,19 @@ export interface ModifierGroupRequest {
   is_required?: boolean;
   display_order?: number;
   is_active?: boolean;
+  modifiers: Modifier[];
+  internal_name?: string;
+}
+
+export interface ModifierGroupDashboardRequest {
+  translations: string;
+  selection_type?: SelectionTypeEnum;
+  min_selections?: number;
+  max_selections?: number;
+  is_required?: boolean;
+  display_order?: number;
+  is_active?: boolean;
+  internal_name?: string;
 }
 
 export interface ModifierRequest {
@@ -414,7 +422,21 @@ export interface ModifierRequest {
   display_order?: number;
 }
 
+export interface MyRestaurant {
+  id: string;
+  slug: string;
+  name: string;
+  logo: string;
+  role: string;
+  is_owner: boolean;
+  venue: Record<string, any>;
+}
+
 export interface NameEnum {
+  [key: string]: any;
+}
+
+export interface NullEnum {
   [key: string]: any;
 }
 
@@ -427,7 +449,7 @@ export interface Order {
   table_number: string;
   customer_name?: string;
   customer_phone?: string;
-  customer_email?: string;
+  customer_email?: string | string;
   customer_notes?: string;
   delivery_address?: string;
   subtotal: string;
@@ -555,11 +577,11 @@ export interface PaginatedMenuItemList {
   results: MenuItem[];
 }
 
-export interface PaginatedModifierGroupList {
+export interface PaginatedModifierGroupDashboardList {
   count: number;
   next?: string;
   previous?: string;
-  results: ModifierGroup[];
+  results: ModifierGroupDashboard[];
 }
 
 export interface PaginatedOrderList {
@@ -757,7 +779,7 @@ export interface PatchedMenuItemUpdateRequest {
   modifier_group_ids?: string[];
 }
 
-export interface PatchedModifierGroupRequest {
+export interface PatchedModifierGroupDashboardRequest {
   translations?: string;
   selection_type?: SelectionTypeEnum;
   min_selections?: number;
@@ -765,6 +787,7 @@ export interface PatchedModifierGroupRequest {
   is_required?: boolean;
   display_order?: number;
   is_active?: boolean;
+  internal_name?: string;
 }
 
 export interface PatchedReservationBlockedTimeRequest {
@@ -797,7 +820,7 @@ export interface PatchedReservationSettingsAdminRequest {
 
 export interface PatchedReservationUpdateRequest {
   guest_name?: string;
-  guest_email?: string;
+  guest_email?: string | string;
   guest_phone?: string;
   reservation_date?: string;
   reservation_time?: string;
@@ -836,7 +859,7 @@ export interface PatchedTableRequest {
   section?: string;
   position_x?: number;
   position_y?: number;
-  shape?: ShapeEnum;
+  shape?: Shape01eEnum;
 }
 
 export interface PatchedTableSectionRequest {
@@ -849,10 +872,27 @@ export interface PatchedTableSectionRequest {
 export interface PatchedUserUpdateRequest {
   first_name?: string;
   last_name?: string;
-  phone_number?: string;
+  phone_number?: string | string;
   avatar?: string;
   preferred_language?: PreferredLanguageEnum;
   profile?: UserProfileRequest;
+}
+
+export interface PatchedVenueSectionWriteRequest {
+  name?: string;
+  description?: string;
+  display_order?: number;
+  is_active?: boolean;
+}
+
+export interface PatchedVenueTableWriteRequest {
+  number?: string;
+  name?: string;
+  capacity?: number;
+  min_capacity?: number;
+  shape?: VenueTableWriteShapeEnum;
+  section?: string;
+  is_active?: boolean;
 }
 
 export interface Payment {
@@ -969,7 +1009,7 @@ export interface ReservationBlockedTimeRequest {
 
 export interface ReservationCreate {
   guest_name: string;
-  guest_email?: string;
+  guest_email?: string | string;
   guest_phone: string;
   reservation_date: string;
   reservation_time: string;
@@ -979,7 +1019,7 @@ export interface ReservationCreate {
 
 export interface ReservationCreateRequest {
   guest_name: string;
-  guest_email?: string;
+  guest_email?: string | string;
   guest_phone: string;
   reservation_date: string;
   reservation_time: string;
@@ -990,7 +1030,7 @@ export interface ReservationCreateRequest {
 export interface ReservationDashboardCreate {
   customer?: string;
   guest_name: string;
-  guest_email?: string;
+  guest_email?: string | string;
   guest_phone: string;
   reservation_date: string;
   reservation_time: string;
@@ -1006,7 +1046,7 @@ export interface ReservationDashboardCreate {
 export interface ReservationDashboardCreateRequest {
   customer?: string;
   guest_name: string;
-  guest_email?: string;
+  guest_email?: string | string;
   guest_phone: string;
   reservation_date: string;
   reservation_time: string;
@@ -1033,7 +1073,7 @@ export interface ReservationDetail {
   customer?: string;
   customer_email: string;
   guest_name: string;
-  guest_email?: string;
+  guest_email?: string | string;
   guest_phone: string;
   reservation_date: string;
   reservation_time: string;
@@ -1142,7 +1182,7 @@ export interface ReservationSettingsAdminRequest {
 
 export interface ReservationUpdate {
   guest_name: string;
-  guest_email?: string;
+  guest_email?: string | string;
   guest_phone: string;
   reservation_date: string;
   reservation_time: string;
@@ -1154,7 +1194,7 @@ export interface ReservationUpdate {
 
 export interface ReservationUpdateRequest {
   guest_name: string;
-  guest_email?: string;
+  guest_email?: string | string;
   guest_phone: string;
   reservation_date: string;
   reservation_time: string;
@@ -1178,9 +1218,9 @@ export interface RestaurantCreate {
   slug: string;
   description?: string;
   category_id?: string;
-  email?: string;
-  phone?: string;
-  website?: string;
+  email?: string | string;
+  phone?: string | string;
+  website?: string | string;
   address?: string;
   city?: string;
   postal_code?: string;
@@ -1192,9 +1232,9 @@ export interface RestaurantCreateRequest {
   slug: string;
   description?: string;
   category_id?: string;
-  email?: string;
-  phone?: string;
-  website?: string;
+  email?: string | string;
+  phone?: string | string;
+  website?: string | string;
   address?: string;
   city?: string;
   postal_code?: string;
@@ -1210,9 +1250,10 @@ export interface RestaurantDetail {
   amenities: Amenity[];
   is_active?: boolean;
   owner: User;
-  email?: string;
-  phone?: string;
-  website?: string;
+  venue: string;
+  email?: string | string;
+  phone?: string | string;
+  website?: string | string;
   address?: string;
   city?: string;
   postal_code?: string;
@@ -1260,6 +1301,7 @@ export interface RestaurantList {
   id: string;
   name: string;
   slug: string;
+  venue: string;
   description?: string;
   logo?: string;
   logo_blurhash?: string;
@@ -1275,6 +1317,12 @@ export interface RestaurantList {
   accepts_platform_loyalty?: boolean;
   accepts_bog_payments?: boolean;
   accepts_flitt_payments?: boolean;
+}
+
+export interface RestaurantRef {
+  slug: string;
+  name: string;
+  logo: string;
 }
 
 export interface Review {
@@ -1349,8 +1397,22 @@ export interface SelectionTypeEnum {
   [key: string]: any;
 }
 
-export interface ShapeEnum {
+export interface Shape01eEnum {
   [key: string]: any;
+}
+
+export interface SocialLogin {
+  access_token?: string;
+  code?: string;
+  id_token?: string;
+  referral_code?: string;
+}
+
+export interface SocialLoginRequest {
+  access_token?: string;
+  code?: string;
+  id_token?: string;
+  referral_code?: string;
 }
 
 export interface SourceEnum {
@@ -1462,8 +1524,10 @@ export interface Table {
   section_name: string;
   position_x?: number;
   position_y?: number;
-  shape?: ShapeEnum;
+  shape?: Shape01eEnum;
   qr_codes: TableQrcode[];
+  is_shared: boolean;
+  venue_table: string;
 }
 
 export interface TableCreate {
@@ -1474,7 +1538,7 @@ export interface TableCreate {
   section?: string;
   position_x?: number;
   position_y?: number;
-  shape?: ShapeEnum;
+  shape?: Shape01eEnum;
 }
 
 export interface TableCreateRequest {
@@ -1485,7 +1549,7 @@ export interface TableCreateRequest {
   section?: string;
   position_x?: number;
   position_y?: number;
-  shape?: ShapeEnum;
+  shape?: Shape01eEnum;
   generate_qr?: boolean;
 }
 
@@ -1513,7 +1577,7 @@ export interface TableRequest {
   section?: string;
   position_x?: number;
   position_y?: number;
-  shape?: ShapeEnum;
+  shape?: Shape01eEnum;
 }
 
 export interface TableSection {
@@ -1523,6 +1587,7 @@ export interface TableSection {
   display_order?: number;
   is_active?: boolean;
   tables_count: string;
+  is_shared: boolean;
 }
 
 export interface TableSectionRequest {
@@ -1606,7 +1671,7 @@ export interface User {
   first_name?: string;
   last_name?: string;
   full_name: string;
-  phone_number?: string;
+  phone_number?: string | string;
   phone_verified: boolean;
   avatar?: string;
   preferred_language?: PreferredLanguageEnum;
@@ -1637,7 +1702,7 @@ export interface UserRegistration {
   email: string;
   first_name?: string;
   last_name?: string;
-  phone_number?: string;
+  phone_number?: string | string;
   preferred_language?: PreferredLanguageEnum;
 }
 
@@ -1647,7 +1712,7 @@ export interface UserRegistrationRequest {
   password_confirm: string;
   first_name?: string;
   last_name?: string;
-  phone_number?: string;
+  phone_number?: string | string;
   preferred_language?: PreferredLanguageEnum;
   referral_code?: string;
 }
@@ -1655,7 +1720,7 @@ export interface UserRegistrationRequest {
 export interface UserUpdate {
   first_name?: string;
   last_name?: string;
-  phone_number?: string;
+  phone_number?: string | string;
   avatar?: string;
   preferred_language?: PreferredLanguageEnum;
   profile?: UserProfile;
@@ -1664,10 +1729,199 @@ export interface UserUpdate {
 export interface UserUpdateRequest {
   first_name?: string;
   last_name?: string;
-  phone_number?: string;
+  phone_number?: string | string;
   avatar?: string;
   preferred_language?: PreferredLanguageEnum;
   profile?: UserProfileRequest;
+}
+
+export interface VenueCard {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  logo?: string;
+  logo_blurhash?: string;
+  restaurants_count: string;
+}
+
+export interface VenueDetailData {
+  venue: VenueCard;
+  restaurants: VenueRestaurantCard[];
+}
+
+export interface VenueDetailResponse {
+  success: boolean;
+  data: VenueDetailData;
+}
+
+export interface VenueLeaveRequest {
+  confirm: boolean;
+}
+
+export interface VenueMember {
+  slug: string;
+  name: string;
+  logo: string;
+  display_order: number;
+  is_layout_seed: boolean;
+  is_me: boolean;
+}
+
+export interface VenueMemberTable {
+  restaurant: VenueRestaurantCard;
+  table_id: string;
+  table_code: string;
+}
+
+export interface VenueMenuData {
+  venue: VenueCard;
+  restaurants: VenueMenuEntry[];
+}
+
+export interface VenueMenuEntry {
+  restaurant: VenueRestaurantCard;
+  menu: Record<string, any>;
+}
+
+export interface VenueMenuResponse {
+  success: boolean;
+  data: VenueMenuData;
+}
+
+export interface VenuePermissions {
+  can_manage: boolean;
+  can_leave: boolean;
+}
+
+export interface VenueRestaurantCard {
+  id: string;
+  name: string;
+  slug: string;
+  venue: string;
+  description?: string;
+  logo?: string;
+  logo_blurhash?: string;
+  category: RestaurantCategory;
+  average_rating?: string;
+  total_reviews?: number;
+  is_open_now: string;
+  accepts_remote_orders?: boolean;
+  accepts_platform_loyalty?: boolean;
+  accepts_bog_payments?: boolean;
+  accepts_flitt_payments?: boolean;
+  primary_color?: string;
+  secondary_color?: string;
+  default_currency?: DefaultCurrencyEnum;
+  display_order: string;
+}
+
+export interface VenueSectionDashboard {
+  id: string;
+  name: string;
+  description?: string;
+  display_order?: number;
+  is_active?: boolean;
+}
+
+export interface VenueSectionWriteRequest {
+  name: string;
+  description?: string;
+  display_order?: number;
+  is_active?: boolean;
+}
+
+export interface VenueShareRequest {
+  id: string;
+  status?: VenueShareStatusEnum;
+  direction: string;
+  from_restaurant: RestaurantRef;
+  to_restaurant: RestaurantRef;
+  venue_name?: string;
+  message?: string;
+  layout_options: string;
+  created_at: string;
+  expires_at: string;
+  responded_at?: string;
+}
+
+export interface VenueShareRequestAcceptRequest {
+  layout?: LayoutEnum | NullEnum;
+  venue_name?: string;
+}
+
+export interface VenueShareRequestCreateRequest {
+  to_restaurant: string;
+  venue_name?: string;
+  message?: string;
+}
+
+export interface VenueShareStatusEnum {
+  [key: string]: any;
+}
+
+export interface VenueState {
+  venue: VenueCard;
+  members: VenueMember[];
+  shared_tables_count: number;
+  incoming_requests: VenueShareRequest[];
+  outgoing_requests: VenueShareRequest[];
+  permissions: VenuePermissions;
+}
+
+export interface VenueStateResponse {
+  success: boolean;
+  data: VenueState;
+}
+
+export interface VenueTableDashboard {
+  id: string;
+  number: string;
+  name?: string;
+  capacity?: number;
+  min_capacity?: number;
+  shape?: Shape01eEnum;
+  section?: string;
+  section_name: string;
+  is_active?: boolean;
+  code: string;
+  qr_url: string;
+  qr_image?: string;
+  local_table_id: string;
+}
+
+export interface VenueTablePublic {
+  id: string;
+  number: string;
+  name?: string;
+  capacity?: number;
+  section: string;
+  code: string;
+}
+
+export interface VenueTableWriteRequest {
+  number: string;
+  name?: string;
+  capacity?: number;
+  min_capacity?: number;
+  shape?: VenueTableWriteShapeEnum;
+  section?: string;
+  is_active?: boolean;
+}
+
+export interface VenueTableWriteShapeEnum {
+  [key: string]: any;
+}
+
+export interface VenueValidateData {
+  venue: VenueCard;
+  table: VenueTablePublic;
+  restaurants: VenueMemberTable[];
+}
+
+export interface VenueValidateResponse {
+  success: boolean;
+  data: VenueValidateData;
 }
 
 export interface WalletTransaction {
