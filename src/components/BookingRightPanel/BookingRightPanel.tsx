@@ -25,6 +25,8 @@ type Props = {
   onPhone: (v: string) => void;
   onEmail: (v: string) => void;
   onNotes: (v: string) => void;
+  marketingOptIn?: boolean;
+  onMarketingOptIn?: (v: boolean) => void;
   isPaymentLoading?: boolean;
   paymentError?: string | null;
   reservationId?: string | null;
@@ -84,6 +86,8 @@ export default function BookingRightPanel({
   onPhone,
   onEmail,
   onNotes,
+  marketingOptIn,
+  onMarketingOptIn,
   isPaymentLoading,
   paymentError,
   reservationId,
@@ -114,6 +118,8 @@ export default function BookingRightPanel({
           onPhone={onPhone}
           onEmail={onEmail}
           onNotes={onNotes}
+          marketingOptIn={marketingOptIn}
+          onMarketingOptIn={onMarketingOptIn}
           showSubmitButton
           onSubmit={() => onStepChange('payment')}
         />

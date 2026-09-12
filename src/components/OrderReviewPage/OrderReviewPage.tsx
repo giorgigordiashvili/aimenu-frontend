@@ -18,6 +18,7 @@ import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
 import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
 import PromoCodeField from '@/components/PromoCodeField';
+import { useAuth } from '@/context/AuthContext';
 import TipSelector from '@/components/TipSelector';
 import WalletApplySection from '@/components/WalletApplySection';
 import { useCart } from '@/context/CartContext';
@@ -196,6 +197,16 @@ function formatGuestsNote(guests: Guest[]): string {
   return `Guests: ${guests.map(g => `${g.name} (${g.contact})`).join('; ')}`;
 }
 
+const ConsentRow = styled('label')({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: 8,
+  padding: '8px 0',
+  fontSize: 13,
+  color: '#6b7280',
+  cursor: 'pointer',
+});
+
 export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -210,6 +221,8 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const [provider, setProvider] = useState<PaymentProvider>('bog');
   const [tipAmount, setTipAmount] = useState<number>(0);
   const [promoCode, setPromoCode] = useState<string>('');
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const { user: authUser } = useAuth();
   const [walletAmount, setWalletAmount] = useState<number>(0);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
@@ -325,6 +338,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       table_session: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
       customer_notes: notes.join(' | '),
       promo_code: promoCode || undefined,
+      marketing_opt_in: marketingOptIn || undefined,
       items: items.map<OrderItemPayload>(item => ({
         menu_item: item.menuItemId,
         quantity: item.quantity,
@@ -343,6 +357,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       customer_notes: notes.join(' | '),
       tip_amount: tipAmount || 0,
       promo_code: promoCode || undefined,
+      marketing_opt_in: marketingOptIn || undefined,
       items: items.map(item => ({
         menu_item_id: item.menuItemId,
         quantity: item.quantity,
@@ -517,6 +532,18 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
               }
             />
           </>
+        )}
+
+        {authUser && !isCoveredGuest && (
+          <ConsentRow>
+            <input
+              type='checkbox'
+              checked={marketingOptIn}
+              onChange={e => setMarketingOptIn(e.target.checked)}
+              data-testid='checkout-marketing-opt-in'
+            />
+            <span>{t.orderReview.marketingOptIn}</span>
+          </ConsentRow>
         )}
 
         {!isCoveredGuest && restaurantSlug && (

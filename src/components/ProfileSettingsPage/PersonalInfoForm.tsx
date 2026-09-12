@@ -52,6 +52,16 @@ const Actions = styled('div')({
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
+const ConsentLabel = styled('label')({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: 8,
+  margin: '12px 0 4px',
+  fontSize: 13,
+  color: '#6b7280',
+  cursor: 'pointer',
+});
+
 export default function PersonalInfoForm() {
   const t = useTranslations();
   const { toast, showToast, hideToast } = useToast();
@@ -61,6 +71,8 @@ export default function PersonalInfoForm() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [marketing, setMarketing] = useState(false);
   const [loading, setLoading] = useState(false);
   // `hydrated` becomes true once we have SOME data to display — either the
   // AuthContext user seeded the form, or the /users/me fetch resolved.
@@ -85,6 +97,11 @@ export default function PersonalInfoForm() {
         if (user.last_name) setLastName(user.last_name);
         if (user.email) setEmail(user.email);
         if (user.phone_number) setPhone(user.phone_number);
+        const profile = (
+          user as { profile?: { date_of_birth?: string | null; marketing_opt_in?: boolean } }
+        ).profile;
+        if (profile?.date_of_birth) setBirthday(profile.date_of_birth);
+        if (profile?.marketing_opt_in !== undefined) setMarketing(!!profile.marketing_opt_in);
       })
       .catch(() => {})
       .finally(() => setHydrated(true));
@@ -99,7 +116,8 @@ export default function PersonalInfoForm() {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         phone_number: phone.trim() || undefined,
-      });
+        profile: { date_of_birth: birthday || null, marketing_opt_in: marketing },
+      } as Parameters<typeof usersMePartialUpdate>[0]);
       showToast(t.profile.saveSuccess, 'success');
     } catch {
       showToast(t.profile.updateError, 'error');
@@ -162,7 +180,24 @@ export default function PersonalInfoForm() {
               placeholder='+995 5XX XXX XXX'
             />
           </div>
+          <div>
+            <TextInput
+              label={t.profile.birthday}
+              type='date'
+              value={birthday}
+              onChange={e => setBirthday(e.target.value)}
+            />
+          </div>
         </FieldGrid>
+        <ConsentLabel>
+          <input
+            type='checkbox'
+            checked={marketing}
+            onChange={e => setMarketing(e.target.checked)}
+            data-testid='profile-marketing-opt-in'
+          />
+          <span>{t.profile.marketingOptIn}</span>
+        </ConsentLabel>
 
         <Actions>
           <MainButton

@@ -311,7 +311,8 @@
     "myReservations": "My Reservations",
     "failTitle": "Payment Failed",
     "failDescription": "Please try a different payment method or check your card balance.",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "marketingOptIn": "Send me offers and news from this restaurant (SMS / email). You can unsubscribe any time."
   },
   "reservations": {
     "title": "My Reservations",
@@ -416,7 +417,8 @@
     "pendingInvite": "Confirm or remove the invite link before placing the order.",
     "restaurantPlaceholder": "Restaurant",
     "cuisinePlaceholder": "Cuisine",
-    "invalidContact": "Please enter a valid email or phone number"
+    "invalidContact": "Please enter a valid email or phone number",
+    "marketingOptIn": "Send me offers and news from this restaurant."
   },
   "paymentReturn": {
     "verifying": "Confirming your payment…",
@@ -614,7 +616,9 @@
       "payment": "Payment",
       "referral": "Referral",
       "favorites": "Favorites"
-    }
+    },
+    "birthday": "Birthday",
+    "marketingOptIn": "Offers and news from restaurants I visit (SMS / email)"
   },
   "reviews": {
     "sectionTitle": "Reviews",

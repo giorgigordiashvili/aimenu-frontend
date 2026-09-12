@@ -16,10 +16,12 @@ type Props = {
   phone: string;
   email: string;
   notes: string;
+  marketingOptIn?: boolean;
   onName: (v: string) => void;
   onPhone: (v: string) => void;
   onEmail: (v: string) => void;
   onNotes: (v: string) => void;
+  onMarketingOptIn?: (v: boolean) => void;
   showSubmitButton?: boolean;
   onSubmit?: () => void;
 };
@@ -75,15 +77,27 @@ const SubmitWrap = styled('div')({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+const ConsentLabel = styled('label')({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: 8,
+  marginTop: 12,
+  fontSize: 13,
+  color: slate500,
+  cursor: 'pointer',
+});
+
 export default function BookingContactForm({
   name,
   phone,
   email,
   notes,
+  marketingOptIn = false,
   onName,
   onPhone,
   onEmail,
   onNotes,
+  onMarketingOptIn,
   showSubmitButton = false,
   onSubmit,
 }: Props) {
@@ -132,6 +146,17 @@ export default function BookingContactForm({
           value={notes}
           onChange={e => onNotes(e.target.value)}
         />
+        {onMarketingOptIn && (
+          <ConsentLabel>
+            <input
+              type='checkbox'
+              checked={marketingOptIn}
+              onChange={e => onMarketingOptIn(e.target.checked)}
+              data-testid='booking-marketing-opt-in'
+            />
+            <span>{t.booking.marketingOptIn}</span>
+          </ConsentLabel>
+        )}
       </FieldGroup>
 
       {showSubmitButton && (

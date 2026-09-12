@@ -32,6 +32,8 @@ export interface CreateOrderRequest {
   customer_notes?: string;
   /** Promotions module: a promo code typed at checkout. */
   promo_code?: string;
+  /** CRM: the signed-in guest agreed to offers from this restaurant. */
+  marketing_opt_in?: boolean;
   items: OrderItemPayload[];
 }
 

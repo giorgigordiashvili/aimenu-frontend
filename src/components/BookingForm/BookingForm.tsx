@@ -394,6 +394,7 @@ export default function BookingForm({
   const [phone, setPhone] = useState(initialPhone);
   const [email, setEmail] = useState(initialEmail);
   const [notes, setNotes] = useState('');
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
 
   // If the user logs in while the form is already open, pull in their details.
   useEffect(() => {
@@ -488,6 +489,7 @@ export default function BookingForm({
       reservation_time: time,
       party_size: guests,
       special_requests: notes || undefined,
+      marketing_opt_in: marketingOptIn,
     };
 
     try {
@@ -600,6 +602,8 @@ export default function BookingForm({
                   onPhone={setPhone}
                   onEmail={setEmail}
                   onNotes={setNotes}
+                  marketingOptIn={marketingOptIn}
+                  onMarketingOptIn={setMarketingOptIn}
                 />
               </Section>
             </MobileContactSection>
@@ -617,6 +621,8 @@ export default function BookingForm({
             onPhone={setPhone}
             onEmail={setEmail}
             onNotes={setNotes}
+            marketingOptIn={marketingOptIn}
+            onMarketingOptIn={setMarketingOptIn}
             isPaymentLoading={isPaymentLoading}
             paymentError={paymentError}
             reservationId={reservationId}
