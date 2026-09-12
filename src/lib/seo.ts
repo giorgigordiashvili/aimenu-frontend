@@ -90,7 +90,9 @@ export function buildMetadata({
     : undefined;
 
   return {
-    title: titleWithBrand,
+    // `absolute`: the [locale] layout also declares a `%s — aimenu.ge`
+    // template, which used to stack a second suffix onto this one.
+    title: titleWithBrand ? { absolute: titleWithBrand } : undefined,
     description,
     // Mirror the title into openGraph + twitter below so all surfaces
     // agree. Set this before the spread of openGraph so it overrides the
