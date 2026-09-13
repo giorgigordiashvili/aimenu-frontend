@@ -3,8 +3,21 @@
  * DO NOT EDIT MANUALLY
  */
 
-export interface ActionAf7enum {
+export interface Action29eEnum {
   [key: string]: any;
+}
+
+export interface AddEntryRequest {
+  name: string;
+  phone?: string;
+  party_size?: number;
+  quoted_minutes?: number;
+  notes?: string;
+}
+
+export interface AdjustRequest {
+  amount: string;
+  note: string;
 }
 
 export interface Amenity {
@@ -30,7 +43,7 @@ export interface AuditLogDetail {
   user_agent?: string;
   restaurant?: string;
   restaurant_name: string;
-  action: ActionAf7enum;
+  action: Action29eEnum;
   action_display: string;
   target_model?: string;
   target_id?: string;
@@ -45,7 +58,7 @@ export interface AuditLogDetail {
 export interface AuditLogList {
   id: string;
   user_email: string;
-  action: ActionAf7enum;
+  action: Action29eEnum;
   action_display: string;
   target_model?: string;
   target_id?: string;
@@ -175,6 +188,15 @@ export interface ChangePasswordRequest {
   old_password: string;
   new_password: string;
   new_password_confirm: string;
+}
+
+export interface ChargeRequest {
+  amount: string;
+  order_id?: string;
+  order_ids?: string[];
+  session_id?: string;
+  signed_by?: string;
+  note?: string;
 }
 
 export interface ClockActionActionEnum {
@@ -392,6 +414,10 @@ export interface DeliveryZoneRequest {
   color?: string;
 }
 
+export interface DesignEnum {
+  [key: string]: any;
+}
+
 export interface DestinationEnum {
   [key: string]: any;
 }
@@ -436,6 +462,23 @@ export interface EligibleOrder {
   status: StatusD10enum;
   completed_at: string;
   created_at: string;
+}
+
+export interface Entry {
+  id: string;
+  kind: EntryKindEnum;
+  kind_display: string;
+  amount: string;
+  balance_after: string;
+  order_number: string;
+  receipt_number: string;
+  signed_by: string;
+  note: string;
+  created_at: string;
+}
+
+export interface EntryKindEnum {
+  [key: string]: any;
 }
 
 export interface FavoriteMenuItem {
@@ -509,6 +552,96 @@ export interface FiscalDocumentStatusEnum {
   [key: string]: any;
 }
 
+export interface GenerateStatementRequest {
+  period_start?: string;
+  period_end?: string;
+  send?: boolean;
+}
+
+export interface GiftCard {
+  id: string;
+  code: string;
+  masked_code: string;
+  initial_value: string;
+  balance: string;
+  currency: string;
+  status: GiftCardStatusEnum;
+  status_display: string;
+  is_usable: boolean;
+  kind: GiftCardKindEnum;
+  design: DesignEnum;
+  expires_at: string;
+  purchaser_name: string;
+  purchaser_phone: string;
+  recipient_name: string;
+  recipient_phone: string;
+  recipient_email: string;
+  message: string;
+  sold_online: boolean;
+  delivered_at: string;
+  created_at: string;
+}
+
+export interface GiftCardKindEnum {
+  [key: string]: any;
+}
+
+export interface GiftCardLookup {
+  id: string;
+  masked_code: string;
+  balance: string;
+  currency: string;
+  status: string;
+  is_usable: boolean;
+  expires_at: string;
+  error_code: string;
+}
+
+export interface GiftCardStatusEnum {
+  [key: string]: any;
+}
+
+export interface HouseAccount {
+  id: string;
+  name: string;
+  company?: string;
+  tax_id?: string;
+  phone?: string;
+  email?: string | string;
+  credit_limit?: string;
+  balance: string;
+  available: string;
+  status?: HouseAccountStatusEnum;
+  status_display: string;
+  billing_day?: number;
+  authorised_names?: string;
+  require_signature?: boolean;
+  notes?: string;
+  customer?: string;
+  customer_name: string;
+  last_payment_at: string;
+  created_at: string;
+}
+
+export interface HouseAccountRequest {
+  name: string;
+  company?: string;
+  tax_id?: string;
+  phone?: string;
+  email?: string | string;
+  credit_limit?: string;
+  status?: HouseAccountStatusEnum;
+  billing_day?: number;
+  authorised_names?: string;
+  require_signature?: boolean;
+  notes?: string;
+  customer?: string;
+}
+
+export interface HouseAccountStatusEnum {
+  [key: string]: any;
+}
+
 export interface ItemAvailability {
   id: string;
   name: string;
@@ -516,6 +649,12 @@ export interface ItemAvailability {
   available_from: string;
   unavailable_until: string;
   is_available: boolean;
+}
+
+export interface JoinRequest {
+  name: string;
+  phone: string;
+  party_size?: number;
 }
 
 export interface Kind0ffEnum {
@@ -790,7 +929,11 @@ export interface MenuSyncRequestRequest {
   kind?: MenuSyncRequestKindEnum;
 }
 
-export interface Method2d9enum {
+export interface Method782enum {
+  [key: string]: any;
+}
+
+export interface Method787enum {
   [key: string]: any;
 }
 
@@ -945,6 +1088,7 @@ export interface Order {
   delivery_instructions?: string;
   delivery_fee?: string;
   packaging_fee?: string;
+  gift_card_applied?: string;
   scheduled_for?: string;
   delivery: string;
   subtotal: string;
@@ -1419,6 +1563,21 @@ export interface PatchedDeliveryZoneRequest {
   color?: string;
 }
 
+export interface PatchedHouseAccountRequest {
+  name?: string;
+  company?: string;
+  tax_id?: string;
+  phone?: string;
+  email?: string | string;
+  credit_limit?: string;
+  status?: HouseAccountStatusEnum;
+  billing_day?: number;
+  authorised_names?: string;
+  require_signature?: boolean;
+  notes?: string;
+  customer?: string;
+}
+
 export interface PatchedLoyaltyProgramWriteRequest {
   name?: string;
   description?: string;
@@ -1594,6 +1753,15 @@ export interface PatchedTableSectionRequest {
   background_note?: string;
 }
 
+export interface PatchedUpdateEntryRequest {
+  name?: string;
+  phone?: string;
+  party_size?: number;
+  quoted_minutes?: number;
+  notes?: string;
+  position?: number;
+}
+
 export interface PatchedUserUpdateRequest {
   first_name?: string;
   last_name?: string;
@@ -1618,6 +1786,15 @@ export interface PatchedVenueTableWriteRequest {
   shape?: VenueTableWriteShapeEnum;
   section?: string;
   is_active?: boolean;
+}
+
+export interface PatchedWaitlistSettingsRequest {
+  default_wait_minutes?: number;
+  notify_expire_minutes?: number;
+  allow_self_join?: boolean;
+  max_party_size?: number;
+  sms_on_join?: boolean;
+  sms_on_ready?: boolean;
 }
 
 export interface PauseRequest {
@@ -1704,7 +1881,7 @@ export interface PaymentModeEnum {
 
 export interface PaymentRefundRequest {
   amount: string;
-  method?: Method2d9enum;
+  method?: Method787enum;
   reason?: Reason4d1enum;
   reason_id?: string;
   reason_details?: string;
@@ -1896,6 +2073,27 @@ export interface Provider3c4enum {
   [key: string]: any;
 }
 
+export interface PublicBalance {
+  masked_code: string;
+  balance: string;
+  currency: string;
+  status: string;
+  expires_at: string;
+  restaurant: string;
+}
+
+export interface PublicStatus {
+  name: string;
+  party_size: number;
+  status: string;
+  position: number;
+  ahead: number;
+  quoted_minutes: number;
+  estimated_ready_at: string;
+  restaurant: string;
+  restaurant_slug: string;
+}
+
 export interface PurchaseOrder {
   id: string;
   number: string;
@@ -1994,6 +2192,14 @@ export interface RecordPaymentResponse {
   paid_order_numbers: string[];
 }
 
+export interface RedeemRequest {
+  code: string;
+  amount: string;
+  order_id?: string;
+  order_ids?: string[];
+  session_id?: string;
+}
+
 export interface ReferredUser {
   id: string;
   email: string;
@@ -2009,7 +2215,7 @@ export interface Refund {
   order?: string;
   shift?: string;
   amount: string;
-  method?: Method2d9enum;
+  method?: Method787enum;
   reason?: Reason4d1enum;
   reason_code?: string;
   reason_details?: string;
@@ -2499,6 +2705,10 @@ export interface RotaShift {
   hours: string;
 }
 
+export interface SeatRequest {
+  table_id: string;
+}
+
 export interface Segment {
   id: string;
   name: string;
@@ -2513,12 +2723,37 @@ export interface SelectionTypeEnum {
   [key: string]: any;
 }
 
+export interface SellKindEnum {
+  [key: string]: any;
+}
+
+export interface SellRequest {
+  amount: string;
+  method: Method782enum;
+  tendered?: string;
+  kind?: SellKindEnum;
+  design?: string;
+  recipient_name?: string;
+  recipient_phone?: string;
+  recipient_email?: string | string;
+  purchaser_name?: string;
+  purchaser_phone?: string;
+  message?: string;
+}
+
 export interface SendLinkRequest {
   to: string;
 }
 
 export interface SetUnavailableRequest {
   until?: UntilEnum;
+}
+
+export interface SettleRequest {
+  amount: string;
+  method: Method782enum;
+  tendered?: string;
+  note?: string;
 }
 
 export interface Shape877enum {
@@ -2646,6 +2881,21 @@ export interface StartSaleRequest {
   send_to?: string;
 }
 
+export interface Statement {
+  id: string;
+  period_start: string;
+  period_end: string;
+  opening: string;
+  charges: string;
+  payments: string;
+  adjustments: string;
+  closing: string;
+  sent_at: string;
+  sent_to: string;
+  url: string;
+  created_at: string;
+}
+
 export interface StationEnum {
   [key: string]: any;
 }
@@ -2667,6 +2917,14 @@ export interface StatusD10enum {
 }
 
 export interface StatusE8bEnum {
+  [key: string]: any;
+}
+
+export interface StatusRequest {
+  status: StatusStatusEnum;
+}
+
+export interface StatusStatusEnum {
   [key: string]: any;
 }
 
@@ -3267,6 +3525,55 @@ export interface VenueValidateData {
 export interface VenueValidateResponse {
   success: boolean;
   data: VenueValidateData;
+}
+
+export interface VoidRequest {
+  note?: string;
+}
+
+export interface WaitlistEntry {
+  id: string;
+  date: string;
+  position: number;
+  name: string;
+  phone: string;
+  party_size: number;
+  quoted_minutes: number;
+  status: WaitlistEntryStatusEnum;
+  status_display: string;
+  is_open: boolean;
+  source: WaitlistEntrySourceEnum;
+  notes: string;
+  notified_at: string;
+  notify_count: number;
+  seated_at: string;
+  left_at: string;
+  table: string;
+  table_number: string;
+  session: string;
+  reservation: string;
+  reservation_code: string;
+  estimated_ready_at: string;
+  waited_minutes: number;
+  created_at: string;
+}
+
+export interface WaitlistEntrySourceEnum {
+  [key: string]: any;
+}
+
+export interface WaitlistEntryStatusEnum {
+  [key: string]: any;
+}
+
+export interface WaitlistSettings {
+  default_wait_minutes?: number;
+  notify_expire_minutes?: number;
+  allow_self_join?: boolean;
+  max_party_size?: number;
+  sms_on_join?: boolean;
+  sms_on_ready?: boolean;
+  join_url: string;
 }
 
 export interface WalletTransaction {

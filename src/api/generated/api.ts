@@ -38,6 +38,21 @@ import type {
   PauseRequest,
   StoreStatus,
   PaginatedFiscalDocumentList,
+  GiftCard,
+  AdjustRequest,
+  VoidRequest,
+  GiftCardLookup,
+  RedeemRequest,
+  SellRequest,
+  HouseAccount,
+  HouseAccountRequest,
+  PatchedHouseAccountRequest,
+  Entry,
+  ChargeRequest,
+  SettleRequest,
+  Statement,
+  GenerateStatementRequest,
+  StatusRequest,
   PaginatedLoyaltyProgramList,
   LoyaltyProgramWriteRequest,
   LoyaltyProgramWrite,
@@ -192,12 +207,19 @@ import type {
   VenueTableDashboard,
   VenueTableWriteRequest,
   PatchedVenueTableWriteRequest,
+  WaitlistEntry,
+  AddEntryRequest,
+  PatchedUpdateEntryRequest,
+  SeatRequest,
+  WaitlistSettings,
+  PatchedWaitlistSettingsRequest,
   PaginatedFavoriteMenuItemList,
   FavoriteMenuItemCreateRequest,
   FavoriteMenuItemCreate,
   PaginatedFavoriteRestaurantList,
   FavoriteRestaurantCreateRequest,
   FavoriteRestaurantCreate,
+  PublicBalance,
   DeliveryQuoteRequestRequest,
   PaginatedOrderList,
   PaginatedPaymentMethodList,
@@ -236,6 +258,8 @@ import type {
   VenueDetailResponse,
   VenueMenuResponse,
   VenueValidateResponse,
+  JoinRequest,
+  PublicStatus,
 } from './interfaces';
 
 export async function adminAuditList(
@@ -566,6 +590,242 @@ export async function dashboardFiscalPaymentsReceiptRetrieve(
   const response = await axios.get(
     `/api/v1/dashboard/fiscal/payments/${id}/receipt/`,
   );
+  return response.data;
+}
+
+export async function dashboardGiftCardsList(
+  q?: string,
+  status?: string,
+): Promise<GiftCard[]> {
+  const response = await axios.get(
+    `/api/v1/dashboard/gift-cards/${(() => {
+      const parts = [
+        q ? 'q=' + encodeURIComponent(q) : null,
+        status ? 'status=' + encodeURIComponent(status) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function dashboardGiftCardsRetrieve(
+  cardId: string,
+): Promise<GiftCard> {
+  const response = await axios.get(`/api/v1/dashboard/gift-cards/${cardId}/`);
+  return response.data;
+}
+
+export async function dashboardGiftCardsAdjustCreate(
+  cardId: string,
+  data: AdjustRequest,
+): Promise<GiftCard> {
+  const response = await axios.post(
+    `/api/v1/dashboard/gift-cards/${cardId}/adjust/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardGiftCardsResendCreate(
+  cardId: string,
+): Promise<GiftCard> {
+  const response = await axios.post(
+    `/api/v1/dashboard/gift-cards/${cardId}/resend/`,
+  );
+  return response.data;
+}
+
+export async function dashboardGiftCardsVoidCreate(
+  cardId: string,
+  data: VoidRequest,
+): Promise<GiftCard> {
+  const response = await axios.post(
+    `/api/v1/dashboard/gift-cards/${cardId}/void/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardGiftCardsLookupRetrieve(
+  code?: string,
+): Promise<GiftCardLookup> {
+  const response = await axios.get(
+    `/api/v1/dashboard/gift-cards/lookup/${code ? '?code=' + encodeURIComponent(code) : ''}`,
+  );
+  return response.data;
+}
+
+export async function dashboardGiftCardsRedeemCreate(
+  data: RedeemRequest,
+): Promise<Record<string, any>> {
+  const response = await axios.post(
+    `/api/v1/dashboard/gift-cards/redeem/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardGiftCardsSellCreate(
+  data: SellRequest,
+): Promise<GiftCard> {
+  const response = await axios.post(`/api/v1/dashboard/gift-cards/sell/`, data);
+  return response.data;
+}
+
+export async function dashboardGiftCardsSummaryRetrieve(): Promise<Summary> {
+  const response = await axios.get(`/api/v1/dashboard/gift-cards/summary/`);
+  return response.data;
+}
+
+export async function dashboardHouseAccountsList(
+  ordering?: string,
+  search?: string,
+): Promise<HouseAccount[]> {
+  const response = await axios.get(
+    `/api/v1/dashboard/house-accounts/${(() => {
+      const parts = [
+        ordering ? 'ordering=' + encodeURIComponent(ordering) : null,
+        search ? 'search=' + encodeURIComponent(search) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsCreate(
+  data: HouseAccountRequest,
+): Promise<HouseAccount> {
+  const response = await axios.post(`/api/v1/dashboard/house-accounts/`, data);
+  return response.data;
+}
+
+export async function dashboardHouseAccountsRetrieve(
+  accountId: string,
+): Promise<HouseAccount> {
+  const response = await axios.get(
+    `/api/v1/dashboard/house-accounts/${accountId}/`,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsUpdate(
+  accountId: string,
+  data: HouseAccountRequest,
+): Promise<HouseAccount> {
+  const response = await axios.put(
+    `/api/v1/dashboard/house-accounts/${accountId}/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsPartialUpdate(
+  accountId: string,
+  data: PatchedHouseAccountRequest,
+): Promise<HouseAccount> {
+  const response = await axios.patch(
+    `/api/v1/dashboard/house-accounts/${accountId}/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsAdjustCreate(
+  accountId: string,
+  data: AdjustRequest,
+): Promise<Entry> {
+  const response = await axios.post(
+    `/api/v1/dashboard/house-accounts/${accountId}/adjust/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsChargeCreate(
+  accountId: string,
+  data: ChargeRequest,
+): Promise<Record<string, any>> {
+  const response = await axios.post(
+    `/api/v1/dashboard/house-accounts/${accountId}/charge/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsEntriesList(
+  accountId: string,
+): Promise<Entry[]> {
+  const response = await axios.get(
+    `/api/v1/dashboard/house-accounts/${accountId}/entries/`,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsSettleCreate(
+  accountId: string,
+  data: SettleRequest,
+): Promise<Record<string, any>> {
+  const response = await axios.post(
+    `/api/v1/dashboard/house-accounts/${accountId}/settle/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsStatementsList(
+  accountId: string,
+): Promise<Statement[]> {
+  const response = await axios.get(
+    `/api/v1/dashboard/house-accounts/${accountId}/statements/`,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsStatementsCreate(
+  accountId: string,
+  data: GenerateStatementRequest,
+): Promise<Statement> {
+  const response = await axios.post(
+    `/api/v1/dashboard/house-accounts/${accountId}/statements/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsStatementsSendCreate(
+  accountId: string,
+  statementId: string,
+): Promise<Statement> {
+  const response = await axios.post(
+    `/api/v1/dashboard/house-accounts/${accountId}/statements/${statementId}/send/`,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsStatusCreate(
+  accountId: string,
+  data: StatusRequest,
+): Promise<HouseAccount> {
+  const response = await axios.post(
+    `/api/v1/dashboard/house-accounts/${accountId}/status/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsLookupRetrieve(
+  phone?: string,
+): Promise<HouseAccount> {
+  const response = await axios.get(
+    `/api/v1/dashboard/house-accounts/lookup/${phone ? '?phone=' + encodeURIComponent(phone) : ''}`,
+  );
+  return response.data;
+}
+
+export async function dashboardHouseAccountsSummaryRetrieve(): Promise<Summary> {
+  const response = await axios.get(`/api/v1/dashboard/house-accounts/summary/`);
   return response.data;
 }
 
@@ -2778,6 +3038,128 @@ export async function dashboardVenueTablesDeactivateCreate(
   return response.data;
 }
 
+export async function dashboardWaitlistEntriesList(
+  all?: boolean,
+  date?: string,
+): Promise<WaitlistEntry[]> {
+  const response = await axios.get(
+    `/api/v1/dashboard/waitlist/entries/${(() => {
+      const parts = [
+        all ? 'all=' + encodeURIComponent(all) : null,
+        date ? 'date=' + encodeURIComponent(date) : null,
+      ].filter(Boolean);
+      return parts.length > 0 ? '?' + parts.join('&') : '';
+    })()}`,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistEntriesCreate(
+  data: AddEntryRequest,
+): Promise<WaitlistEntry> {
+  const response = await axios.post(
+    `/api/v1/dashboard/waitlist/entries/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistEntriesPartialUpdate(
+  entryId: string,
+  data: PatchedUpdateEntryRequest,
+): Promise<WaitlistEntry> {
+  const response = await axios.patch(
+    `/api/v1/dashboard/waitlist/entries/${entryId}/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistEntriesCancelCreate(
+  entryId: string,
+): Promise<WaitlistEntry> {
+  const response = await axios.post(
+    `/api/v1/dashboard/waitlist/entries/${entryId}/cancel/`,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistEntriesLeftCreate(
+  entryId: string,
+): Promise<WaitlistEntry> {
+  const response = await axios.post(
+    `/api/v1/dashboard/waitlist/entries/${entryId}/left/`,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistEntriesNoShowCreate(
+  entryId: string,
+): Promise<WaitlistEntry> {
+  const response = await axios.post(
+    `/api/v1/dashboard/waitlist/entries/${entryId}/no-show/`,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistEntriesNotifyCreate(
+  entryId: string,
+): Promise<WaitlistEntry> {
+  const response = await axios.post(
+    `/api/v1/dashboard/waitlist/entries/${entryId}/notify/`,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistEntriesSeatCreate(
+  entryId: string,
+  data: SeatRequest,
+): Promise<WaitlistEntry> {
+  const response = await axios.post(
+    `/api/v1/dashboard/waitlist/entries/${entryId}/seat/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistEstimateRetrieve(
+  partySize?: number,
+): Promise<Record<string, any>> {
+  const response = await axios.get(
+    `/api/v1/dashboard/waitlist/estimate/${partySize ? '?party_size=' + encodeURIComponent(partySize) : ''}`,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistReservationsToWaitlistCreate(
+  reservationId: string,
+): Promise<WaitlistEntry> {
+  const response = await axios.post(
+    `/api/v1/dashboard/waitlist/reservations/${reservationId}/to-waitlist/`,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistSettingsRetrieve(): Promise<WaitlistSettings> {
+  const response = await axios.get(`/api/v1/dashboard/waitlist/settings/`);
+  return response.data;
+}
+
+export async function dashboardWaitlistSettingsPartialUpdate(
+  data: PatchedWaitlistSettingsRequest,
+): Promise<WaitlistSettings> {
+  const response = await axios.patch(
+    `/api/v1/dashboard/waitlist/settings/`,
+    data,
+  );
+  return response.data;
+}
+
+export async function dashboardWaitlistSummaryRetrieve(): Promise<Summary> {
+  const response = await axios.get(`/api/v1/dashboard/waitlist/summary/`);
+  return response.data;
+}
+
 export async function favoritesClearDestroy(): Promise<any> {
   const response = await axios.delete(`/api/v1/favorites/clear/`);
   return response.data;
@@ -2910,8 +3292,34 @@ export async function favoritesRestaurantsBulkStatusCreate(): Promise<any> {
   return response.data;
 }
 
+export async function giftCardsBalanceRetrieve(
+  slug: string,
+  code?: string,
+): Promise<PublicBalance> {
+  const response = await axios.get(
+    `/api/v1/gift-cards/${slug}/balance/${code ? '?code=' + encodeURIComponent(code) : ''}`,
+  );
+  return response.data;
+}
+
+export async function giftCardsCardRetrieve(
+  token: string,
+): Promise<Record<string, any>> {
+  const response = await axios.get(`/api/v1/gift-cards/card/${token}/`);
+  return response.data;
+}
+
 export async function healthRetrieve(): Promise<any> {
   const response = await axios.get(`/api/v1/health/`);
+  return response.data;
+}
+
+export async function houseAccountsStatementRetrieve(
+  token: string,
+): Promise<Record<string, any>> {
+  const response = await axios.get(
+    `/api/v1/house-accounts/statement/${token}/`,
+  );
   return response.data;
 }
 
@@ -3749,6 +4157,37 @@ export async function venuesValidateRetrieve(
   code: string,
 ): Promise<VenueValidateResponse> {
   const response = await axios.get(`/api/v1/venues/validate/${code}/`);
+  return response.data;
+}
+
+export async function waitlistRetrieve(
+  slug: string,
+  token: string,
+): Promise<Record<string, any>> {
+  const response = await axios.get(`/api/v1/waitlist/${slug}/${token}/`);
+  return response.data;
+}
+
+export async function waitlistCreate(
+  slug: string,
+  token: string,
+  data: JoinRequest,
+): Promise<Record<string, any>> {
+  const response = await axios.post(`/api/v1/waitlist/${slug}/${token}/`, data);
+  return response.data;
+}
+
+export async function waitlistStatusRetrieve(
+  token: string,
+): Promise<PublicStatus> {
+  const response = await axios.get(`/api/v1/waitlist/status/${token}/`);
+  return response.data;
+}
+
+export async function waitlistStatusDestroy(
+  token: string,
+): Promise<Record<string, any>> {
+  const response = await axios.delete(`/api/v1/waitlist/status/${token}/`);
   return response.data;
 }
 
