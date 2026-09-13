@@ -24,6 +24,7 @@ import InviteFriendsSection from '@/components/InviteFriendsSection';
 import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
 import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
+import GiftCardField from '@/components/GiftCardField';
 import PromoCodeField from '@/components/PromoCodeField';
 import TipSelector from '@/components/TipSelector';
 import WalletApplySection from '@/components/WalletApplySection';
@@ -35,6 +36,7 @@ import { useTable } from '@/context/TableContext';
 import { useToast } from '@/hooks/useToast';
 import { Locale } from '@/i18n/config';
 import { localePath } from '@/i18n/routing';
+import { restaurantModules } from '@/lib/modules';
 import ArrowRightIcon from '@/icons/ArrowRight';
 import {
   background,
@@ -243,6 +245,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const [provider, setProvider] = useState<PaymentProvider>('bog');
   const [tipAmount, setTipAmount] = useState<number>(0);
   const [promoCode, setPromoCode] = useState<string>('');
+  const [giftCardCode, setGiftCardCode] = useState<string>('');
   const [marketingOptIn, setMarketingOptIn] = useState(false);
   const { user: authUser } = useAuth();
   const [walletAmount, setWalletAmount] = useState<number>(0);
@@ -435,6 +438,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       table_session: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
       customer_notes: notes.join(' | '),
       promo_code: promoCode || undefined,
+      gift_card_code: giftCardCode || undefined,
       marketing_opt_in: marketingOptIn || undefined,
       items: items.map<OrderItemPayload>(item => ({
         menu_item: item.menuItemId,
@@ -455,6 +459,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       customer_notes: notes.join(' | '),
       tip_amount: tipAmount || 0,
       promo_code: promoCode || undefined,
+      gift_card_code: giftCardCode || undefined,
       marketing_opt_in: marketingOptIn || undefined,
       items: items.map(item => ({
         menu_item_id: item.menuItemId,
@@ -565,6 +570,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     tableData,
     tipAmount,
     promoCode,
+    giftCardCode,
     walletAmount,
     marketingOptIn,
   ]);
@@ -710,6 +716,10 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
             value={promoCode}
             onChange={setPromoCode}
           />
+        )}
+
+        {!isCoveredGuest && restaurantSlug && restaurantModules(restaurant).gift_cards && (
+          <GiftCardField slug={restaurantSlug} value={giftCardCode} onChange={setGiftCardCode} />
         )}
 
         {/* Tip — only for people actually paying right now (host / solo);

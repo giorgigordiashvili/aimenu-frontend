@@ -1176,5 +1176,37 @@
       "self_join_off": "Joining from your phone is switched off — ask the staff.",
       "name_required": "Please enter your name."
     }
+  },
+  "giftCard": {
+    "title": "Gift card",
+    "placeholder": "GC-XXXX-XXXX",
+    "apply": "Apply",
+    "checking": "Checking…",
+    "remove": "Remove",
+    "applied": "Gift card applied · balance {balance} ₾ — it pays what it can, the rest is charged normally",
+    "hint": "Have a gift card? Enter the code and it pays part or all of the order.",
+    "notFound": "This gift card link is not valid.",
+    "shopTitle": "{restaurant} gift card",
+    "shopIntro": "Buy a digital gift card — it arrives by SMS or email with a code that works at the restaurant and at online checkout.",
+    "customAmount": "Other amount",
+    "recipientName": "Recipient name",
+    "recipientPhone": "Recipient phone (SMS)",
+    "recipientEmail": "Recipient email",
+    "yourName": "Your name",
+    "message": "Message on the card",
+    "forName": "for {name}",
+    "buy": "Buy for {amount} ₾",
+    "noOnlinePayments": "This restaurant does not take online payments yet — gift cards are sold at the restaurant.",
+    "deliveryNote": "You pay by card; the code is sent as soon as the payment is confirmed.",
+    "howToUse": "Show this code at the restaurant or type it at online checkout. Any remaining balance stays on the card.",
+    "validUntil": "Valid until {date}",
+    "errors": {
+      "generic": "Something went wrong, try again.",
+      "not_found": "No gift card with this code.",
+      "void": "This gift card was voided.",
+      "expired": "This gift card has expired.",
+      "used_up": "This gift card has no balance left.",
+      "pending": "This gift card has not been paid for yet."
+    }
   }
 }

@@ -32,6 +32,8 @@ export interface CreateOrderRequest {
   customer_notes?: string;
   /** Promotions module: a promo code typed at checkout. */
   promo_code?: string;
+  /** Gift cards module: a card code typed at checkout; the backend redeems what the bill needs. */
+  gift_card_code?: string;
   /** CRM: the signed-in guest agreed to offers from this restaurant. */
   marketing_opt_in?: boolean;
   /** Online ordering: chosen slot (ISO) — omitted = as soon as possible. */
