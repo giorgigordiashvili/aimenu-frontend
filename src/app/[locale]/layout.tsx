@@ -14,6 +14,7 @@ import CookieConsent from '@/components/CookieConsent';
 import TopProgressBar from '@/components/TopProgressBar';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
+import { FulfilmentProvider } from '@/context/FulfilmentContext';
 import { LocaleProvider } from '@/context/LocaleContext';
 import { TableProvider } from '@/context/TableContext';
 import { locales, Locale, isValidLocale } from '@/i18n/config';
@@ -158,9 +159,11 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             <LocaleProvider locale={locale as Locale}>
               <TableProvider>
                 <CartProvider>
-                  <MobileNavSpacer>{children}</MobileNavSpacer>
-                  <BottomTabBar />
-                  <CookieConsent />
+                  <FulfilmentProvider>
+                    <MobileNavSpacer>{children}</MobileNavSpacer>
+                    <BottomTabBar />
+                    <CookieConsent />
+                  </FulfilmentProvider>
                 </CartProvider>
               </TableProvider>
             </LocaleProvider>

@@ -69,6 +69,33 @@ const StatusRow = styled('div')({
   marginBottom: '8px',
 });
 
+const Steps = styled('ol')({
+  listStyle: 'none',
+  margin: '12px 0 0',
+  padding: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 6,
+});
+const Step = styled('li')<{ state: 'done' | 'now' | 'todo' }>({
+  fontSize: 14,
+  display: 'flex',
+  gap: 8,
+  alignItems: 'center',
+  variants: [
+    { props: { state: 'done' }, style: { color: '#15803d' } },
+    { props: { state: 'now' }, style: { color: '#0f172b', fontWeight: 700 } },
+    { props: { state: 'todo' }, style: { color: '#94a3b8' } },
+  ],
+});
+const TrackLink = styled('a')({
+  display: 'inline-block',
+  marginTop: 10,
+  color: '#155DFC',
+  fontWeight: 600,
+  fontSize: 14,
+});
+
 const StatusLabel = styled('span')({
   fontSize: '14px',
   color: slate500,
@@ -166,6 +193,20 @@ interface Props {
 
 type StatusKey = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled';
 
+type DeliveryStep = 'pending' | 'assigned' | 'picked_up' | 'delivered';
+interface DeliverySummary {
+  id: string;
+  provider: string;
+  status: string;
+  courier_name: string;
+  courier_phone: string;
+  tracking_url: string;
+  pickup_eta: string | null;
+  dropoff_eta: string | null;
+  cost: string;
+  error: string;
+}
+
 const STATUS_KEYS: StatusKey[] = [
   'pending',
   'confirmed',
@@ -256,6 +297,23 @@ export default function OrderStatusPage({ locale, orderNumber }: Props) {
 
   const statusKey = resolveStatusKey(data.status);
   const total = parseFloat(data.total || '0');
+  // OrderTypeEnum is generated as an interface; it is a plain string on the wire.
+  const orderType = String(data.order_type ?? '');
+  const fulfilment = orderType === 'takeaway' || orderType === 'delivery';
+  // The generator types this nested object as `string`; it is an object on the wire.
+  const delivery = (data as unknown as { delivery?: DeliverySummary | null }).delivery ?? null;
+  const when = data.scheduled_for || data.estimated_ready_at || null;
+  const deliveryFee = parseFloat(data.delivery_fee || '0');
+  const packagingFee = parseFloat(data.packaging_fee || '0');
+  const DELIVERY_STEPS: DeliveryStep[] = ['pending', 'assigned', 'picked_up', 'delivered'];
+  const deliveryStep = delivery
+    ? delivery.status === 'requested' ||
+      delivery.status === 'accepted' ||
+      delivery.status === 'quoted'
+      ? 'pending'
+      : delivery.status
+    : 'pending';
+  const stepIndex = DELIVERY_STEPS.indexOf(deliveryStep as DeliveryStep);
   const orderSuccessCopy = (t as unknown as { orderSuccess?: Record<string, string> }).orderSuccess;
   const showSettleCta =
     !!session &&
@@ -281,6 +339,64 @@ export default function OrderStatusPage({ locale, orderNumber }: Props) {
           </StatusRow>
         </Card>
 
+        {fulfilment ? (
+          <Card data-testid='fulfilment-card'>
+            <SectionHeading>
+              {orderType === 'delivery' ? '🛵 ' : '🛍 '}
+              {(orderType === 'delivery'
+                ? t.ordering.summaryDelivery
+                : t.ordering.summaryPickup
+              ).replace(
+                '{time}',
+                when
+                  ? (data.scheduled_for ? t.ordering.scheduledFor : t.ordering.readyBy).replace(
+                      '{time}',
+                      new Date(when).toLocaleString(locale, {
+                        weekday: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    )
+                  : ''
+              )}
+            </SectionHeading>
+            {orderType === 'delivery' ? (
+              <>
+                <ItemMeta>
+                  {t.ordering.deliveryTo}: {data.delivery_address}
+                </ItemMeta>
+                {delivery && delivery.status !== 'failed' && delivery.status !== 'cancelled' ? (
+                  <Steps>
+                    {DELIVERY_STEPS.map((step, i) => (
+                      <Step
+                        key={step}
+                        state={i < stepIndex ? 'done' : i === stepIndex ? 'now' : 'todo'}
+                      >
+                        {i < stepIndex ? '✓' : i === stepIndex ? '●' : '○'}{' '}
+                        {(t.ordering.status as Record<string, string>)[step]}
+                      </Step>
+                    ))}
+                  </Steps>
+                ) : delivery ? (
+                  <ItemMeta>
+                    {(t.ordering.status as Record<string, string>)[delivery.status]}
+                  </ItemMeta>
+                ) : null}
+                {delivery?.courier_name ? (
+                  <ItemMeta>
+                    {t.ordering.courier}: {delivery.courier_name}
+                  </ItemMeta>
+                ) : null}
+                {delivery?.tracking_url ? (
+                  <TrackLink href={delivery.tracking_url} target='_blank' rel='noreferrer'>
+                    {t.ordering.track} →
+                  </TrackLink>
+                ) : null}
+              </>
+            ) : null}
+          </Card>
+        ) : null}
+
         <Card>
           <SectionHeading>{t.orders.yourOrder}</SectionHeading>
           {data.items.map(item => (
@@ -297,6 +413,18 @@ export default function OrderStatusPage({ locale, orderNumber }: Props) {
               <ItemPrice>{parseFloat(item.total_price).toFixed(2)} ₾</ItemPrice>
             </ItemRow>
           ))}
+          {deliveryFee > 0 ? (
+            <ItemRow>
+              <ItemName>{t.ordering.deliveryFee}</ItemName>
+              <ItemPrice>{deliveryFee.toFixed(2)} ₾</ItemPrice>
+            </ItemRow>
+          ) : null}
+          {packagingFee > 0 ? (
+            <ItemRow>
+              <ItemName>{t.ordering.packaging}</ItemName>
+              <ItemPrice>{packagingFee.toFixed(2)} ₾</ItemPrice>
+            </ItemRow>
+          ) : null}
           <TotalRow>
             <TotalLabel>{t.orders.total}</TotalLabel>
             <TotalValue>{total.toFixed(2)} ₾</TotalValue>

@@ -1,11 +1,13 @@
 import { styled } from '@pigment-css/react';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 
 import type { RestaurantDetail } from '@/api/generated/interfaces';
 import { ReservationWidget } from '@/components';
 import CartBadge from '@/components/CartBadge';
 import ContactInfo from '@/components/ContactInfo';
 import Footer from '@/components/Footer';
+import FulfilmentBar from '@/components/FulfilmentBar';
 import HeaderPrimary from '@/components/HeaderPrimary';
 import MenuSection from '@/components/MenuSection';
 import RestaurantCartScopeBanner from '@/components/RestaurantCartScopeBanner';
@@ -238,6 +240,8 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   // — handled inside ReservationWidget itself.
   // Modules the restaurant switched on (Settings -> Modules in its admin).
   const modules = restaurantModules(restaurant);
+  // A restaurant's own domain (custom domain): no marketplace cross-links.
+  const siteMode = (await headers()).get('x-site-mode') === 'restaurant';
   const showWidget = modules.reservations;
   // Master ordering switch. When off, the customer can browse the menu but
   // every order surface is suppressed (cart, checkout, QR dine-in).
@@ -329,6 +333,10 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
                 sheet; see MobileReservationSheet. The old inline widget
                 was removed to give the menu more vertical space. */}
 
+            {orderingEnabled && modules.online_ordering ? (
+              <FulfilmentBar slug={slug} locale={locale} />
+            ) : null}
+
             <MenuSection
               slug={slug}
               locale={locale}
@@ -347,11 +355,13 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
               locale={locale}
             />
 
-            <SimilarRestaurants
-              cuisineType={restaurant.category?.slug ?? ''}
-              currentSlug={slug}
-              locale={locale}
-            />
+            {siteMode ? null : (
+              <SimilarRestaurants
+                cuisineType={restaurant.category?.slug ?? ''}
+                currentSlug={slug}
+                locale={locale}
+              />
+            )}
           </LeftColumn>
 
           {showRightColumn && (

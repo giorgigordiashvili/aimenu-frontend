@@ -34,6 +34,19 @@ export interface CreateOrderRequest {
   promo_code?: string;
   /** CRM: the signed-in guest agreed to offers from this restaurant. */
   marketing_opt_in?: boolean;
+  /** Online ordering: chosen slot (ISO) — omitted = as soon as possible. */
+  scheduled_for?: string;
+  delivery_address?: string;
+  address?: {
+    street: string;
+    building: string;
+    entrance: string;
+    floor: string;
+    apartment: string;
+  };
+  lat?: number;
+  lng?: number;
+  delivery_instructions?: string;
   items: OrderItemPayload[];
 }
 

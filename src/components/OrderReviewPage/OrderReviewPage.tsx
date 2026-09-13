@@ -9,6 +9,13 @@ import { restaurantsRetrieve, tablesSessionsRetrieve } from '@/api/generated/api
 import type { RestaurantDetail, TableSessionDetail } from '@/api/generated/interfaces';
 import { submitOrder } from '@/api/order';
 import type { CreateOrderRequest, OrderItemPayload } from '@/api/order-payload';
+import {
+  fetchOrderingConfig,
+  orderingError,
+  quoteDelivery,
+  type DeliveryQuote,
+  type OrderingConfig,
+} from '@/api/ordering';
 import { initiateOrderPayment } from '@/api/payments/bog';
 import { initiateOrderFlitt } from '@/api/payments/flitt';
 import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRestaurantCard';
@@ -18,10 +25,11 @@ import MainButton from '@/components/MainButton/MainButton';
 import PaymentMethodSelector, { PaymentMethod } from '@/components/PaymentMethodSelector';
 import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
 import PromoCodeField from '@/components/PromoCodeField';
-import { useAuth } from '@/context/AuthContext';
 import TipSelector from '@/components/TipSelector';
 import WalletApplySection from '@/components/WalletApplySection';
+import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useFulfilment } from '@/context/FulfilmentContext';
 import { useTranslations } from '@/context/LocaleContext';
 import { useTable } from '@/context/TableContext';
 import { useToast } from '@/hooks/useToast';
@@ -197,6 +205,20 @@ function formatGuestsNote(guests: Guest[]): string {
   return `Guests: ${guests.map(g => `${g.name} (${g.contact})`).join('; ')}`;
 }
 
+const FulfilmentSummary = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 4,
+  padding: '14px 16px',
+  borderRadius: 12,
+  border: '1px solid #fecdd3',
+  background: '#fff1f2',
+  fontSize: 14,
+  color: '#0f172b',
+  marginBottom: 16,
+  '& small': { color: '#6b7280' },
+});
+
 const ConsentRow = styled('label')({
   display: 'flex',
   alignItems: 'flex-start',
@@ -225,6 +247,9 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
   const { user: authUser } = useAuth();
   const [walletAmount, setWalletAmount] = useState<number>(0);
   const [guests, setGuests] = useState<Guest[]>([]);
+  const fulfilment = useFulfilment();
+  const [orderingConfig, setOrderingConfig] = useState<OrderingConfig | null>(null);
+  const [deliveryQuote, setDeliveryQuote] = useState<DeliveryQuote | null>(null);
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [session, setSession] = useState<TableSessionDetail | null>(null);
 
@@ -319,6 +344,51 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     router.push(localePath(locale));
   }, [locale, router]);
 
+  // Pickup / delivery rules for this restaurant (hours, fees, minimums).
+  useEffect(() => {
+    if (!restaurantSlug) return;
+    let cancelled = false;
+    fetchOrderingConfig(restaurantSlug)
+      .then(cfg => {
+        if (!cancelled) setOrderingConfig(cfg);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [restaurantSlug]);
+
+  const atTable = tableData?.restaurantSlug === restaurantSlug && !!tableData?.sessionId;
+  const onlineMode = !atTable && !!orderingConfig?.enabled;
+  const orderType: 'dine_in' | 'takeaway' | 'delivery' = !onlineMode
+    ? 'dine_in'
+    : fulfilment.mode === 'delivery'
+      ? 'delivery'
+      : 'takeaway';
+  const cartSubtotal = items.reduce(
+    (sum, item) =>
+      sum + (item.price + (item.modifiers ?? []).reduce((s, m) => s + m.price, 0)) * item.quantity,
+    0
+  );
+
+  useEffect(() => {
+    if (!restaurantSlug || orderType !== 'delivery' || !fulfilment.address) {
+      setDeliveryQuote(null);
+      return;
+    }
+    let cancelled = false;
+    quoteDelivery(restaurantSlug, fulfilment.address.lat, fulfilment.address.lng, cartSubtotal)
+      .then(q => {
+        if (!cancelled) setDeliveryQuote(q);
+      })
+      .catch(() => {
+        if (!cancelled) setDeliveryQuote(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [restaurantSlug, orderType, fulfilment.address, cartSubtotal]);
+
   const handleCancel = useCallback(() => {
     router.back();
   }, [router]);
@@ -331,9 +401,36 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     if (guestNote) notes.push(guestNote);
     notes.push(`Payment: ${paymentMethod}`);
 
+    if (orderType === 'delivery' && !fulfilment.address) {
+      showToast(t.ordering.addressRequired);
+      return;
+    }
+    const fulfilmentFields =
+      orderType === 'dine_in'
+        ? {}
+        : {
+            scheduled_for: fulfilment.scheduledFor ?? undefined,
+            delivery_instructions: fulfilment.instructions || undefined,
+            ...(orderType === 'delivery' && fulfilment.address
+              ? {
+                  delivery_address: fulfilment.address.text,
+                  lat: fulfilment.address.lat,
+                  lng: fulfilment.address.lng,
+                  address: {
+                    street: fulfilment.address.text,
+                    building: fulfilment.address.building ?? '',
+                    entrance: fulfilment.address.entrance ?? '',
+                    floor: fulfilment.address.floor ?? '',
+                    apartment: fulfilment.address.apartment ?? '',
+                  },
+                }
+              : {}),
+          };
+
     const payload: CreateOrderRequest = {
       restaurant_slug: restaurantSlug,
-      order_type: 'dine_in',
+      order_type: orderType,
+      ...fulfilmentFields,
       table: tableData?.restaurantSlug === restaurantSlug ? tableData.code : undefined,
       table_session: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
       customer_notes: notes.join(' | '),
@@ -352,7 +449,8 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     // call so the direct /orders/create path also validates.
     const directPayload = {
       restaurant_slug: restaurantSlug,
-      order_type: 'dine_in',
+      order_type: orderType,
+      ...fulfilmentFields,
       session_id: tableData?.restaurantSlug === restaurantSlug ? tableData.sessionId : undefined,
       customer_notes: notes.join(' | '),
       tip_amount: tipAmount || 0,
@@ -435,10 +533,21 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
       window.location.assign(result.redirect_url);
     } catch (err) {
       if (process.env.NODE_ENV !== 'production') console.error('[submitOrder]', err);
-      showToast(t.orderReview.orderFailed);
+      const known = orderingError(err);
+      const message = known
+        ? ((t.ordering.errors as Record<string, string>)[known.code] ?? known.message)
+        : (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
+            ?.message || t.orderReview.orderFailed;
+      showToast(message);
       setSubmitting(false);
     }
   }, [
+    orderType,
+    fulfilment.address,
+    fulfilment.scheduledFor,
+    fulfilment.instructions,
+    t.ordering.addressRequired,
+    t.ordering.errors,
     clearCart,
     guests,
     isCoveredGuest,
@@ -457,6 +566,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
     tipAmount,
     promoCode,
     walletAmount,
+    marketingOptIn,
   ]);
 
   // Empty cart state
@@ -510,8 +620,54 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
         <PageTitle>{t.orderReview.title}</PageTitle>
         <PageSubtitle>{t.orderReview.subtitle}</PageSubtitle>
 
+        {onlineMode ? (
+          <FulfilmentSummary data-testid='fulfilment-summary'>
+            <strong>
+              {orderType === 'delivery' ? '🛵 ' : '🛍 '}
+              {(orderType === 'delivery'
+                ? t.ordering.summaryDelivery
+                : t.ordering.summaryPickup
+              ).replace(
+                '{time}',
+                fulfilment.scheduledFor
+                  ? t.ordering.scheduledFor.replace(
+                      '{time}',
+                      new Date(fulfilment.scheduledFor).toLocaleString(locale, {
+                        weekday: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    )
+                  : t.ordering.asap.toLowerCase()
+              )}
+            </strong>
+            {orderType === 'delivery' ? (
+              <span>
+                {fulfilment.address
+                  ? `${t.ordering.deliveryTo}: ${fulfilment.address.text}${fulfilment.address.apartment ? `, ${fulfilment.address.apartment}` : ''}`
+                  : t.ordering.addressRequired}
+              </span>
+            ) : null}
+            {deliveryQuote ? (
+              <span>
+                {parseFloat(deliveryQuote.fee) > 0
+                  ? `${t.ordering.deliveryFee}: ${parseFloat(deliveryQuote.fee).toFixed(2)} ₾`
+                  : t.ordering.freeDelivery}
+                {' · '}
+                {t.ordering.eta.replace('{minutes}', String(deliveryQuote.eta_minutes))}
+              </span>
+            ) : null}
+            {orderingConfig && parseFloat(orderingConfig.packaging_fee) > 0 ? (
+              <span>
+                {t.ordering.packaging}: {parseFloat(orderingConfig.packaging_fee).toFixed(2)} ₾
+              </span>
+            ) : null}
+            <small>{t.ordering.checkoutHint}</small>
+          </FulfilmentSummary>
+        ) : null}
+
         {/* Payment Method Section — hidden for guests whose host covers */}
-        {isCoveredGuest ? (
+        {onlineMode ? null : isCoveredGuest ? (
           <CoveredGuestNotice>
             {(t.orderReview.coveredGuestNote as string | undefined) ??
               'Your host is covering this order. Tap submit to send it to the kitchen.'}
@@ -591,7 +747,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
 
         {/* Invite Link Section — covered guests can't invite from a tab they
             don't own; only the host / solo customer sees it. */}
-        {!isCoveredGuest && (
+        {!isCoveredGuest && !onlineMode && (
           <InviteFriendsSection
             locale={locale}
             paymentMethod={paymentMethod}
@@ -600,7 +756,7 @@ export default function OrderReviewPage({ locale }: OrderReviewPageProps) {
         )}
 
         {/* Guest Add Section */}
-        <GuestAddSection guests={guests} onChange={setGuests} />
+        {!onlineMode ? <GuestAddSection guests={guests} onChange={setGuests} /> : null}
 
         {/* Action Buttons */}
         <ActionButtonsContainer>

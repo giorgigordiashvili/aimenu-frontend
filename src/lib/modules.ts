@@ -15,11 +15,12 @@ export type ModuleCode =
   | 'warehouse'
   | 'loyalty'
   | 'reviews'
+  | 'online_ordering'
   | 'payments';
 
 export type RestaurantModules = Record<ModuleCode, boolean>;
 
-const OPT_IN: ModuleCode[] = ['warehouse', 'payments'];
+const OPT_IN: ModuleCode[] = ['warehouse', 'payments', 'online_ordering'];
 const CODES: ModuleCode[] = [
   'menu',
   'ordering',
@@ -29,6 +30,7 @@ const CODES: ModuleCode[] = [
   'warehouse',
   'loyalty',
   'reviews',
+  'online_ordering',
   'payments',
 ];
 
