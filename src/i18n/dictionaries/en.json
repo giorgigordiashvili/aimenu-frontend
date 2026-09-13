@@ -1147,5 +1147,34 @@
       "pickup_disabled": "Pickup is not available right now.",
       "delivery_disabled": "Delivery is not available right now."
     }
+  },
+  "waitlist": {
+    "notFound": "This link is not valid.",
+    "joinIntro": "{waiting} parties waiting · about {minutes} min",
+    "closed": "The waitlist is closed right now — ask the staff.",
+    "name": "Your name",
+    "phone": "Phone (we text you when the table is ready)",
+    "party": "Party size",
+    "join": "Join the waitlist",
+    "smsNote": "You will get an SMS when your table is ready. You can also follow your place in line on this page.",
+    "guests": "guests",
+    "ahead": "{ahead} parties ahead of you",
+    "about": "about {minutes} min",
+    "leave": "Leave the list",
+    "ready": "Your table is ready — come to the entrance!",
+    "seated": "Seated. Enjoy!",
+    "viewMenu": "View the menu",
+    "status": {
+      "left": "You left the list",
+      "cancelled": "Cancelled",
+      "no_show": "The table was released"
+    },
+    "errors": {
+      "generic": "Something went wrong, try again.",
+      "already_waiting": "You are already on the list.",
+      "party_too_big": "That party is too big for the list — ask the staff.",
+      "self_join_off": "Joining from your phone is switched off — ask the staff.",
+      "name_required": "Please enter your name."
+    }
   }
 }
