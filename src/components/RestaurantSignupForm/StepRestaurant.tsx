@@ -273,6 +273,7 @@ export default function StepRestaurant({
             type='tel'
             value={data.restaurantPhone}
             leftIcon={PhoneIcon}
+            errorMessage={errors.restaurantPhone}
             onChange={e => update('restaurantPhone', e.target.value)}
           />
         </Field>
@@ -284,6 +285,7 @@ export default function StepRestaurant({
             type='url'
             value={data.website}
             leftIcon={EmailIcon}
+            errorMessage={errors.website}
             onChange={e => update('website', e.target.value)}
           />
         </Field>

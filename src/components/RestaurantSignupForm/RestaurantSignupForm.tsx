@@ -3,8 +3,9 @@
 import { styled } from '@pigment-css/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { emailCheck } from '@/api/auth';
 import { authLoginCreate, authRegisterCreate, restaurantsCreateCreate } from '@/api/generated';
 import HeaderPrimary from '@/components/HeaderPrimary/HeaderPrimary';
 import LanguageSwitcherPrimary from '@/components/LanguageSwitcherPrimary';
@@ -12,9 +13,10 @@ import { useAuth } from '@/context/AuthContext';
 import { Locale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
+import { authErrorMessage, fieldMessage, hasCode, parseApiError } from '@/lib/api-error';
 import * as tokens from '@/tokens';
 
-import { EMAIL_RE, type SignupData, type SignupErrors, slugify } from './shared';
+import { EMAIL_RE, type OwnerMode, type SignupData, type SignupErrors } from './shared';
 import StepOwner from './StepOwner';
 import StepRestaurant from './StepRestaurant';
 import StepReview from './StepReview';
@@ -195,16 +197,33 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
   const router = useRouter();
   const t = getDictionary(locale);
   const ts = t.restaurantSignup;
-  const { login } = useAuth();
+  const { login, logout, user } = useAuth();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [data, setData] = useState<SignupData>(initialData);
   const [errors, setErrors] = useState<SignupErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Once an owner account has been created we don't want to create it again
-  // if the restaurant-create step fails — we only retry the restaurant step.
+  const [ownerBusy, setOwnerBusy] = useState(false);
+  // One AiMenu identity serves both roles: a customer account can own a
+  // restaurant. Step 1 therefore has three shapes -- see OwnerMode.
+  const [ownerMode, setOwnerMode] = useState<OwnerMode>('new');
+  // Once the owner is signed in we don't want to register again if the
+  // restaurant-create step fails — we only retry the restaurant step.
   const [accountCreated, setAccountCreated] = useState(false);
+
+  useEffect(() => {
+    if (user && ownerMode !== 'signedIn') {
+      setOwnerMode('signedIn');
+      setAccountCreated(true);
+      setData(prev => ({
+        ...prev,
+        email: user.email ?? prev.email,
+        firstName: prev.firstName || user.first_name || '',
+        lastName: prev.lastName || user.last_name || '',
+      }));
+    }
+  }, [user, ownerMode]);
 
   function validateStep1(): boolean {
     const next: SignupErrors = {};
@@ -220,6 +239,70 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
     return Object.keys(next).length === 0;
   }
 
+  /** Sign the existing account in with the password typed on step 1. */
+  async function signInExisting(): Promise<boolean> {
+    if (!data.password) {
+      setErrors(prev => ({ ...prev, password: ts.errors.requiredField }));
+      return false;
+    }
+    setOwnerBusy(true);
+    try {
+      const tokenResp = (await authLoginCreate({
+        email: data.email.trim(),
+        password: data.password,
+      })) as { access?: string; refresh?: string };
+      if (!tokenResp?.access || !tokenResp?.refresh) {
+        setApiError(t.apiErrors.generic);
+        return false;
+      }
+      await login({ access: tokenResp.access, refresh: tokenResp.refresh });
+      setAccountCreated(true);
+      return true;
+    } catch (err: unknown) {
+      const e = parseApiError(err);
+      const msg = authErrorMessage(e, t.apiErrors);
+      if (e.status === 401) setErrors(prev => ({ ...prev, password: msg }));
+      else setApiError(msg);
+      return false;
+    } finally {
+      setOwnerBusy(false);
+    }
+  }
+
+  async function handleOwnerNext() {
+    if (ownerMode === 'signedIn') {
+      setStep(2);
+      return;
+    }
+    if (ownerMode === 'existing') {
+      if (await signInExisting()) setStep(2);
+      return;
+    }
+    if (!validateStep1()) return;
+    // Known email? Then ask for its password instead of failing at submit.
+    setOwnerBusy(true);
+    try {
+      const check = await emailCheck(data.email.trim());
+      if (check.exists) {
+        setOwnerMode('existing');
+        setData(prev => ({ ...prev, password: '', passwordConfirm: '' }));
+        return;
+      }
+    } catch {
+      // The check is a convenience; registration itself still reports a taken email.
+    } finally {
+      setOwnerBusy(false);
+    }
+    setStep(2);
+  }
+
+  function useDifferentEmail() {
+    setOwnerMode('new');
+    setApiError(null);
+    setErrors({});
+    setData(prev => ({ ...prev, email: '', password: '', passwordConfirm: '' }));
+  }
+
   function validateStep2(): boolean {
     const next: SignupErrors = {};
     if (!data.restaurantName.trim()) next.restaurantName = ts.errors.requiredField;
@@ -230,9 +313,12 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
 
   function handleNext() {
     setApiError(null);
-    if (step === 1 && !validateStep1()) return;
+    if (step === 1) {
+      void handleOwnerNext();
+      return;
+    }
     if (step === 2 && !validateStep2()) return;
-    setStep(prev => (prev === 1 ? 2 : 3));
+    setStep(3);
   }
 
   function handleBack() {
@@ -250,7 +336,8 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
 
     try {
       // 1. Create the owner account (only if we didn't already on a previous
-      //    attempt that failed at step 2).
+      //    attempt that failed at step 2, and not when an existing account
+      //    was signed in on step 1).
       if (!accountCreated) {
         try {
           await authRegisterCreate({
@@ -262,16 +349,34 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
             phone_number: data.phone.trim() || undefined,
           });
         } catch (err: unknown) {
-          const axiosErr = err as { response?: { data?: Record<string, string[] | string> } };
-          const body = axiosErr?.response?.data;
-          if (body && (body.email || (Array.isArray(body.email) && body.email.length))) {
-            // Email already registered — bounce back to step 1 with an inline hint
-            setErrors(prev => ({ ...prev, email: ts.errors.emailTaken }));
-            setApiError(ts.errors.emailTaken);
+          const e = parseApiError(err);
+          if (hasCode(e, 'email', 'email_taken')) {
+            // Registered meanwhile (or the pre-check was skipped): ask for the password.
+            setOwnerMode('existing');
+            setData(prev => ({ ...prev, password: '', passwordConfirm: '' }));
+            setErrors({});
+            setApiError(t.apiErrors.emailTaken);
             setStep(1);
             return;
           }
-          setApiError(ts.errors.accountCreationFailed);
+          const next: SignupErrors = {};
+          const emailMsg = fieldMessage(e, 'email', t.apiErrors);
+          if (emailMsg) next.email = emailMsg;
+          const passwordMsg = fieldMessage(e, 'password', t.apiErrors);
+          if (passwordMsg) next.password = passwordMsg;
+          const confirmMsg = fieldMessage(e, 'password_confirm', t.apiErrors);
+          if (confirmMsg) next.passwordConfirm = confirmMsg;
+          const firstNameMsg = fieldMessage(e, 'first_name', t.apiErrors);
+          if (firstNameMsg) next.firstName = firstNameMsg;
+          const lastNameMsg = fieldMessage(e, 'last_name', t.apiErrors);
+          if (lastNameMsg) next.lastName = lastNameMsg;
+          if (Object.keys(next).length) {
+            setErrors(prev => ({ ...prev, ...next }));
+            setApiError(Object.values(next)[0] ?? null);
+            setStep(1);
+            return;
+          }
+          setApiError(e.network ? t.apiErrors.network : authErrorMessage(e, t.apiErrors));
           return;
         }
 
@@ -288,12 +393,10 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
         setAccountCreated(true);
       }
 
-      // 3. Create the restaurant. Backend's save() auto-suffixes slug on
-      //    collision, so a deterministic client-side slugify is safe.
-      const slug = slugify(data.restaurantName);
+      // 3. Create the restaurant. No slug: the backend derives one from the
+      //    name (Georgian transliterated) and suffixes it on collision.
       const restaurant = await restaurantsCreateCreate({
         name: data.restaurantName.trim(),
-        slug,
         description: data.description.trim() || undefined,
         category_id: data.categoryId || undefined,
         email: data.email.trim(),
@@ -304,7 +407,7 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
         country: data.country.trim() || undefined,
       });
 
-      const finalSlug = restaurant?.slug ?? slug;
+      const finalSlug = restaurant.slug ?? '';
       try {
         sessionStorage.setItem(
           'aimenu_signup_result',
@@ -320,16 +423,33 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
         )
       );
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: Record<string, unknown> } };
-      const body = axiosErr?.response?.data;
-      if (body && typeof body === 'object') {
-        const firstVal = Object.values(body).flat().find(Boolean);
-        if (firstVal) {
-          setApiError(String(firstVal));
-          return;
-        }
+      const e = parseApiError(err);
+      const next: SignupErrors = {};
+      const nameMsg = fieldMessage(e, 'name', t.apiErrors);
+      if (nameMsg) next.restaurantName = nameMsg;
+      const cityMsg = fieldMessage(e, 'city', t.apiErrors);
+      if (cityMsg) next.city = cityMsg;
+      const phoneMsg = fieldMessage(e, 'phone', t.apiErrors);
+      if (phoneMsg) next.restaurantPhone = phoneMsg;
+      const websiteMsg = fieldMessage(e, 'website', t.apiErrors);
+      if (websiteMsg) next.website = websiteMsg;
+      if (Object.keys(next).length) {
+        setErrors(prev => ({ ...prev, ...next }));
+        setApiError(Object.values(next)[0] ?? null);
+        setStep(2);
+        return;
       }
-      setApiError(ts.errors.restaurantCreationFailed);
+      if (e.status === 401) {
+        // Session expired between steps: sign in again.
+        setAccountCreated(false);
+        setOwnerMode('existing');
+        setApiError(t.apiErrors.invalidCredentials);
+        setStep(1);
+        return;
+      }
+      setApiError(
+        e.network ? t.apiErrors.network : (e.message ?? ts.errors.restaurantCreationFailed)
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -384,6 +504,12 @@ export default function RestaurantSignupForm({ locale }: RestaurantSignupFormPro
               onNext={handleNext}
               t={ts}
               locale={locale}
+              mode={ownerMode}
+              busy={ownerBusy}
+              onUseDifferentEmail={useDifferentEmail}
+              onSignOut={() => {
+                void logout(null);
+              }}
             />
           )}
           {step === 2 && (

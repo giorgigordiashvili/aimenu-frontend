@@ -14,7 +14,7 @@ import ManIcon from '@/icons/Man';
 import PhoneIcon from '@/icons/Phone';
 import * as tokens from '@/tokens';
 
-import type { SignupData, SignupErrors, SignupT } from './shared';
+import type { OwnerMode, SignupData, SignupErrors, SignupT } from './shared';
 
 const Form = styled('form')({
   display: 'flex',
@@ -99,6 +99,10 @@ interface StepOwnerProps {
   onNext: () => void;
   t: SignupT;
   locale: Locale;
+  mode: OwnerMode;
+  busy: boolean;
+  onUseDifferentEmail: () => void;
+  onSignOut: () => void;
 }
 
 export default function StepOwner({
@@ -109,12 +113,92 @@ export default function StepOwner({
   onNext,
   t,
   locale,
+  mode,
+  busy,
+  onUseDifferentEmail,
+  onSignOut,
 }: StepOwnerProps) {
   function update<K extends keyof SignupData>(key: K, value: SignupData[K]) {
     setData(prev => ({ ...prev, [key]: value }));
     if (errors[key as keyof SignupErrors]) {
       setErrors(prev => ({ ...prev, [key]: undefined }));
     }
+  }
+
+  if (mode === 'signedIn') {
+    return (
+      <Form
+        onSubmit={e => {
+          e.preventDefault();
+          onNext();
+        }}
+        noValidate
+      >
+        <SectionTitle>{t.ownerSectionTitle}</SectionTitle>
+        <SectionSub>{t.signedInAs.replace('{email}', data.email)}</SectionSub>
+        <SubmitButton type='submit' disabled={busy}>
+          {t.signedInContinue}
+        </SubmitButton>
+        <Footer>
+          <a
+            href='#'
+            onClick={e => {
+              e.preventDefault();
+              onSignOut();
+            }}
+          >
+            {t.signedInNotYou}
+          </a>
+        </Footer>
+      </Form>
+    );
+  }
+
+  if (mode === 'existing') {
+    return (
+      <Form
+        onSubmit={e => {
+          e.preventDefault();
+          onNext();
+        }}
+        noValidate
+      >
+        <SectionTitle>{t.existingTitle}</SectionTitle>
+        <SectionSub>{t.existingHint.replace('{email}', data.email)}</SectionSub>
+        <Field>
+          <TextInput
+            variant='outlined'
+            label={t.password}
+            id='signup-existing-password'
+            type='password'
+            autoComplete='current-password'
+            required
+            autoFocus
+            value={data.password}
+            leftIcon={LockIcon}
+            icon={EyeIcon}
+            errorMessage={errors.password}
+            onChange={e => update('password', e.target.value)}
+          />
+        </Field>
+        <SubmitButton type='submit' disabled={busy}>
+          {busy ? t.checkingEmail : t.existingSubmit}
+        </SubmitButton>
+        <Footer>
+          <a
+            href='#'
+            onClick={e => {
+              e.preventDefault();
+              onUseDifferentEmail();
+            }}
+          >
+            {t.existingChangeEmail}
+          </a>
+          {' · '}
+          <Link href={localePath(locale, '/password-reset')}>{t.existingForgot}</Link>
+        </Footer>
+      </Form>
+    );
   }
 
   return (
@@ -220,7 +304,9 @@ export default function StepOwner({
         />
       </Field>
 
-      <SubmitButton type='submit'>{t.nextButton}</SubmitButton>
+      <SubmitButton type='submit' disabled={busy}>
+        {busy ? t.checkingEmail : t.nextButton}
+      </SubmitButton>
 
       <Footer>
         {t.haveAccount} <Link href={localePath(locale, '/login')}>{t.loginLink}</Link>

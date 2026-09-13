@@ -28,23 +28,16 @@ export interface SignupErrors {
   passwordConfirm?: string;
   restaurantName?: string;
   city?: string;
+  restaurantPhone?: string;
+  website?: string;
 }
+
+/**
+ * How step 1 behaves:
+ *  - new:      collect name, email, password -> register
+ *  - existing: the email already has an AiMenu account -> ask for its password, sign in
+ *  - signedIn: the visitor is already logged in -> the restaurant joins that account
+ */
+export type OwnerMode = 'new' | 'existing' | 'signedIn';
 
 export type SignupT = Dictionary['restaurantSignup'];
-
-// Lowercase + ASCII-safe. Backend auto-suffixes on collision; non-ASCII names
-// get reduced to an empty string here — that's fine because the backend's
-// save() also falls back to slugify(name) and will end up with a sensible
-// default (`restaurant-<id>` pattern at worst).
-export function slugify(input: string): string {
-  const base = input
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-  return base || 'restaurant';
-}

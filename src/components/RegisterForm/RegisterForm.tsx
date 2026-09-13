@@ -23,6 +23,7 @@ import GoogleIcon from '@/icons/Google';
 import LockIcon from '@/icons/Lock';
 import ManIcon from '@/icons/Man';
 import PhoneIcon from '@/icons/Phone';
+import { authErrorMessage, fieldMessage, hasCode, parseApiError } from '@/lib/api-error';
 import * as tokens from '@/tokens';
 
 // ── Layout ────────────────────────────────────────────────────────────────
@@ -113,6 +114,16 @@ const Form = styled('form')({
 const Field = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+});
+
+const EmailTakenLink = styled('span')({
+  fontSize: '13px',
+  marginTop: '6px',
+  '& a': {
+    color: tokens.primary,
+    fontWeight: 600,
+    textDecoration: 'underline',
+  },
 });
 
 const PasswordHint = styled('span')({
@@ -295,6 +306,7 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
+  const [emailTaken, setEmailTaken] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const { google: onGoogle, facebook: onFacebook } = useSocialAuth({
@@ -360,17 +372,24 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
         localePath(locale, '/login') + (redirect ? `?redirect=${encodeURIComponent(redirect)}` : '')
       );
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: Record<string, string[]> } };
-      const data = axiosErr?.response?.data;
-      if (data?.referral_code) {
-        setErrors(prev => ({ ...prev, referralCode: String(data.referral_code[0]) }));
-        setApiError(null);
-      } else if (data) {
-        const firstError = Object.values(data).flat()[0];
-        setApiError(String(firstError));
-      } else {
-        setApiError(t.register.genericError);
-      }
+      const e = parseApiError(err);
+      const copy = t.apiErrors;
+      const next: FormErrors = {};
+      const emailMsg = fieldMessage(e, 'email', copy);
+      if (emailMsg) next.email = emailMsg;
+      const passwordMsg = fieldMessage(e, 'password', copy);
+      if (passwordMsg) next.password = passwordMsg;
+      const confirmMsg = fieldMessage(e, 'password_confirm', copy);
+      if (confirmMsg) next.repeatPassword = confirmMsg;
+      const firstNameMsg = fieldMessage(e, 'first_name', copy);
+      if (firstNameMsg) next.firstName = firstNameMsg;
+      const lastNameMsg = fieldMessage(e, 'last_name', copy);
+      if (lastNameMsg) next.lastName = lastNameMsg;
+      if (e.fields.referral_code) next.referralCode = e.fields.referral_code;
+      setErrors(prev => ({ ...prev, ...next }));
+      setEmailTaken(hasCode(e, 'email', 'email_taken'));
+      // Field errors are shown inline; the banner is for everything else.
+      setApiError(Object.keys(next).length ? null : authErrorMessage(e, copy));
     } finally {
       setIsLoading(false);
     }
@@ -462,9 +481,21 @@ export default function RegisterForm({ locale }: RegisterFormProps) {
                 errorMessage={errors.email}
                 onChange={e => {
                   setEmail(e.target.value);
+                  setEmailTaken(false);
                   if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
                 }}
               />
+              {emailTaken && (
+                <EmailTakenLink>
+                  <Link
+                    href={
+                      localePath(locale, '/login') + `?email=${encodeURIComponent(email.trim())}`
+                    }
+                  >
+                    {t.register.emailTakenLogin}
+                  </Link>
+                </EmailTakenLink>
+              )}
             </Field>
 
             <Field>

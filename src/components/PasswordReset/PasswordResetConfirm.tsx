@@ -12,6 +12,7 @@ import { localePath } from '@/i18n/routing';
 import ArrowIcon from '@/icons/Arrow';
 import Checkmark from '@/icons/Checkmark';
 import EyeIcon from '@/icons/Eye';
+import { authErrorMessage, fieldMessage, parseApiError } from '@/lib/api-error';
 
 import {
   AlertBox,
@@ -98,20 +99,13 @@ export default function PasswordResetConfirm({ locale }: PasswordResetProps) {
 
       setIsSuccess(true);
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { status?: number; data?: { detail?: string } } };
-        const status = axiosErr.response?.status;
-
-        if (status === 400 || status === 404) {
-          setApiError(t.passwordReset.invalidToken);
-        } else {
-          setApiError(axiosErr.response?.data?.detail || t.passwordReset.resetFailed);
-        }
-      } else if (err instanceof Error && err.message === 'Network Error') {
-        setApiError(t.passwordReset.networkError);
-      } else {
-        setApiError(t.passwordReset.resetFailed);
-      }
+      const e = parseApiError(err);
+      const passwordMsg =
+        fieldMessage(e, 'new_password', t.apiErrors) ??
+        fieldMessage(e, 'new_password_confirm', t.apiErrors);
+      if (passwordMsg) setApiError(passwordMsg);
+      else if (e.status === 400 || e.status === 404) setApiError(t.passwordReset.invalidToken);
+      else setApiError(authErrorMessage(e, t.apiErrors));
     } finally {
       setIsLoading(false);
     }

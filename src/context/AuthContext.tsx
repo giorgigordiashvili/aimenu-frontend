@@ -10,7 +10,8 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (tokens: { access: string; refresh: string }) => Promise<void>;
-  logout: () => Promise<void>;
+  /** Clear the session. Redirects to /login unless `redirectTo` is null (reload in place) or a path. */
+  logout: (redirectTo?: string | null) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -64,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(user);
   };
 
-  const logout = async () => {
+  const logout = async (redirectTo?: string | null) => {
     try {
       await authLogoutCreate();
     } catch {
@@ -75,7 +76,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('refresh_token');
     setAuthCookie(null);
     setUser(null);
-    window.location.href = '/login';
+    window.location.href =
+      redirectTo === null ? window.location.pathname : (redirectTo ?? '/login');
   };
 
   return (

@@ -21,6 +21,7 @@ import EyeIcon from '@/icons/Eye';
 import FacebookIcon from '@/icons/Facebook';
 import GoogleIcon from '@/icons/Google';
 import LockIcon from '@/icons/Lock';
+import { authErrorMessage, parseApiError } from '@/lib/api-error';
 
 import {
   AlertBox,
@@ -64,7 +65,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
   const { locale: currentLocale } = useLocale();
   const t = getDictionary(locale);
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(() => searchParams.get('email') ?? '');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
@@ -108,20 +109,7 @@ export default function LoginForm({ locale }: LoginFormProps) {
       const redirect = searchParams.get('redirect');
       router.push(redirect || localePath(locale));
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { status?: number; data?: { detail?: string } } };
-        const status = axiosErr.response?.status;
-
-        if (status === 401 || status === 400) {
-          setApiError(t.login.invalidCredentials);
-        } else {
-          setApiError(axiosErr.response?.data?.detail || t.login.loginFailed);
-        }
-      } else if (err instanceof Error && err.message === 'Network Error') {
-        setApiError(t.login.networkError);
-      } else {
-        setApiError(t.login.loginFailed);
-      }
+      setApiError(authErrorMessage(parseApiError(err), t.apiErrors));
     } finally {
       setIsLoading(false);
     }

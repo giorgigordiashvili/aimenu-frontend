@@ -10,6 +10,7 @@ import { getDictionary } from '@/i18n/getDictionary';
 import { localePath } from '@/i18n/routing';
 import ArrowIcon from '@/icons/Arrow';
 import Checkmark from '@/icons/Checkmark';
+import { authErrorMessage, parseApiError } from '@/lib/api-error';
 
 import {
   AlertBox,
@@ -62,20 +63,11 @@ export default function PasswordResetRequest({ locale }: PasswordResetProps) {
 
       setIsSuccess(true);
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { status?: number; data?: { detail?: string } } };
-        const status = axiosErr.response?.status;
-
-        if (status === 404 || status === 400) {
-          setApiError(t.passwordReset.emailNotFound);
-        } else {
-          setApiError(axiosErr.response?.data?.detail || t.passwordReset.requestFailed);
-        }
-      } else if (err instanceof Error && err.message === 'Network Error') {
-        setApiError(t.passwordReset.networkError);
-      } else {
-        setApiError(t.passwordReset.requestFailed);
-      }
+      const e = parseApiError(err);
+      if (e.status === 404) setApiError(t.passwordReset.emailNotFound);
+      else if (e.status === 400 && !e.codes.email?.length)
+        setApiError(t.passwordReset.emailNotFound);
+      else setApiError(authErrorMessage(e, t.apiErrors));
     } finally {
       setIsLoading(false);
     }

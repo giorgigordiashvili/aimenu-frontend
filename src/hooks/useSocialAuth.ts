@@ -8,6 +8,7 @@ import axiosInstance from '@/api/axios';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale } from '@/context/LocaleContext';
 import { localePath } from '@/i18n/routing';
+import { parseApiError } from '@/lib/api-error';
 
 // Shared login-flow glue used by both LoginForm and RegisterForm. The two
 // forms differ only in: (a) the register form wants the ?ref= code in the
@@ -53,14 +54,10 @@ export function useSocialAuth({ referralCode, onError }: Options = {}) {
         const redirect = searchParams.get('redirect');
         router.push(redirect || localePath(locale));
       } catch (err) {
-        const axiosErr = err as {
-          response?: { data?: { detail?: string; non_field_errors?: string[] } };
-        };
-        const detail =
-          axiosErr?.response?.data?.detail ??
-          axiosErr?.response?.data?.non_field_errors?.[0] ??
-          null;
-        onError?.(detail ?? 'Social login failed. Please try again.');
+        const e = parseApiError(err);
+        onError?.(
+          e.fields.non_field_errors ?? e.message ?? 'Social login failed. Please try again.'
+        );
       }
     },
     [login, locale, onError, referralCode, router, searchParams]

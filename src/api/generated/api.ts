@@ -7,6 +7,8 @@ import axios from '../axios';
 import type {
   PaginatedAuditLogListList,
   AuditLogDetail,
+  EmailCheckRequest,
+  EmailCheckResult,
   CustomTokenObtainPairRequest,
   ChangePasswordRequest,
   ChangePassword,
@@ -284,6 +286,13 @@ export async function adminAuditList(
 
 export async function adminAuditRetrieve(id: string): Promise<AuditLogDetail> {
   const response = await axios.get(`/api/v1/admin/audit/${id}/`);
+  return response.data;
+}
+
+export async function authEmailCheckCreate(
+  data: EmailCheckRequest,
+): Promise<EmailCheckResult> {
+  const response = await axios.post(`/api/v1/auth/email-check/`, data);
   return response.data;
 }
 

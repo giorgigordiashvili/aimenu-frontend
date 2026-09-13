@@ -124,7 +124,8 @@
     "phonePlaceholder": "Enter your phone number",
     "emailPlaceholder": "Enter your email",
     "passwordPlaceholder": "Enter your password",
-    "repeatPasswordPlaceholder": "Re-enter your password"
+    "repeatPasswordPlaceholder": "Re-enter your password",
+    "emailTakenLogin": "Sign in instead"
   },
   "restaurantSignup": {
     "pageTitle": "List your restaurant on aimenu.ge",
@@ -185,7 +186,16 @@
       "restaurantCreationFailed": "Your account is ready, but we couldn't create the restaurant. Press Retry, or sign in and try again from your dashboard.",
       "networkError": "Network error — check your connection and try again.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "existingTitle": "You already have an AiMenu account",
+    "existingHint": "{email} is registered. Enter its password to continue -- the same account works for ordering and for running a restaurant.",
+    "existingSubmit": "Sign in & continue",
+    "existingChangeEmail": "Use a different email",
+    "existingForgot": "Forgot password?",
+    "signedInAs": "Signed in as {email}. The restaurant will be added to this account.",
+    "signedInContinue": "Continue",
+    "signedInNotYou": "Not you? Sign out",
+    "checkingEmail": "Checking…"
   },
   "login": {
     "back": "Back",
@@ -1208,5 +1218,20 @@
       "used_up": "This gift card has no balance left.",
       "pending": "This gift card has not been paid for yet."
     }
+  },
+  "apiErrors": {
+    "emailTaken": "An account with this email already exists. Sign in instead.",
+    "invalidEmail": "Please enter a valid email address.",
+    "required": "This field is required.",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "passwordTooCommon": "This password is too common. Pick something less guessable.",
+    "passwordNumeric": "Password can't be entirely numeric.",
+    "passwordSimilar": "Password is too similar to your name or email.",
+    "passwordMismatch": "Passwords do not match.",
+    "invalidCredentials": "Invalid email or password. Please try again.",
+    "accountLocked": "Too many failed attempts. The account is locked for 30 minutes.",
+    "tooManyAttempts": "Too many attempts. Try again in {seconds} seconds.",
+    "network": "Network error. Please check your connection and try again.",
+    "generic": "Something went wrong. Please try again."
   }
 }
