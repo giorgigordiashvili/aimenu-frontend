@@ -467,6 +467,7 @@
   "payments": {
     "providerPicker": {
       "title": "Choose payment provider",
+      "singleTitle": "Card payment",
       "bogLabel": "Bank of Georgia",
       "bogDescription": "Pay by card via BOG.",
       "flittLabel": "Flitt",

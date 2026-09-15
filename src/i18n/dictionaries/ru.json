@@ -468,6 +468,7 @@
   "payments": {
     "providerPicker": {
       "title": "Выберите платёжного провайдера",
+      "singleTitle": "Оплата картой",
       "bogLabel": "Bank of Georgia",
       "bogDescription": "Оплата картой через BOG.",
       "flittLabel": "Flitt",

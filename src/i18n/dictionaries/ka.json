@@ -466,6 +466,7 @@
   "payments": {
     "providerPicker": {
       "title": "აირჩიე გადახდის სისტემა",
+      "singleTitle": "გადახდა ბარათით",
       "bogLabel": "Bank of Georgia",
       "bogDescription": "ბარათით გადახდა BOG-ის მეშვეობით.",
       "flittLabel": "Flitt",

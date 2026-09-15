@@ -103,15 +103,34 @@ export default function PaymentProviderPicker({
   const t = useTranslations();
   const copy = t.payments?.providerPicker;
 
-  // When only one is available, the caller should hide the whole component.
-  // Rendering a single-option picker would be visual noise.
   if (!bogAvailable && !flittAvailable) return null;
-  if (!(bogAvailable && flittAvailable)) return null;
 
   const bogTitle = copy?.bogLabel ?? 'Bank of Georgia';
   const bogDesc = copy?.bogDescription ?? 'Pay by card via BOG.';
   const flittTitle = copy?.flittLabel ?? 'Flitt';
   const flittDesc = copy?.flittDescription ?? 'Pay by card via Flitt.';
+
+  // With a single provider there is nothing to choose, so render it as a
+  // static label rather than a one-option radio: the guest still learns who
+  // is about to take their card, which is worth saying out loud, and it
+  // makes it obvious during testing which processor is wired up.
+  const onlyOne = !(bogAvailable && flittAvailable);
+  if (onlyOne) {
+    const title = bogAvailable ? bogTitle : flittTitle;
+    const desc = bogAvailable ? bogDesc : flittDesc;
+    return (
+      <div>
+        <SectionLabel>{copy?.singleTitle ?? copy?.title ?? 'Card payment'}</SectionLabel>
+        <ProviderCard as='div' data-selected='true'>
+          <ProviderHead>
+            <CreditCardIcon />
+            <ProviderBrand>{title}</ProviderBrand>
+          </ProviderHead>
+          <ProviderHint>{desc}</ProviderHint>
+        </ProviderCard>
+      </div>
+    );
+  }
 
   return (
     <div>
