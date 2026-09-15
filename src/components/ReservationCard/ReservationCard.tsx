@@ -300,13 +300,17 @@ export default function ReservationCard({
     return time ? `${datePart} · ${time}` : datePart;
   })();
 
-  // payment_status is the acquirer's transaction status (BOG or Flitt).
-  // `approved` is the only terminal success either provider reports.
+  // payment_status is the acquirer's own transaction status, and the two
+  // providers use different words for the same outcome: BOG reports
+  // `completed` / `partial_completed`, Flitt reports `approved`. Matching
+  // only one of them labels half of all paid reservations as pending.
+  const PAID = ['approved', 'completed', 'partial_completed'];
+  const FAILED = ['declined', 'expired', 'reversed', 'failed', 'rejected', 'cancelled'];
   const payState: 'paid' | 'pending' | 'unpaid' | null = (() => {
     const st = (reservation.payment_status ?? '').toLowerCase();
     if (!st) return null;
-    if (st === 'approved') return 'paid';
-    if (['declined', 'expired', 'reversed', 'failed'].includes(st)) return 'unpaid';
+    if (PAID.includes(st)) return 'paid';
+    if (FAILED.includes(st)) return 'unpaid';
     return 'pending';
   })();
 
