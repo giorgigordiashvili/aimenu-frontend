@@ -83,6 +83,14 @@ export const primaryHover = rose700;
 export const muted = slate500;
 export const border = slate200;
 
+// ── Accessible CTA green ─────────────────────────────────────────────────
+// `green500` (#8CC63E) renders white text at 2.05:1 — a hard WCAG AA failure
+// (AA needs 4.5:1, or 3:1 for large text). These replace it on filled
+// buttons. Contrast with white: 4.99:1 and 7.08:1 respectively.
+// Do NOT use green500/lime500/lime600 behind white text.
+export const ctaGreen = '#4D7C0F';
+export const ctaGreenHover = '#3F6212';
+
 // ── Shadows ──────────────────────────────────────────────────────────────
 export const shadowSm = '0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)';
 export const shadowMd =

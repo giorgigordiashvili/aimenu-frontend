@@ -104,6 +104,7 @@ const ErrorText = styled('p')({
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 // Generated per-restaurant at request time. We hit the public REST
@@ -198,8 +199,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export default async function RestaurantDetailPage({ params }: PageProps) {
+export default async function RestaurantDetailPage({ params, searchParams }: PageProps) {
   const { locale: rawLocale, slug } = await params;
+  const sp = await searchParams;
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : defaultLocale;
   const t = getDictionary(locale);
 
@@ -252,8 +254,18 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   // one of the two flows (reservation OR ordering) is active. The desktop
   // right column hosts both the booking widget and the QR order card, so
   // it shows for either.
-  const showMobileSheet = showWidget || orderingEnabled;
-  const showRightColumn = showWidget || orderingEnabled;
+  // ── Table mode ────────────────────────────────────────────────────────
+  // A guest who scanned the QR at a table arrives with ?table=<code>. They
+  // are not shopping the marketplace: they are sitting in this restaurant
+  // and want the menu. Strip everything that points away from it — the
+  // reservation widget (they are already here), reviews, contact details,
+  // opening hours, and above all "Similar Restaurants", which advertises
+  // competitors to a seated guest on a page the restaurant pays us for.
+  // The bottom tab bar hides itself off TableContext; see BottomTabBar.
+  const tableMode = orderingEnabled && typeof sp.table === 'string' && sp.table.length > 0;
+
+  const showMobileSheet = !tableMode && (showWidget || orderingEnabled);
+  const showRightColumn = !tableMode && (showWidget || orderingEnabled);
 
   // schema.org/Restaurant JSON-LD for Google's rich result. Optional fields
   // are only emitted when the API populated them so we don't ship empty
@@ -344,18 +356,20 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
               orderingEnabled={orderingEnabled}
             />
 
-            {reviewsEnabled && <ReviewsSection slug={slug} />}
+            {reviewsEnabled && !tableMode && <ReviewsSection slug={slug} />}
 
-            <ContactInfo
-              operatingHours={restaurant.operating_hours}
-              phone={restaurant.phone}
-              website={restaurant.website}
-              email={restaurant.email}
-              isOpenNow={restaurant.is_open_now}
-              locale={locale}
-            />
+            {tableMode ? null : (
+              <ContactInfo
+                operatingHours={restaurant.operating_hours}
+                phone={restaurant.phone}
+                website={restaurant.website}
+                email={restaurant.email}
+                isOpenNow={restaurant.is_open_now}
+                locale={locale}
+              />
+            )}
 
-            {siteMode ? null : (
+            {siteMode || tableMode ? null : (
               <SimilarRestaurants
                 cuisineType={restaurant.category?.slug ?? ''}
                 currentSlug={slug}

@@ -189,6 +189,15 @@ export default function ReviewsSection({ slug }: Props) {
   const total = stats?.total ?? 0;
   const dist = stats?.distribution ?? { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 };
 
+  // Below this many reviews the block is pure negative signal: a 0.0 average,
+  // five empty distribution bars and "no reviews yet" occupy about a third of
+  // a phone screen to tell the guest there is no social proof. Hide it unless
+  // the restaurant has something to show — but always render for a guest who
+  // is eligible to leave one, so the write-a-review path stays reachable.
+  const MIN_REVIEWS_TO_SHOW = 3;
+  const canWriteReview = isAuthenticated && !!eligibleForThis;
+  if (!isLoading && total < MIN_REVIEWS_TO_SHOW && !canWriteReview) return null;
+
   return (
     <Section>
       <Head>

@@ -13,6 +13,12 @@ import CalendarIcon from '@/icons/Calendar';
 import ChevronDownIcon from '@/icons/ChevronDown';
 import ClockIcon from '@/icons/Clock';
 import {
+  FALLBACK_SETTINGS,
+  defaultDateAndTime,
+  fetchReservationSettings,
+  type ReservationSettings,
+} from '@/lib/reservationDefaults';
+import {
   border,
   foreground,
   iconStroke,
@@ -29,6 +35,7 @@ import CalendarPicker from './CalendarPicker';
 import GuestsDropdown from './GuestsDropdown';
 import PriceSummarySection from './PriceSummarySection';
 import TimeDropdown from './TimeDropdown';
+
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -290,6 +297,38 @@ export default function ReservationWidget({
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [guests, setGuests] = useState<number>(2);
+  const [settings, setSettings] = useState<ReservationSettings>(FALLBACK_SETTINGS);
+  // The guest has touched the date or time themselves — stop auto-filling.
+  const touchedRef = useRef(false);
+
+  // Open on today at the soonest bookable slot instead of two empty fields.
+  // "Soonest" is the restaurant's own `min_advance_hours` (2h by default),
+  // snapped forward onto its `slot_interval_minutes` grid, then matched to a
+  // slot that actually appears in the dropdown. Rolls to tomorrow's first
+  // slot when nothing is left today.
+  useEffect(() => {
+    if (!slug) return;
+    let cancelled = false;
+    fetchReservationSettings(slug)
+      .then(cfg => {
+        if (!cancelled) setSettings(cfg);
+      })
+      .catch(() => {
+        // Endpoint returns defaults rather than erroring, so a failure here
+        // is a network problem — keep FALLBACK_SETTINGS and carry on.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    if (touchedRef.current) return;
+    const pick = defaultDateAndTime(settings, DEFAULT_TIME_SLOTS);
+    if (!pick) return;
+    setSelectedDate(prev => prev ?? pick.date);
+    setSelectedTime(prev => prev || pick.time);
+  }, [settings]);
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
@@ -358,6 +397,7 @@ export default function ReservationWidget({
     const d = new Date(viewYear, viewMonth, day);
     d.setHours(0, 0, 0, 0);
     if (d < today || d > maxDate) return;
+    touchedRef.current = true;
     setSelectedDate(new Date(viewYear, viewMonth, day));
     setShowCalendar(false);
   }
@@ -527,6 +567,7 @@ export default function ReservationWidget({
             slots={DEFAULT_TIME_SLOTS}
             selected={selectedTime}
             onSelect={slot => {
+              touchedRef.current = true;
               setSelectedTime(slot);
               setShowTimeDropdown(false);
             }}

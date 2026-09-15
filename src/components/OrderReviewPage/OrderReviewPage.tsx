@@ -46,7 +46,7 @@ import {
   white,
   slate100,
   lime500,
-  lime600,
+  ctaGreenHover,
 } from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -177,7 +177,7 @@ const SubmitButton = styled('button')({
   cursor: 'pointer',
   transition: 'background-color 0.2s ease',
   '&:hover:not(:disabled)': {
-    backgroundColor: lime600,
+    backgroundColor: ctaGreenHover,
   },
   '&:disabled': {
     opacity: 0.6,

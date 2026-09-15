@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 
 import { useAuth } from '@/context/AuthContext';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
+import { useTable } from '@/context/TableContext';
 import { localePath, stripLocale } from '@/i18n/routing';
 import HouseIcon from '@/icons/House';
 import ScanIcon from '@/icons/Scan';
@@ -100,10 +101,17 @@ export default function BottomTabBar() {
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
 
+  const { tableData } = useTable();
+
   const { pathWithoutLocale } = stripLocale(pathname);
-  const hidden = HIDDEN_PATHS.some(
-    p => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`)
-  );
+  // A guest seated at a table is not browsing the marketplace. Home / Search /
+  // Scan / Profile all lead away from the restaurant they are sitting in, and
+  // the bar competes with the cart CTA for the bottom of the screen. Hide it
+  // for the whole table session, on every page.
+  const inTableSession = !!tableData?.isValidated;
+  const hidden =
+    inTableSession ||
+    HIDDEN_PATHS.some(p => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`));
 
   const profileHref = isAuthenticated
     ? localePath(locale, '/profile')

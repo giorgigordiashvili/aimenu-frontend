@@ -39,7 +39,8 @@
     "website": "Website",
     "similar": "Similar Restaurants",
     "addToCart": "Add to Cart",
-    "selectedItems": "{count} dishes selected"
+    "selectedItems": "{count} dishes selected",
+    "selectedItemsOne": "{count} dish selected"
   },
   "product": {
     "total": "Total",
@@ -792,7 +793,7 @@
     "privacyTitle": "Privacy policy",
     "privacyIntro": "At aimenu.ge, your privacy is a top priority. This Privacy Policy explains how we collect, use, store, and protect your personal data when you use our website, mobile application, or any related services (collectively, the \"Platform\").\n\nBy accessing or using aimenu.ge, you consent to the practices described in this policy.",
     "privacyWhoHeading": "Who we are",
-    "privacyWhoBody": "aimenu.ge is a digital platform that enables users to discover and book tables at restaurants, place pre-orders, and helps restaurants manage bookings and customer interactions.\n\nData Controller:\n\nTelos LLC\n\nLegal address: 6 Bakos Street, Tbilisi, Georgia\n\nIdentification number: 405735879\n\nEmail: info@telos.ge",
+    "privacyWhoBody": "aimenu.ge is a digital platform that enables users to discover and book tables at restaurants, place pre-orders, and helps restaurants manage bookings and customer interactions.\n\nData Controller:\n\nAI menu LLC\n\nLegal address: 6 Baku Street, Chugureti, Tbilisi, Georgia\n\nIdentification number: 402379118\n\nEmail: info@aimenu.ge",
     "privacyDataHeading": "What data we collect",
     "privacyDataBody": "A. For users (customers):\n\n• Name\n\n• Email address\n\n• Phone number\n\n• Reservation details (date, time, party size)\n\n• Device and browser information\n\n• Location data (optional, with your permission)\n\nB. For restaurants (partners):\n\n• Business name and contact details\n\n• Owner / manager contact information\n\n• Billing details (VAT ID, payment method)\n\n• Menu, photos, and other listing content\n\n• Booking history and customer interactions",
     "privacyUseHeading": "How we use your information",
@@ -808,17 +809,17 @@
     "privacySecurityHeading": "Data security",
     "privacySecurityBody": "We take technical and organisational measures to protect your data against:\n\n• Unauthorised access\n\n• Accidental loss or destruction\n\n• Breach or misuse\n\nData is transmitted over secure (HTTPS) connections and stored in secure environments.",
     "privacyRightsHeading": "Your rights",
-    "privacyRightsBody": "You have the right to:\n\n• Access your data\n\n• Correct inaccurate or incomplete data\n\n• Delete your personal data (\"right to be forgotten\")\n\n• Restrict or object to processing\n\n• Withdraw consent at any time\n\nTo exercise these rights, contact info@telos.ge. EU / UK residents: GDPR rights apply in full.",
+    "privacyRightsBody": "You have the right to:\n\n• Access your data\n\n• Correct inaccurate or incomplete data\n\n• Delete your personal data (\"right to be forgotten\")\n\n• Restrict or object to processing\n\n• Withdraw consent at any time\n\nTo exercise these rights, contact info@aimenu.ge. EU / UK residents: GDPR rights apply in full.",
     "privacyThirdPartyHeading": "Third-party links",
     "privacyThirdPartyBody": "Our Platform may contain links to third-party websites. We are not responsible for the privacy practices or content of those sites.",
     "privacyChangesHeading": "Changes to this policy",
     "privacyChangesBody": "We may update this Privacy Policy from time to time. Changes will be posted here with the updated effective date. We recommend reviewing it regularly.",
     "privacyContactHeading": "Contact us",
-    "privacyContactBody": "If you have any questions about this Privacy Policy or how we handle your data, contact:\n\nEmail: info@telos.ge",
+    "privacyContactBody": "If you have any questions about this Privacy Policy or how we handle your data, contact:\n\nEmail: info@aimenu.ge",
     "termsTitle": "Terms and conditions",
     "termsIntro": "By using aimenu.ge you agree to the terms set out below. Please read them carefully before using the service.",
     "termsGeneralHeading": "General terms",
-    "termsGeneralBody": "This document is a legally binding agreement between the user and Telos LLC (identification number 405735879).\n\nBy using the platform, the user confirms they have fully read and agree to these terms.",
+    "termsGeneralBody": "This document is a legally binding agreement between the user and AI menu LLC (identification number 402379118).\n\nBy using the platform, the user confirms they have fully read and agree to these terms.",
     "termsServiceHeading": "Service description",
     "termsServiceBody": "aimenu.ge is an online platform that lets users search for and reserve tables at restaurants, browse menus and prices, place pre-orders and payments, and receive booking confirmations by email or SMS.\n\nThe platform acts as a technological intermediary between the user and partner restaurants and is not responsible for the service delivered by the restaurant.",
     "termsAccountHeading": "User obligations",
@@ -836,7 +837,7 @@
     "termsLawHeading": "Governing law",
     "termsLawBody": "These terms are governed by the laws of Georgia. Any dispute arising in connection with this agreement shall be resolved by the competent courts of Georgia.",
     "termsContactHeading": "Contact",
-    "termsContactBody": "Telos LLC\n\nLegal address: 6 Bakos Street, Tbilisi, Georgia\n\nIdentification number: 405735879\n\nEmail: info@telos.ge"
+    "termsContactBody": "AI menu LLC\n\nLegal address: 6 Baku Street, Chugureti, Tbilisi, Georgia\n\nIdentification number: 402379118\n\nEmail: info@aimenu.ge"
   },
   "seo": {
     "siteTitle": "aimenu.ge — restaurants, menus, reservations",

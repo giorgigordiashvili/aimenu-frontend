@@ -417,7 +417,11 @@ export default function BookingForm({
   useEffect(() => {
     if (!slug) return;
     axiosInstance
-      .get(`/api/v1/restaurants/${slug}/reservation-settings/`)
+      // Tenant-scoped via the X-Restaurant header; the old
+      // /restaurants/<slug>/reservation-settings/ path does not exist and
+      // this call silently 404'd, so every restaurant fell back to the
+      // hardcoded defaults below.
+      .get('/api/v1/reservations/settings/', { headers: { 'X-Restaurant': slug } })
       .then(res => {
         const d = res.data;
         if (d?.advance_booking_days !== null && d?.advance_booking_days !== undefined)
