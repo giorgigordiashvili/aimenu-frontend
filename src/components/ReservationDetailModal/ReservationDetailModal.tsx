@@ -390,6 +390,9 @@ export default function ReservationDetailModal({
     id: string;
     item_name: string;
     quantity?: number;
+    /** Price for ONE unit. */
+    unit_price?: string;
+    /** unit_price × quantity, already multiplied by the backend. */
     total_price: string;
   }
   interface PreOrderShape {
@@ -404,12 +407,27 @@ export default function ReservationDetailModal({
       })
     | null;
   const preOrder = reservationWithPayment?.pre_order ?? null;
-  const realItems: OrderItem[] = (preOrder?.items ?? []).map(item => ({
-    id: item.id,
-    quantity: item.quantity ?? 1,
-    name: item.item_name,
-    price: parseFloat(item.total_price || '0'),
-  }));
+  // BookingOrderSummary expects a UNIT price and multiplies by quantity
+  // itself. Passing total_price here double-multiplied every line: a 15.00
+  // dish ordered 4 times arrived as total_price 60.00, was treated as the
+  // unit price, and rendered "4 × 60.00 ₾ = 240.00". Prefer unit_price and
+  // fall back to dividing the total, for older rows that predate the field.
+  const realItems: OrderItem[] = (preOrder?.items ?? []).map(item => {
+    const quantity = item.quantity ?? 1;
+    const total = parseFloat(item.total_price || '0');
+    const unit =
+      item.unit_price !== undefined && item.unit_price !== null
+        ? parseFloat(item.unit_price)
+        : quantity > 0
+          ? total / quantity
+          : total;
+    return {
+      id: item.id,
+      quantity,
+      name: item.item_name,
+      price: Number.isFinite(unit) ? unit : 0,
+    };
+  });
   const mockItems = MOCK_MODE ? (MOCK_ORDER_ITEMS[reservationId] ?? []) : [];
   const orderItems: OrderItem[] = realItems.length > 0 ? realItems : mockItems;
 

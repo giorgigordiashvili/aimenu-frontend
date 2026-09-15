@@ -185,7 +185,13 @@ function restaurantPropsFromReservation(r: unknown) {
     restaurantName: source.restaurant_name,
     restaurantImage: source.restaurant_logo || source.restaurant_cover_image,
     restaurantCity: source.restaurant_city,
-    restaurantRating: source.restaurant_average_rating,
+    // A restaurant with no reviews has an average of 0.00, and rendering
+    // "0.00" beside a star reads as a one-star review rather than "no
+    // reviews yet". Drop it until there is a real rating to show.
+    restaurantRating:
+      source.restaurant_average_rating && parseFloat(source.restaurant_average_rating) > 0
+        ? source.restaurant_average_rating
+        : undefined,
   };
 }
 
