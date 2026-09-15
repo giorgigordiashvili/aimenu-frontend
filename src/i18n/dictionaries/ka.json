@@ -360,7 +360,10 @@
     "loyaltyPoints": "ქულა",
     "loyaltyUpTo": "-მდე",
     "loyaltyDescPre": "დააგროვეთ კიდევ",
-    "loyaltyDescPost": "ქულა და მიიღეთ 10% ფასდაქლება ყველა რესტორანში."
+    "loyaltyDescPost": "ქულა და მიიღეთ 10% ფასდაქლება ყველა რესტორანში.",
+    "paid": "გადახდილია",
+    "paymentPending": "მუშავდება",
+    "notPaid": "გადაუხდელი"
   },
   "tip": {
     "title": "გაუწიე ჩაი",

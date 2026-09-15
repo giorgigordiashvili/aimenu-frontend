@@ -18,7 +18,8 @@ import BookingRestaurantCard from '@/components/BookingRestaurantCard/BookingRes
 import BookingRightPanel from '@/components/BookingRightPanel/BookingRightPanel';
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import MainButton from '@/components/MainButton/MainButton';
-import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
+import { type PaymentProvider } from '@/components/PaymentProviderPicker';
+import PayWithProvider from '@/components/PayWithProvider/PayWithProvider';
 import WalletApplySection from '@/components/WalletApplySection';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -479,7 +480,11 @@ export default function BookingForm({
       });
   }, [selectedDate, slug]);
 
-  async function handlePay() {
+  // Accepts the acquirer explicitly: the pay-with buttons choose and submit
+  // in the same click, and reading `provider` from state there would race
+  // setState and send the previous selection.
+  async function handlePay(overrideProvider?: PaymentProvider) {
+    const chosen = overrideProvider ?? provider;
     if (!selectedDate || !time || !name || !phone) return;
 
     setIsPaymentLoading(true);
@@ -542,7 +547,7 @@ export default function BookingForm({
         return_url: returnUrl,
       };
       const result =
-        provider === 'flitt'
+        chosen === 'flitt'
           ? await initiateReservationFlitt(initiateBody)
           : await initiateReservationPayment(initiateBody);
       window.location.assign(result.redirect_url);
@@ -615,8 +620,6 @@ export default function BookingForm({
 
           {/* ── Right panel — desktop only, self-contained ───────────────── */}
           <BookingRightPanel
-            provider={provider}
-            onProvider={setProvider}
             bogAvailable={providerFlags.bog}
             flittAvailable={providerFlags.flitt}
             depositAmount={depositAmount}
@@ -670,11 +673,12 @@ export default function BookingForm({
           </OverlayHeader>
 
           <OverlayContent>
-            <PaymentProviderPicker
-              value={provider}
-              onChange={setProvider}
+            <PayWithProvider
               bogAvailable={providerFlags.bog}
               flittAvailable={providerFlags.flitt}
+              isLoading={isPaymentLoading}
+              amountLabel={`${(cartTotal + depositAmount - walletAmount).toFixed(2)} ₾`}
+              onPay={handlePay}
             />
             {cartItems.length > 0 ? (
               <WalletApplySection

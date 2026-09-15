@@ -362,7 +362,10 @@
     "loyaltyPoints": "очков",
     "loyaltyUpTo": " макс.",
     "loyaltyDescPre": "Накопите ещё",
-    "loyaltyDescPost": "баллов и получите скидку 10% во всех ресторанах."
+    "loyaltyDescPost": "баллов и получите скидку 10% во всех ресторанах.",
+    "paid": "Оплачено",
+    "paymentPending": "Обрабатывается",
+    "notPaid": "Не оплачено"
   },
   "tip": {
     "title": "Чаевые",

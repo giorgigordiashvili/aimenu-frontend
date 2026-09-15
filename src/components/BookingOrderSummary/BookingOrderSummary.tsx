@@ -134,12 +134,25 @@ const OrderItemRight = styled('div')({
   flexShrink: 0,
 });
 
+const PriceStack = styled('span')({
+  display: 'inline-flex',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+  lineHeight: 1.3,
+});
+
 const OrderItemPrice = styled('span')({
   fontSize: '14px',
   fontWeight: 500,
   color: foreground,
   lineHeight: '20px',
   whiteSpace: 'nowrap',
+});
+
+const OrderItemUnit = styled('span')({
+  fontSize: '11.5px',
+  color: slate500,
+  fontVariantNumeric: 'tabular-nums',
 });
 
 const OrderSubtotalRow = styled('div')({
@@ -265,7 +278,18 @@ export default function BookingOrderSummary({ items, depositAmount }: Props) {
                 ))}
               </OrderItemContent>
               <OrderItemRight>
-                <OrderItemPrice>{item.price.toFixed(2)} ₾</OrderItemPrice>
+                {/* Line total, not the unit price. Beside a "3x" badge a bare
+                    unit price reads as the line total and makes the food
+                    total look wrong — 3x at 15.00 showing "15.00" then a
+                    45.00 subtotal is the same arithmetic stated two ways. */}
+                <PriceStack>
+                  <OrderItemPrice>{(item.price * item.quantity).toFixed(2)} ₾</OrderItemPrice>
+                  {item.quantity > 1 && (
+                    <OrderItemUnit>
+                      {item.quantity} × {item.price.toFixed(2)} ₾
+                    </OrderItemUnit>
+                  )}
+                </PriceStack>
                 <MainButton size='extra_small' variant='outline' icon={EditButtonIcon} />
               </OrderItemRight>
             </OrderItemRow>

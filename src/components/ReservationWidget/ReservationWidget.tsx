@@ -36,7 +36,6 @@ import GuestsDropdown from './GuestsDropdown';
 import PriceSummarySection from './PriceSummarySection';
 import TimeDropdown from './TimeDropdown';
 
-
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const DEFAULT_TIME_SLOTS = [

@@ -5,18 +5,18 @@ import { useRouter } from 'next/navigation';
 
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
-import BookingPaymentForm from '@/components/BookingPaymentForm/BookingPaymentForm';
-import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
+import { type PaymentProvider } from '@/components/PaymentProviderPicker';
+import PayWithProvider from '@/components/PayWithProvider/PayWithProvider';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { localePath } from '@/i18n/routing';
 import CloseIcon from '@/icons/Close';
-import { slate100, slate600, white } from '@/tokens';
+import { slate100, slate500, slate600, white } from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Props = {
-  depositAmount: number;
+  depositAmount?: number;
   grandTotal?: number;
   name: string;
   phone: string;
@@ -32,16 +32,9 @@ type Props = {
   paymentError?: string | null;
   reservationId?: string | null;
   onClose?: () => void;
-  onPay: () => void;
+  onPay: (provider: PaymentProvider) => void;
   step: 'contact' | 'payment' | 'success' | 'fail';
   onStepChange: (step: 'contact' | 'payment') => void;
-  /**
-   * Card acquirer. The picker used to live only inside the mobile payment
-   * overlay, so on desktop a restaurant with both BOG and Flitt configured
-   * silently defaulted to BOG with no way to switch.
-   */
-  provider: PaymentProvider;
-  onProvider: (p: PaymentProvider) => void;
   bogAvailable: boolean;
   flittAvailable: boolean;
 };
@@ -83,10 +76,25 @@ const CloseButton = styled('button')({
   },
 });
 
+const PaymentError = styled('span')({
+  fontSize: '13px',
+  color: '#B91C1C',
+});
+
+const BackLink = styled('button')({
+  alignSelf: 'flex-start',
+  background: 'none',
+  border: 'none',
+  padding: '4px 0',
+  fontSize: '14px',
+  color: slate500,
+  cursor: 'pointer',
+  textDecoration: 'underline',
+});
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function BookingRightPanel({
-  depositAmount,
   grandTotal,
   name,
   phone,
@@ -105,8 +113,6 @@ export default function BookingRightPanel({
   onPay,
   step,
   onStepChange,
-  provider,
-  onProvider,
   bogAvailable,
   flittAvailable,
 }: Props) {
@@ -141,21 +147,21 @@ export default function BookingRightPanel({
 
       {step === 'payment' && (
         <>
-          <PaymentProviderPicker
-            value={provider}
-            onChange={onProvider}
+          <PayWithProvider
             bogAvailable={bogAvailable}
             flittAvailable={flittAvailable}
-          />
-          <BookingPaymentForm
-            depositAmount={depositAmount}
-            grandTotal={grandTotal}
-            savedCard={null}
             isLoading={isPaymentLoading}
-            error={paymentError}
-            onBack={() => onStepChange('contact')}
+            amountLabel={
+              grandTotal !== undefined && grandTotal !== null
+                ? `${grandTotal.toFixed(2)} ₾`
+                : undefined
+            }
             onPay={onPay}
           />
+          {paymentError && <PaymentError>{paymentError}</PaymentError>}
+          <BackLink type='button' onClick={() => onStepChange('contact')}>
+            {t.booking.goBack}
+          </BackLink>
         </>
       )}
 

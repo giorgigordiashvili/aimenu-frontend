@@ -5,12 +5,14 @@ import Image from 'next/image';
 
 import { ReservationList } from '@/api/generated/interfaces';
 import MainButton from '@/components/MainButton/MainButton';
-import { useTranslations } from '@/context/LocaleContext';
+import { useLocale, useTranslations } from '@/context/LocaleContext';
 import SecondArrow from '@/icons/SecondArrow';
 import Star from '@/icons/Star';
 import {
   border,
   foreground,
+  emerald600,
+  green50,
   radiusMd,
   radiusSm,
   rose200,
@@ -19,6 +21,7 @@ import {
   rose800,
   shadowSm,
   slate200,
+  slate50,
   slate500,
   white,
 } from '@/tokens';
@@ -100,6 +103,33 @@ const Subtitle = styled('span')({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+});
+
+const MetaRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: '6px 10px',
+  marginTop: '4px',
+});
+
+const MetaItem = styled('span')({
+  fontSize: '12.5px',
+  color: slate500,
+  fontVariantNumeric: 'tabular-nums',
+});
+
+const PayPill = styled('span')({
+  fontSize: '11px',
+  fontWeight: 600,
+  padding: '2px 8px',
+  borderRadius: '999px',
+  lineHeight: '16px',
+  whiteSpace: 'nowrap',
+
+  '&[data-state="paid"]': { background: green50, color: emerald600 },
+  '&[data-state="pending"]': { background: '#FEF3C7', color: '#92400E' },
+  '&[data-state="unpaid"]': { background: slate50, color: slate500 },
 });
 
 const RatingBadge = styled('div')({
@@ -243,6 +273,7 @@ export default function ReservationCard({
   restaurantRating,
 }: ReservationCardProps) {
   const t = useTranslations();
+  const { locale } = useLocale();
 
   const title =
     restaurantName ||
@@ -252,6 +283,44 @@ export default function ReservationCard({
 
   const subtitle = [restaurantCity, restaurantCuisine].filter(Boolean).join(' • ');
   const guestLabel = `${reservation.party_size} ${t.reservations.guests}`;
+
+  // Date + time and whether it has been paid for are the two things a guest
+  // actually opens this page to check, and neither was rendered — the API
+  // has returned both all along.
+  const when = (() => {
+    const date = reservation.reservation_date;
+    const time = (reservation.reservation_time ?? '').slice(0, 5); // HH:MM
+    if (!date) return time || null;
+    const d = new Date(`${date}T${time || '00:00'}`);
+    if (isNaN(d.getTime())) return [date, time].filter(Boolean).join(' · ');
+    const datePart = new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+    }).format(d);
+    return time ? `${datePart} · ${time}` : datePart;
+  })();
+
+  // payment_status is the acquirer's transaction status (BOG or Flitt).
+  // `approved` is the only terminal success either provider reports.
+  const payState: 'paid' | 'pending' | 'unpaid' | null = (() => {
+    const st = (reservation.payment_status ?? '').toLowerCase();
+    if (!st) return null;
+    if (st === 'approved') return 'paid';
+    if (['declined', 'expired', 'reversed', 'failed'].includes(st)) return 'unpaid';
+    return 'pending';
+  })();
+
+  const payCopy = t.reservations as unknown as Record<string, string | undefined>;
+  const payLabel =
+    payState === 'paid'
+      ? (payCopy.paid ?? 'Paid')
+      : payState === 'pending'
+        ? (payCopy.paymentPending ?? 'Payment pending')
+        : (payCopy.notPaid ?? 'Not paid');
+
+  const depositLabel = reservation.deposit_amount
+    ? `${parseFloat(reservation.deposit_amount).toFixed(2)} ₾`
+    : null;
 
   const thumbnail = (
     <Thumbnail>
@@ -267,6 +336,13 @@ export default function ReservationCard({
     <Content>
       <RestaurantName>{title}</RestaurantName>
       {subtitle && <Subtitle>{subtitle}</Subtitle>}
+      {(when || payState || depositLabel) && (
+        <MetaRow>
+          {when && <MetaItem>{when}</MetaItem>}
+          {depositLabel && <MetaItem>{depositLabel}</MetaItem>}
+          {payState && <PayPill data-state={payState}>{payLabel}</PayPill>}
+        </MetaRow>
+      )}
       {restaurantRating &&
         (variant === 'alt' ? (
           <RatingWrapper>
