@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import BookingContactForm from '@/components/BookingContactForm/BookingContactForm';
 import BookingFailPanel from '@/components/BookingFailPanel/BookingFailPanel';
 import BookingPaymentForm from '@/components/BookingPaymentForm/BookingPaymentForm';
+import PaymentProviderPicker, { type PaymentProvider } from '@/components/PaymentProviderPicker';
 import BookingSuccessPanel from '@/components/BookingSuccessPanel/BookingSuccessPanel';
 import { useLocale, useTranslations } from '@/context/LocaleContext';
 import { localePath } from '@/i18n/routing';
@@ -34,6 +35,15 @@ type Props = {
   onPay: () => void;
   step: 'contact' | 'payment' | 'success' | 'fail';
   onStepChange: (step: 'contact' | 'payment') => void;
+  /**
+   * Card acquirer. The picker used to live only inside the mobile payment
+   * overlay, so on desktop a restaurant with both BOG and Flitt configured
+   * silently defaulted to BOG with no way to switch.
+   */
+  provider: PaymentProvider;
+  onProvider: (p: PaymentProvider) => void;
+  bogAvailable: boolean;
+  flittAvailable: boolean;
 };
 
 // ─── Styled components ────────────────────────────────────────────────────────
@@ -95,6 +105,10 @@ export default function BookingRightPanel({
   onPay,
   step,
   onStepChange,
+  provider,
+  onProvider,
+  bogAvailable,
+  flittAvailable,
 }: Props) {
   const t = useTranslations();
   const { locale } = useLocale();
@@ -126,15 +140,23 @@ export default function BookingRightPanel({
       )}
 
       {step === 'payment' && (
-        <BookingPaymentForm
-          depositAmount={depositAmount}
-          grandTotal={grandTotal}
-          savedCard={null}
-          isLoading={isPaymentLoading}
-          error={paymentError}
-          onBack={() => onStepChange('contact')}
-          onPay={onPay}
-        />
+        <>
+          <PaymentProviderPicker
+            value={provider}
+            onChange={onProvider}
+            bogAvailable={bogAvailable}
+            flittAvailable={flittAvailable}
+          />
+          <BookingPaymentForm
+            depositAmount={depositAmount}
+            grandTotal={grandTotal}
+            savedCard={null}
+            isLoading={isPaymentLoading}
+            error={paymentError}
+            onBack={() => onStepChange('contact')}
+            onPay={onPay}
+          />
+        </>
       )}
 
       {step === 'success' && (

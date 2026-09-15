@@ -615,6 +615,10 @@ export default function BookingForm({
 
           {/* ── Right panel — desktop only, self-contained ───────────────── */}
           <BookingRightPanel
+            provider={provider}
+            onProvider={setProvider}
+            bogAvailable={providerFlags.bog}
+            flittAvailable={providerFlags.flitt}
             depositAmount={depositAmount}
             grandTotal={cartTotal + depositAmount}
             name={name}
