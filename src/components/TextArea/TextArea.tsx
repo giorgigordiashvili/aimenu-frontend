@@ -4,7 +4,7 @@ import { styled } from '@pigment-css/react';
 import { useState } from 'react';
 
 import FieldError from '@/components/FieldError';
-import { slate50, slate200, slate400 } from '@/tokens';
+import { slate50, slate200, slate400, slate900 } from '@/tokens';
 
 const Text = styled('p')({
   fontSize: '14px',
@@ -27,7 +27,9 @@ const StyledTextArea = styled('textarea')({
   letterSpacing: '-0.15px',
   fontWeight: 400,
   border: '1px solid transparent',
-  color: '#717182',
+  // Darker than the placeholder so a filled note reads as filled — see
+  // TextInput for the same fix.
+  color: slate900,
   borderRadius: '8px',
   padding: '10px 12px',
   backgroundColor: '#F3F3F5',

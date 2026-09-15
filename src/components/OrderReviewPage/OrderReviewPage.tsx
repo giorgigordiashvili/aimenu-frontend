@@ -45,8 +45,9 @@ import {
   slate500,
   white,
   slate100,
-  lime500,
+  ctaGreen,
   ctaGreenHover,
+  ctaGreenInk,
 } from '@/tokens';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -169,10 +170,10 @@ const SubmitButton = styled('button')({
   padding: '16px 32px',
   borderRadius: '12px',
   border: 'none',
-  backgroundColor: lime500,
-  color: white,
+  backgroundColor: ctaGreen,
+  color: ctaGreenInk,
   fontSize: '16px',
-  fontWeight: 500,
+  fontWeight: 700,
   fontFamily: 'Inter, sans-serif',
   cursor: 'pointer',
   transition: 'background-color 0.2s ease',

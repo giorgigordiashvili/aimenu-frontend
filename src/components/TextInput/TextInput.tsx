@@ -4,7 +4,7 @@ import { styled } from '@pigment-css/react';
 import { useState, useRef } from 'react';
 
 import FieldError from '@/components/FieldError';
-import { slate50, slate200, slate400 } from '@/tokens';
+import { slate50, slate200, slate400, slate900 } from '@/tokens';
 
 const Text = styled('p')({
   fontSize: '14px',
@@ -67,7 +67,11 @@ const StyledInput = styled('input')({
   letterSpacing: '-0.15px',
   fontWeight: 400,
   border: '1px solid transparent',
-  color: '#717182',
+  // The VALUE must be darker than the placeholder, or a prefilled field is
+  // indistinguishable from an empty one — which is exactly what happened
+  // when we started pre-filling name/phone/email for signed-in guests.
+  // 16.1:1 on the #F3F3F5 field against the placeholder's 4.3:1.
+  color: slate900,
   borderRadius: '8px',
   padding: '10px 12px',
   backgroundColor: '#F3F3F5',
